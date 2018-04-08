@@ -1,6 +1,9 @@
-# Lab1
+# Lab2
 
-Repository for the lab1 exercise of MAD: two activities to manage the user profile.
+Repository for the lab2 exercise of MAD: 
+- Activity for ad creation of a book
+- Firebase support
+- Navigation scheme
 
 
 ## Resources
