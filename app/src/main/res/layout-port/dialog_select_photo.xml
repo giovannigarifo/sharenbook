@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:background="@color/colorPrimary"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/photo_dialog_title" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:id="@+id/dialog_gallery_button">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_photo_library_black_24dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingLeft="80dp"
+            android:textSize="20sp"
+            android:text="@string/photo_dialog_item_gallery"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:id="@+id/dialog_camera_button">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_photo_camera_black_24dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingLeft="80dp"
+            android:textSize="20sp"
+            android:text="@string/photo_dialog_item_camera"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:id="@+id/dialog_cancel_button">
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_cancel_black_24dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingLeft="80dp"
+            android:textSize="20sp"
+            android:text="@android:string/cancel"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

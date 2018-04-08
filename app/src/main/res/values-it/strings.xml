@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">Lab1</string>
+    <string name="profile_preferences">profile_preferences</string>
+    <string name="profile_preferences_copy">profile_preferences_copy</string>
+    <string name="default_fullname_heading">Nome e cognome</string>
+    <string name="default_username_heading">Nome utente</string>
+    <string name="default_fullname">Nome Cognome</string>
+    <string name="default_username">Nome utente</string>
+    <string name="default_email_heading">Email</string>
+    <string name="default_email">La tua email.</string>
+    <string name="default_city_heading">Città</string>
+    <string name="default_city">Città, Nazione</string>
+    <string name="default_bio_heading">Biografia</string>
+    <string name="default_bio">Scrivi qui la tua biografia.
+    </string>
+    <string name="default_picture_path">void</string>
+
+    <string name="search_hint">Ricerca un libro o un utente...</string>
+
+    <!-- navigation bar -->
+    <string name="title_profile">Profilo</string>
+    <string name="title_showcase">Bacheca</string>
+    <string name="title_shareBook">Nuovo annuncio</string>
+
+    <!-- persistence keys -->
+    <string name="fullname_key">fullname</string>
+    <string name="username_key">username</string>
+    <string name="email_key">email</string>
+    <string name="city_key">city</string>
+    <string name="bio_key">bio</string>
+    <string name="userPicture_key">user_picture</string>
+
+    <!-- copy keys for rollbacks-->
+    <string name="fullname_copy_key">fullname_copy</string>
+    <string name="username_copy_key">username_copy</string>
+    <string name="email_copy_key">email_copy</string>
+    <string name="city_copy_key">city_copy</string>
+    <string name="bio_copy_key">bio_copy</string>
+    <string name="userPicture_copy_key">user_picture_copy</string>
+
+    <!-- photo dialog items -->
+
+    <string name="photo_dialog_item_camera">Fotocamera</string>
+    <string name="photo_dialog_item_gallery">Galleria</string>
+    <string name="photo_dialog_title">Aggiungi immagine</string>
+    <string name="photo_dialog_select_gallery_method_title">Seleziona metodo</string>
+
+    <!-- exit dialogue -->
+
+    <string name="exit_request_title">Termina la modifica</string>
+    <string name="exit_rationale">sei sicuro di voler uscire? ogni modifica verrà persa!</string>
+
+    <!-- validate inputs -->
+    <string name="name_bad_format_rationale">Il tuo nome completo deve contenere solo lettere separate da uno spazio. Lettera iniziale in maiuscolo!</string>
+    <string name="name_length_format_rationale">Il tuo nome completo deve avere almeno 5 caratteri.</string>
+    <string name="bad_email"> Email non valida!</string>
+    <string name="email_bad_format_rationale">Se modifichi la mail, non lasciarla vuota per favore!</string>
+    <string name="username_bad_start_rationale">Per favore, il tuo username deve iniziare con @</string>
+    <string name="username_bad_lenght_rationale">Per favore, il tuo username deve avere almeno 2 caratteri</string>
+    <string name="city_bad_lenght_rationale">Per favore, la tua città deve contenere almeno 2 caratteri</string>
+    <string name="city_bad_format_rationale">Per favore, la tua città deve contenere solo caratteri. Iniziali maiuscole</string>
+    <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>
+
+
+    <!-- permissions -->
+    <string name="permission_already_granted">Cominciamo! :-)</string>
+    <string name="permissions_granted">Permessi forniti!</string>
+    <string name="new_permission_request_title">Sono richiesti dei permessi</string>
+    <string name="permissions_rationale">L\'accesso alla fotocamera ed alla memoria sono richiesti per completare la modifica del profilo!</string>
+    <string name="camera_access_required">L\'accesso alla fotocamera è richiesto poter visualizzare l\'anteprima!</string>
+    <string name="ok">OK</string>
+    <string name="camera_permission_not_available">Permesso non autorizzato. Si richiedo permesso per l\'uso della fotocamera.</string>
+    <string name="camera_permission_available">Permesso per la fotocamera disponibile. Inizializzazione dell\'anteprima.</string>
+    <string name="camera_permission_granted">Permesso per la fotocamera autorizzato. Inizializzazione dell\'anteprima.</string>
+    <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
+    <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
+
+</resources>

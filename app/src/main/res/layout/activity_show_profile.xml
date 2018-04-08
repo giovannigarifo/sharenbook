@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="it.polito.mad.lab1.showProfile">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="55dp">
+
+        <!-- external wrapper-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search Bar -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary">
+
+
+                <com.mancj.materialsearchbar.MaterialSearchBar
+                    style="@style/MaterialSearchBarLight"
+                    app:mt_speechMode="false"
+                    app:mt_hint="@string/search_hint"
+                    app:mt_maxSuggestionsCount="10"
+                    app:mt_navIconEnabled="true"
+                    app:mt_placeholder="Share'nBook"
+                    app:mt_searchBarColor="@color/colorSecondary"
+                    app:mt_textCursorTint="@color/colorPrimary"
+                    android:layout_width="340dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/searchBar" />
+
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp">
+
+                <!-- colored bar -->
+                <ImageView
+                    android:id="@+id/topBar_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="85sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/gradient" />
+
+                <!-- user profile picture -->
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/userPicture"
+
+                    android:layout_width="135dp"
+                    android:layout_height="135dp"
+
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_person_black_135dp"
+                    android:tint="@color/darkgrey"
+                    android:clickable="true"
+                    app:civ_border_color="@color/lightgrey"
+                    app:civ_border_width="1dp"
+                    app:civ_shadow="true"
+                    app:civ_shadow_color="@color/lightgrey"
+                    app:civ_shadow_radius="10" />
+
+                <!-- user full name -->
+                <TextView
+                    android:id="@+id/tv_userFullName"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignTop="@id/userPicture"
+                    android:layout_marginLeft="8dp"
+
+                    android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@id/userPicture"
+
+
+                    android:textColor="@color/darkgrey"
+                    android:textSize="24sp" />
+
+                <!-- user nick name-->
+                <TextView
+                    android:id="@+id/tv_userNickName"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_below="@+id/tv_userFullName"
+                    android:layout_marginLeft="8dp"
+
+                    android:layout_toRightOf="@id/userPicture"
+
+                    android:textColor="@color/darkgrey" />
+
+                <!-- user rating stars -->
+                <RatingBar
+                    android:id="@+id/userRatingBar"
+
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/topBar_background"
+
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@id/userPicture"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:progressBackgroundTint="@color/lightgrey"
+                    android:progressTint="@color/colorPrimary"
+                    android:rating="3.5"
+                    android:stepSize="0.5" />
+
+
+                <!-- user rating info-->
+                <TextView
+                    android:id="@+id/tv_userRatingInfo"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_below="@id/topBar_background"
+                    android:layout_marginLeft="8dp"
+
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@+id/userRatingBar"
+                    android:text="Feedback: 75,2%"
+                    android:textColor="@color/darkgrey" />
+
+
+            </RelativeLayout>
+
+
+
+            <!-- Content -->
+            <LinearLayout
+                android:id="@+id/content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <!-- user Email-->
+                <TextView
+                    android:id="@+id/tv_userEmailHeading"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_email_heading" />
+
+                <TextView
+                    android:id="@+id/tv_userEmailContent"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!-- user city-->
+                <TextView
+                    android:id="@+id/tv_userCityHeading"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_city_heading" />
+
+                <TextView
+                    android:id="@+id/tv_userCityContent"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                     />
+
+
+                <!-- user bio -->
+                <TextView
+                    android:id="@+id/tv_userBioHeading"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_bio_heading" />
+
+                <TextView
+                    android:id="@+id/tv_userBioContent"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/lightgrey"
+        app:itemTextColor="@drawable/nav_bar_selector"
+        app:itemIconTint="@drawable/nav_bar_selector"
+        app:menu="@menu/navigation" />
+
+    <!-- Edit Floating Action Button-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="70dp"
+        android:src="@drawable/ic_create_black_24dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchor="@id/navigation"
+        app:layout_anchorGravity="end"
+        android:layout_marginEnd="30dp" />
+
+</android.support.design.widget.CoordinatorLayout>

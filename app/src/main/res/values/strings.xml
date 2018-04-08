@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">Lab1</string>
+    <string name="profile_preferences">profile_preferences</string>
+    <string name="profile_preferences_copy">profile_preferences_copy</string>
+    <string name="default_fullname_heading">Full Name</string>
+    <string name="default_username_heading">Username</string>
+    <string name="default_fullname">Your full name.</string>
+    <string name="default_username">Your username.</string>
+    <string name="default_city_heading">City</string>
+    <string name="default_city">City, Country</string>
+    <string name="default_email_heading">Email</string>
+    <string name="default_email">Your email.</string>
+    <string name="default_bio_heading">Bio</string>
+    <string name="default_bio">Write here your Bio
+    </string>
+    <string name="default_picture_path">void</string>
+
+    <string name="search_hint">Search a book or a user...</string>
+
+    <!-- navigation bar -->
+    <string name="title_profile">Profile</string>
+    <string name="title_showcase">Showcase</string>
+    <string name="title_shareBook">Share a book</string>
+
+    <!-- persistence keys -->
+    <string name="fullname_key">fullname</string>
+    <string name="username_key">username</string>
+    <string name="city_key">city</string>
+    <string name="bio_key">bio</string>
+    <string name="email_key">email</string>
+    <string name="userPicture_key">user_picture</string>
+
+    <!-- copy keys for rollbacks-->
+    <string name="fullname_copy_key">fullname_copy</string>
+    <string name="username_copy_key">username_copy</string>
+    <string name="city_copy_key">city_copy</string>
+    <string name="bio_copy_key">bio_copy</string>
+    <string name="email_copy_key">email_copy</string>
+    <string name="userPicture_copy_key">user_picture_copy</string>
+
+    <!-- photo dialog items -->
+
+    <string name="photo_dialog_item_camera">Camera</string>
+    <string name="photo_dialog_item_gallery">Gallery</string>
+    <string name="photo_dialog_title">Add image</string>
+    <string name="photo_dialog_select_gallery_method_title">Select method</string>
+
+    <!-- exit dialogue -->
+
+    <string name="exit_request_title">Edit exit</string>
+    <string name="exit_rationale">Do you really want to exit? Any modification will be lost!</string>
+
+    <!-- validate inputs -->
+    <string name="name_bad_format_rationale">Please, your full name must contains just letters separated by one space. Initial capital letter.</string>
+    <string name="name_length_format_rationale">Your full name must have at least 5 characters</string>
+    <string name="bad_email"> Bad email format!</string>
+    <string name="email_bad_format_rationale">If you modify your email, do not leave it empty please!</string>
+    <string name="username_bad_start_rationale">Please, your username should start with @</string>
+    <string name="username_bad_lenght_rationale">Please, your username should have at least 2 characters</string>
+    <string name="city_bad_lenght_rationale">Please, city name should be at least 2 characters</string>
+    <string name="city_bad_format_rationale">Please, city name must contain just letters. Initial capital letters</string>
+    <string name="bio_bad_format_rationale">Please, do not use special characters in your biography</string>
+
+    <!-- permissions -->
+    <string name="permission_already_granted">Let us start!</string>
+    <string name="permissions_granted">Permissions granted!</string>
+    <string name="new_permission_request_title">Permissions Request</string>
+    <string name="permissions_rationale">Camera and data access are needed to correctly edit the profile!</string>
+    <string name="camera_access_required">Camera access is required to display the camera preview.</string>
+    <string name="ok">OK</string>
+    <string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
+    <string name="camera_permission_available">Camera permission is available. Starting preview.</string>
+    <string name="camera_permission_granted">Camera permission was granted. Starting preview.</string>
+    <string name="camera_permission_denied">Camera permission request was denied.</string>
+    <string name="camera_unavailable"><b>Camera could not be opened.</b>\nThis occurs when the camera is not available (for example it is already in use) or if the system has denied access (for example when camera access has been disabled).</string>
+
+</resources>

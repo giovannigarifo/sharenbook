@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<resources>
+    <color name="colorPrimary">#f4c654</color>
+    <color name="colorPrimaryLight">#f0a037</color>
+    <color name="colorSecondary">#ffe7ae</color>
+    <color name="colorAccent">#E65100</color>
+    <color name="darkgrey">#424242</color>
+    <color name="lightgrey">#E0E0E0</color>
+</resources>
+
+<!-- FFD54F -->

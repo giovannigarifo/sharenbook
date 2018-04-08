@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_showcase"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_showcase" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_person_black_135dp"
+        android:title="@string/title_profile" />
+
+    <item
+        android:id="@+id/navigation_shareBook"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="@string/title_shareBook" />
+
+</menu>
