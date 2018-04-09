@@ -14,157 +14,148 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="55dp">
 
-    <!-- external wrapper-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        <!-- external wrapper-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
 
-                <!-- Top bar -->
-                <RelativeLayout
+            <!-- Top bar -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp">
+
+                <!-- colored bar -->
+                <ImageView
+                    android:id="@+id/topBar_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="85sp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@color/colorPrimary" />
+
+                <!-- user profile picture -->
+
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/userPicture_edit"
+
+                    android:layout_width="135dp"
+                    android:layout_height="135dp"
+
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/ic_person_black_135dp"
+
+                    android:tint="@color/darkgrey"
+                    app:civ_border_color="@color/lightgrey"
+                    app:civ_border_width="1dp"
+                    app:civ_shadow="true"
+                    app:civ_shadow_color="@color/lightgrey"
+                    app:civ_shadow_radius="10" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab_editPhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/userPicture_edit"
+                    android:layout_alignEnd="@+id/userPicture_edit"
+                    android:clickable="true"
+                    android:src="@android:drawable/ic_menu_camera" />
+
+            </RelativeLayout>
+
+
+            <!-- Content -->
+            <LinearLayout
+                android:id="@+id/content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+
+                <!-- user full name-->
+                <TextView
+                    android:id="@+id/tv_userFullNameHeading_edit"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_fullname_heading" />
+
+                <EditText
+                    android:id="@+id/et_fullNameContent_edit"
+                    style="@style/TextViewContent"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:maxLength="32" />
 
-                    <!-- colored bar -->
-                    <ImageView
-                        android:id="@+id/topBar_background"
-                        android:layout_width="wrap_content"
-                        android:layout_height="85sp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:background="@color/colorPrimary" />
+                <!-- user username -->
 
-                    <!-- user profile picture -->
+                <TextView
+                    android:id="@+id/tv_userNameHeading_edit"
+                    style="@style/TextViewHeading"
 
+                    android:text="@string/default_username_heading" />
 
-
-
-                    <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/userPicture_edit"
-
-                        android:layout_width="135dp"
-                        android:layout_height="135dp"
-
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/ic_person_black_135dp"
-
-                        android:tint="@color/darkgrey"
-                        app:civ_border_color="@color/lightgrey"
-                        app:civ_border_width="1dp"
-                        app:civ_shadow="true"
-                        app:civ_shadow_color="@color/lightgrey"
-                        app:civ_shadow_radius="10" />
-
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/fab_editPhoto"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/userPicture_edit"
-                        android:layout_alignEnd="@+id/userPicture_edit"
-                        android:clickable="true"
-                        android:src="@android:drawable/ic_menu_camera" />
-
-                </RelativeLayout>
-
-
-
-
-                <!-- Content -->
-                <LinearLayout
-                    android:id="@+id/content_layout"
+                <EditText
+                    android:id="@+id/et_userNameContent_edit"
+                    style="@style/TextViewContent"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:maxLength="16"
+                    android:textAllCaps="false" />
+
+                <!-- user Email-->
+                <TextView
+                    android:id="@+id/tv_userEmailHeading_edit"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_email_heading" />
+
+                <EditText
+                    android:id="@+id/et_emailContent_edit"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:maxLength="56" />
+
+                <!-- user city-->
+                <TextView
+                    android:id="@+id/tv_userCityHeading_edit"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_city_heading" />
+
+                <EditText
+                    android:id="@+id/et_userCityContent_edit"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="32" />
 
 
-                    <!-- user full name-->
-                    <TextView
-                        android:id="@+id/tv_fullNameHeading_edit"
-                        style="@style/TextViewHeading"
+                <!-- user bio -->
+                <TextView
+                    android:id="@+id/tv_userBioHeading_edit"
+                    style="@style/TextViewHeading"
 
-                        android:text="@string/default_fullname_heading" />
+                    android:text="@string/default_bio_heading" />
 
-                    <EditText
-                        android:id="@+id/et_fullNameContent_edit"
-                        style="@style/TextViewContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:maxLength="32"
-                        />
-
-                    <!-- user username -->
-
-                    <TextView
-                        android:id="@+id/tv_userNameHeading_edit"
-                        style="@style/TextViewHeading"
-
-                        android:text="@string/default_username_heading"  />
-
-                    <EditText
-                        android:id="@+id/et_userNameContent_edit"
-                        style="@style/TextViewContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLength="16"
-                        android:textAllCaps="false"
-                        />
-
-                    <!-- user Email-->
-                    <TextView
-                        android:id="@+id/tv_userEmailHeading_edit"
-                        style="@style/TextViewHeading"
-
-                        android:text="@string/default_email_heading" />
-
-                    <EditText
-                        android:id="@+id/et_emailContent_edit"
-                        style="@style/TextViewContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        android:maxLength="56"/>
-
-                    <!-- user city-->
-                    <TextView
-                        android:id="@+id/tv_userCityHeading_edit"
-                        style="@style/TextViewHeading"
-
-                        android:text="@string/default_city_heading" />
-
-                    <EditText
-                        android:id="@+id/et_userCityContent_edit"
-                        style="@style/TextViewContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLength="32"
-                        />
+                <EditText
+                    android:id="@+id/et_userBioContent_edit"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="150" />
 
 
-                    <!-- user bio -->
-                    <TextView
-                        android:id="@+id/tv_userBioHeading_edit"
-                        style="@style/TextViewHeading"
-
-                        android:text="@string/default_bio_heading" />
-
-                    <EditText
-                        android:id="@+id/et_userBioContent_edit"
-                        style="@style/TextViewContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxLength="150"
-                        />
-
-
-
-                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -176,8 +167,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/lightgrey"
-        app:itemTextColor="@drawable/nav_bar_selector"
         app:itemIconTint="@drawable/nav_bar_selector"
+        app:itemTextColor="@drawable/nav_bar_selector"
         app:menu="@menu/navigation" />
 
     <!-- Save Floating Action Button-->
@@ -186,11 +177,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"
+        android:layout_marginEnd="30dp"
         android:src="@drawable/ic_check_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end"
-        android:layout_marginEnd="30dp" />
+        app:layout_anchorGravity="end" />
 
 </android.support.design.widget.CoordinatorLayout>
 

@@ -74,7 +74,7 @@ public class showProfile extends Activity {
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
         //modify default typography
-        setTypography();
+        getViewsAndSetTypography();
 
         //get references to UI elements
         goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
@@ -204,9 +204,10 @@ public class showProfile extends Activity {
 
 
     /**
-     * setTypography method
+     * getViewsAndSetTypography method
+     *
      */
-    private void setTypography() {
+    private void getViewsAndSetTypography() {
 
         //get views
         tv_userFullName = (TextView) findViewById(R.id.tv_userFullName);
