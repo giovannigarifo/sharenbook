@@ -23,14 +23,16 @@ public class showProfile extends Activity {
 
     //views
     private TextView tv_userFullName, tv_userNickName, tv_userRatingInfo,
-            tv_userCityHeading, tv_userBioHeading, tv_userEmailHeading, tv_userCityContent, tv_userBioContent, tv_userEmailContent;
+            tv_userCityHeading, tv_userBioHeading, tv_userEmailHeading,
+            tv_userCityContent, tv_userBioContent, tv_userEmailContent;
 
     private BottomNavigationView navBar;
 
     private FloatingActionButton goEdit_button;
 
-    //preferences
+    private CircularImageView userPicture;
 
+    //key value database
     private SharedPreferences editedProfile;
 
     //default profile values
@@ -41,36 +43,29 @@ public class showProfile extends Activity {
     private String default_username;
     private String default_picture_path;
 
-    private CircularImageView userPicture;
-
-
     //result values returned by called activities
-    private static final int EDIT_RETURN_VALUE =1;
+    private static final int EDIT_RETURN_VALUE = 1;
 
-    private int widthT=700;
+    private int widthT = 700;
 
-
-
+    /**
+     * onCreate callback
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
-        this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
-
-        setContentView(R.layout.activity_show_profile);
-
-        /*
-            SharedPreferences: verify if the profile has been edited otherwise set default values
-        */
+        this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
+        setContentView(R.layout.activity_show_profile); //load view
+        Context context = this.getApplicationContext(); //retrieve context
 
         //retrieve the shared preference file
-        Context context = this.getApplicationContext();
-        editedProfile = context.getSharedPreferences(
-                getString(R.string.profile_preferences), Context.MODE_PRIVATE);
+        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
-
-
-        //retrieve the default values if the profile is not yet edited
+        //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
         default_bio = context.getResources().getString(R.string.default_bio);
         default_email = context.getResources().getString(R.string.default_email);
@@ -78,10 +73,140 @@ public class showProfile extends Activity {
         default_username = context.getResources().getString(R.string.default_username_heading);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
+        //modify default typography
+        setTypography();
+
+        //get references to UI elements
+        goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
+        navBar = (BottomNavigationView) findViewById(R.id.navigation);
+        userPicture = (CircularImageView) findViewById(R.id.userPicture);
+
+        /**
+         * userPicture
+         */
+
+        //set user picture
+        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+        if (!choosenPicture.equals(getString(R.string.default_picture_path)))
+            userPicture.setImageURI(Uri.parse(choosenPicture));
+
+        //register callback that start the showPicture activity when user clicks the photo
+        userPicture.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), showPicture.class);
+            i.putExtra("PicturePath", choosenPicture);
+            startActivity(i);
+        });
 
 
+        /**
+         * goEdit_Button
+         */
+        goEdit_button.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), editProfile.class);
+            startActivityForResult(i, EDIT_RETURN_VALUE);
+        });
 
 
+        /**
+         * navBar
+         */
+
+        //set navigation_profile as selected item
+        navBar.setSelectedItemId(R.id.navigation_profile);
+
+        //set the listener for the navigation bar items
+        navBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_showcase:
+                    Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case R.id.navigation_profile:
+                    Toast.makeText(getApplicationContext(), "Selected Profile!", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case R.id.navigation_shareBook:
+                    Toast.makeText(getApplicationContext(), "Selected Share Book!", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return true;
+        });
+
+    }
+
+
+    /**
+     * onActivityResult callback
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        String default_picture_path = "void";
+
+        if (requestCode == EDIT_RETURN_VALUE) {
+
+            if (resultCode == RESULT_OK) {
+
+                fullNameResize();
+                tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
+                tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key), default_username));
+                tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key), default_city));
+                tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key), default_bio));
+                tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key), default_email));
+
+                final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+
+                if (!choosenPicture.equals(default_picture_path))
+                    userPicture.setImageURI(Uri.parse(choosenPicture));
+
+                userPicture.setOnClickListener(v -> {
+
+                            Intent i = new Intent(getApplicationContext(), showPicture.class);
+                            i.putExtra("PicturePath", choosenPicture);
+                            startActivity(i);
+                        }
+                );
+            }
+        }
+    }
+
+
+    /**
+     * fullNameResize method
+     */
+    private void fullNameResize() {
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        Log.d("Metrics:", "width:" + metrics.widthPixels);
+
+        if (metrics.densityDpi != metrics.DENSITY_HIGH || metrics.widthPixels < widthT) {
+
+            int fullname_lenght = editedProfile.getString(getString(R.string.fullname_key), default_fullname).length();
+
+            if (fullname_lenght <= 16) {
+                tv_userFullName.setTextSize(2, 24);
+            } else if (fullname_lenght > 16 && fullname_lenght <= 22) {
+                tv_userFullName.setTextSize(2, 18);
+            } else {
+                tv_userFullName.setTextSize(2, 14);
+            }
+        }
+
+    }
+
+
+    /**
+     * setTypography method
+     */
+    private void setTypography() {
 
         //get views
         tv_userFullName = (TextView) findViewById(R.id.tv_userFullName);
@@ -95,155 +220,36 @@ public class showProfile extends Activity {
         tv_userBioContent = (TextView) findViewById(R.id.tv_userBioContent);
         tv_userEmailContent = (TextView) findViewById(R.id.tv_userEmailContent);
 
-        //get view button
-        goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
-
-        //set views font to Roboto and text
+        //retrieve fonts
         Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
+        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+
+        /**
+         * set views font and view text
+         */
+
         tv_userFullName.setTypeface(robotoBold);
         fullNameResize();
-        tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key),default_fullname));
+        tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
 
+        tv_userNickName.setTypeface(robotoLight);
+        tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key), default_username));
+        tv_userRatingInfo.setTypeface(robotoLight);
+
+        //headings
         tv_userCityHeading.setTypeface(robotoBold);
         tv_userBioHeading.setTypeface(robotoBold);
         tv_userEmailHeading.setTypeface(robotoBold);
 
-        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-        tv_userNickName.setTypeface(robotoLight);
-        tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key),default_username));
-
-        tv_userRatingInfo.setTypeface(robotoLight);
-
+        //contents
         tv_userCityContent.setTypeface(robotoLight);
-        tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key),default_city));
+        tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key), default_city));
 
         tv_userBioContent.setTypeface(robotoLight);
-        tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key),default_bio));
+        tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key), default_bio));
 
         tv_userEmailContent.setTypeface(robotoLight);
-        tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key),default_email));
-
-        navBar = (BottomNavigationView) findViewById(R.id.navigation);
-
-        userPicture = (CircularImageView) findViewById(R.id.userPicture);
-        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key),default_picture_path);
-
-        if(!choosenPicture.equals(getString(R.string.default_picture_path)))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
-
-        userPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i= new Intent(getApplicationContext(),showPicture.class);
-
-                i.putExtra("PicturePath",choosenPicture);
-
-                startActivity(i);
-            }
-        });
-
-        //set navigation_profile as selected item
-        navBar.setSelectedItemId(R.id.navigation_profile);
-
-        //set the listened for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_showcase:
-                        Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case R.id.navigation_profile:
-                        Toast.makeText(getApplicationContext(), "Selected Profile!", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case R.id.navigation_shareBook:
-                        Toast.makeText(getApplicationContext(), "Selected Share Book!", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return true;
-            }
-        });
-
-
-        //set the listener for the edit button
-        goEdit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent i=new Intent(getApplicationContext(),editProfile.class);
-
-
-                startActivityForResult(i, EDIT_RETURN_VALUE);
-            }
-        });
-
-
-
-
-
+        tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key), default_email));
     }
-
-    @Override
-    protected void onActivityResult(int requestCode,int resultCode, Intent data){
-
-        super.onActivityResult(requestCode,resultCode,data);
-
-        String default_picture_path="void";
-        if(requestCode== EDIT_RETURN_VALUE){
-            if(resultCode==RESULT_OK){
-
-                fullNameResize();
-                tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key),default_fullname));
-                tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key),default_username));
-                tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key),default_city));
-                tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key),default_bio));
-                tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key),default_email));
-
-               final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key),default_picture_path);
-
-                if(!choosenPicture.equals(default_picture_path))
-                    userPicture.setImageURI(Uri.parse(choosenPicture));
-                userPicture.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i= new Intent(getApplicationContext(),showPicture.class);
-
-                        i.putExtra("PicturePath",choosenPicture);
-
-                        startActivity(i);
-                    }
-                });
-            }
-        }
-
-    }
-
-    private void fullNameResize(){
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-
-        Log.d("Metrics:", "width:"+metrics.widthPixels);
-
-        if(metrics.densityDpi != metrics.DENSITY_HIGH || metrics.widthPixels<widthT){
-            int fullname_lenght = editedProfile.getString(getString(R.string.fullname_key), default_fullname).length();
-            if (fullname_lenght <= 16) {
-
-                tv_userFullName.setTextSize(2, 24);
-            } else if (fullname_lenght > 16 && fullname_lenght <= 22) {
-                tv_userFullName.setTextSize(2, 18);
-            } else {
-                tv_userFullName.setTextSize(2, 14);
-            }
-
-        }
-
-
-
-    }
-
 
 }

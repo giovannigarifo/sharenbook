@@ -12,7 +12,7 @@
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp">
+        android:layout_marginBottom="56dp">
 
         <!-- external wrapper-->
         <LinearLayout
@@ -23,27 +23,25 @@
             <!-- Search Bar -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="56dp"
                 android:background="@color/colorPrimary">
 
 
                 <com.mancj.materialsearchbar.MaterialSearchBar
+                    android:id="@+id/searchBar"
                     style="@style/MaterialSearchBarLight"
-                    app:mt_speechMode="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
                     app:mt_hint="@string/search_hint"
                     app:mt_maxSuggestionsCount="10"
                     app:mt_navIconEnabled="true"
                     app:mt_placeholder="Share'nBook"
                     app:mt_searchBarColor="@color/colorSecondary"
-                    app:mt_textCursorTint="@color/colorPrimary"
-                    android:layout_width="340dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/searchBar" />
+                    app:mt_speechMode="false"
+                    app:mt_textCursorTint="@color/colorPrimary" />
 
             </RelativeLayout>
-
 
 
             <RelativeLayout
@@ -71,9 +69,9 @@
 
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="16dp"
+                    android:clickable="true"
                     android:src="@drawable/ic_person_black_135dp"
                     android:tint="@color/darkgrey"
-                    android:clickable="true"
                     app:civ_border_color="@color/lightgrey"
                     app:civ_border_width="1dp"
                     app:civ_shadow="true"
@@ -151,7 +149,6 @@
             </RelativeLayout>
 
 
-
             <!-- Content -->
             <LinearLayout
                 android:id="@+id/content_layout"
@@ -184,8 +181,7 @@
                     android:id="@+id/tv_userCityContent"
                     style="@style/TextViewContent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                     />
+                    android:layout_height="wrap_content" />
 
 
                 <!-- user bio -->
@@ -199,7 +195,7 @@
                     android:id="@+id/tv_userBioContent"
                     style="@style/TextViewContent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -210,11 +206,11 @@
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_gravity="bottom"
         android:background="@color/lightgrey"
-        app:itemTextColor="@drawable/nav_bar_selector"
         app:itemIconTint="@drawable/nav_bar_selector"
+        app:itemTextColor="@drawable/nav_bar_selector"
         app:menu="@menu/navigation" />
 
     <!-- Edit Floating Action Button-->
@@ -222,11 +218,11 @@
         android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="80dp"
+        android:layout_marginEnd="30dp"
         android:src="@drawable/ic_create_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end"
-        android:layout_marginEnd="30dp" />
+        app:layout_anchorGravity="end" />
 
 </android.support.design.widget.CoordinatorLayout>

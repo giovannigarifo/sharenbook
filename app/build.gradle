@@ -19,6 +19,10 @@ android {
     productFlavors {
     }
     buildToolsVersion '27.0.3'
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -30,8 +34,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     //
     //circle layout for imageviews from https://github.com/lopspower/CircularImageView
-    compile 'com.mikhaellopez:circularimageview:3.0.2'
+    implementation 'com.mikhaellopez:circularimageview:3.0.2'
     //
     //support design library (includes floating action button FAB)
-    compile 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
 }
