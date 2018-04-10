@@ -58,7 +58,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:background="@drawable/gradient" />
+                    android:background="@drawable/gradient"
+                    android:elevation="10dp"/>
 
                 <!-- user profile picture -->
                 <com.mikhaellopez.circularimageview.CircularImageView
@@ -76,7 +77,8 @@
                     app:civ_border_width="1dp"
                     app:civ_shadow="true"
                     app:civ_shadow_color="@color/lightgrey"
-                    app:civ_shadow_radius="10" />
+                    app:civ_shadow_radius="10"
+                    android:elevation="10dp"/>
 
                 <!-- user full name -->
                 <TextView
@@ -90,8 +92,7 @@
 
                     android:layout_marginTop="8dp"
                     android:layout_toRightOf="@id/userPicture"
-
-
+                    android:elevation="10dp"
                     android:textColor="@color/darkgrey"
                     android:textSize="24sp" />
 
@@ -101,13 +102,12 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_below="@+id/tv_userFullName"
                     android:layout_marginLeft="8dp"
-
                     android:layout_toRightOf="@id/userPicture"
-
-                    android:textColor="@color/darkgrey" />
+                    android:elevation="10dp"
+                    android:textColor="@color/darkgrey"
+                    android:alpha="0.5" />
 
                 <!-- user rating stars -->
                 <RatingBar

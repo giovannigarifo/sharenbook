@@ -43,4 +43,14 @@
         <item name="android:paddingLeft">20dp</item>
     </style>
 
+    <style name="myShowPictureWindow" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:minWidth">350dp</item>
+        <item name="android:minHeight">350dp</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
 </resources>
