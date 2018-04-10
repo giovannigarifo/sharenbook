@@ -20,7 +20,8 @@ import java.net.URL;
 public class ShareBookActivity extends Activity {
 
     private ImageView bookCover;
-    private TextView tvIsbn;
+    private TextView tvTitle;
+    private TextView tvDescription;
     private Button btnScan;
 
     private IntentIntegrator qrScan;
@@ -36,7 +37,8 @@ public class ShareBookActivity extends Activity {
 
         // View objects
         bookCover = findViewById(R.id.image_book_cover);
-        tvIsbn = findViewById(R.id.text_isbn);
+        tvTitle = findViewById(R.id.text_sba_title);
+        tvDescription = findViewById(R.id.text_sba_description);
         btnScan = findViewById(R.id.button_scan_isbn);
 
         // Initializing scan object
@@ -60,7 +62,7 @@ public class ShareBookActivity extends Activity {
 
         if(result != null)
         {
-            if(result.getContents() == null) tvIsbn.setText("There was an error! Try Again.");
+            if(result.getContents() == null) tvTitle.setText("There was an error! Try Again.");
             else
             {
                 BookDetails bookInfo = new BookDetails(result.getContents());
@@ -68,8 +70,13 @@ public class ShareBookActivity extends Activity {
                 if (bookInfo.getTotalItems() > 0)
                 {
                     String bookTitle = bookInfo.getBookList().get(0).getTitle();
+                    String description = bookInfo.getBookList().get(0).getDescription();
                     Uri thumbnail = bookInfo.getBookList().get(0).getThumbnail();
-                    tvIsbn.setText(bookTitle);
+
+                    tvTitle.setText(bookTitle);
+                    if (description != null)
+                        tvDescription.setText(description);
+
                     if (thumbnail != null)
                     {
                         try {
@@ -80,7 +87,7 @@ public class ShareBookActivity extends Activity {
                     }
                 }
                 else
-                    tvIsbn.setText("ISBN not valid");
+                    tvTitle.setText("ISBN not valid");
             }
         }
         else
