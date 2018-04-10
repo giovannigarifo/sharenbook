@@ -14,6 +14,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 public class ShowProfileActivity extends Activity {
@@ -31,6 +33,9 @@ public class ShowProfileActivity extends Activity {
 
     //key value database
     private SharedPreferences editedProfile;
+
+    //Firebase references
+    FirebaseDatabase firedb;
 
     //default profile values
     private String default_city;
@@ -58,6 +63,22 @@ public class ShowProfileActivity extends Activity {
         this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
+
+
+        /**
+         * Firebase Connection test: it works.
+         *
+        firedb = FirebaseDatabase.getInstance();
+        DatabaseReference dbRef = firedb.getReference(); //url inferred from google-services.json
+
+        //obtain unique key
+        DatabaseReference itemRef = dbRef.push();
+
+        //push value
+        itemRef.setValue("Hello World");
+        */
+
+
 
         //retrieve the shared preference file
         editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);

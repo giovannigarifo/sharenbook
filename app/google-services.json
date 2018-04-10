@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "284783646504",
+    "firebase_url": "https://sharenbook-1b8ac.firebaseio.com",
+    "project_id": "sharenbook-1b8ac",
+    "storage_bucket": "sharenbook-1b8ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284783646504:android:4356ff1a7c716297",
+        "android_client_info": {
+          "package_name": "it.polito.mad.lab1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284783646504-snj13m3hjn341rqii4uoihjs8gckil75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad.lab1",
+            "certificate_hash": "0bcc2a6a85ebdef27215e653ea7df69c817ba3f9"
+          }
+        },
+        {
+          "client_id": "284783646504-iead90umcnt2fgpvd5a0il2akmqrq662.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHadtF66bJK6l4rb-wC8VEneuDd002iXI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284783646504-iead90umcnt2fgpvd5a0il2akmqrq662.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
