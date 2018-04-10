@@ -6,7 +6,7 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.showProfile">
+    tools:context="it.polito.mad.lab1.ShowProfileActivity">
 
     <ScrollView
         android:id="@+id/scrollview"
@@ -30,7 +30,7 @@
                 <com.mancj.materialsearchbar.MaterialSearchBar
                     android:id="@+id/searchBar"
                     style="@style/MaterialSearchBarLight"
-                    android:layout_width="match_parent"
+                    android:layout_width="350dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
@@ -222,7 +222,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="80dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
         android:src="@drawable/ic_create_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/navigation"

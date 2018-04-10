@@ -6,7 +6,7 @@
     android:id="@+id/coordinator_edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.editProfile">
+    tools:context="it.polito.mad.lab1.EditProfileActivity">
 
     <ScrollView
         android:id="@+id/scrollview"

@@ -21,15 +21,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:name=".showProfile">
+        <activity android:name=".ShowProfileActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".editProfile" />
-        <activity android:name=".showPicture" android:theme="@style/myShowPictureWindow"/>
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ShowPictureActivity" android:theme="@style/myShowPictureWindow"/>
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"

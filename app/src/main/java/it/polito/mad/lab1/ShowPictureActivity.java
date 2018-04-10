@@ -10,7 +10,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 
-public class showPicture extends Activity {
+public class ShowPictureActivity extends Activity {
 
     private ImageView fullSizePicture;
 

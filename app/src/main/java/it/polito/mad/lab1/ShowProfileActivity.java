@@ -7,19 +7,16 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-public class showProfile extends Activity {
+public class ShowProfileActivity extends Activity {
 
     //views
     private TextView tv_userFullName, tv_userNickName, tv_userRatingInfo,
@@ -92,7 +89,7 @@ public class showProfile extends Activity {
 
         //register callback that start the showPicture activity when user clicks the photo
         userPicture.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), showPicture.class);
+            Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
             i.putExtra("PicturePath", choosenPicture);
             startActivity(i);
         });
@@ -102,7 +99,7 @@ public class showProfile extends Activity {
          * goEdit_Button
          */
         goEdit_button.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), editProfile.class);
+            Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
             startActivityForResult(i, EDIT_RETURN_VALUE);
         });
 
@@ -167,7 +164,7 @@ public class showProfile extends Activity {
 
                 userPicture.setOnClickListener(v -> {
 
-                            Intent i = new Intent(getApplicationContext(), showPicture.class);
+                            Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                             i.putExtra("PicturePath", choosenPicture);
                             startActivity(i);
                         }

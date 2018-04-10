@@ -8,10 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -27,7 +23,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,7 +47,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 
-public class editProfile extends Activity {
+public class EditProfileActivity extends Activity {
 
     //context of the activity
     private Context context;
@@ -254,7 +249,7 @@ public class editProfile extends Activity {
         List<String> listPermissionsNeeded = new ArrayList<String>();
 
         for (String permission : permissions) {
-            result = ContextCompat.checkSelfPermission(editProfile.this, permission);
+            result = ContextCompat.checkSelfPermission(EditProfileActivity.this, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
             } else {
@@ -288,18 +283,18 @@ public class editProfile extends Activity {
                     final List<String> neededPermissions = new ArrayList<String>();
                     for (String permission : permissions) {
 
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(editProfile.this, permission)) {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(EditProfileActivity.this, permission)) {
                             neededPermissions.add(permission);
                         }
                     }
 
                     if (!neededPermissions.isEmpty()) {
 
-                        AlertDialog.Builder newPermissionRequest = new AlertDialog.Builder(editProfile.this); //give a context to Dialog
+                        AlertDialog.Builder newPermissionRequest = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
                         newPermissionRequest.setTitle(R.string.new_permission_request_title);
                         newPermissionRequest.setMessage(R.string.permissions_rationale);
                         newPermissionRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                                    ActivityCompat.requestPermissions(editProfile.this, neededPermissions.toArray(new String[neededPermissions.size()]), MULTIPLE_PERMISSIONS);
+                                    ActivityCompat.requestPermissions(EditProfileActivity.this, neededPermissions.toArray(new String[neededPermissions.size()]), MULTIPLE_PERMISSIONS);
                                 }
                         ).setNegativeButton(android.R.string.cancel,
                                 (dialog, which) -> {
@@ -325,7 +320,7 @@ public class editProfile extends Activity {
     private void selectImage() {
 
         final CharSequence items[] = {getString(R.string.photo_dialog_item_camera), getString(R.string.photo_dialog_item_gallery), getString(android.R.string.cancel)};
-        final AlertDialog.Builder select = new AlertDialog.Builder(editProfile.this); //give a context to Dialog
+        final AlertDialog.Builder select = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
         select.setTitle(getString(R.string.photo_dialog_title));
 
 
@@ -450,7 +445,7 @@ public class editProfile extends Activity {
             //save image in gallery
             //galleryPath = MediaStore.Images.Media.insertImage(getContentResolver(), resultBMP, imageFileName, "user profile image");
 
-            outFile = new File(editProfile.this.getExternalFilesDir(null), imageFileName);
+            outFile = new File(EditProfileActivity.this.getExternalFilesDir(null), imageFileName);
 
             //      in = getContentResolver().openInputStream(Uri.parse(galleryPath));
 
@@ -517,7 +512,7 @@ public class editProfile extends Activity {
         try {
 
 
-            outFile = new File(editProfile.this.getExternalFilesDir(null), imageFileName);
+            outFile = new File(EditProfileActivity.this.getExternalFilesDir(null), imageFileName);
 
             in = getContentResolver().openInputStream(data.getData());
 
@@ -725,7 +720,7 @@ public class editProfile extends Activity {
     @Override
     public void onBackPressed() {
 
-        AlertDialog.Builder exitRequest = new AlertDialog.Builder(editProfile.this); //give a context to Dialog
+        AlertDialog.Builder exitRequest = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
         exitRequest.setTitle(R.string.exit_request_title);
         exitRequest.setMessage(R.string.exit_rationale);
         exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
