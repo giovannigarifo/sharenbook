@@ -30,8 +30,10 @@
                 <com.mancj.materialsearchbar.MaterialSearchBar
                     android:id="@+id/searchBar"
                     style="@style/MaterialSearchBarLight"
-                    android:layout_width="540dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="64dp"
+                    android:layout_marginRight="64dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
                     app:mt_hint="@string/search_hint"
