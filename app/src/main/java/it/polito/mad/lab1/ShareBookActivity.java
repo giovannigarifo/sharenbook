@@ -6,10 +6,13 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.BottomNavigationView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -19,6 +22,7 @@ import java.net.URL;
 
 public class ShareBookActivity extends Activity {
 
+    private BottomNavigationView navBar;
     private ImageView bookCover;
     private TextView tvTitle;
     private TextView tvDescription;
@@ -36,6 +40,7 @@ public class ShareBookActivity extends Activity {
         StrictMode.setThreadPolicy(policy);
 
         // View objects
+        navBar = findViewById(R.id.navigation);
         bookCover = findViewById(R.id.image_book_cover);
         tvTitle = findViewById(R.id.text_sba_title);
         tvDescription = findViewById(R.id.text_sba_description);
@@ -53,6 +58,33 @@ public class ShareBookActivity extends Activity {
                 qrScan.initiateScan();
             }
         });
+
+        /**
+         * navBar
+         */
+
+        //set navigation_profile as selected item
+        navBar.setSelectedItemId(R.id.navigation_shareBook);
+
+        //set the listener for the navigation bar items
+        navBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_showcase:
+                    Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case R.id.navigation_profile:
+                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    startActivity(i);
+                    finish();
+                    break;
+
+                case R.id.navigation_shareBook:
+                    break;
+            }
+            return true;
+        });
+
     }
 
     @Override

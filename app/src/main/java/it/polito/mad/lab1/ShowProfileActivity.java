@@ -140,12 +140,12 @@ public class ShowProfileActivity extends Activity {
                     break;
 
                 case R.id.navigation_profile:
-                    Toast.makeText(getApplicationContext(), "Selected Profile!", Toast.LENGTH_SHORT).show();
                     break;
 
                 case R.id.navigation_shareBook:
                     Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
                     startActivity(i);
+                    finish();
                     break;
             }
             return true;
