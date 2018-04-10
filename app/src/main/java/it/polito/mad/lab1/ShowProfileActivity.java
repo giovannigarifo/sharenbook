@@ -123,7 +123,8 @@ public class ShowProfileActivity extends Activity {
                     break;
 
                 case R.id.navigation_shareBook:
-                    Toast.makeText(getApplicationContext(), "Selected Share Book!", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+                    startActivity(i);
                     break;
             }
             return true;
@@ -173,6 +174,11 @@ public class ShowProfileActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navBar.setSelectedItemId(R.id.navigation_profile);
+    }
 
     /**
      * fullNameResize method
