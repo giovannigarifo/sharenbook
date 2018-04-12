@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,7 +20,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.io.IOException;
 import java.net.URL;
 
-public class ShareBookActivity extends Activity {
+public class ShareBookActivity extends AppCompatActivity {
 
     private BottomNavigationView navBar;
     private ImageView bookCover;

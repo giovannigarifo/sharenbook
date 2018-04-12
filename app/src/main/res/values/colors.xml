@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <resources>
-    <color name="colorPrimary">#f4c654</color>
-    <color name="colorPrimaryLight">#f0a037</color>
-    <color name="colorSecondary">#ffe7ae</color>
-    <color name="colorAccent">#E65100</color>
+
+    <color name="colorPrimary">#FFC107</color>
+    <color name="colorPrimaryDark">#FFA000</color>
+    <color name="colorPrimaryLight">#FFECB3</color>
+    <color name="colorAccent">#009688</color>
+    <color name="primaryText">#212121</color>
+    <color name="secondaryText">#757575</color>
+    <color name="icons">#212121</color>
+    <color name="divider">#BDBDBD</color>
+
     <color name="darkgrey">#424242</color>
     <color name="lightgrey">#E0E0E0</color>
-    <color name="transparent">#00000000</color>
+
+    <!--
+    <color name="colorPrimary">#f4c654</color>
+    <color name="colorPrimaryDark">#ebb738</color>
+    <color name="colorPrimaryShifted">#f0a037</color>
+    <color name="colorSecondary">#ffe7ae</color>
+    <color name="colorAccent">#E65100</color>
+
+    -->
 </resources>
 
 <!-- FFD54F -->

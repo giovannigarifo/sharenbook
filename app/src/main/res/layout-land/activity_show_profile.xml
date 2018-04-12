@@ -40,7 +40,7 @@
                     app:mt_maxSuggestionsCount="10"
                     app:mt_navIconEnabled="true"
                     app:mt_placeholder="Share'nBook"
-                    app:mt_searchBarColor="@color/colorSecondary"
+                    app:mt_searchBarColor="@color/colorPrimaryLight"
                     app:mt_speechMode="false"
                     app:mt_textCursorTint="@color/colorPrimary" />
 
@@ -224,7 +224,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"
         android:src="@drawable/ic_create_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/navigation"
         app:layout_anchorGravity="end"
         android:layout_marginEnd="30dp"

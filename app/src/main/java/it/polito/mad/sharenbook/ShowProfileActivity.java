@@ -144,7 +144,6 @@ public class ShowProfileActivity extends Activity {
                 case R.id.navigation_shareBook:
                     Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
                     startActivity(i);
-                    finish();
                     break;
             }
             return true;
