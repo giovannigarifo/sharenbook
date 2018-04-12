@@ -22,6 +22,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -184,7 +185,7 @@ public class EditProfileActivity extends Activity {
             userPicture.setImageURI(Uri.parse(choosenPicture));
 
         fab_editPhoto = (FloatingActionButton) findViewById(R.id.fab_editPhoto);
-        fab_editPhoto.setBackgroundDrawable(getDrawable(R.drawable.ic_check_black_24dp));
+        fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this,R.drawable.ic_check_black_24dp));
 
         fab_editPhoto.setOnClickListener(v -> {
             selectImage();
