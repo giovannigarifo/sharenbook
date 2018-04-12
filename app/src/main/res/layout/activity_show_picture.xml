@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.ShowPictureActivity">
+    tools:context="it.polito.mad.sharenbook.ShowPictureActivity">
 
     <ImageView
         android:id="@+id/fullSize_Picture"

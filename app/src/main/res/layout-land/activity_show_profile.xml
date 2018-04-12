@@ -6,7 +6,7 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.ShowProfileActivity">
+    tools:context="it.polito.mad.sharenbook.ShowProfileActivity">
 
     <ScrollView
         android:id="@+id/scrollview"
@@ -228,6 +228,7 @@
         app:layout_anchor="@id/navigation"
         app:layout_anchorGravity="end"
         android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
         />
 
 </android.support.design.widget.CoordinatorLayout>

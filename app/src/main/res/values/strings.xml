@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lab1</string>
+    <string name="app_name">Share\'nBook</string>
     <string name="profile_preferences">profile_preferences</string>
     <string name="profile_preferences_copy">profile_preferences_copy</string>
     <string name="default_fullname_heading">Full Name</string>
@@ -73,5 +73,8 @@
     <string name="camera_permission_granted">Camera permission was granted. Starting preview.</string>
     <string name="camera_permission_denied">Camera permission request was denied.</string>
     <string name="camera_unavailable"><b>Camera could not be opened.</b>\nThis occurs when the camera is not available (for example it is already in use) or if the system has denied access (for example when camera access has been disabled).</string>
+
+    <string name="facebook_app_id">375832199559673</string>
+
 
 </resources>

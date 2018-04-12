@@ -1,4 +1,4 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mikhaellopez.circularimageview.CircularImageView;
 

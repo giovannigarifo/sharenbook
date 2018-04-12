@@ -1,4 +1,4 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
 import android.Manifest;
 import android.app.Activity;

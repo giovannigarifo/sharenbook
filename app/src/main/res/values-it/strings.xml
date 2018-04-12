@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lab1</string>
+    <string name="app_name">Share\'nBook</string>
     <string name="profile_preferences">profile_preferences</string>
     <string name="profile_preferences_copy">profile_preferences_copy</string>
     <string name="default_fullname_heading">Nome e cognome</string>
@@ -74,5 +74,8 @@
     <string name="camera_permission_granted">Permesso per la fotocamera autorizzato. Inizializzazione dell\'anteprima.</string>
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
+
+    <string name="facebook_app_id">375832199559673</string>
+
 
 </resources>

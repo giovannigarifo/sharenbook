@@ -1,4 +1,4 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.BottomNavigationView;
 import android.view.View;
 import android.widget.Button;
