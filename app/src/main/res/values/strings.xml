@@ -74,7 +74,13 @@
     <string name="camera_permission_denied">Camera permission request was denied.</string>
     <string name="camera_unavailable"><b>Camera could not be opened.</b>\nThis occurs when the camera is not available (for example it is already in use) or if the system has denied access (for example when camera access has been disabled).</string>
 
-    <string name="facebook_app_id">375832199559673</string>
+    <!-- FACEBOOK -->
+    <string name="facebook_application_id">375832199559673</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb375832199559673</string>
+
+    <!-- TWITTER -->
+    <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
+    <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
 
 
 </resources>
