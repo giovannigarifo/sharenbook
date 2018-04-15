@@ -90,7 +90,7 @@
     <string name="bio_bad_format_rationale">Please, do not use special characters in your biography</string>
 
     <!-- permissions -->
-    <string name="permission_already_granted">Let us start!</string>
+    <string name="permission_already_granted">Let\'s start!</string>
     <string name="permissions_granted">Permissions granted!</string>
     <string name="new_permission_request_title">Permissions Request</string>
     <string name="permissions_rationale">Camera and data access are needed to correctly edit the profile!</string>

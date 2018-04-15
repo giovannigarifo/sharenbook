@@ -1,27 +1,40 @@
 package it.polito.mad.sharenbook;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EditBookActivity extends Activity {
 
@@ -48,6 +61,14 @@ public class EditBookActivity extends Activity {
     private FloatingActionButton editbook_fab_save;
 
     private ImageButton editbook_ib_addBookPhoto;
+
+    private BottomNavigationView navBar;
+
+    //permissions needed
+    private String[] permissions = new String[]{
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+    };
 
     //book to share
     Book book;
@@ -87,7 +108,6 @@ public class EditBookActivity extends Activity {
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData(book);
 
-
         /**
          * register callbacks for buttons
          */
@@ -99,9 +119,64 @@ public class EditBookActivity extends Activity {
         editbook_ib_addBookPhoto.setOnClickListener((v) -> {
 
             Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
+
+            hasPermissions();//check permissions
+
             showSelectImageDialog();
         });
+
+
+        /**
+         * navBar
+         */
+
+        //set correct navigation as selected item
+        navBar.setSelectedItemId(R.id.navigation_shareBook);
+
+        //set the listener for the navigation bar items
+        navBar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_showcase:
+                    //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
+                    AuthUI.getInstance()
+                            .signOut(this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                    startActivity(i);
+                                    Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
+                            });
+
+                    break;
+
+                case R.id.navigation_profile:
+                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    startActivity(i);
+                    break;
+
+                case R.id.navigation_shareBook:
+                    break;
+            }
+            return true;
+        });
+
     }
+
+
+
+    /**
+     * onResume callback
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //set correct navigation as selected item
+        navBar.setSelectedItemId(R.id.navigation_shareBook);
+    }
+
 
 
     /**
@@ -171,10 +246,36 @@ public class EditBookActivity extends Activity {
         }
 
         //load book cover from thumbnail
-        editbook_iv_thumbnail = (ImageView) findViewById(R.id.editbook_iv_thumbnail);
         Glide.with(this).load(book.getThumbnail()).into(editbook_iv_thumbnail);
 
     }
+
+
+
+    /**
+     * hasPermissions method
+     */
+    private void hasPermissions() {
+
+        int result;
+
+        List<String> listPermissionsNeeded = new ArrayList<String>();
+
+        for (String permission : permissions) {
+            result = ContextCompat.checkSelfPermission(context, permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(permission);
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
+        }
+    }
+
+
 
 
     /**
@@ -198,11 +299,11 @@ public class EditBookActivity extends Activity {
             if (items[i].equals(getString(R.string.photo_dialog_item_camera))) {
 
                 //send intent to camera
-                Intent selfie = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                if (selfie.resolveActivity(getPackageManager()) != null) {
+                if (takePhoto.resolveActivity(getPackageManager()) != null) {
 
-                    startActivityForResult(selfie, REQUEST_CAMERA);
+                    startActivityForResult(takePhoto, REQUEST_CAMERA);
                 }
 
             } else if (items[i].equals(getString(R.string.photo_dialog_item_gallery))) {
@@ -260,7 +361,7 @@ public class EditBookActivity extends Activity {
                     croppedPhoto = extras.getParcelable("data");
 
                     //add photo to collection and display it in view
-                    book.addBookPhoto(croppedPhoto);
+                    //book.addBookPhoto(croppedPhoto);
                     editbook_iv_thumbnail.setImageBitmap(croppedPhoto);
 
                 } catch (NullPointerException exc) {
@@ -339,13 +440,42 @@ public class EditBookActivity extends Activity {
 
 
     /**
+     * onBackPressed method
+     */
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder exitRequest = new AlertDialog.Builder(context); //give a context to Dialog
+        exitRequest.setTitle(R.string.exit_request_title);
+        exitRequest.setMessage(R.string.exit_rationale);
+        exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    finish();
+                }
+        ).setNegativeButton(android.R.string.cancel,
+                (dialog, which) -> {
+                    dialog.dismiss();
+                }
+        );
+
+        exitRequest.show();
+    }
+
+
+
+    /**
      * getViewsAndSetTypography method
      */
     private void getViewsAndSetTypography() {
 
+        //get navbar
+        navBar = (BottomNavigationView) findViewById(R.id.navigation);
+
         //get buttons
         editbook_fab_save = (FloatingActionButton) findViewById(R.id.editbook_fab_save);
         editbook_ib_addBookPhoto = (ImageButton) findViewById(R.id.editbook_ib_addBookPhoto);
+
+        //get images
+        editbook_iv_thumbnail = (ImageView) findViewById(R.id.editbook_iv_thumbnail);
 
         //get the rest of views
         editbook_tv_isbn = (TextView) findViewById(R.id.editbook_tv_isbn);
