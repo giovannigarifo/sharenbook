@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.BottomNavigationView;
 import android.view.View;
 import android.widget.Button;
@@ -91,13 +90,14 @@ public class ShareBookActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        BookDetails bookInfo;
 
         if(result != null)
         {
             if(result.getContents() == null) tvTitle.setText("There was an error! Try Again.");
             else
             {
-                BookDetails bookInfo = new BookDetails(result.getContents());
+                bookInfo = new BookDetails(result.getContents());
 
                 if (bookInfo.getTotalItems() > 0)
                 {
@@ -117,6 +117,15 @@ public class ShareBookActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
+
+
+                    /**
+                     * FOR TEST PURPOSE: FIRE EditBookActivity
+                     */
+                    Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+                    i.putExtra("book", bookInfo.getBookList().get(0));
+                    startActivity(i);
+
                 }
                 else
                     tvTitle.setText("ISBN not valid");
@@ -126,5 +135,6 @@ public class ShareBookActivity extends Activity {
         {
             super.onActivityResult(requestCode, resultCode, data);
         }
+
     }
 }

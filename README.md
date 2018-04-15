@@ -11,3 +11,5 @@ Repository for the lab2 exercise of MAD:
 * gitignore for android studio project: https://gist.github.com/iainconnor/8605514
 
 * design support library with material design components (e.g. floating action button): https://developer.android.com/topic/libraries/support-library/packages.html#design
+
+* Glide library for image handling: https://bumptech.github.io/glide/

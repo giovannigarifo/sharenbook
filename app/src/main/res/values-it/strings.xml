@@ -1,7 +1,4 @@
 <resources>
-    <string name="app_name">Lab1</string>
-    <string name="profile_preferences">profile_preferences</string>
-    <string name="profile_preferences_copy">profile_preferences_copy</string>
     <string name="default_fullname_heading">Nome e cognome</string>
     <string name="default_username_heading">Nome utente</string>
     <string name="default_fullname">Nome Cognome</string>
@@ -13,7 +10,6 @@
     <string name="default_bio_heading">Biografia</string>
     <string name="default_bio">Scrivi qui la tua biografia.
     </string>
-    <string name="default_picture_path">void</string>
 
     <string name="search_hint">Ricerca un libro o un utente...</string>
 
@@ -23,20 +19,8 @@
     <string name="title_shareBook">Nuovo annuncio</string>
 
     <!-- persistence keys -->
-    <string name="fullname_key">fullname</string>
-    <string name="username_key">username</string>
-    <string name="email_key">email</string>
-    <string name="city_key">city</string>
-    <string name="bio_key">bio</string>
-    <string name="userPicture_key">user_picture</string>
 
     <!-- copy keys for rollbacks-->
-    <string name="fullname_copy_key">fullname_copy</string>
-    <string name="username_copy_key">username_copy</string>
-    <string name="email_copy_key">email_copy</string>
-    <string name="city_copy_key">city_copy</string>
-    <string name="bio_copy_key">bio_copy</string>
-    <string name="userPicture_copy_key">user_picture_copy</string>
 
     <!-- photo dialog items -->
 
@@ -74,5 +58,16 @@
     <string name="camera_permission_granted">Permesso per la fotocamera autorizzato. Inizializzazione dell\'anteprima.</string>
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
+    <string name="default_title_heading">Titolo</string>
+    <string name="default_sub_title_heading">Sottotitolo</string>
+    <string name="default_authors_heading">Autori</string>
+    <string name="default_publisher_heading">Editore</string>
+    <string name="default_published_date_heading">Data pubblicazione</string>
+    <string name="default_description_heading">Descrizione</string>
+    <string name="default_page_count_heading">Numero pagine</string>
+    <string name="default_categories_heading">Categoria</string>
+    <string name="default_language_heading">Lingua</string>
+    <string name="default_average_rating_heading">Media recensioni</string>
+    <string name="default_rating_count_heading">Numero recensioni</string>
 
 </resources>

@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral() //added for Glide
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.1'
@@ -20,6 +21,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral() //added for Glide
         //
         // added for support library
         maven { url "https://jitpack.io" }

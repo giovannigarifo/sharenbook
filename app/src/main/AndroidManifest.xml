@@ -29,12 +29,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditProfileActivity" />
-        <activity android:name=".ShowPictureActivity" android:theme="@style/myShowPictureWindow"/>
+        <activity
+            android:name=".ShowPictureActivity"
+            android:theme="@style/myShowPictureWindow" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
         <activity android:name=".ShareBookActivity" />
+        <activity android:name=".EditBookActivity"></activity>
     </application>
 
 </manifest>

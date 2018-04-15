@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Lab1</string>
-    <string name="profile_preferences">profile_preferences</string>
-    <string name="profile_preferences_copy">profile_preferences_copy</string>
+    <string name="app_name" translatable="false">Share\'nBook</string>
+    <string name="profile_preferences" translatable="false">profile_preferences</string>
+    <string name="profile_preferences_copy" translatable="false">profile_preferences_copy</string>
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
@@ -13,9 +13,37 @@
     <string name="default_bio_heading">Bio</string>
     <string name="default_bio">Write here your Bio
     </string>
-    <string name="default_picture_path">void</string>
+    <string name="default_picture_path" translatable="false">void</string>
 
     <string name="search_hint">Search a book or a user...</string>
+
+    <!-- ============================== -->
+
+    <!-- edit book strings -->
+    <string name="default_isbn_heading" translatable="false">ISBN</string>
+    <string name="default_title_heading">Title</string>
+    <string name="default_subtitle_heading">Subtitle</string>
+    <string name="default_authors_heading">Authors</string>
+    <string name="default_publisher_heading">Publisher</string>
+    <string name="default_published_date_heading">Published Date</string>
+    <string name="default_description_heading">Description</string>
+    <string name="default_page_count_heading">Page Count</string>
+    <string name="default_categories_heading">Categories</string>
+    <string name="default_language_heading">Language</string>
+    <string name="default_rating_heading">Rating</string>
+
+    <string name="default_isbn" translatable="false">a number composed of 10 to 13 digits</string>
+    <string name="default_title">The book title</string>
+    <string name="default_subtitle">The book subtitle</string>
+    <string name="default_authors">The book authors list</string>
+    <string name="default_publisher">The book publisher</string>
+    <string name="default_published_date">The published date of the book</string>
+    <string name="default_description">Book Description</string>
+    <string name="default_page_count">Page Count of the book</string>
+    <string name="default_categories">Categories of the book</string>
+    <string name="default_language">Book language</string>
+
+    <!-- ======================== -->
 
     <!-- navigation bar -->
     <string name="title_profile">Profile</string>
@@ -23,20 +51,20 @@
     <string name="title_shareBook">Share a book</string>
 
     <!-- persistence keys -->
-    <string name="fullname_key">fullname</string>
-    <string name="username_key">username</string>
-    <string name="city_key">city</string>
-    <string name="bio_key">bio</string>
-    <string name="email_key">email</string>
-    <string name="userPicture_key">user_picture</string>
+    <string name="fullname_key" translatable="false">fullname</string>
+    <string name="username_key" translatable="false">username</string>
+    <string name="city_key" translatable="false">city</string>
+    <string name="bio_key" translatable="false">bio</string>
+    <string name="email_key" translatable="false">email</string>
+    <string name="userPicture_key" translatable="false">user_picture</string>
 
     <!-- copy keys for rollbacks-->
-    <string name="fullname_copy_key">fullname_copy</string>
-    <string name="username_copy_key">username_copy</string>
-    <string name="city_copy_key">city_copy</string>
-    <string name="bio_copy_key">bio_copy</string>
-    <string name="email_copy_key">email_copy</string>
-    <string name="userPicture_copy_key">user_picture_copy</string>
+    <string name="fullname_copy_key" translatable="false">fullname_copy</string>
+    <string name="username_copy_key" translatable="false">username_copy</string>
+    <string name="city_copy_key" translatable="false">city_copy</string>
+    <string name="bio_copy_key" translatable="false">bio_copy</string>
+    <string name="email_copy_key" translatable="false">email_copy</string>
+    <string name="userPicture_copy_key" translatable="false">user_picture_copy</string>
 
     <!-- photo dialog items -->
 

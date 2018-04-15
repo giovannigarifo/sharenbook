@@ -65,21 +65,6 @@ public class ShowProfileActivity extends Activity {
         Context context = this.getApplicationContext(); //retrieve context
 
 
-        /**
-         * Firebase Connection test: it works.
-         *
-        firedb = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = firedb.getReference(); //url inferred from google-services.json
-
-        //obtain unique key
-        DatabaseReference itemRef = dbRef.push();
-
-        //push value
-        itemRef.setValue("Hello World");
-        */
-
-
-
         //retrieve the shared preference file
         editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
