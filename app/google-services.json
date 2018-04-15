@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:284783646504:android:4356ff1a7c716297",
+        "mobilesdk_app_id": "1:284783646504:android:1e2c241afc777a17",
         "android_client_info": {
-          "package_name": "it.polito.mad.lab1"
+          "package_name": "it.polito.mad.sharenbook"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "284783646504-snj13m3hjn341rqii4uoihjs8gckil75.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "it.polito.mad.lab1",
-            "certificate_hash": "0bcc2a6a85ebdef27215e653ea7df69c817ba3f9"
-          }
-        },
         {
           "client_id": "284783646504-iead90umcnt2fgpvd5a0il2akmqrq662.apps.googleusercontent.com",
           "client_type": 3
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "284783646504-iead90umcnt2fgpvd5a0il2akmqrq662.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

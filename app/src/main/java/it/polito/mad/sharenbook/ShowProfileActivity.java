@@ -1,4 +1,4 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
@@ -14,7 +15,9 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -121,7 +124,18 @@ public class ShowProfileActivity extends Activity {
         navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_showcase:
-                    Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
+                    AuthUI.getInstance()
+                            .signOut(this)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                    startActivity(i);
+                                    Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
+                            });
+
                     break;
 
                 case R.id.navigation_profile:
@@ -130,7 +144,6 @@ public class ShowProfileActivity extends Activity {
                 case R.id.navigation_shareBook:
                     Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
                     startActivity(i);
-                    finish();
                     break;
             }
             return true;

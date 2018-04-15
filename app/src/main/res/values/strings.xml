@@ -13,7 +13,7 @@
     <string name="default_bio_heading">Bio</string>
     <string name="default_bio">Write here your Bio
     </string>
-    <string name="default_picture_path" translatable="false">void</string>
+    <string name="default_picture_path">void</string>
 
     <string name="search_hint">Search a book or a user...</string>
 
@@ -51,20 +51,20 @@
     <string name="title_shareBook">Share a book</string>
 
     <!-- persistence keys -->
-    <string name="fullname_key" translatable="false">fullname</string>
-    <string name="username_key" translatable="false">username</string>
-    <string name="city_key" translatable="false">city</string>
-    <string name="bio_key" translatable="false">bio</string>
-    <string name="email_key" translatable="false">email</string>
-    <string name="userPicture_key" translatable="false">user_picture</string>
+    <string name="fullname_key">fullname</string>
+    <string name="username_key">username</string>
+    <string name="city_key">city</string>
+    <string name="bio_key">bio</string>
+    <string name="email_key">email</string>
+    <string name="userPicture_key">user_picture</string>
 
     <!-- copy keys for rollbacks-->
-    <string name="fullname_copy_key" translatable="false">fullname_copy</string>
-    <string name="username_copy_key" translatable="false">username_copy</string>
-    <string name="city_copy_key" translatable="false">city_copy</string>
-    <string name="bio_copy_key" translatable="false">bio_copy</string>
-    <string name="email_copy_key" translatable="false">email_copy</string>
-    <string name="userPicture_copy_key" translatable="false">user_picture_copy</string>
+    <string name="fullname_copy_key">fullname_copy</string>
+    <string name="username_copy_key">username_copy</string>
+    <string name="city_copy_key">city_copy</string>
+    <string name="bio_copy_key">bio_copy</string>
+    <string name="email_copy_key">email_copy</string>
+    <string name="userPicture_copy_key">user_picture_copy</string>
 
     <!-- photo dialog items -->
 
@@ -101,5 +101,14 @@
     <string name="camera_permission_granted">Camera permission was granted. Starting preview.</string>
     <string name="camera_permission_denied">Camera permission request was denied.</string>
     <string name="camera_unavailable"><b>Camera could not be opened.</b>\nThis occurs when the camera is not available (for example it is already in use) or if the system has denied access (for example when camera access has been disabled).</string>
+
+    <!-- FACEBOOK -->
+    <string name="facebook_application_id">375832199559673</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb375832199559673</string>
+
+    <!-- TWITTER -->
+    <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
+    <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
+
 
 </resources>

@@ -1,20 +1,14 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -26,15 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 public class EditBookActivity extends Activity {

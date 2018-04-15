@@ -1,4 +1,4 @@
-package it.polito.mad.lab1;
+package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

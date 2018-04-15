@@ -6,7 +6,7 @@
     android:id="@+id/editbook_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.EditProfileActivity">
+    tools:context="it.polito.mad.sharenbook.EditProfileActivity">
 
     <ScrollView
         android:id="@+id/editbook_scrollview"
@@ -64,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/userPicture_edit"
                     android:layout_alignEnd="@+id/userPicture_edit"
+                    android:layout_alignRight="@+id/userPicture_edit"
                     android:clickable="true"
                     android:src="@android:drawable/ic_menu_camera" />
 
@@ -178,8 +179,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"
         android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
         android:src="@drawable/ic_check_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/navigation"
         app:layout_anchorGravity="end" />
 

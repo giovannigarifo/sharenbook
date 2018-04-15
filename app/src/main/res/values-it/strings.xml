@@ -1,4 +1,7 @@
 <resources>
+    <string name="app_name">Share\'nBook</string>
+    <string name="profile_preferences">profile_preferences</string>
+    <string name="profile_preferences_copy">profile_preferences_copy</string>
     <string name="default_fullname_heading">Nome e cognome</string>
     <string name="default_username_heading">Nome utente</string>
     <string name="default_fullname">Nome Cognome</string>
@@ -69,5 +72,14 @@
     <string name="default_language_heading">Lingua</string>
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
+
+    <!-- FACEBOOK -->
+    <string name="facebook_application_id">375832199559673</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb375832199559673</string>
+
+    <!-- TWITTER -->
+    <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
+    <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
+
 
 </resources>

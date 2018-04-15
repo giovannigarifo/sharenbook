@@ -6,7 +6,7 @@
     android:id="@+id/editbook_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.lab1.EditBookActivity">
+    tools:context=".EditBookActivity">
 
     <ScrollView
         android:id="@+id/editbook_scrollview"

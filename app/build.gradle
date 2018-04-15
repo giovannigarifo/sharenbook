@@ -1,14 +1,18 @@
+// APP HASH KEY - D7:CA:DB:BD:99:D2:C1:C8:18:BD:26:85:38:19:B3:8D:31:7B:C4:FF
+
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "it.polito.mad.lab1"
+        applicationId "it.polito.mad.sharenbook"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "en,it" // And any other languages you support
     }
     buildTypes {
         release {
@@ -26,11 +30,24 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
+
+    /*
+     * FIREBASE LIBRARIES
+     */
     implementation 'com.google.firebase:firebase-core:12.0.1'
     implementation 'com.google.firebase:firebase-database:12.0.1'
+    implementation 'com.google.firebase:firebase-auth:12.0.1'
+    implementation 'com.firebaseui:firebase-ui-auth:3.3.0'
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
+
+    implementation 'com.facebook.android:facebook-android-sdk:4.32.0'
+    implementation ("com.twitter.sdk.android:twitter-core:3.0.0@aar") { transitive = true }
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -38,12 +55,11 @@ dependencies {
     //circle layout for imageviews from https://github.com/lopspower/CircularImageView
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
     //
-    //support design library (includes floating action button FAB)
-    implementation 'com.android.support:design:27.1.1'
-    //
     // Zxing barcode reader library
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
+
+
 
     //
     // Glide library
