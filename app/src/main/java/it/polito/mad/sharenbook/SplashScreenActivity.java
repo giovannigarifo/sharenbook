@@ -10,10 +10,13 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
@@ -144,8 +147,18 @@ public class SplashScreenActivity extends Activity {
 
                 if(firebaseAuth.getCurrentUser()!=null) {
 
+                    Map<String,Object> users = new HashMap<String,Object>();
+                    users.put(firebaseAuth.getCurrentUser().getUid(),"prova");
+
                     firebaseDB = FirebaseDatabase.getInstance().getReference("users");
-                    firebaseDB.setValue(firebaseAuth.getCurrentUser().getUid());
+                    firebaseDB.updateChildren(users, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            //
+                            Log.d ("LOADED:", "CORRECT!");
+
+                        }
+                    });
 
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                     startActivity(i);
