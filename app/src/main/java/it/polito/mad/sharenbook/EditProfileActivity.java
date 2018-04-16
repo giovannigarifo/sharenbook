@@ -47,6 +47,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import it.polito.mad.sharenbook.model.UserProfile;
+
 
 public class EditProfileActivity extends Activity {
 
@@ -127,6 +129,16 @@ public class EditProfileActivity extends Activity {
 
         //call to methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
+
+            Bundle data = getIntent().getExtras();
+            if(data.getString("from").equals("signup")) {
+                Log.d("USERDATA:", "SIGNUP");
+                UserProfile user = data.getParcelable(getString(R.string.user_profile_data_key));
+                Log.d("USERDATA:", user.getUserID());
+                Log.d("USERDATA:", user.getFullname());
+                Log.d("USERDATA:",user.getEmail());
+            }
+
             onCreateWithBundleEmpty();
         } else {
             onCreateWithBundleNotEmpty();
