@@ -10,6 +10,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 
@@ -18,52 +20,140 @@ import static android.content.ContentValues.TAG;
 public class SplashScreenActivity extends Activity {
 
     private static final int RC_SIGN_IN = 123;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private DatabaseReference firebaseDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
+         /**
            Verify if the user is already signed-in
+
          */
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
-            // User already signed in
+
+        checkAuth();
+
+
+
+/*
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() != null) {
+
+                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    i.putExtra(getString(R.string.uid_key),firebaseAuth.getCurrentUser().getUid());
+                    Log.d("UID:",firebaseAuth.getCurrentUser().getUid());
+                    Log.d("UID:",firebaseAuth.getCurrentUser().getProviderId());
+
+                    startActivity(i);
+                    finish();
+
+                }else {
+                    // User not signed in
+                    startActivityForResult(
+                            // Get an instance of AuthUI based on the default app
+                            AuthUI.getInstance().createSignInIntentBuilder()
+                                    .setAvailableProviders(Arrays.asList(
+                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                            new AuthUI.IdpConfig.FacebookBuilder().build(),
+                                            new AuthUI.IdpConfig.TwitterBuilder().build(),
+                                            new AuthUI.IdpConfig.EmailBuilder().build()))
+                                    .setLogo(R.mipmap.ic_launcher)
+                                    .build(),
+                            RC_SIGN_IN);
+                }
+            }
+        };
+
+*/
+    }
+
+    private void checkAuth(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+
+        if(firebaseAuth.getCurrentUser()!=null){
+            /**
+
+                User already signed in
+
+            */
+
+            String userId = firebaseAuth.getCurrentUser().getUid();
+
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.uid_key), userId);
             startActivity(i);
             finish();
 
-        } else {
+        }else {
             // User not signed in
             startActivityForResult(
                     // Get an instance of AuthUI based on the default app
                     AuthUI.getInstance().createSignInIntentBuilder()
-                        .setAvailableProviders(Arrays.asList(
-                                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                new AuthUI.IdpConfig.EmailBuilder().build()))
+                            .setAvailableProviders(Arrays.asList(
+                                    new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                    new AuthUI.IdpConfig.FacebookBuilder().build(),
+                                    new AuthUI.IdpConfig.TwitterBuilder().build(),
+                                    new AuthUI.IdpConfig.EmailBuilder().build()))
                             .setLogo(R.mipmap.ic_launcher)
                             .build(),
                     RC_SIGN_IN);
         }
 
     }
+/*
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            firebaseAuth.removeAuthStateListener(authStateListener);
+        }
+    }
+
+
+*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
         if (requestCode == RC_SIGN_IN) {
+
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
+
             // Successfully signed in
+
             if (resultCode == RESULT_OK) {
-                Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                startActivity(i);
-                finish();
-            } else {
+
+                Log.d("PassoDiQui:","YES");
+                Log.d("PassoDiQui:", response.getProviderType());
+
+
+
+                if(firebaseAuth.getCurrentUser()!=null) {
+
+                    firebaseDB = FirebaseDatabase.getInstance().getReference("users");
+                    firebaseDB.setValue(firebaseAuth.getCurrentUser().getUid());
+
+                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+            } else{
+
+            //if (resultCode != RESULT_OK){
                 // Sign in failed
 
                 if (response == null) {
@@ -82,7 +172,9 @@ public class SplashScreenActivity extends Activity {
                 Toast.makeText(this, "ERROR: Unknown error", Toast.LENGTH_SHORT).show();
                 //showSnackbar(R.string.unknown_error);
                 Log.e(TAG, "Sign-in error: ", response.getError());
+
             }
+
         }
     }
 

@@ -101,5 +101,8 @@
     <string name="sba_scan_isbn">Scansiona l\'ISBN utilizzando la fotocamera</string>
     <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
 
+    <!-- Firebase keys -->
+    <string name="uid_key">uid_key</string>
+
 
 </resources>
