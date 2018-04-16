@@ -129,7 +129,7 @@ public class ShowProfileActivity extends Activity {
                             .signOut(this)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
                                     Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
                                     finish();

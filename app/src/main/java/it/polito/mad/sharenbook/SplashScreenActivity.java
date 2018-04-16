@@ -15,14 +15,14 @@ import java.util.Arrays;
 
 import static android.content.ContentValues.TAG;
 
-public class SignInActivity extends Activity {
+public class SplashScreenActivity extends Activity {
 
     private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_splash_screen);
 
 
         /*
@@ -45,6 +45,7 @@ public class SignInActivity extends Activity {
                                 new AuthUI.IdpConfig.FacebookBuilder().build(),
                                 new AuthUI.IdpConfig.TwitterBuilder().build(),
                                 new AuthUI.IdpConfig.EmailBuilder().build()))
+                            .setLogo(R.mipmap.ic_launcher)
                             .build(),
                     RC_SIGN_IN);
         }

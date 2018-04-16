@@ -30,7 +30,8 @@
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
         <activity android:name=".ShareBookActivity" />
-        <activity android:name=".SignInActivity">
+        <activity android:name=".SplashScreenActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

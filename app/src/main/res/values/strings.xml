@@ -15,6 +15,7 @@
     </string>
     <string name="default_picture_path">void</string>
 
+    <string name="welcome_msg">Test</string>
     <string name="search_hint">Search a book or a user...</string>
 
     <!-- ============================== -->
