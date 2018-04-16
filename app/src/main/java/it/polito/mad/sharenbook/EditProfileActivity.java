@@ -35,6 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -44,7 +48,9 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import it.polito.mad.sharenbook.model.UserProfile;
@@ -76,8 +82,7 @@ public class EditProfileActivity extends Activity {
     private OutputStream out;
 
     //preferences
-    private SharedPreferences editedProfile;
-    private SharedPreferences.Editor writeProfile;
+
     private SharedPreferences editedProfile_copy;
     private SharedPreferences.Editor writeProfile_copy;
 
@@ -88,6 +93,12 @@ public class EditProfileActivity extends Activity {
     private String default_fullname;
     private String default_username;
     private String default_picture_path;
+
+    private String fullname;
+    private String username;
+    private String email;
+    private String city;
+    private String bio;
 
     //permissions needed
     private String[] permissions = new String[]{
@@ -102,6 +113,9 @@ public class EditProfileActivity extends Activity {
 
     //User profile data
     private UserProfile user;
+
+    //FIREBASE
+    private DatabaseReference firebaseDB;
     /**
      * onCreate callback
      *
@@ -128,12 +142,14 @@ public class EditProfileActivity extends Activity {
         default_username = context.getResources().getString(R.string.default_username);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
+        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+
+        Bundle data = getIntent().getExtras();
+        user = data.getParcelable(getString(R.string.user_profile_data_key));
+        Log.d("USERID:",user.getUserID());
+
         //call to methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
-
-            Bundle data = getIntent().getExtras();
-
-            user = data.getParcelable(getString(R.string.user_profile_data_key));
 
             onCreateWithBundleEmpty(user);
 
@@ -148,10 +164,7 @@ public class EditProfileActivity extends Activity {
      */
     private void onCreateWithBundleEmpty(UserProfile user) {
 
-        //retrieve the shared preference file
-       // editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
-       // writeProfile = editedProfile.edit();
 
         //make a copy for rollbacks
         editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
@@ -160,7 +173,7 @@ public class EditProfileActivity extends Activity {
         //get view button
         save_button = (FloatingActionButton) findViewById(R.id.fab_save);
 
-        String fullname;
+       // String fullname;
 
         if(user.getFullname() != null) {
             fullname = user.getFullname();
@@ -175,7 +188,7 @@ public class EditProfileActivity extends Activity {
         writeProfile_copy.putString(getString(R.string.fullname_copy_key), fullname).commit();
 
 
-        String username;
+        //String username;
 
         if(user.getUsername() != null) {
             username = user.getUsername();
@@ -189,7 +202,7 @@ public class EditProfileActivity extends Activity {
         writeProfile_copy.putString(getString(R.string.username_copy_key), username).commit();
 
 
-        String city;
+       // String city;
 
         if(user.getCity() != null) {
             city = user.getCity();
@@ -204,7 +217,7 @@ public class EditProfileActivity extends Activity {
         writeProfile_copy.putString(getString(R.string.city_copy_key), city).commit();
 
 
-        String bio;
+       // String bio;
 
         if(user.getBio() != null) {
             bio = user.getBio();
@@ -225,7 +238,7 @@ public class EditProfileActivity extends Activity {
         }
         */
 
-        String email;
+       // String email;
         if( user.getEmail()!=null) {
             email = user.getEmail();
             et_userEmail.setText(email);
@@ -242,8 +255,8 @@ public class EditProfileActivity extends Activity {
 
         String choosenPicture;
 
-        if(user.getPictureURI()!=null)
-            choosenPicture = user.getPictureURI().toString();
+        if(user.getPicture_uri()!=null)
+            choosenPicture = user.getPicture_uri().toString();
         else
             choosenPicture = default_picture_path;
 
@@ -267,10 +280,7 @@ public class EditProfileActivity extends Activity {
      */
     private void onCreateWithBundleNotEmpty() {
 
-        //retrieve the shared preference file
-        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
-
-        writeProfile = editedProfile.edit();
+        
 
         //make a copy for rollbacks
         editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
@@ -635,38 +645,50 @@ public class EditProfileActivity extends Activity {
 
                 if (!validateForm())
                     return;
-/**
-                if (et_userFullName.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.fullname_key), editedProfile_copy.getString(getString(R.string.fullname_copy_key), default_fullname));
-                if (et_userNickName.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.username_key), editedProfile_copy.getString(getString(R.string.username_copy_key), default_username));
-                if (et_userCity.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.city_key), editedProfile_copy.getString(getString(R.string.city_copy_key), default_city));
-                if (et_userBio.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.bio_key), editedProfile_copy.getString(getString(R.string.bio_copy_key), default_bio));
-                if (et_userEmail.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.email_key), editedProfile_copy.getString(getString(R.string.email_copy_key), default_email));
-                writeProfile.putString(getString(R.string.userPicture_key), editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
-                writeProfile.commit();
-
-                SUBSTITUTE WITH FIREBASE WRITE
 
 
+            firebaseSaveProfile();
 
-*/
-                writeProfile_copy.clear().commit();
-                //writeProfile.commit();
-               // String debug = editedProfile.getString(getString(R.string.default_picture_path), default_picture_path);
-               // Log.d("Gallery:", debug);
-               // setResult(RESULT_OK);
-
-                /**
-                 *  start show profile activity
-                 */
-
-                finish();
             }
         });
+
+    }
+
+    private void firebaseSaveProfile(){
+
+        Map<String,Object> userData = new HashMap<>();
+        if(et_userFullName.getText().length() != 0 && !et_userFullName.getText().equals(default_fullname))
+            userData.put(getString(R.string.fullname_key),et_userFullName.getText().toString());
+        if(et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username))
+            userData.put(getString(R.string.username_key),et_userNickName.getText().toString());
+        if (et_userEmail.getText().length() != 0 && !et_userEmail.getText().equals(default_email))
+            userData.put(getString(R.string.email_key),et_userEmail.getText().toString());
+        if(et_userCity.getText().length()!=0 && !et_userCity.getText().equals(default_city))
+            userData.put(getString(R.string.city_key),et_userCity.getText().toString());
+        if (et_userBio.getText().length() != 0 && !et_userBio.getText().equals(default_bio))
+            userData.put(getString(R.string.bio_key),et_userBio.getText().toString());
+
+        /** to add photo
+         *
+         */
+
+        writeProfile_copy.clear().commit();
+
+
+
+
+        firebaseDB.child(user.getUserID()).updateChildren(userData, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError == null){
+                    Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+
+            }
+        });
+
 
     }
 
@@ -680,7 +702,7 @@ public class EditProfileActivity extends Activity {
         boolean result = true;
 
 
-        if (!(et_userFullName.getText().toString().equals(editedProfile.getString(getString(R.string.fullname_key), default_fullname))) && !(et_userFullName.getText().toString().isEmpty())) {
+        if (!(et_userFullName.getText().toString().equals(fullname)) && !(et_userFullName.getText().toString().isEmpty())) {
             if ((et_userFullName.getText().toString().length()) < 5) {
                 et_userFullName.setError(getString(R.string.name_length_format_rationale));
                 result = false;
@@ -695,7 +717,7 @@ public class EditProfileActivity extends Activity {
 
         }
 
-        if (!(et_userNickName.getText().toString().equals(editedProfile.getString(getString(R.string.username_key), default_username))) && !(et_userNickName.getText().toString().isEmpty())) {
+        if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 2) {
                 et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
@@ -710,7 +732,7 @@ public class EditProfileActivity extends Activity {
         }
 
 
-        if (!(et_userEmail.getText().toString().equals(editedProfile.getString(getString(R.string.email_key), default_email))) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
+        if (!(et_userEmail.getText().toString().equals(email)) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
             Log.d("Email:", et_userEmail.getText().toString());
 
             if (!RFC822_email_regex.matcher(et_userEmail.getText().toString()).matches()) {
@@ -722,7 +744,7 @@ public class EditProfileActivity extends Activity {
             }
         }
 
-        if (!(et_userCity.getText().toString().equals(editedProfile.getString(getString(R.string.city_key), default_city))) && !(et_userCity.getText().toString().isEmpty())) {
+        if (!(et_userCity.getText().toString().equals(city)) && !(et_userCity.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userCity.getText().toString())) < 2) {
                 et_userCity.setError(getString(R.string.city_bad_lenght_rationale));
@@ -804,7 +826,10 @@ public class EditProfileActivity extends Activity {
         exitRequest.setMessage(R.string.exit_rationale);
         exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     writeProfile_copy.clear().commit();
-                    finish();
+            Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+            startActivity(i);
+            finish();
+
                 }
         ).setNegativeButton(android.R.string.cancel,
                 (dialog, which) -> {

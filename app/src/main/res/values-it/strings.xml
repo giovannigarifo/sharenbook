@@ -23,8 +23,20 @@
     <string name="title_shareBook">Nuovo annuncio</string>
 
     <!-- persistence keys -->
+    <string name="fullname_key">fullname</string>
+    <string name="username_key">username</string>
+    <string name="city_key">city</string>
+    <string name="bio_key">bio</string>
+    <string name="email_key">email</string>
+    <string name="userPicture_key">picture_uri</string>
 
     <!-- copy keys for rollbacks-->
+    <string name="fullname_copy_key">fullname_copy</string>
+    <string name="username_copy_key">username_copy</string>
+    <string name="city_copy_key">city_copy</string>
+    <string name="bio_copy_key">bio_copy</string>
+    <string name="email_copy_key">email_copy</string>
+    <string name="userPicture_copy_key">user_picture_copy</string>
 
     <!-- photo dialog items -->
 

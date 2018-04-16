@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.firebase.ui.auth.data.model.User;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +19,7 @@ public class UserProfile implements Parcelable {
     private String email;
     private String city;
     private String bio;
-    private Uri pictureURI;
+    private Uri picture_uri;
 
     public UserProfile (Parcel in){
 
@@ -31,7 +29,7 @@ public class UserProfile implements Parcelable {
         this.email = in.readString();
         this.city = in.readString();
         this.bio = in.readString();
-        this.pictureURI = Uri.parse(in.readString());
+        this.picture_uri = Uri.parse(in.readString());
 
     }
 
@@ -42,7 +40,7 @@ public class UserProfile implements Parcelable {
         this.email = email;
 
         if(pictureURI != null)
-            this.pictureURI = Uri.parse(pictureURI);
+            this.picture_uri = Uri.parse(pictureURI);
 
     }
 
@@ -55,7 +53,7 @@ public class UserProfile implements Parcelable {
         result.put("email",getEmail());
         result.put("city",getCity());
         result.put("bio",getBio());
-        result.put("pictureURI",getPictureURI());
+        result.put("picture_uri", getPicture_uri());
 
         return result;
     }
@@ -85,8 +83,8 @@ public class UserProfile implements Parcelable {
         return bio;
     }
 
-    public Uri getPictureURI() {
-        return pictureURI;
+    public Uri getPicture_uri() {
+        return picture_uri;
     }
 
 
@@ -104,7 +102,7 @@ public class UserProfile implements Parcelable {
         dest.writeString(getEmail());
         dest.writeString(getCity());
         dest.writeString(getBio());
-        dest.writeString(getPictureURI().toString());
+        dest.writeString(getPicture_uri().toString());
 
     }
 

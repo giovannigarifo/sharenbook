@@ -57,7 +57,7 @@
     <string name="city_key">city</string>
     <string name="bio_key">bio</string>
     <string name="email_key">email</string>
-    <string name="userPicture_key">user_picture</string>
+    <string name="userPicture_key">picture_uri</string>
 
     <!-- copy keys for rollbacks-->
     <string name="fullname_copy_key">fullname_copy</string>
