@@ -668,7 +668,7 @@ public class EditProfileActivity extends Activity {
         if (et_userBio.getText().length() != 0 && !et_userBio.getText().equals(default_bio))
             userData.put(getString(R.string.bio_key),et_userBio.getText().toString());
 
-        /** to add photo
+        /** TODO add photo
          *
          */
 
@@ -704,6 +704,7 @@ public class EditProfileActivity extends Activity {
     private boolean validateForm() {
         boolean result = true;
 
+        //TODO validation should fail if a field is empty! (or at least we should make some mandatory fields to fill)
 
         if (!(et_userFullName.getText().toString().equals(fullname)) && !(et_userFullName.getText().toString().isEmpty())) {
             if ((et_userFullName.getText().toString().length()) < 5) {
@@ -716,7 +717,6 @@ public class EditProfileActivity extends Activity {
             } else {
                 et_userFullName.setError(null);
             }
-
 
         }
 

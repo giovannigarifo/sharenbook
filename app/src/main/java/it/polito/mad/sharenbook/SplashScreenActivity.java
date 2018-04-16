@@ -11,9 +11,11 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,7 +30,8 @@ public class SplashScreenActivity extends Activity {
     private static final int RC_SIGN_IN = 123;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private DatabaseReference firebaseDB;
+    private FirebaseDatabase firebaseDB;
+    private DatabaseReference dbReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +87,7 @@ public class SplashScreenActivity extends Activity {
 
         if(firebaseAuth.getCurrentUser()!=null){
             /**
-
-                User already signed in
-
+             *  User already signed in
             */
 
             /**
@@ -95,6 +96,38 @@ public class SplashScreenActivity extends Activity {
              */
 
             String userId = firebaseAuth.getCurrentUser().getUid();
+
+            /*
+            DatabaseReference userRef = firebaseDB.getReference().child(getString(R.string.users_key)).child(userId);
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String profileState = (String) dataSnapshot.getValue();
+
+                    if(profileState.equals("empty_profile")){
+                        //User has not set profile data -> EditProfileActivity
+                        //TODO Complete this part
+                        Log.d("ERROR", "You must complete your profile creation before continuing!");
+
+                    } else {
+                        //User has a valid profile -> ShowProfileActivity
+
+                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                        i.putExtra(getString(R.string.uid_key), userId);
+                        startActivity(i);
+                        finish();
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError Error) {
+
+                }
+            });
+
+*/
 
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.putExtra(getString(R.string.uid_key), userId);
@@ -148,7 +181,6 @@ public class SplashScreenActivity extends Activity {
 
             if (resultCode == RESULT_OK) {
 
-                Log.d("PassoDiQui:","YES");
                 Log.d("PassoDiQui:", response.getProviderType());
 
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -159,19 +191,19 @@ public class SplashScreenActivity extends Activity {
 
                     /**
                      * CREATE USER TO PASS IN THE BUNDLE FOR EDIT_PROFILE
-
                      */
 
                     UserProfile user = new UserProfile(firebaseUser.getUid(),
-                            firebaseUser.getDisplayName(),firebaseUser.getEmail(),
+                            firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
+                            null, null,
                             firebaseUser.getPhotoUrl().toString()
                             );
 
                     users.put(firebaseUser.getUid(), getString(R.string.empty_profile_value));
 
-                    firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+                    dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
 
-                    firebaseDB.updateChildren(users, new DatabaseReference.CompletionListener() {
+                    dbReference.updateChildren(users, new DatabaseReference.CompletionListener() {
 
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

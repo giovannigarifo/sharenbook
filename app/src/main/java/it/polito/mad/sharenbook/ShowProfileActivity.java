@@ -126,7 +126,9 @@ public class ShowProfileActivity extends Activity {
             UserProfile user = new UserProfile(
                     firebaseUser.getUid(),
                     editedProfile.getString(getString(R.string.fullname_key), default_fullname),
+                    null,
                     editedProfile.getString(getString(R.string.email_key), default_email),
+                    null,null,
                     choosenPicture.toString()
             );
 

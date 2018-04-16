@@ -33,16 +33,23 @@ public class UserProfile implements Parcelable {
 
     }
 
-    public UserProfile (String userID,String fullname,String email, String pictureURI){
+    /**
+     * UserProfile Complete Constructor
+     */
+    public UserProfile (String userID, String fullname, String username, String email, String city, String bio, String pictureURI){
 
         this.userID = userID;
         this.fullname = fullname;
+        this.username = username;
         this.email = email;
+        this.city = city;
+        this.bio = bio;
 
         if(pictureURI != null)
             this.picture_uri = Uri.parse(pictureURI);
 
     }
+
 
     public Map<String,Object> toMap(){
         Map<String,Object> result = new HashMap<String,Object>();
