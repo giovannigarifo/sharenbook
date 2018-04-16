@@ -100,7 +100,8 @@ public class EditProfileActivity extends Activity {
     private Pattern fullname_regex = Pattern.compile("([A-Z]([a-z])*[\\s][A-Za-z]([a-z])*[\\s]?)([A-Za-z]([a-z])*[\\s]?)*");
     private Pattern city_regex = Pattern.compile("([A-Z][a-z]*)[\\s]?[,]?[\\s]?([A-Z][a-z]*)?[\\s]?");
 
-
+    //User profile data
+    private UserProfile user;
     /**
      * onCreate callback
      *
@@ -131,15 +132,11 @@ public class EditProfileActivity extends Activity {
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
 
             Bundle data = getIntent().getExtras();
-            if(data.getString("from").equals("signup")) {
-                Log.d("USERDATA:", "SIGNUP");
-                UserProfile user = data.getParcelable(getString(R.string.user_profile_data_key));
-                Log.d("USERDATA:", user.getUserID());
-                Log.d("USERDATA:", user.getFullname());
-                Log.d("USERDATA:",user.getEmail());
-            }
 
-            onCreateWithBundleEmpty();
+            user = data.getParcelable(getString(R.string.user_profile_data_key));
+
+            onCreateWithBundleEmpty(user);
+
         } else {
             onCreateWithBundleNotEmpty();
         }
@@ -149,12 +146,12 @@ public class EditProfileActivity extends Activity {
     /**
      * onCreateWithBundleEmpty method
      */
-    private void onCreateWithBundleEmpty() {
+    private void onCreateWithBundleEmpty(UserProfile user) {
 
         //retrieve the shared preference file
-        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
+       // editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
-        writeProfile = editedProfile.edit();
+       // writeProfile = editedProfile.edit();
 
         //make a copy for rollbacks
         editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
@@ -163,34 +160,94 @@ public class EditProfileActivity extends Activity {
         //get view button
         save_button = (FloatingActionButton) findViewById(R.id.fab_save);
 
-        //get editViews
-        writeProfile_copy.putString(getString(R.string.fullname_copy_key), editedProfile.getString(getString(R.string.fullname_key), default_fullname)).commit();
-        et_userFullName.setHint(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
+        String fullname;
 
-        writeProfile_copy.putString(getString(R.string.username_copy_key), editedProfile.getString(getString(R.string.username_key), default_username)).commit();
-        et_userNickName.setHint(editedProfile.getString(getString(R.string.username_key), default_username));
-
-        writeProfile_copy.putString(getString(R.string.city_copy_key), editedProfile.getString(getString(R.string.city_key), default_city)).commit();
-        et_userCity.setHint(editedProfile.getString(getString(R.string.city_key), default_city));
-
-        writeProfile_copy.putString(getString(R.string.bio_copy_key), editedProfile.getString(getString(R.string.bio_key), default_bio)).commit();
-        String actualBio = editedProfile.getString(getString(R.string.bio_key), default_bio);
-
-        if (actualBio.equals(default_bio))
-            et_userBio.setHint(actualBio);
+        if(user.getFullname() != null) {
+            fullname = user.getFullname();
+            et_userFullName.setText(fullname);
+        }
         else {
-            et_userBio.setText(actualBio);
+            fullname = default_fullname;
+            et_userFullName.setHint(fullname);
+
+        }
+            //get editViews
+        writeProfile_copy.putString(getString(R.string.fullname_copy_key), fullname).commit();
+
+
+        String username;
+
+        if(user.getUsername() != null) {
+            username = user.getUsername();
+            et_userNickName.setText(username);
+        }
+        else {
+            username = default_username;
+            et_userNickName.setHint(username);
+        }
+
+        writeProfile_copy.putString(getString(R.string.username_copy_key), username).commit();
+
+
+        String city;
+
+        if(user.getCity() != null) {
+            city = user.getCity();
+            et_userCity.setText(city);
+        }
+
+        else {
+            city = default_city;
+            et_userCity.setHint(city);
+        }
+
+        writeProfile_copy.putString(getString(R.string.city_copy_key), city).commit();
+
+
+        String bio;
+
+        if(user.getBio() != null) {
+            bio = user.getBio();
+            et_userBio.setText(bio);
+        }
+        else {
+            bio = default_bio;
+            et_userBio.setHint(bio);
+        }
+        writeProfile_copy.putString(getString(R.string.bio_copy_key), bio).commit();
+
+/*
+        if (bio.equals(default_bio))
+            et_userBio.setHint(bio);
+        else {
+            et_userBio.setText(bio);
             et_userBio.setTextColor(Color.GRAY);
         }
-        //et_userBio.setHint(editedProfile.getString(getString(R.string.bio_key), default_bio));
+        */
 
-        writeProfile_copy.putString(getString(R.string.email_copy_key), editedProfile.getString(getString(R.string.email_key), default_email)).commit();
-        et_userEmail.setHint(editedProfile.getString(getString(R.string.email_key), default_email));
+        String email;
+        if( user.getEmail()!=null) {
+            email = user.getEmail();
+            et_userEmail.setText(email);
+        }
+        else {
+            email = default_email;
+            et_userEmail.setHint(email);
+        }
+        writeProfile_copy.putString(getString(R.string.email_copy_key), email).commit();
+
 
         /* Edit photo section */
         userPicture = (com.mikhaellopez.circularimageview.CircularImageView) findViewById(R.id.userPicture_edit);
-        String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), editedProfile.getString(getString(R.string.userPicture_key), default_picture_path)).commit();
+
+        String choosenPicture;
+
+        if(user.getPictureURI()!=null)
+            choosenPicture = user.getPictureURI().toString();
+        else
+            choosenPicture = default_picture_path;
+
+        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), choosenPicture).commit();
 
         Log.d("Gallery:", choosenPicture);
         if (!choosenPicture.equals(default_picture_path))
@@ -578,7 +635,7 @@ public class EditProfileActivity extends Activity {
 
                 if (!validateForm())
                     return;
-
+/**
                 if (et_userFullName.getText().length() != 0)
                     writeProfile.putString(getString(R.string.fullname_key), editedProfile_copy.getString(getString(R.string.fullname_copy_key), default_fullname));
                 if (et_userNickName.getText().length() != 0)
@@ -592,11 +649,20 @@ public class EditProfileActivity extends Activity {
                 writeProfile.putString(getString(R.string.userPicture_key), editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
                 writeProfile.commit();
 
+                SUBSTITUTE WITH FIREBASE WRITE
+
+
+
+*/
                 writeProfile_copy.clear().commit();
                 //writeProfile.commit();
-                String debug = editedProfile.getString(getString(R.string.default_picture_path), default_picture_path);
-                Log.d("Gallery:", debug);
-                setResult(RESULT_OK);
+               // String debug = editedProfile.getString(getString(R.string.default_picture_path), default_picture_path);
+               // Log.d("Gallery:", debug);
+               // setResult(RESULT_OK);
+
+                /**
+                 *  start show profile activity
+                 */
 
                 finish();
             }
