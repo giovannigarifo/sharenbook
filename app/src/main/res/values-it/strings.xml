@@ -103,6 +103,9 @@
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>
+    <string name="user_profile_data_key">user_data</string>
+    <string name="empty_profile_value">empty_profile</string>
+    <string name="users_key">users</string>
 
 
 </resources>

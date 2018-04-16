@@ -10,6 +10,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
 
@@ -86,6 +89,11 @@ public class SplashScreenActivity extends Activity {
 
             */
 
+            /**
+             *  check se il valore che ha per chiave la uid corrente è empty profile -> EditProfile
+             *  altrimenti ShowProfile
+             */
+
             String userId = firebaseAuth.getCurrentUser().getUid();
 
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
@@ -143,24 +151,40 @@ public class SplashScreenActivity extends Activity {
                 Log.d("PassoDiQui:","YES");
                 Log.d("PassoDiQui:", response.getProviderType());
 
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-
-                if(firebaseAuth.getCurrentUser()!=null) {
+                if(firebaseUser != null) {
 
                     Map<String,Object> users = new HashMap<String,Object>();
-                    users.put(firebaseAuth.getCurrentUser().getUid(),"prova");
 
-                    firebaseDB = FirebaseDatabase.getInstance().getReference("users");
+                    /**
+                     * CREATE USER TO PASS IN THE BUNDLE FOR EDIT_PROFILE
+
+                     */
+
+                    UserProfile user = new UserProfile(firebaseUser.getUid(),
+                            firebaseUser.getDisplayName(),firebaseUser.getEmail(),
+                            firebaseUser.getPhotoUrl().toString()
+                            );
+
+                    users.put(firebaseUser.getUid(), getString(R.string.empty_profile_value));
+
+                    firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+
                     firebaseDB.updateChildren(users, new DatabaseReference.CompletionListener() {
+
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                             //
-                            Log.d ("LOADED:", "CORRECT!");
+                            //Log.d ("LOADED:", "CORRECT!");
+                            //firebaseDB.child(firebaseUser.getUid()).updateChildren(prova);
 
                         }
                     });
 
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                    i.putExtra(getString(R.string.user_profile_data_key),user);
+                    i.putExtra("from","signup");
                     startActivity(i);
                     finish();
                 }
