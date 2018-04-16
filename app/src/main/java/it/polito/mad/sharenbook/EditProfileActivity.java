@@ -184,7 +184,8 @@ public class EditProfileActivity extends Activity {
             et_userFullName.setHint(fullname);
 
         }
-            //get editViews
+
+        //get editViews
         writeProfile_copy.putString(getString(R.string.fullname_copy_key), fullname).commit();
 
 
@@ -646,8 +647,7 @@ public class EditProfileActivity extends Activity {
                 if (!validateForm())
                     return;
 
-
-            firebaseSaveProfile();
+                firebaseSaveProfile();
 
             }
         });
@@ -681,6 +681,9 @@ public class EditProfileActivity extends Activity {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if(databaseError == null){
+
+                    //TODO: Here should be passed the shared preferences with user profile data
+
                     Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
                     startActivity(i);
                     finish();

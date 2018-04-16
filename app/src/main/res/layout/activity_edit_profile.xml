@@ -11,8 +11,7 @@
     <ScrollView
         android:id="@+id/editbook_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp">
+        android:layout_height="wrap_content">
 
         <!-- external wrapper-->
         <LinearLayout
@@ -162,7 +161,7 @@
 
     </ScrollView>
 
-    <android.support.design.widget.BottomNavigationView
+    <!-- <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -171,20 +170,17 @@
         app:itemIconTint="@drawable/nav_bar_selector"
         app:itemTextColor="@drawable/nav_bar_selector"
         app:itemBackground="@drawable/nav_bar_bg_selector"
-        app:menu="@menu/navigation" />
+        app:menu="@menu/navigation" />-->
 
     <!-- Save Floating Action Button-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="75dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="32dp"
         android:src="@drawable/ic_check_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </android.support.design.widget.CoordinatorLayout>
 

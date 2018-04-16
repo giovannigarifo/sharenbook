@@ -18,8 +18,13 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import it.polito.mad.sharenbook.model.UserProfile;
 
 public class ShowProfileActivity extends Activity {
 
@@ -38,7 +43,8 @@ public class ShowProfileActivity extends Activity {
     private SharedPreferences editedProfile;
 
     //Firebase references
-    FirebaseDatabase firedb;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference firebaseDB;
 
     //default profile values
     private String default_city;
@@ -108,8 +114,27 @@ public class ShowProfileActivity extends Activity {
          * goEdit_Button
          */
         goEdit_button.setOnClickListener(v -> {
+
+
+            /**
+             *   Create User Object
+             */
+            firebaseAuth = FirebaseAuth.getInstance();
+
+            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+            UserProfile user = new UserProfile(
+                    firebaseUser.getUid(),
+                    editedProfile.getString(getString(R.string.fullname_key), default_fullname),
+                    editedProfile.getString(getString(R.string.email_key), default_email),
+                    choosenPicture.toString()
+            );
+
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key),user);
+            i.putExtra("from","profile");
             startActivityForResult(i, EDIT_RETURN_VALUE);
+
         });
 
 
