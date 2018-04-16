@@ -94,6 +94,7 @@
                     android:layout_marginRight="48dp"
                     android:layout_marginStart="48dp"
                     android:textAlignment="center"
+                    android:inputType="number"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"

@@ -49,6 +49,7 @@
                         android:layout_width="100dp"
                         android:layout_height="150dp"
                         android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
 
                         android:src="@drawable/book_cover_example" />
@@ -59,6 +60,7 @@
                         android:layout_width="100dp"
                         android:layout_height="150dp"
                         android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
 
                         android:adjustViewBounds="false"
@@ -66,7 +68,8 @@
                         android:padding="0dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_add_black_24dp"
-                        android:tint="@color/darkGrey" />
+                        android:tint="@color/darkGrey"
+                        tools:ignore="ContentDescription"/>
 
                 </LinearLayout>
 
@@ -175,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/default_published_date"
-                    android:inputType="text"
+                    android:inputType="date"
                     android:maxLength="32" />
 
                 <!-- description -->

@@ -14,6 +14,7 @@
     <string name="default_bio">Scrivi qui la tua biografia.
     </string>
 
+    <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
     <string name="search_hint">Ricerca un libro o un utente...</string>
 
     <!-- navigation bar -->
@@ -61,8 +62,9 @@
     <string name="camera_permission_granted">Permesso per la fotocamera autorizzato. Inizializzazione dell\'anteprima.</string>
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
+
     <string name="default_title_heading">Titolo</string>
-    <string name="default_sub_title_heading">Sottotitolo</string>
+    <string name="default_subtitle_heading">Sottotitolo</string>
     <string name="default_authors_heading">Autori</string>
     <string name="default_publisher_heading">Editore</string>
     <string name="default_published_date_heading">Data pubblicazione</string>
@@ -72,6 +74,17 @@
     <string name="default_language_heading">Lingua</string>
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
+
+    <string name="default_isbn" translatable="false">Inserisci il codice ISBN (da 10 a 13 cifre)</string>
+    <string name="default_title">Qual è il titolo del libro?</string>
+    <string name="default_subtitle">Il libro ha un sottotitolo?</string>
+    <string name="default_authors">Chi sono gli autori?</string>
+    <string name="default_publisher">Chi ha pubblicato il libro?</string>
+    <string name="default_published_date">Quando è stato pubblicato?</string>
+    <string name="default_description">Di cosa tratta?</string>
+    <string name="default_page_count">Quante pagine ha?</string>
+    <string name="default_categories">In quali categorie rientra?</string>
+    <string name="default_language">In che lingua è scritto?</string>
 
     <!-- FACEBOOK -->
     <string name="facebook_application_id">375832199559673</string>

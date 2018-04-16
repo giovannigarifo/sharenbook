@@ -15,7 +15,7 @@
     </string>
     <string name="default_picture_path">void</string>
 
-    <string name="welcome_msg">Test</string>
+    <string name="welcome_msg">Welcome to Share\'nBook!</string>
     <string name="search_hint">Search a book or a user...</string>
 
     <!-- ============================== -->
@@ -34,15 +34,15 @@
     <string name="default_rating_heading">Rating</string>
 
     <string name="default_isbn" translatable="false">a number composed of 10 to 13 digits</string>
-    <string name="default_title">The book title</string>
-    <string name="default_subtitle">The book subtitle</string>
-    <string name="default_authors">The book authors list</string>
-    <string name="default_publisher">The book publisher</string>
-    <string name="default_published_date">The published date of the book</string>
-    <string name="default_description">Book Description</string>
-    <string name="default_page_count">Page Count of the book</string>
-    <string name="default_categories">Categories of the book</string>
-    <string name="default_language">Book language</string>
+    <string name="default_title">Which is the title?</string>
+    <string name="default_subtitle">Which is the subtitle, if any?</string>
+    <string name="default_authors">Which are the authors?</string>
+    <string name="default_publisher">Who published this book?</string>
+    <string name="default_published_date">When did it has been published?</string>
+    <string name="default_description">Which is the plot?</string>
+    <string name="default_page_count">How many pages has this book?</string>
+    <string name="default_categories">Which genres it belongs to?</string>
+    <string name="default_language">In which language is it written?</string>
 
     <!-- ======================== -->
 
