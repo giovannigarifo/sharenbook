@@ -110,5 +110,11 @@
     <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
     <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
 
+    <!-- ShareBookActivity String -->
+    <string name="sba_title">Share a Book</string>
+    <string name="sba_subtitle">Select an option...</string>
+    <string name="sba_insert_isbn">Insert ISBN</string>
+    <string name="sba_scan_isbn">Scan ISBN Barcode</string>
+    <string name="sba_manually_input">Manually input Book Details</string>
 
 </resources>

@@ -81,5 +81,12 @@
     <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
     <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
 
+    <!-- ShareBookActivity String -->
+    <string name="sba_title">Condividi un Libro</string>
+    <string name="sba_subtitle">Seleziona un\'opzione...</string>
+    <string name="sba_insert_isbn">Inserisci l\'ISBN</string>
+    <string name="sba_scan_isbn">Scansiona l\'ISBN Barcode utilizzando la fotocamera</string>
+    <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
+
 
 </resources>

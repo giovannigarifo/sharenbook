@@ -74,11 +74,11 @@
                     android:layout_marginTop="28dp"
                     android:clickable="true"
                     android:src="@drawable/ic_person_black_135dp"
-                    android:tint="@color/darkgrey"
-                    app:civ_border_color="@color/lightgrey"
+                    android:tint="@color/darkGrey"
+                    app:civ_border_color="@color/lightGrey"
                     app:civ_border_width="1dp"
                     app:civ_shadow="true"
-                    app:civ_shadow_color="@color/lightgrey"
+                    app:civ_shadow_color="@color/lightGrey"
                     app:civ_shadow_radius="10" />
 
 
@@ -94,7 +94,7 @@
                     android:layout_toRightOf="@id/userPicture"
 
 
-                    android:textColor="@color/darkgrey"
+                    android:textColor="@color/darkGrey"
                     android:textSize="24sp" />
 
                 <!-- user nick name-->
@@ -108,7 +108,7 @@
                     android:layout_marginLeft="64dp"
                     android:layout_toRightOf="@id/userPicture"
 
-                    android:textColor="@color/darkgrey" />
+                    android:textColor="@color/darkGrey" />
 
                 <!-- user rating stars -->
                 <RatingBar
@@ -125,7 +125,7 @@
                     android:layout_toRightOf="@id/userPicture"
                     android:isIndicator="false"
                     android:numStars="5"
-                    android:progressBackgroundTint="@color/lightgrey"
+                    android:progressBackgroundTint="@color/lightGrey"
                     android:progressTint="@color/colorPrimary"
                     android:rating="3.5"
                     android:stepSize="0.5" />
@@ -144,7 +144,7 @@
                     android:layout_marginTop="7dp"
                     android:layout_toRightOf="@+id/userRatingBar"
                     android:text="Feedback: 75,2%"
-                    android:textColor="@color/darkgrey" />
+                    android:textColor="@color/darkGrey" />
 
 
             </RelativeLayout>
@@ -212,9 +212,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/lightgrey"
+        android:background="@color/darkGrey"
         app:itemTextColor="@drawable/nav_bar_selector"
         app:itemIconTint="@drawable/nav_bar_selector"
+        app:itemBackground="@drawable/nav_bar_bg_selector"
         app:menu="@menu/navigation" />
 
     <!-- Edit Floating Action Button-->
@@ -222,12 +223,13 @@
         android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="75dp"
         android:src="@drawable/ic_create_black_24dp"
         app:layout_anchor="@id/navigation"
         app:layout_anchorGravity="end"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
         />
 
 </android.support.design.widget.CoordinatorLayout>

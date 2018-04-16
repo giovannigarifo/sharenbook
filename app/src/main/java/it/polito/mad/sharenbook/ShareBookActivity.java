@@ -1,37 +1,30 @@
 package it.polito.mad.sharenbook;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.io.IOException;
-import java.net.URL;
-
 public class ShareBookActivity extends AppCompatActivity {
 
     private BottomNavigationView navBar;
-    private ImageView bookCover;
-    private TextView tvTitle;
-    private TextView tvDescription;
-    private Button btnScan;
+    private CardView btnScan;
+    private CardView btnManual;
 
     private IntentIntegrator qrScan;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_book);
 
@@ -39,12 +32,19 @@ public class ShareBookActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        // Setup toolbar
+        Toolbar sbaToolbar = findViewById(R.id.sba_toolbar);
+        setSupportActionBar(sbaToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.sba_title);
+
+        // Setup navbar
+        setupNavbar();
+
         // View objects
-        navBar = findViewById(R.id.navigation);
-        bookCover = findViewById(R.id.image_book_cover);
-        tvTitle = findViewById(R.id.text_sba_title);
-        tvDescription = findViewById(R.id.text_sba_description);
-        btnScan = findViewById(R.id.button_scan_isbn);
+        btnScan = findViewById(R.id.sba_scan_button);
+        btnManual = findViewById(R.id.sba_manual_button);
 
         // Initializing scan object
         qrScan = new IntentIntegrator(this);
@@ -58,10 +58,61 @@ public class ShareBookActivity extends AppCompatActivity {
                 qrScan.initiateScan();
             }
         });
+        btnManual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+                startActivity(i);
+                */
+                Toast.makeText(getApplicationContext(), "To be implemented", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-        /**
-         * navBar
-         */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        BookDetails bookInfo;
+
+        if(result != null)
+        {
+            if(result.getContents() == null) return;
+            else
+            {
+                bookInfo = new BookDetails(result.getContents());
+
+                if (bookInfo.getTotalItems() > 0)
+                {
+                    /**
+                     * FOR TEST PURPOSE: FIRE EditBookActivity
+                     */
+                    Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+                    i.putExtra("book", bookInfo.getBookList().get(0));
+                    startActivity(i);
+                }
+                else
+                    Toast.makeText(getApplicationContext(), "Ivalid ISBN", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+        {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+
+    }
+
+    @Override
+    public boolean onSupportNavigateUp()
+    {
+        finish();
+        return true;
+    }
+
+    private void setupNavbar()
+    {
+        navBar = findViewById(R.id.navigation);
 
         //set navigation_profile as selected item
         navBar.setSelectedItemId(R.id.navigation_shareBook);
@@ -75,6 +126,7 @@ public class ShareBookActivity extends AppCompatActivity {
 
                 case R.id.navigation_profile:
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(i);
                     finish();
                     break;
@@ -84,58 +136,5 @@ public class ShareBookActivity extends AppCompatActivity {
             }
             return true;
         });
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        BookDetails bookInfo;
-
-        if(result != null)
-        {
-            if(result.getContents() == null) tvTitle.setText("There was an error! Try Again.");
-            else
-            {
-                bookInfo = new BookDetails(result.getContents());
-
-                if (bookInfo.getTotalItems() > 0)
-                {
-                    String bookTitle = bookInfo.getBookList().get(0).getTitle();
-                    String description = bookInfo.getBookList().get(0).getDescription();
-                    Uri thumbnail = bookInfo.getBookList().get(0).getThumbnail();
-
-                    tvTitle.setText(bookTitle);
-                    if (description != null)
-                        tvDescription.setText(description);
-
-                    if (thumbnail != null)
-                    {
-                        try {
-                            bookCover.setImageBitmap(BitmapFactory.decodeStream(new URL(thumbnail.toString()).openConnection().getInputStream()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                    /**
-                     * FOR TEST PURPOSE: FIRE EditBookActivity
-                     */
-                    Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
-                    i.putExtra("book", bookInfo.getBookList().get(0));
-                    startActivity(i);
-
-                }
-                else
-                    tvTitle.setText("ISBN not valid");
-            }
-        }
-        else
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
     }
 }
