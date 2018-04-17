@@ -41,17 +41,8 @@
                 <!-- Book thumbnails -->
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="180dp">
-
-                    <ImageView
-                        android:id="@+id/editbook_iv_thumbnail"
-
-                        android:layout_width="100dp"
-                        android:layout_height="150dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="16dp"
-
-                        android:src="@drawable/book_cover_example" />
+                    android:layout_height="180dp"
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/editbook_ib_addBookPhoto"
@@ -67,6 +58,14 @@
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_add_black_24dp"
                         android:tint="@color/darkgrey" />
+
+                    <!-- display collection of the user photo book -->
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/editbook_rv_bookPhotos"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="16dp" />
 
                 </LinearLayout>
 

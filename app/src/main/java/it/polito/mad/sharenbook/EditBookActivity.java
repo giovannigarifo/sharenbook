@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,7 +20,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -31,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,13 +63,16 @@ public class EditBookActivity extends Activity {
             editbook_et_publisher, editbook_et_publishedDate, editbook_et_description,
             editbook_et_pageCount, editbook_et_categories, editbook_et_language;
 
-    private ImageView editbook_iv_thumbnail;
-
     private FloatingActionButton editbook_fab_save;
 
     private ImageButton editbook_ib_addBookPhoto;
 
     private BottomNavigationView navBar;
+
+    //Recycler View
+    private RecyclerView editbook_rv_bookPhotos;
+    private BookPhotoAdapter rvAdapter;
+    private RecyclerView.LayoutManager rvLayoutManager;
 
     //permissions needed
     private String[] permissions = new String[]{
@@ -106,7 +116,7 @@ public class EditBookActivity extends Activity {
         }
 
         //Populate the view with all the information retrieved from Google Books API
-        loadViewWithBookData(book);
+        loadViewWithBookData();
 
         /**
          * register callbacks for buttons
@@ -124,6 +134,20 @@ public class EditBookActivity extends Activity {
 
             showSelectImageDialog();
         });
+
+
+        /**
+         * Recycle View
+         */
+        editbook_rv_bookPhotos.setHasFixedSize(true); //improves performance
+
+        // attach a Layout Manager to the RecyclerView, it's in charge of injecting views into the Recycler
+        rvLayoutManager = new LinearLayoutManager(context);
+        editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
+
+        // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
+        rvAdapter = new BookPhotoAdapter(book.getBookPhotos(), context);
+        editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
 
         /**
@@ -165,6 +189,12 @@ public class EditBookActivity extends Activity {
     }
 
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        Log.d("debug", "onStart called by EditBookActivity");
+    }
 
     /**
      * onResume callback
@@ -180,7 +210,7 @@ public class EditBookActivity extends Activity {
 
 
     /**
-     * Saves the state of the activity when dealing with system wide eents (e.g. rotation)
+     * Saves the state of the activity when dealing with system wide events (e.g. rotation)
      *
      * @param outState : the bundle object that contains all the serialized information to be saved
      */
@@ -196,9 +226,8 @@ public class EditBookActivity extends Activity {
     /**
      * Loads all the info obtained from Google Books API into the view
      *
-     * @param book : the Book object that encapsulate all the book infos
      */
-    private void loadViewWithBookData(Book book) {
+    private void loadViewWithBookData() {
 
         editbook_et_isbn.setText(book.getIsbn());
         editbook_et_title.setText(book.getTitle());
@@ -244,9 +273,6 @@ public class EditBookActivity extends Activity {
 
             editbook_et_categories.setText(sb.deleteCharAt(sb.length() - 1).toString());
         }
-
-        //load book cover from thumbnail
-        Glide.with(this).load(book.getThumbnail()).into(editbook_iv_thumbnail);
 
     }
 
@@ -360,9 +386,11 @@ public class EditBookActivity extends Activity {
 
                     croppedPhoto = extras.getParcelable("data");
 
-                    //add photo to collection and display it in view
-                    //book.addBookPhoto(croppedPhoto);
-                    editbook_iv_thumbnail.setImageBitmap(croppedPhoto);
+                    //add photo to collection
+                    book.addBookPhoto(croppedPhoto);
+
+                    //notify update of the collection to Recycle View adapter
+                    rvAdapter.notifyItemInserted(book.getBookPhotos().size() - 1);
 
                 } catch (NullPointerException exc) {
 
@@ -474,8 +502,8 @@ public class EditBookActivity extends Activity {
         editbook_fab_save = (FloatingActionButton) findViewById(R.id.editbook_fab_save);
         editbook_ib_addBookPhoto = (ImageButton) findViewById(R.id.editbook_ib_addBookPhoto);
 
-        //get images
-        editbook_iv_thumbnail = (ImageView) findViewById(R.id.editbook_iv_thumbnail);
+        //get recycle views
+        editbook_rv_bookPhotos = (RecyclerView) findViewById(R.id.editbook_rv_bookPhotos);
 
         //get the rest of views
         editbook_tv_isbn = (TextView) findViewById(R.id.editbook_tv_isbn);
@@ -532,5 +560,71 @@ public class EditBookActivity extends Activity {
         editbook_et_categories.setTypeface(robotoLight);
         editbook_et_language.setTypeface(robotoLight);
 
+    }
+}
+
+
+/**
+ * TEST
+ *
+ * BookPhotoAdapter class
+ */
+
+class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
+
+    public List<Bitmap> bookPhotos;
+    private Context context;
+
+    //constructor
+    public BookPhotoAdapter(ArrayList<Bitmap> bookPhotos, Context context) {
+        this.bookPhotos = bookPhotos;
+        this.context = context;
+    }
+
+    //Inner Class that provides a reference to the views for each data item of the collection
+    public class BookPhotoViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView item_book_photo_iv;
+
+        public BookPhotoViewHolder(ImageView iv) {
+            super(iv);
+            item_book_photo_iv = iv;
+        }
+    }
+
+    /**
+     * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
+     * display it's content
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
+    @Override
+    public BookPhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        LayoutInflater li = LayoutInflater.from(parent.getContext());
+        ImageView iv = (ImageView) li.inflate(R.layout.item_book_photo, parent, false);
+
+        return new BookPhotoAdapter.BookPhotoViewHolder(iv);
+    }
+
+    /**
+     * Replace the contents of a ViewHolder (invoked by the layout manager)
+     *
+     * @param holder
+     * @param position
+     */
+    @Override
+    public void onBindViewHolder(BookPhotoViewHolder holder, int position) {
+
+        Bitmap bmPhoto = this.bookPhotos.get(position);
+        holder.item_book_photo_iv.setImageBitmap(bmPhoto);
+    }
+
+    // Return the size of your dataset (invoked by the layout manager)
+    @Override
+    public int getItemCount() {
+        return this.bookPhotos.size();
     }
 }

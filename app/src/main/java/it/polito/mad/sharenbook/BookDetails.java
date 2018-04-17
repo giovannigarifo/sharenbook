@@ -1,9 +1,11 @@
 package it.polito.mad.sharenbook;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -192,7 +194,20 @@ class Book implements Parcelable {
     private ArrayList<Bitmap> bookPhotos;
 
 
-
+    /**
+     * Constructor for the Book Class
+     * @param isbn
+     * @param title
+     * @param subTitle
+     * @param authors
+     * @param publisher
+     * @param publishedDate
+     * @param description
+     * @param pageCount
+     * @param categories
+     * @param language
+     * @param thumbnail
+     */
     public Book(String isbn, String title, String subTitle, String[] authors, String publisher,
                 String publishedDate, String description, int pageCount, String[] categories,
                 String language, Uri thumbnail) {
@@ -217,7 +232,19 @@ class Book implements Parcelable {
         else
             this.categories = categories;
 
-        this.bookPhotos= new ArrayList<>();
+        this.bookPhotos = new ArrayList<Bitmap>();
+
+        try {
+
+            URL url = new URL(this.thumbnail.toString());
+            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            this.bookPhotos.add(bmp);
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            Log.d("error", "Unable to retrieve the bitmap from the thumbnail Uri.");
+        }
+
     }
 
     public String getIsbn() {
@@ -265,11 +292,7 @@ class Book implements Parcelable {
     }
 
     public ArrayList<Bitmap> getBookPhotos() {
-        return bookPhotos;
-    }
-
-    public void setBookPhotos(ArrayList<Bitmap> bookPhotos) {
-        this.bookPhotos = bookPhotos;
+        return this.bookPhotos;
     }
 
     public void addBookPhoto(Bitmap photo){
@@ -289,7 +312,6 @@ class Book implements Parcelable {
      * @param in : the Parcel object
      */
     public Book(Parcel in) {
-
 
         this.isbn = in.readString();
         this.title = in.readString();
@@ -311,6 +333,9 @@ class Book implements Parcelable {
         String[] c = new String[num_categories];
         in.readStringArray(c);
         this.categories = c;
+
+        //instantiate the photo collection, it's not parcelled
+        this.bookPhotos = in.readArrayList(null);
     }
 
     /**
@@ -338,6 +363,8 @@ class Book implements Parcelable {
 
         dest.writeInt(getCategories().length);
         dest.writeStringArray(getCategories());
+
+        dest.writeList(getBookPhotos());
     }
 
     @Override
@@ -346,10 +373,10 @@ class Book implements Parcelable {
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
         public Book createFromParcel(Parcel in) {
             return new Book(in);
         }
-
         public Book[] newArray(int size) {
             return new Book[size];
         }
