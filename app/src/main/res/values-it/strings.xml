@@ -11,11 +11,13 @@
     <string name="default_city_heading">Città</string>
     <string name="default_city">Città, Nazione</string>
     <string name="default_bio_heading">Biografia</string>
-    <string name="default_bio">Scrivi qui la tua biografia.
-    </string>
+    <string name="default_bio">Scrivi qui la tua biografia.</string>
 
     <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
     <string name="search_hint">Ricerca un libro o un utente...</string>
+
+    <!-- common words -->
+    <string name="search">Cerca</string>
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -108,10 +110,11 @@
 
     <!-- ShareBookActivity String -->
     <string name="sba_title">Condividi un Libro</string>
-    <string name="sba_subtitle">Seleziona un\'opzione...</string>
+    <string name="sba_subtitle">Seleziona un\'opzione…</string>
     <string name="sba_insert_isbn">Inserisci l\'ISBN</string>
     <string name="sba_scan_isbn">Scansiona l\'ISBN utilizzando la fotocamera</string>
     <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
+    <string name="sba_isbn_not_valid">ISBN non valido</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>

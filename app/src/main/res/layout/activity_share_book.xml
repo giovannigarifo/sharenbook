@@ -86,21 +86,35 @@
 
                 </LinearLayout>
 
-                <EditText
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="48dp"
-                    android:layout_marginLeft="48dp"
-                    android:layout_marginRight="48dp"
-                    android:layout_marginStart="48dp"
-                    android:textAlignment="center"
-                    android:inputType="number"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sba_cv1_header" />
+                    app:layout_constraintTop_toBottomOf="@id/sba_cv1_header">
+
+                    <EditText
+                        android:id="@+id/sba_edit_text_isbn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="200dp"
+                        android:textAlignment="center"
+                        android:inputType="number"
+                        android:maxLength="13"
+                        android:textSize="22dp"/>
+
+                    <Button
+                        android:id="@+id/sba_search_isbn_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/search"
+                        android:textColor="@color/white"/>
+
+                </LinearLayout>
 
             </android.support.constraint.ConstraintLayout>
 

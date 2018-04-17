@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -16,9 +18,11 @@ import com.google.zxing.integration.android.IntentResult;
 
 public class ShareBookActivity extends AppCompatActivity {
 
-    private BottomNavigationView navBar;
+    private EditText editIsbn;
+    private Button btnSearchIsbn;
     private CardView btnScan;
     private CardView btnManual;
+    private BottomNavigationView navBar;
 
     private IntentIntegrator qrScan;
 
@@ -43,6 +47,8 @@ public class ShareBookActivity extends AppCompatActivity {
         setupNavbar();
 
         // View objects
+        editIsbn = findViewById(R.id.sba_edit_text_isbn);
+        btnSearchIsbn = findViewById(R.id.sba_search_isbn_button);
         btnScan = findViewById(R.id.sba_scan_button);
         btnManual = findViewById(R.id.sba_manual_button);
 
@@ -52,6 +58,27 @@ public class ShareBookActivity extends AppCompatActivity {
         qrScan.setPrompt("Scan an ISBN Barcode");
 
         // Attach listeners
+        btnSearchIsbn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String insertedText = editIsbn.getText().toString();
+
+                if (insertedText.length() != 10 && insertedText.length() != 13) {
+                    editIsbn.setError(getText(R.string.sba_isbn_not_valid));
+                    return;
+                }
+
+                BookDetails bookInfo = new BookDetails(insertedText);
+                if (bookInfo.getTotalItems() == 0) {
+                    Toast.makeText(getApplicationContext(), "No books found", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+                    i.putExtra("book", bookInfo.getBookList().get(0));
+                    startActivity(i);
+                }
+            }
+        });
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,13 +88,16 @@ public class ShareBookActivity extends AppCompatActivity {
         btnManual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+                i.putExtra("book", new Book());
                 startActivity(i);
-                */
-                Toast.makeText(getApplicationContext(), "To be implemented", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Restore previous state
+        if (savedInstanceState != null) {
+            editIsbn.setText(savedInstanceState.getString("isbn"));
+        }
     }
 
     @Override
@@ -85,15 +115,13 @@ public class ShareBookActivity extends AppCompatActivity {
 
                 if (bookInfo.getTotalItems() > 0)
                 {
-                    /**
-                     * FOR TEST PURPOSE: FIRE EditBookActivity
-                     */
+                    // Fire EditBookActivity
                     Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                     i.putExtra("book", bookInfo.getBookList().get(0));
                     startActivity(i);
                 }
                 else
-                    Toast.makeText(getApplicationContext(), "Ivalid ISBN", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Invalid ISBN", Toast.LENGTH_SHORT).show();
             }
         }
         else
@@ -108,6 +136,13 @@ public class ShareBookActivity extends AppCompatActivity {
     {
         finish();
         return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current ISBN value
+        savedInstanceState.putString("isbn", editIsbn.getText().toString());
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     private void setupNavbar()

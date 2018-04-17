@@ -11,12 +11,14 @@
     <string name="default_email_heading">Email</string>
     <string name="default_email">Your email.</string>
     <string name="default_bio_heading">Bio</string>
-    <string name="default_bio">Write here your Bio
-    </string>
+    <string name="default_bio">Write here your Bio</string>
     <string name="default_picture_path">void</string>
 
     <string name="welcome_msg">Welcome to Share\'nBook!</string>
     <string name="search_hint">Search a book or a user...</string>
+
+    <!-- common words -->
+    <string name="search">Search</string>
 
     <!-- ============================== -->
 
@@ -113,10 +115,11 @@
 
     <!-- ShareBookActivity String -->
     <string name="sba_title">Share a Book</string>
-    <string name="sba_subtitle">Select an option...</string>
+    <string name="sba_subtitle">Select an option…</string>
     <string name="sba_insert_isbn">Insert ISBN</string>
     <string name="sba_scan_isbn">Scan ISBN Barcode</string>
     <string name="sba_manually_input">Manually input Book Details</string>
+    <string name="sba_isbn_not_valid">ISBN not valid</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>

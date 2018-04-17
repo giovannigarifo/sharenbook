@@ -9,8 +9,9 @@
 
         <!-- Customize Material Button -->
         <item name="colorButtonNormal">@color/colorAccent</item>
-    </style>
 
+        <item name="cardViewStyle">@style/CardView</item>
+    </style>
 
     <style name="TextViewHeading">
 

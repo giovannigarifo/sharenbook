@@ -74,7 +74,7 @@ class BookDetails {
             int pageCount = retrieveInteger(volumeInfo, "pageCount");
             String[] categories = retrieveArrayString(volumeInfo, "categories");
             String language = retrieveString(volumeInfo, "language");
-            Uri thumbnail = retrieveImageUri(volumeInfo, "thumbnail");
+            String thumbnail = retrieveImageLink(volumeInfo, "thumbnail");
             double averageRating = retrieveDouble(volumeInfo, "averageRating");
             int ratingsCount = retrieveInteger(volumeInfo, "ratingsCount");
 
@@ -131,12 +131,12 @@ class BookDetails {
         }
     }
 
-    private Uri retrieveImageUri(JSONObject volumeInfo, String name) {
+    private String retrieveImageLink(JSONObject volumeInfo, String name) {
         try {
             JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-            return Uri.parse(imageLinks.getString(name));
+            return imageLinks.getString(name);
         } catch (JSONException e) {
-            return null;
+            return "";
         }
     }
 
@@ -188,14 +188,14 @@ class Book implements Parcelable {
     private String[] categories;
     private String[] authors;
     private int pageCount;
-    private Uri thumbnail;
+    private String thumbnail;
     private ArrayList<Bitmap> bookPhotos;
 
 
 
     public Book(String isbn, String title, String subTitle, String[] authors, String publisher,
                 String publishedDate, String description, int pageCount, String[] categories,
-                String language, Uri thumbnail) {
+                String language, String thumbnail) {
         this.isbn = isbn;
         this.title = title;
         this.subTitle = subTitle;
@@ -217,6 +217,21 @@ class Book implements Parcelable {
         else
             this.categories = categories;
 
+        this.bookPhotos= new ArrayList<>();
+    }
+
+    public Book() {
+        this.isbn = "";
+        this.title = "";
+        this.subTitle = "";
+        this.publisher = "";
+        this.publishedDate = "";
+        this.description = "";
+        this.language = "";
+        this.categories = new String[]{""};
+        this.authors = new String[]{""};
+        this.pageCount = -1;
+        this.thumbnail = "";
         this.bookPhotos= new ArrayList<>();
     }
 
@@ -260,7 +275,7 @@ class Book implements Parcelable {
         return language;
     }
 
-    public Uri getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
@@ -298,7 +313,7 @@ class Book implements Parcelable {
         this.publishedDate = in.readString();
         this.description = in.readString();
         this.language = in.readString();
-        this.thumbnail = Uri.parse(in.readString());
+        this.thumbnail = in.readString();
 
         int num_authors = in.readInt();
         String[] a = new String[num_authors];
@@ -329,7 +344,7 @@ class Book implements Parcelable {
         dest.writeString(getPublishedDate());
         dest.writeString(getDescription());
         dest.writeString(getLanguage());
-        dest.writeString(getThumbnail().toString());
+        dest.writeString(getThumbnail());
 
         dest.writeInt(getAuthors().length);
         dest.writeStringArray(getAuthors());
