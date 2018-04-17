@@ -181,13 +181,15 @@ public class SplashScreenActivity extends Activity {
 
             if (resultCode == RESULT_OK) {
 
-                Log.d("PassoDiQui:", response.getProviderType());
 
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
+
+
                 if(firebaseUser != null) {
 
-                    Map<String,Object> users = new HashMap<String,Object>();
+                    Map<String,Object> users_dataPlaceholder = new HashMap<String,Object>();
+                    Map<String,Object> profile_books = new HashMap<String,Object>();
 
                     /**
                      * CREATE USER TO PASS IN THE BUNDLE FOR EDIT_PROFILE
@@ -199,26 +201,39 @@ public class SplashScreenActivity extends Activity {
                             firebaseUser.getPhotoUrl().toString()
                             );
 
-                    users.put(firebaseUser.getUid(), getString(R.string.empty_profile_value));
+                    users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
+                    profile_books.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
+                    profile_books.put(getString(R.string.user_books_key),getString(R.string.users_books_placeholder));
 
                     dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
 
-                    dbReference.updateChildren(users, new DatabaseReference.CompletionListener() {
+                    dbReference.updateChildren(users_dataPlaceholder, new DatabaseReference.CompletionListener() {
 
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            //
-                            //Log.d ("LOADED:", "CORRECT!");
-                            //firebaseDB.child(firebaseUser.getUid()).updateChildren(prova);
 
+                            if(databaseError == null) {
+                                dbReference.child(firebaseUser.getUid()).updateChildren(profile_books);
+                                Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                                i.putExtra(getString(R.string.user_profile_data_key),user);
+                                i.putExtra("from","signup");
+                                startActivity(i);
+                                finish();
+
+                            }else {
+
+                                Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
                         }
                     });
-
+/*
                     Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                     i.putExtra(getString(R.string.user_profile_data_key),user);
                     i.putExtra("from","signup");
                     startActivity(i);
                     finish();
+                    */
                 }
             } else{
 

@@ -59,6 +59,8 @@ public class ShowProfileActivity extends Activity {
 
     private int widthT = 700;
 
+    private UserProfile user;
+
     /**
      * onCreate callback
      *
@@ -94,6 +96,18 @@ public class ShowProfileActivity extends Activity {
         userPicture = (CircularImageView) findViewById(R.id.userPicture);
 
         /**
+         * firebase reading
+         */
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+
+
+
+        /**
          * userPicture
          */
 
@@ -119,9 +133,7 @@ public class ShowProfileActivity extends Activity {
             /**
              *   Create User Object
              */
-            firebaseAuth = FirebaseAuth.getInstance();
 
-            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
             UserProfile user = new UserProfile(
                     firebaseUser.getUid(),
@@ -175,6 +187,12 @@ public class ShowProfileActivity extends Activity {
             }
             return true;
         });
+
+
+        /**
+         * firebase
+         */
+
 
     }
 

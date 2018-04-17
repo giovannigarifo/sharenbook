@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class UserProfile implements Parcelable {
 
+
+
     private String userID;
     private String fullname;
     private String username;
@@ -92,6 +94,34 @@ public class UserProfile implements Parcelable {
 
     public Uri getPicture_uri() {
         return picture_uri;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setPicture_uri(Uri picture_uri) {
+        this.picture_uri = picture_uri;
     }
 
 

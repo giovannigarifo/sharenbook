@@ -142,11 +142,13 @@ public class EditProfileActivity extends Activity {
         default_username = context.getResources().getString(R.string.default_username);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
-        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+
 
         Bundle data = getIntent().getExtras();
         user = data.getParcelable(getString(R.string.user_profile_data_key));
         Log.d("USERID:",user.getUserID());
+
+        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
 
         //call to methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
@@ -677,7 +679,7 @@ public class EditProfileActivity extends Activity {
 
 
 
-        firebaseDB.child(user.getUserID()).updateChildren(userData, new DatabaseReference.CompletionListener() {
+        firebaseDB.child(getString(R.string.profile_key)).updateChildren(userData, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if(databaseError == null){
