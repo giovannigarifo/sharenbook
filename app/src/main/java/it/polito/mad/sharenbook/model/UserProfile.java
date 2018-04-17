@@ -23,6 +23,10 @@ public class UserProfile implements Parcelable {
     private String bio;
     private Uri picture_uri;
 
+    public UserProfile(){
+
+    }
+
     public UserProfile (Parcel in){
 
         this.userID = in.readString();

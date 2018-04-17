@@ -20,8 +20,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.model.UserProfile;
@@ -44,7 +47,9 @@ public class ShowProfileActivity extends Activity {
 
     //Firebase references
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference firebaseDB;
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseUser firebaseUser;
 
     //default profile values
     private String default_city;
@@ -95,15 +100,13 @@ public class ShowProfileActivity extends Activity {
         navBar = (BottomNavigationView) findViewById(R.id.navigation);
         userPicture = (CircularImageView) findViewById(R.id.userPicture);
 
+
         /**
-         * firebase reading
+         * User void creation
          */
+        user = new UserProfile();
 
-        firebaseAuth = FirebaseAuth.getInstance();
-
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+        firebaseInitAndReading();
 
 
 
@@ -112,18 +115,40 @@ public class ShowProfileActivity extends Activity {
          */
 
         //set user picture
-        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-        if (!choosenPicture.equals(getString(R.string.default_picture_path)))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
+        final String choosenPicture;
+
+
+
+        //= editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+        //if (!choosenPicture.equals(getString(R.string.default_picture_path)))
+        //    userPicture.setImageURI(Uri.parse(choosenPicture));
 
         //register callback that start the showPicture activity when user clicks the photo
+       // userPicture.setOnClickListener(v -> {
+         //   Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+         //   i.putExtra("PicturePath", choosenPicture);
+         //   startActivity(i);
+       // });
+
+
+
+
+
+        /*
+
+        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+
+        if (!choosenPicture.equals(default_picture_path))
+            userPicture.setImageURI(Uri.parse(choosenPicture));
+
         userPicture.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-            i.putExtra("PicturePath", choosenPicture);
-            startActivity(i);
-        });
 
-
+                    Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                    i.putExtra("PicturePath", choosenPicture);
+                    startActivity(i);
+                }
+        );
+*/
         /**
          * goEdit_Button
          */
@@ -134,7 +159,7 @@ public class ShowProfileActivity extends Activity {
              *   Create User Object
              */
 
-
+/*
             UserProfile user = new UserProfile(
                     firebaseUser.getUid(),
                     editedProfile.getString(getString(R.string.fullname_key), default_fullname),
@@ -143,7 +168,7 @@ public class ShowProfileActivity extends Activity {
                     null,null,
                     choosenPicture.toString()
             );
-
+*/
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key),user);
             i.putExtra("from","profile");
@@ -189,13 +214,75 @@ public class ShowProfileActivity extends Activity {
         });
 
 
-        /**
-         * firebase
-         */
+
 
 
     }
 
+    /**
+     * firebase init and reading method
+     */
+    private void firebaseInitAndReading(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
+
+        databaseReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                user = dataSnapshot.getValue(UserProfile.class);
+                user.setUserID(firebaseUser.getUid());
+
+
+                if(user.getPicture_uri() != null) {
+                    userPicture.setImageURI(user.getPicture_uri());
+                    userPicture.setOnClickListener(v -> {
+                        Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                        i.putExtra("PicturePath", user.getPicture_uri().toString());
+                        startActivity(i);
+                    });
+                }
+                user.setPicture_uri(Uri.parse(default_picture_path));
+                /**
+                 * set texts
+                 */
+                fullNameResize();
+                tv_userFullName.setText(user.getFullname());
+                tv_userNickName.setText(user.getUsername());
+                tv_userCityContent.setText(user.getCity());
+                tv_userBioContent.setText(user.getBio());
+                tv_userEmailContent.setText(user.getEmail());
+
+                Log.d("DATA:",user.getUserID());
+                Log.d("DATA:",user.getFullname());
+                Log.d("DATA:",user.getUsername());
+                Log.d("DATA:",user.getEmail());
+                Log.d("DATA:",user.getCity());
+                Log.d("DATA:",user.getBio());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+                if(databaseError != null){
+                    Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+            }
+        });
+
+
+
+
+
+    }
 
     /**
      * onActivityResult callback
