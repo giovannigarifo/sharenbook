@@ -92,6 +92,7 @@
     <string name="city_bad_format_rationale">Please, city name must contain just letters. Initial capital letters</string>
     <string name="bio_bad_format_rationale">Please, do not use special characters in your biography</string>
     <string name="required_field">This field is mandatory</string>
+    <string name="isbn_bad_format">ISBN not valid</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Let\'s start!</string>
@@ -120,7 +121,8 @@
     <string name="sba_insert_isbn">Insert ISBN</string>
     <string name="sba_scan_isbn">Scan ISBN Barcode</string>
     <string name="sba_manually_input">Manually input Book Details</string>
-    <string name="sba_isbn_not_valid">ISBN not valid</string>
+    <string name="sba_no_books_found">Book not found</string>
+    <string name="sba_getting_book_details">"Retrieving book details…"</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>

@@ -63,6 +63,7 @@
     <string name="city_bad_format_rationale">Per favore, la tua città deve contenere solo caratteri. Iniziali maiuscole</string>
     <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>
     <string name="required_field">Questo campo è obbligatorio!</string>
+    <string name="isbn_bad_format">ISBN non valido</string>
 
 
     <!-- permissions -->
@@ -115,7 +116,8 @@
     <string name="sba_insert_isbn">Inserisci l\'ISBN</string>
     <string name="sba_scan_isbn">Scansiona l\'ISBN utilizzando la fotocamera</string>
     <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
-    <string name="sba_isbn_not_valid">ISBN non valido</string>
+    <string name="sba_no_books_found">Nessun libro trovato</string>
+    <string name="sba_getting_book_details">"Recupero informazioni sul libro…"</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>
