@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 public class ShowPictureActivity extends Activity {
 
     private ImageView fullSizePicture;
@@ -46,7 +48,10 @@ public class ShowPictureActivity extends Activity {
 
         fullSizePicture.setImageBitmap(resultBMP);
         */
-        fullSizePicture.setImageURI(pictureUri);
+        //fullSizePicture.setImageURI(pictureUri);
+        Glide.with(getApplicationContext()).load(pictureUri).into(fullSizePicture);
+
+
 
         Log.d("Path:",picturePath.toString());
 

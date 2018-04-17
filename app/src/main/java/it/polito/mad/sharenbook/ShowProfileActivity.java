@@ -15,8 +15,11 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,7 +28,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.io.File;
+import java.io.IOException;
 
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -109,9 +118,12 @@ public class ShowProfileActivity extends Activity {
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
         if(user.getPicture_uri() != null) {
-            userPicture.setImageURI(user.getPicture_uri());
+
+            //Set profile picture
+            Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
+
             userPicture.setOnClickListener(v -> {
-                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class); //TODO glide in showPicture
                 i.putExtra("PicturePath", user.getPicture_uri().toString());
                 startActivity(i);
             });
@@ -127,10 +139,6 @@ public class ShowProfileActivity extends Activity {
         tv_userBioContent.setText(user.getBio());
         tv_userEmailContent.setText(user.getEmail());
 
-        //user = new UserProfile();
-
-        //firebaseInitAndReading();
-
 
 
         /**
@@ -140,38 +148,6 @@ public class ShowProfileActivity extends Activity {
         //set user picture
         final String choosenPicture;
 
-
-
-        //= editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-        //if (!choosenPicture.equals(getString(R.string.default_picture_path)))
-        //    userPicture.setImageURI(Uri.parse(choosenPicture));
-
-        //register callback that start the showPicture activity when user clicks the photo
-       // userPicture.setOnClickListener(v -> {
-         //   Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-         //   i.putExtra("PicturePath", choosenPicture);
-         //   startActivity(i);
-       // });
-
-
-
-
-
-        /*
-
-        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-
-        if (!choosenPicture.equals(default_picture_path))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
-
-        userPicture.setOnClickListener(v -> {
-
-                    Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                    i.putExtra("PicturePath", choosenPicture);
-                    startActivity(i);
-                }
-        );
-*/
         /**
          * goEdit_Button
          */
@@ -195,7 +171,7 @@ public class ShowProfileActivity extends Activity {
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key),user);
             i.putExtra("from","profile");
-            startActivityForResult(i, EDIT_RETURN_VALUE);
+            startActivityForResult(i, EDIT_RETURN_VALUE); //TODO verify if it works without ForResult
 
         });
 
@@ -263,15 +239,40 @@ public class ShowProfileActivity extends Activity {
                 user.setUserID(firebaseUser.getUid());
 
 
-                if(user.getPicture_uri() != null) {
-                    userPicture.setImageURI(user.getPicture_uri());
+                //if(user.getPicture_uri() != null) {
+
+                    /**
+                     * Retrieve Image from Storage
+                     */
+
+                   /* FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                    StorageReference storageRef = storage.getReference();
+
+                    storageRef.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            user.setPicture_uri(uri);
+                            String imageURL = uri.toString();
+                            Glide.with(getApplicationContext()).load(imageURL).into(userPicture);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });*/
+
                     userPicture.setOnClickListener(v -> {
                         Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                         i.putExtra("PicturePath", user.getPicture_uri().toString());
                         startActivity(i);
                     });
-                }
-                user.setPicture_uri(Uri.parse(default_picture_path));
+               // }
+
+
+
+                //user.setPicture_uri(Uri.parse(default_picture_path));
                 /**
                  * set texts
                  */
@@ -336,6 +337,9 @@ public class ShowProfileActivity extends Activity {
 
                 if (!choosenPicture.equals(default_picture_path))
                     userPicture.setImageURI(Uri.parse(choosenPicture));
+
+
+
 
                 userPicture.setOnClickListener(v -> {
 

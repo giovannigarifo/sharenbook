@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -187,11 +193,10 @@ public class SplashScreenActivity extends Activity {
 
         if(firebaseUser != null) {
 
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
 
-            //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             firebaseDatabase = FirebaseDatabase.getInstance();
-
-
             dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
 
             dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -215,21 +220,25 @@ public class SplashScreenActivity extends Activity {
 
                         user.setUserID(firebaseUser.getUid());
 
-                        user.setPicture_uri(Uri.parse(getString(R.string.default_picture_path)));
+                        storageRef.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                user.setPicture_uri(uri);
+                                Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                                i.putExtra(getString(R.string.user_profile_data_key), user);
+                                i.putExtra("from", "splash");
+                                startActivity(i);
+                                finish();
+                                /*String imageURL = uri.toString();
+                                Glide.with(getApplicationContext()).load(imageURL).into(userPicture);*/
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle any errors
+                            }
+                        });
 
-
-                        Log.d("DATA:", user.getUserID());
-                        Log.d("DATA:", user.getFullname());
-                        Log.d("DATA:", user.getUsername());
-                        Log.d("DATA:", user.getEmail());
-                        Log.d("DATA:", user.getCity());
-                        Log.d("DATA:", user.getBio());
-
-                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                        i.putExtra(getString(R.string.user_profile_data_key), user);
-                        i.putExtra("from", "splash");
-                        startActivity(i);
-                        finish();
                     }
                 }
 

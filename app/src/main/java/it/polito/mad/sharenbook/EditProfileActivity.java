@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 
@@ -35,9 +37,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,6 +90,9 @@ public class EditProfileActivity extends Activity {
     private Uri photoPathUri;
     private OutputStream out;
 
+    private StorageReference storageReference;
+
+
     //preferences
 
     private SharedPreferences editedProfile_copy;
@@ -113,6 +125,7 @@ public class EditProfileActivity extends Activity {
 
     //User profile data
     private UserProfile user;
+    private Uri pictureURI = null;
 
     //FIREBASE
     private DatabaseReference firebaseDB;
@@ -142,6 +155,9 @@ public class EditProfileActivity extends Activity {
         default_username = context.getResources().getString(R.string.default_username);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        // Create a storage reference from our app
+        storageReference = storage.getReference();
 
 
         Bundle data = getIntent().getExtras();
@@ -267,7 +283,7 @@ public class EditProfileActivity extends Activity {
 
         Log.d("Gallery:", choosenPicture);
         if (!choosenPicture.equals(default_picture_path))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
+            Glide.with(getApplicationContext()).load(choosenPicture).into(userPicture);
 
         fab_editPhoto = (FloatingActionButton) findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this,R.drawable.ic_check_black_24dp));
@@ -320,6 +336,66 @@ public class EditProfileActivity extends Activity {
             selectImage();
         });
     }
+
+
+    //this method will upload the file
+    private void uploadFile(Uri file) {
+        //if there is a file to upload
+        Uri filePath = file;
+
+        if (filePath != null) {
+            //displaying a progress dialog while upload is going on
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            StorageReference riversRef = storageReference.child("images/"+user.getUserID()+".jpg");
+            riversRef.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //if the upload is successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying a success toast
+                            Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
+
+                            Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+                            i.putExtra(getString(R.string.user_profile_data_key),user);
+                            startActivity(i);
+                            finish();
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //if the upload is not successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying error message
+                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploading " + ((int) progress) + "%...");
+                        }
+                    });
+        }
+        //if there is not any file
+        else {
+            //you can display an error toast
+        }
+    }
+
 
 
     /**
@@ -546,6 +622,8 @@ public class EditProfileActivity extends Activity {
                 out.write(buf, 0, len);
             }
             */
+            pictureURI = Uri.parse(imagePath);
+
             out.close();
             //in.close();
 
@@ -601,13 +679,16 @@ public class EditProfileActivity extends Activity {
 
             out = new FileOutputStream(outFile);
 
-            imagePath = outFile.getAbsolutePath();
 
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+
+            imagePath = outFile.getAbsolutePath();
+
+            pictureURI = data.getData();    //picture URI to be saved on firebase
 
             out.close();
             in.close();
@@ -679,14 +760,9 @@ public class EditProfileActivity extends Activity {
             userData.put(getString(R.string.bio_key), et_userBio.getText().toString());
             user.setBio(et_userBio.getText().toString());
         }
-        /** TODO add photo
-         *
-         */
 
-        user.setPicture_uri(Uri.parse(default_picture_path));
+
         writeProfile_copy.clear().commit();
-
-
 
 
         firebaseDB.child(getString(R.string.profile_key)).updateChildren(userData, new DatabaseReference.CompletionListener() {
@@ -695,10 +771,14 @@ public class EditProfileActivity extends Activity {
 
                 if(databaseError == null){
 
-                    Intent i = new Intent (getApplicationContext(), SplashScreenActivity.class);
-                    i.putExtra(getString(R.string.user_profile_data_key),user);
-                    startActivity(i);
-                    finish();
+                    //Upload profile picture on firebase (if updated)
+                    if(pictureURI != null) {
+                        uploadFile(pictureURI);
+                        user.setPicture_uri(pictureURI); //TODO modify this part -> URL not local URI!
+                    } else {
+                        user.setPicture_uri(Uri.parse(default_picture_path));
+                    }
+
                 }
 
             }
