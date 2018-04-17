@@ -62,6 +62,7 @@
     <string name="city_bad_lenght_rationale">Per favore, la tua città deve contenere almeno 2 caratteri</string>
     <string name="city_bad_format_rationale">Per favore, la tua città deve contenere solo caratteri. Iniziali maiuscole</string>
     <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>
+    <string name="required_field">Questo campo è obbligatorio!</string>
 
 
     <!-- permissions -->

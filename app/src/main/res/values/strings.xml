@@ -91,6 +91,7 @@
     <string name="city_bad_lenght_rationale">Please, city name should be at least 2 characters</string>
     <string name="city_bad_format_rationale">Please, city name must contain just letters. Initial capital letters</string>
     <string name="bio_bad_format_rationale">Please, do not use special characters in your biography</string>
+    <string name="required_field">This field is mandatory</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Let\'s start!</string>

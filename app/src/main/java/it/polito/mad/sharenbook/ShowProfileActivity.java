@@ -102,11 +102,34 @@ public class ShowProfileActivity extends Activity {
 
 
         /**
-         * User void creation
+         * User creation
          */
-        user = new UserProfile();
 
-        firebaseInitAndReading();
+        Bundle data = getIntent().getExtras();
+        user = data.getParcelable(getString(R.string.user_profile_data_key));
+
+        if(user.getPicture_uri() != null) {
+            userPicture.setImageURI(user.getPicture_uri());
+            userPicture.setOnClickListener(v -> {
+                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                i.putExtra("PicturePath", user.getPicture_uri().toString());
+                startActivity(i);
+            });
+        }
+
+        /**
+         * set texts
+         */
+        fullNameResize();
+        tv_userFullName.setText(user.getFullname());
+        tv_userNickName.setText(user.getUsername());
+        tv_userCityContent.setText(user.getCity());
+        tv_userBioContent.setText(user.getBio());
+        tv_userEmailContent.setText(user.getEmail());
+
+        //user = new UserProfile();
+
+        //firebaseInitAndReading();
 
 
 

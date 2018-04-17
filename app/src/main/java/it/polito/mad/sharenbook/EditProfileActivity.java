@@ -177,7 +177,7 @@ public class EditProfileActivity extends Activity {
 
        // String fullname;
 
-        if(user.getFullname() != null) {
+        if(user.getFullname() != null && !user.getFullname().equals(default_fullname)) {
             fullname = user.getFullname();
             et_userFullName.setText(fullname);
         }
@@ -193,7 +193,7 @@ public class EditProfileActivity extends Activity {
 
         //String username;
 
-        if(user.getUsername() != null) {
+        if(user.getUsername() != null && !user.getUsername().equals(default_username)) {
             username = user.getUsername();
             et_userNickName.setText(username);
         }
@@ -207,7 +207,7 @@ public class EditProfileActivity extends Activity {
 
        // String city;
 
-        if(user.getCity() != null) {
+        if(user.getCity() != null && !user.getCity().equals(default_city)) {
             city = user.getCity();
             et_userCity.setText(city);
         }
@@ -222,7 +222,7 @@ public class EditProfileActivity extends Activity {
 
        // String bio;
 
-        if(user.getBio() != null) {
+        if(user.getBio() != null && !user.getBio().equals(default_bio)) {
             bio = user.getBio();
             et_userBio.setText(bio);
         }
@@ -242,7 +242,7 @@ public class EditProfileActivity extends Activity {
         */
 
        // String email;
-        if( user.getEmail()!=null) {
+        if( user.getEmail()!=null && !user.getEmail().equals(default_email)) {
             email = user.getEmail();
             et_userEmail.setText(email);
         }
@@ -659,21 +659,31 @@ public class EditProfileActivity extends Activity {
     private void firebaseSaveProfile(){
 
         Map<String,Object> userData = new HashMap<>();
-        if(et_userFullName.getText().length() != 0 && !et_userFullName.getText().equals(default_fullname))
-            userData.put(getString(R.string.fullname_key),et_userFullName.getText().toString());
-        if(et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username))
-            userData.put(getString(R.string.username_key),et_userNickName.getText().toString());
-        if (et_userEmail.getText().length() != 0 && !et_userEmail.getText().equals(default_email))
-            userData.put(getString(R.string.email_key),et_userEmail.getText().toString());
-        if(et_userCity.getText().length()!=0 && !et_userCity.getText().equals(default_city))
-            userData.put(getString(R.string.city_key),et_userCity.getText().toString());
-        if (et_userBio.getText().length() != 0 && !et_userBio.getText().equals(default_bio))
-            userData.put(getString(R.string.bio_key),et_userBio.getText().toString());
-
+        if(et_userFullName.getText().length() != 0 && !et_userFullName.getText().equals(default_fullname)) {
+            userData.put(getString(R.string.fullname_key), et_userFullName.getText().toString());
+            user.setFullname(et_userFullName.getText().toString());
+        }
+        if(et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
+            userData.put(getString(R.string.username_key), et_userNickName.getText().toString());
+            user.setUsername(et_userNickName.getText().toString());
+        }
+        if (et_userEmail.getText().length() != 0 && !et_userEmail.getText().equals(default_email)) {
+            userData.put(getString(R.string.email_key), et_userEmail.getText().toString());
+            user.setEmail(et_userEmail.getText().toString());
+        }
+        if(et_userCity.getText().length()!=0 && !et_userCity.getText().equals(default_city)) {
+            userData.put(getString(R.string.city_key), et_userCity.getText().toString());
+            user.setCity(et_userCity.getText().toString());
+        }
+        if (et_userBio.getText().length() != 0 && !et_userBio.getText().equals(default_bio)) {
+            userData.put(getString(R.string.bio_key), et_userBio.getText().toString());
+            user.setBio(et_userBio.getText().toString());
+        }
         /** TODO add photo
          *
          */
 
+        user.setPicture_uri(Uri.parse(default_picture_path));
         writeProfile_copy.clear().commit();
 
 
@@ -682,11 +692,11 @@ public class EditProfileActivity extends Activity {
         firebaseDB.child(getString(R.string.profile_key)).updateChildren(userData, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
                 if(databaseError == null){
 
-                    //TODO: Here should be passed the shared preferences with user profile data
-
-                    Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+                    Intent i = new Intent (getApplicationContext(), SplashScreenActivity.class);
+                    i.putExtra(getString(R.string.user_profile_data_key),user);
                     startActivity(i);
                     finish();
                 }
@@ -706,7 +716,7 @@ public class EditProfileActivity extends Activity {
     private boolean validateForm() {
         boolean result = true;
 
-        //TODO validation should fail if a field is empty! (or at least we should make some mandatory fields to fill)
+
 
         if (!(et_userFullName.getText().toString().equals(fullname)) && !(et_userFullName.getText().toString().isEmpty())) {
             if ((et_userFullName.getText().toString().length()) < 5) {
@@ -720,6 +730,9 @@ public class EditProfileActivity extends Activity {
                 et_userFullName.setError(null);
             }
 
+        }else if(et_userFullName.getText().toString().isEmpty()){
+            et_userFullName.setError(getString(R.string.required_field));
+            result = false;
         }
 
         if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
@@ -734,6 +747,9 @@ public class EditProfileActivity extends Activity {
                 et_userNickName.setError(null);
             }
 
+        }else if(et_userNickName.getText().toString().isEmpty()){
+            et_userNickName.setError(getString(R.string.required_field));
+            result = false;
         }
 
 
@@ -747,6 +763,9 @@ public class EditProfileActivity extends Activity {
             } else {
                 et_userEmail.setError(null);
             }
+        }else if(TextUtils.isEmpty(et_userEmail.getText().toString())){
+            et_userEmail.setError(getString(R.string.required_field));
+            result = false;
         }
 
         if (!(et_userCity.getText().toString().equals(city)) && !(et_userCity.getText().toString().isEmpty())) {
@@ -762,6 +781,9 @@ public class EditProfileActivity extends Activity {
             }
 
 
+        }else if(TextUtils.isEmpty(et_userCity.getText().toString())){
+            et_userCity.setError(getString(R.string.required_field));
+            result = false;
         }
         /*
         if(!(et_userBio.getText().toString().equals(editedProfile.getString(getString(R.string.bio_key),default_bio)))&&!(et_userBio.getText().toString().isEmpty())){
@@ -777,6 +799,11 @@ public class EditProfileActivity extends Activity {
 
         }
         */
+        if(TextUtils.isEmpty(et_userBio.getText().toString())){
+            et_userBio.setError(getString(R.string.required_field));
+            result = false;
+        }
+
         return result;
     }
 
@@ -831,8 +858,8 @@ public class EditProfileActivity extends Activity {
         exitRequest.setMessage(R.string.exit_rationale);
         exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     writeProfile_copy.clear().commit();
-            Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
-            startActivity(i);
+            //Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+            //startActivity(i);
             finish();
 
                 }

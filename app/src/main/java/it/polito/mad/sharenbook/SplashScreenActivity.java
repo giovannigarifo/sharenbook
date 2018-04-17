@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +35,21 @@ public class SplashScreenActivity extends Activity {
     private FirebaseDatabase firebaseDB;
     private DatabaseReference dbReference;
 
+    //Firebase references
+    //private DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseUser firebaseUser;
+
+    private UserProfile user;
+
+    //default profile values
+    private String default_city;
+    private String default_bio;
+    private String default_email;
+    private String default_fullname;
+    private String default_username;
+    private String default_picture_path;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +59,16 @@ public class SplashScreenActivity extends Activity {
 
          */
 
-        checkAuth();
+        //user = new UserProfile();
+
+        default_city = getString(R.string.default_city);
+        default_bio = getString(R.string.default_bio);
+        default_email = getString(R.string.default_email);
+        default_fullname = getString(R.string.default_fullname_heading);
+        default_username = getString(R.string.default_username_heading);
+        default_picture_path = getString(R.string.default_picture_path);
+
+        firebaseInitAndReading();
 
 
 
@@ -148,6 +174,92 @@ public class SplashScreenActivity extends Activity {
                             .build(),
                     RC_SIGN_IN);
         }
+
+    }
+
+    /**
+     * firebase init and reading method
+     */
+    private void firebaseInitAndReading(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+        if(firebaseUser != null) {
+
+
+            //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            firebaseDatabase = FirebaseDatabase.getInstance();
+
+
+            dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
+
+            dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                    if (dataSnapshot.getValue().equals(getString(R.string.profile_value_placeholder))) {
+
+                        user = new UserProfile(firebaseUser.getUid(),default_fullname,default_username,default_email,
+                                default_city,default_bio,default_picture_path);
+                        Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                        i.putExtra(getString(R.string.user_profile_data_key), user);
+                        i.putExtra("from", "splash");
+                        startActivity(i);
+                        finish();
+
+                    }else {
+
+                        user = dataSnapshot.getValue(UserProfile.class);
+
+                        user.setUserID(firebaseUser.getUid());
+
+                        user.setPicture_uri(Uri.parse(getString(R.string.default_picture_path)));
+
+
+                        Log.d("DATA:", user.getUserID());
+                        Log.d("DATA:", user.getFullname());
+                        Log.d("DATA:", user.getUsername());
+                        Log.d("DATA:", user.getEmail());
+                        Log.d("DATA:", user.getCity());
+                        Log.d("DATA:", user.getBio());
+
+                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                        i.putExtra(getString(R.string.user_profile_data_key), user);
+                        i.putExtra("from", "splash");
+                        startActivity(i);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                    if (databaseError != null) {
+                        Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                }
+            });
+
+
+        }else {
+            // User not signed in
+            startActivityForResult(
+                    // Get an instance of AuthUI based on the default app
+                    AuthUI.getInstance().createSignInIntentBuilder()
+                            .setAvailableProviders(Arrays.asList(
+                                    new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                    new AuthUI.IdpConfig.FacebookBuilder().build(),
+                                    new AuthUI.IdpConfig.TwitterBuilder().build(),
+                                    new AuthUI.IdpConfig.EmailBuilder().build()))
+                            .setLogo(R.mipmap.ic_launcher)
+                            .build(),
+                    RC_SIGN_IN);
+        }
+
 
     }
 /*
