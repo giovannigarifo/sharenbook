@@ -123,8 +123,8 @@
     <string name="default_categories">In quali categorie rientra?</string>
     <string name="default_language">In che lingua è scritto?</string>
     <string name="default_saving_on_firebase">Salvataggio dati in corso…</string>
-    <string name="default_book_condition">Copertina rigata, pagine strappate...</string>
-    <string name="default_tags">Bestseller, consigliato per bambini...</string>
+    <string name="default_book_condition">Copertina rigata, pagine strappate…</string>
+    <string name="default_tags">Bestseller, consigliato per bambini…</string>
 
 
 

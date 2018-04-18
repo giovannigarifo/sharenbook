@@ -9,20 +9,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-//import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,27 +30,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
 
@@ -281,6 +271,7 @@ public class EditBookActivity extends Activity {
         editbook_et_language.setText(book.getLanguage());
         if (book.getPageCount() != -1)
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
+
         //authors to comma separated string
         String[] a_arr = book.getAuthors();
 
@@ -292,11 +283,14 @@ public class EditBookActivity extends Activity {
 
             StringBuilder sb = new StringBuilder();
 
+            String prefix = "";
             for (String s : a_arr) {
-                sb.append(s).append(", ");
+                sb.append(prefix);
+                prefix = ", ";
+                sb.append(s);
             }
 
-            editbook_et_authors.setText(sb.deleteCharAt(sb.length() - 1).toString());
+            editbook_et_authors.setText(sb.toString());
         }
 
         //categories to comma separated string
@@ -306,15 +300,18 @@ public class EditBookActivity extends Activity {
 
             editbook_et_categories.setText(book.getCategories()[0]);
 
-        } else if (a_arr.length > 1) {
+        } else if (c_arr.length > 1) {
 
             StringBuilder sb = new StringBuilder();
 
+            String prefix = "";
             for (String s : c_arr) {
-                sb.append(s).append(", ");
+                sb.append(prefix);
+                prefix = ", ";
+                sb.append(s);
             }
 
-            editbook_et_categories.setText(sb.deleteCharAt(sb.length() - 1).toString());
+            editbook_et_categories.setText(sb.toString());
         }
     }
 
@@ -559,13 +556,15 @@ public class EditBookActivity extends Activity {
         bookData.put("isbn", editbook_et_isbn.getText().toString());
         bookData.put("title", editbook_et_title.getText().toString());
         bookData.put("subtitle", editbook_et_subtitle.getText().toString());
-        bookData.put("authors", editbook_et_authors.getText().toString());
+        bookData.put("authors", commaStringToList( editbook_et_authors.getText().toString() ));
         bookData.put("publisher", editbook_et_publisher.getText().toString());
         bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
         bookData.put("description", editbook_et_description.getText().toString());
         bookData.put("pageCount", editbook_et_pageCount.getText().toString());
-        bookData.put("categories", editbook_et_categories.getText().toString());
+        bookData.put("categories", commaStringToList( editbook_et_categories.getText().toString() ));
         bookData.put("language", editbook_et_language.getText().toString());
+        bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
+        bookData.put("tags", editbook_et_tags.getText().toString());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -574,14 +573,16 @@ public class EditBookActivity extends Activity {
 
         // Write on DB
         DatabaseReference newBookRef = booksDb.push();
+
+        // Push newBook on "books" section
         newBookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
 
             if (databaseError == null) {
-
+                // Push newBook reference on "user_books" section
                 userBooksDb.push().setValue(newBookRef.getKey(), (databaseError1, databaseReference1) -> {
 
                     progressDialog.dismiss();
-                    if (databaseError == null) {
+                    if (databaseError1 == null) {
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(i);
@@ -596,6 +597,17 @@ public class EditBookActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    /**
+     * Convert a comma separated multiple words string to a string list
+     */
+    private List<String> commaStringToList(String commaString) {
+        List<String> stringList = new ArrayList<>();
+        for (String s: commaString.split(",")) {
+            stringList.add(s.trim());
+        }
+        return stringList;
     }
 
     /**
