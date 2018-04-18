@@ -363,8 +363,12 @@ public class EditProfileActivity extends Activity {
 
                             Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
                             i.putExtra(getString(R.string.user_profile_data_key),user);
-                            //startActivity(i);
-                            setResult(RESULT_OK,i);
+                            if(getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
+                                setResult(RESULT_OK, i);
+                            } else {
+                                Log.d("CI sono", "wewe");
+                                startActivity(i);
+                            }
                             finish();
 
                         }
@@ -603,7 +607,7 @@ public class EditProfileActivity extends Activity {
         try {
 
             //save image in gallery
-            //galleryPath = MediaStore.Images.Media.insertImage(getContentResolver(), resultBMP, imageFileName, "user profile image");
+            galleryPath = MediaStore.Images.Media.insertImage(getContentResolver(), resultBMP, imageFileName, "user profile image");
 
             outFile = new File(EditProfileActivity.this.getExternalFilesDir(null), imageFileName);
 
@@ -623,7 +627,7 @@ public class EditProfileActivity extends Activity {
                 out.write(buf, 0, len);
             }
             */
-            pictureURI = Uri.parse(imagePath);
+            pictureURI = Uri.parse(galleryPath);
 
             out.close();
             //in.close();
@@ -787,8 +791,13 @@ public class EditProfileActivity extends Activity {
 
                         Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key),user);
-                        //startActivity(i);
-                        setResult(RESULT_OK,i);
+
+                        if(getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
+                            setResult(RESULT_OK, i);
+                        } else {
+                            Log.d("CI sono", "wewe");
+                            startActivity(i);
+                        }
                         finish();
 
                     }
