@@ -80,7 +80,7 @@ public class EditBookActivity extends Activity {
             Manifest.permission.CAMERA
     };
 
-    //book to share
+    //information of the book to be shared
     Book book;
 
 
@@ -142,7 +142,7 @@ public class EditBookActivity extends Activity {
         editbook_rv_bookPhotos.setHasFixedSize(true); //improves performance
 
         // attach a Layout Manager to the RecyclerView, it's in charge of injecting views into the Recycler
-        rvLayoutManager = new LinearLayoutManager(context);
+        rvLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
 
         // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
@@ -385,11 +385,12 @@ public class EditBookActivity extends Activity {
 
                     croppedPhoto = extras.getParcelable("data");
 
-                    //add photo to collection
+                    //add photo to collection (to position 0)
                     book.addBookPhoto(croppedPhoto);
 
                     //notify update of the collection to Recycle View adapter
-                    rvAdapter.notifyItemInserted(book.getBookPhotos().size() - 1);
+                    rvAdapter.notifyItemInserted(0);
+                    rvLayoutManager.scrollToPosition(0);
 
                 } catch (NullPointerException exc) {
 
