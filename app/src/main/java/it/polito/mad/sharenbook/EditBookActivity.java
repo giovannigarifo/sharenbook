@@ -195,7 +195,7 @@ public class EditBookActivity extends Activity {
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_showcase:
+                case R.id.navigation_logout:
                     //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
                     AuthUI.getInstance()
                             .signOut(this)
@@ -203,7 +203,7 @@ public class EditBookActivity extends Activity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
-                                    Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), R.string.log_out, Toast.LENGTH_SHORT).show();
                                     finish();
                                 }
                             });

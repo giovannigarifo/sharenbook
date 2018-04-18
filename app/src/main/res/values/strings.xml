@@ -5,17 +5,25 @@
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
-    <string name="default_username">Your username.</string>
+    <string name="default_username">Your username</string>
     <string name="default_city_heading">City</string>
     <string name="default_city">City, Country</string>
     <string name="default_email_heading">Email</string>
-    <string name="default_email">Your email.</string>
+    <string name="default_email">Your email</string>
     <string name="default_bio_heading">Bio</string>
     <string name="default_bio">Write here your Bio</string>
     <string name="default_picture_path">void</string>
 
+    <!-- Various Messages -->
+    <string name="profile_saved">Your profile has been saved!</string>
+    <string name="upload_progress">Upload progress: </string>
+    <string name="no_internet_connection">No internet connection!</string>
+    <string name="sign_in_cancelled">Canceled!</string>
+    <string name="unknown_error">Unknown Error!</string>
+    <string name="internal_error">Server Database Error!</string>
     <string name="welcome_msg">Welcome to Share\'nBook!</string>
     <string name="search_hint">Search a book or a user…</string>
+    <string name="log_out">Logged Out!</string>
 
     <!-- common words -->
     <string name="search">Search</string>
@@ -50,7 +58,7 @@
     <string name="default_language">In which language is it written?</string>
     <string name="default_saving_on_firebase">Saving book on cloud…</string>
     <string name="default_book_condition">Striped cover, torn pages...</string>
-    <string name="default_tags">Bestseller, recommended for childrens...</string>
+    <string name="default_tags">Bestseller, recommended for children...</string>
 
 
     <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>
@@ -61,6 +69,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_showcase">Showcase</string>
     <string name="title_shareBook">Share a book</string>
+    <string name="title_logout">Logout</string>
 
     <!-- persistence keys -->
     <string name="fullname_key">fullname</string>

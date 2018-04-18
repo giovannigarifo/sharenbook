@@ -7,14 +7,23 @@
     <string name="default_fullname">Nome Cognome</string>
     <string name="default_username">Nome utente</string>
     <string name="default_email_heading">Email</string>
-    <string name="default_email">La tua email.</string>
+    <string name="default_email">La tua email</string>
     <string name="default_city_heading">Città</string>
     <string name="default_city">Città, Nazione</string>
     <string name="default_bio_heading">Biografia</string>
-    <string name="default_bio">Scrivi qui la tua biografia.</string>
+    <string name="default_bio">Scrivi qui la tua biografia</string>
 
+    <!-- Various Messages -->
+    <string name="profile_saved">Profilo salvato!</string>
+    <string name="upload_progress">Caricamento in corso: </string>
+    <string name="no_internet_connection">Nessuna connessione a internet!</string>
+    <string name="sign_in_cancelled">Operazione annullata!</string>
+    <string name="unknown_error">Errore sconosciuto!</string>
+    <string name="internal_error">Errore interno del server database!</string>
     <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
     <string name="search_hint">Ricerca un libro o un utente…</string>
+    <string name="log_out">Logged Out!</string>
+
 
     <!-- common words -->
     <string name="search">Cerca</string>
@@ -23,6 +32,8 @@
     <string name="title_profile">Profilo</string>
     <string name="title_showcase">Bacheca</string>
     <string name="title_shareBook">Nuovo annuncio</string>
+    <string name="title_logout">Esci</string>
+
 
     <!-- persistence keys -->
     <string name="fullname_key">fullname</string>
@@ -50,7 +61,7 @@
     <!-- exit dialogue -->
 
     <string name="exit_request_title">Termina la modifica</string>
-    <string name="exit_rationale">sei sicuro di voler uscire? ogni modifica verrà persa!</string>
+    <string name="exit_rationale">Sei sicuro di voler uscire? ogni modifica verrà persa!</string>
 
     <!-- complete profile dialog -->
     <string name="complete_profile_title">Benvenuto!</string>

@@ -376,7 +376,7 @@ public class EditProfileActivity extends Activity {
 
                             writeProfile_copy.clear().commit();
 
-                            Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), R.string.profile_saved, Toast.LENGTH_LONG).show();
                             user.setPicture_uri(taskSnapshot.getDownloadUrl()); //pass the download URL
 
                             Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
@@ -410,7 +410,7 @@ public class EditProfileActivity extends Activity {
                             double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
 
                             //displaying percentage in progress dialog
-                            progressDialog.setMessage("Uploading " + ((int) progress) + "%...");
+                            progressDialog.setMessage(R.string.upload_progress + ((int) progress) + "%...");
                         }
                     });
         }
