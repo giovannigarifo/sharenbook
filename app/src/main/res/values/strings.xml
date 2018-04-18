@@ -91,6 +91,10 @@
     <string name="exit_request_title">Edit exit</string>
     <string name="exit_rationale">Do you really want to exit? Any modification will be lost!</string>
 
+    <!-- complete profile dialog -->
+    <string name="complete_profile_title">Welcome!</string>
+    <string name="complete_profile_rational">Please, complete your profile before continuing.</string>
+
     <!-- validate inputs -->
     <string name="name_bad_format_rationale">Please, your full name must contains just letters separated by one space. Initial capital letter.</string>
     <string name="name_length_format_rationale">Your full name must have at least 5 characters</string>

@@ -52,6 +52,10 @@
     <string name="exit_request_title">Termina la modifica</string>
     <string name="exit_rationale">sei sicuro di voler uscire? ogni modifica verrà persa!</string>
 
+    <!-- complete profile dialog -->
+    <string name="complete_profile_title">Benvenuto!</string>
+    <string name="complete_profile_rational">Per favore, completa il tuo profilo prima di procedere.</string>
+
     <!-- validate inputs -->
     <string name="name_bad_format_rationale">Il tuo nome completo deve contenere solo lettere separate da uno spazio. Lettera iniziale in maiuscolo!</string>
     <string name="name_length_format_rationale">Il tuo nome completo deve avere almeno 5 caratteri.</string>

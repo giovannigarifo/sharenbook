@@ -140,7 +140,20 @@ public class EditProfileActivity extends Activity {
         this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_edit_profile);
 
-        hasPermissions();
+        if(getCallingActivity() == null && savedInstanceState == null) {
+            AlertDialog.Builder completeProfileAlert = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
+            completeProfileAlert.setTitle(R.string.complete_profile_title);
+            completeProfileAlert.setMessage(R.string.complete_profile_rational);
+            completeProfileAlert.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        dialog.dismiss();
+                        hasPermissions();
+
+                    }
+            );
+
+            completeProfileAlert.show();
+        }else
+            hasPermissions();
 
         //modify default typography
         getViewsAndSetTypography();
@@ -165,6 +178,8 @@ public class EditProfileActivity extends Activity {
         Log.d("USERID:",user.getUserID());
 
         firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+
+
 
         //call to methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
@@ -421,7 +436,7 @@ public class EditProfileActivity extends Activity {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
             } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
+               // Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
             }
         }
 
