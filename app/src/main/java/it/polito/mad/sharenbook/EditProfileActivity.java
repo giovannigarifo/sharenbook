@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 
@@ -35,6 +37,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -44,8 +57,12 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import it.polito.mad.sharenbook.model.UserProfile;
 
 
 public class EditProfileActivity extends Activity {
@@ -73,9 +90,11 @@ public class EditProfileActivity extends Activity {
     private Uri photoPathUri;
     private OutputStream out;
 
+    private StorageReference storageReference;
+
+
     //preferences
-    private SharedPreferences editedProfile;
-    private SharedPreferences.Editor writeProfile;
+
     private SharedPreferences editedProfile_copy;
     private SharedPreferences.Editor writeProfile_copy;
 
@@ -86,6 +105,12 @@ public class EditProfileActivity extends Activity {
     private String default_fullname;
     private String default_username;
     private String default_picture_path;
+
+    private String fullname;
+    private String username;
+    private String email;
+    private String city;
+    private String bio;
 
     //permissions needed
     private String[] permissions = new String[]{
@@ -98,7 +123,12 @@ public class EditProfileActivity extends Activity {
     private Pattern fullname_regex = Pattern.compile("([A-Z]([a-z])*[\\s][A-Za-z]([a-z])*[\\s]?)([A-Za-z]([a-z])*[\\s]?)*");
     private Pattern city_regex = Pattern.compile("([A-Z][a-z]*)[\\s]?[,]?[\\s]?([A-Z][a-z]*)?[\\s]?");
 
+    //User profile data
+    private UserProfile user;
+    private Uri pictureURI = null;
 
+    //FIREBASE
+    private DatabaseReference firebaseDB;
     /**
      * onCreate callback
      *
@@ -125,9 +155,22 @@ public class EditProfileActivity extends Activity {
         default_username = context.getResources().getString(R.string.default_username);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        // Create a storage reference from our app
+        storageReference = storage.getReference();
+
+
+        Bundle data = getIntent().getExtras();
+        user = data.getParcelable(getString(R.string.user_profile_data_key));
+        Log.d("USERID:",user.getUserID());
+
+        firebaseDB = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+
         //call to methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //first time make copies and visualize stable profile
-            onCreateWithBundleEmpty();
+
+            onCreateWithBundleEmpty(user);
+
         } else {
             onCreateWithBundleNotEmpty();
         }
@@ -137,12 +180,9 @@ public class EditProfileActivity extends Activity {
     /**
      * onCreateWithBundleEmpty method
      */
-    private void onCreateWithBundleEmpty() {
+    private void onCreateWithBundleEmpty(UserProfile user) {
 
-        //retrieve the shared preference file
-        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
-        writeProfile = editedProfile.edit();
 
         //make a copy for rollbacks
         editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
@@ -151,38 +191,99 @@ public class EditProfileActivity extends Activity {
         //get view button
         save_button = (FloatingActionButton) findViewById(R.id.fab_save);
 
-        //get editViews
-        writeProfile_copy.putString(getString(R.string.fullname_copy_key), editedProfile.getString(getString(R.string.fullname_key), default_fullname)).commit();
-        et_userFullName.setHint(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
+       // String fullname;
 
-        writeProfile_copy.putString(getString(R.string.username_copy_key), editedProfile.getString(getString(R.string.username_key), default_username)).commit();
-        et_userNickName.setHint(editedProfile.getString(getString(R.string.username_key), default_username));
-
-        writeProfile_copy.putString(getString(R.string.city_copy_key), editedProfile.getString(getString(R.string.city_key), default_city)).commit();
-        et_userCity.setHint(editedProfile.getString(getString(R.string.city_key), default_city));
-
-        writeProfile_copy.putString(getString(R.string.bio_copy_key), editedProfile.getString(getString(R.string.bio_key), default_bio)).commit();
-        String actualBio = editedProfile.getString(getString(R.string.bio_key), default_bio);
-
-        if (actualBio.equals(default_bio))
-            et_userBio.setHint(actualBio);
+        if(user.getFullname() != null && !user.getFullname().equals(default_fullname)) {
+            fullname = user.getFullname();
+            et_userFullName.setText(fullname);
+        }
         else {
-            et_userBio.setText(actualBio);
+            fullname = default_fullname;
+            et_userFullName.setHint(fullname);
+
+        }
+
+        //get editViews
+        writeProfile_copy.putString(getString(R.string.fullname_copy_key), fullname).commit();
+
+
+        //String username;
+
+        if(user.getUsername() != null && !user.getUsername().equals(default_username)) {
+            username = user.getUsername();
+            et_userNickName.setText(username);
+        }
+        else {
+            username = default_username;
+            et_userNickName.setHint(username);
+        }
+
+        writeProfile_copy.putString(getString(R.string.username_copy_key), username).commit();
+
+
+       // String city;
+
+        if(user.getCity() != null && !user.getCity().equals(default_city)) {
+            city = user.getCity();
+            et_userCity.setText(city);
+        }
+
+        else {
+            city = default_city;
+            et_userCity.setHint(city);
+        }
+
+        writeProfile_copy.putString(getString(R.string.city_copy_key), city).commit();
+
+
+       // String bio;
+
+        if(user.getBio() != null && !user.getBio().equals(default_bio)) {
+            bio = user.getBio();
+            et_userBio.setText(bio);
+        }
+        else {
+            bio = default_bio;
+            et_userBio.setHint(bio);
+        }
+        writeProfile_copy.putString(getString(R.string.bio_copy_key), bio).commit();
+
+/*
+        if (bio.equals(default_bio))
+            et_userBio.setHint(bio);
+        else {
+            et_userBio.setText(bio);
             et_userBio.setTextColor(Color.GRAY);
         }
-        //et_userBio.setHint(editedProfile.getString(getString(R.string.bio_key), default_bio));
+        */
 
-        writeProfile_copy.putString(getString(R.string.email_copy_key), editedProfile.getString(getString(R.string.email_key), default_email)).commit();
-        et_userEmail.setHint(editedProfile.getString(getString(R.string.email_key), default_email));
+       // String email;
+        if( user.getEmail()!=null && !user.getEmail().equals(default_email)) {
+            email = user.getEmail();
+            et_userEmail.setText(email);
+        }
+        else {
+            email = default_email;
+            et_userEmail.setHint(email);
+        }
+        writeProfile_copy.putString(getString(R.string.email_copy_key), email).commit();
+
 
         /* Edit photo section */
         userPicture = (com.mikhaellopez.circularimageview.CircularImageView) findViewById(R.id.userPicture_edit);
-        String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), editedProfile.getString(getString(R.string.userPicture_key), default_picture_path)).commit();
+
+        String choosenPicture;
+
+        if(user.getPicture_uri()!=null)
+            choosenPicture = user.getPicture_uri().toString();
+        else
+            choosenPicture = default_picture_path;
+
+        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), choosenPicture).commit();
 
         Log.d("Gallery:", choosenPicture);
         if (!choosenPicture.equals(default_picture_path))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
+            Glide.with(getApplicationContext()).load(choosenPicture).into(userPicture);
 
         fab_editPhoto = (FloatingActionButton) findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this,R.drawable.ic_check_black_24dp));
@@ -198,10 +299,7 @@ public class EditProfileActivity extends Activity {
      */
     private void onCreateWithBundleNotEmpty() {
 
-        //retrieve the shared preference file
-        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
-
-        writeProfile = editedProfile.edit();
+        
 
         //make a copy for rollbacks
         editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
@@ -238,6 +336,66 @@ public class EditProfileActivity extends Activity {
             selectImage();
         });
     }
+
+
+    //this method will upload the file
+    private void uploadFile(Uri file) {
+        //if there is a file to upload
+        Uri filePath = file;
+
+        if (filePath != null) {
+            //displaying a progress dialog while upload is going on
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading");
+            progressDialog.show();
+
+            StorageReference riversRef = storageReference.child("images/"+user.getUserID()+".jpg");
+            riversRef.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //if the upload is successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying a success toast
+                            Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
+
+                            Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+                            i.putExtra(getString(R.string.user_profile_data_key),user);
+                            startActivity(i);
+                            finish();
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            //if the upload is not successfull
+                            //hiding the progress dialog
+                            progressDialog.dismiss();
+
+                            //and displaying error message
+                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploading " + ((int) progress) + "%...");
+                        }
+                    });
+        }
+        //if there is not any file
+        else {
+            //you can display an error toast
+        }
+    }
+
 
 
     /**
@@ -464,6 +622,8 @@ public class EditProfileActivity extends Activity {
                 out.write(buf, 0, len);
             }
             */
+            pictureURI = Uri.parse(imagePath);
+
             out.close();
             //in.close();
 
@@ -519,13 +679,16 @@ public class EditProfileActivity extends Activity {
 
             out = new FileOutputStream(outFile);
 
-            imagePath = outFile.getAbsolutePath();
 
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+
+            imagePath = outFile.getAbsolutePath();
+
+            pictureURI = data.getData();    //picture URI to be saved on firebase
 
             out.close();
             in.close();
@@ -567,28 +730,60 @@ public class EditProfileActivity extends Activity {
                 if (!validateForm())
                     return;
 
-                if (et_userFullName.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.fullname_key), editedProfile_copy.getString(getString(R.string.fullname_copy_key), default_fullname));
-                if (et_userNickName.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.username_key), editedProfile_copy.getString(getString(R.string.username_copy_key), default_username));
-                if (et_userCity.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.city_key), editedProfile_copy.getString(getString(R.string.city_copy_key), default_city));
-                if (et_userBio.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.bio_key), editedProfile_copy.getString(getString(R.string.bio_copy_key), default_bio));
-                if (et_userEmail.getText().length() != 0)
-                    writeProfile.putString(getString(R.string.email_key), editedProfile_copy.getString(getString(R.string.email_copy_key), default_email));
-                writeProfile.putString(getString(R.string.userPicture_key), editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
-                writeProfile.commit();
+                firebaseSaveProfile();
 
-                writeProfile_copy.clear().commit();
-                //writeProfile.commit();
-                String debug = editedProfile.getString(getString(R.string.default_picture_path), default_picture_path);
-                Log.d("Gallery:", debug);
-                setResult(RESULT_OK);
-
-                finish();
             }
         });
+
+    }
+
+    private void firebaseSaveProfile(){
+
+        Map<String,Object> userData = new HashMap<>();
+        if(et_userFullName.getText().length() != 0 && !et_userFullName.getText().equals(default_fullname)) {
+            userData.put(getString(R.string.fullname_key), et_userFullName.getText().toString());
+            user.setFullname(et_userFullName.getText().toString());
+        }
+        if(et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
+            userData.put(getString(R.string.username_key), et_userNickName.getText().toString());
+            user.setUsername(et_userNickName.getText().toString());
+        }
+        if (et_userEmail.getText().length() != 0 && !et_userEmail.getText().equals(default_email)) {
+            userData.put(getString(R.string.email_key), et_userEmail.getText().toString());
+            user.setEmail(et_userEmail.getText().toString());
+        }
+        if(et_userCity.getText().length()!=0 && !et_userCity.getText().equals(default_city)) {
+            userData.put(getString(R.string.city_key), et_userCity.getText().toString());
+            user.setCity(et_userCity.getText().toString());
+        }
+        if (et_userBio.getText().length() != 0 && !et_userBio.getText().equals(default_bio)) {
+            userData.put(getString(R.string.bio_key), et_userBio.getText().toString());
+            user.setBio(et_userBio.getText().toString());
+        }
+
+
+        writeProfile_copy.clear().commit();
+
+
+        firebaseDB.child(getString(R.string.profile_key)).updateChildren(userData, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                if(databaseError == null){
+
+                    //Upload profile picture on firebase (if updated)
+                    if(pictureURI != null) {
+                        uploadFile(pictureURI);
+                        user.setPicture_uri(pictureURI); //TODO modify this part -> URL not local URI!
+                    } else {
+                        user.setPicture_uri(Uri.parse(default_picture_path));
+                    }
+
+                }
+
+            }
+        });
+
 
     }
 
@@ -602,7 +797,8 @@ public class EditProfileActivity extends Activity {
         boolean result = true;
 
 
-        if (!(et_userFullName.getText().toString().equals(editedProfile.getString(getString(R.string.fullname_key), default_fullname))) && !(et_userFullName.getText().toString().isEmpty())) {
+
+        if (!(et_userFullName.getText().toString().equals(fullname)) && !(et_userFullName.getText().toString().isEmpty())) {
             if ((et_userFullName.getText().toString().length()) < 5) {
                 et_userFullName.setError(getString(R.string.name_length_format_rationale));
                 result = false;
@@ -614,10 +810,12 @@ public class EditProfileActivity extends Activity {
                 et_userFullName.setError(null);
             }
 
-
+        }else if(et_userFullName.getText().toString().isEmpty()){
+            et_userFullName.setError(getString(R.string.required_field));
+            result = false;
         }
 
-        if (!(et_userNickName.getText().toString().equals(editedProfile.getString(getString(R.string.username_key), default_username))) && !(et_userNickName.getText().toString().isEmpty())) {
+        if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 2) {
                 et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
@@ -629,10 +827,13 @@ public class EditProfileActivity extends Activity {
                 et_userNickName.setError(null);
             }
 
+        }else if(et_userNickName.getText().toString().isEmpty()){
+            et_userNickName.setError(getString(R.string.required_field));
+            result = false;
         }
 
 
-        if (!(et_userEmail.getText().toString().equals(editedProfile.getString(getString(R.string.email_key), default_email))) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
+        if (!(et_userEmail.getText().toString().equals(email)) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
             Log.d("Email:", et_userEmail.getText().toString());
 
             if (!RFC822_email_regex.matcher(et_userEmail.getText().toString()).matches()) {
@@ -642,9 +843,12 @@ public class EditProfileActivity extends Activity {
             } else {
                 et_userEmail.setError(null);
             }
+        }else if(TextUtils.isEmpty(et_userEmail.getText().toString())){
+            et_userEmail.setError(getString(R.string.required_field));
+            result = false;
         }
 
-        if (!(et_userCity.getText().toString().equals(editedProfile.getString(getString(R.string.city_key), default_city))) && !(et_userCity.getText().toString().isEmpty())) {
+        if (!(et_userCity.getText().toString().equals(city)) && !(et_userCity.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userCity.getText().toString())) < 2) {
                 et_userCity.setError(getString(R.string.city_bad_lenght_rationale));
@@ -657,6 +861,9 @@ public class EditProfileActivity extends Activity {
             }
 
 
+        }else if(TextUtils.isEmpty(et_userCity.getText().toString())){
+            et_userCity.setError(getString(R.string.required_field));
+            result = false;
         }
         /*
         if(!(et_userBio.getText().toString().equals(editedProfile.getString(getString(R.string.bio_key),default_bio)))&&!(et_userBio.getText().toString().isEmpty())){
@@ -672,6 +879,11 @@ public class EditProfileActivity extends Activity {
 
         }
         */
+        if(TextUtils.isEmpty(et_userBio.getText().toString())){
+            et_userBio.setError(getString(R.string.required_field));
+            result = false;
+        }
+
         return result;
     }
 
@@ -726,7 +938,10 @@ public class EditProfileActivity extends Activity {
         exitRequest.setMessage(R.string.exit_rationale);
         exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     writeProfile_copy.clear().commit();
-                    finish();
+            //Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+            //startActivity(i);
+            finish();
+
                 }
         ).setNegativeButton(android.R.string.cancel,
                 (dialog, which) -> {

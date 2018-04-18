@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.sharenbook.SignInActivity">
+    tools:context="it.polito.mad.sharenbook.SplashScreenActivity"
+    android:background="@color/colorPrimary">
 
 </android.support.constraint.ConstraintLayout>

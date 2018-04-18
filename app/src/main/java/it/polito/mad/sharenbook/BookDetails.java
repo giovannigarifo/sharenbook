@@ -15,12 +15,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 class BookDetails {
     private final String GOOGLE_BOOK_WS = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
@@ -42,7 +39,9 @@ class BookDetails {
             this.jsonBook = readJsonFromUrl(GOOGLE_BOOK_WS + isbnNumber);
             totalItems = jsonBook.getInt("totalItems");
             createBookList();
-        } catch (IOException | JSONException e) {
+        } catch (IOException e) {
+            totalItems = -1;
+        } catch (JSONException e) {
             totalItems = 0;
         }
     }
@@ -76,7 +75,7 @@ class BookDetails {
             int pageCount = retrieveInteger(volumeInfo, "pageCount");
             String[] categories = retrieveArrayString(volumeInfo, "categories");
             String language = retrieveString(volumeInfo, "language");
-            Uri thumbnail = retrieveImageUri(volumeInfo, "thumbnail");
+            String thumbnail = retrieveImageLink(volumeInfo, "thumbnail");
             double averageRating = retrieveDouble(volumeInfo, "averageRating");
             int ratingsCount = retrieveInteger(volumeInfo, "ratingsCount");
 
@@ -133,24 +132,24 @@ class BookDetails {
         }
     }
 
-    private Uri retrieveImageUri(JSONObject volumeInfo, String name) {
+    private String retrieveImageLink(JSONObject volumeInfo, String name) {
         try {
             JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-            return Uri.parse(imageLinks.getString(name));
+            return imageLinks.getString(name);
         } catch (JSONException e) {
-            return null;
+            return "";
         }
     }
 
     /**
      * Return a String containing all data read from a Reader
      */
-    private String readAll(Reader rd) throws IOException {
+    private String readAll(BufferedReader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
-        int cp;
+        String inputLine;
 
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
+        while ((inputLine = rd.readLine()) != null) {
+            sb.append(inputLine);
         }
         return sb.toString();
     }
@@ -190,7 +189,7 @@ class Book implements Parcelable {
     private String[] categories;
     private String[] authors;
     private int pageCount;
-    private Uri thumbnail;
+    private String thumbnail;
     private ArrayList<Bitmap> bookPhotos;
 
 
@@ -210,7 +209,7 @@ class Book implements Parcelable {
      */
     public Book(String isbn, String title, String subTitle, String[] authors, String publisher,
                 String publishedDate, String description, int pageCount, String[] categories,
-                String language, Uri thumbnail) {
+                String language, String thumbnail) {
         this.isbn = isbn;
         this.title = title;
         this.subTitle = subTitle;
@@ -245,6 +244,21 @@ class Book implements Parcelable {
             Log.d("error", "Unable to retrieve the bitmap from the thumbnail Uri.");
         }
 
+    }
+
+    public Book() {
+        this.isbn = "";
+        this.title = "";
+        this.subTitle = "";
+        this.publisher = "";
+        this.publishedDate = "";
+        this.description = "";
+        this.language = "";
+        this.categories = new String[]{""};
+        this.authors = new String[]{""};
+        this.pageCount = -1;
+        this.thumbnail = "";
+        this.bookPhotos= new ArrayList<>();
     }
 
     public String getIsbn() {
@@ -287,7 +301,7 @@ class Book implements Parcelable {
         return language;
     }
 
-    public Uri getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
@@ -320,7 +334,7 @@ class Book implements Parcelable {
         this.publishedDate = in.readString();
         this.description = in.readString();
         this.language = in.readString();
-        this.thumbnail = Uri.parse(in.readString());
+        this.thumbnail = in.readString();
 
         int num_authors = in.readInt();
         String[] a = new String[num_authors];
@@ -354,7 +368,7 @@ class Book implements Parcelable {
         dest.writeString(getPublishedDate());
         dest.writeString(getDescription());
         dest.writeString(getLanguage());
-        dest.writeString(getThumbnail().toString());
+        dest.writeString(getThumbnail());
 
         dest.writeInt(getAuthors().length);
         dest.writeStringArray(getAuthors());

@@ -10,17 +10,15 @@
     <color name="icons">#212121</color>
     <color name="divider">#BDBDBD</color>
 
-    <color name="darkgrey">#424242</color>
-    <color name="lightgrey">#E0E0E0</color>
+    <color name="darkGrey">#424242</color>
+    <color name="lightGrey">#E0E0E0</color>
+    <color name="bgGrey">#EBEBEB</color>
+    <color name="bdazzledBlue">#235789</color>
+    <color name="goldenGateBridge">#C1292E</color>
+    <color name="queenBlue">#3C6997</color>
 
     <!--
-    <color name="colorPrimary">#f4c654</color>
-    <color name="colorPrimaryDark">#ebb738</color>
-    <color name="colorPrimaryShifted">#f0a037</color>
-    <color name="colorSecondary">#ffe7ae</color>
-    <color name="colorAccent">#E65100</color>
-
+    <color name="colorAccent">#009688</color>
     -->
-</resources>
 
-<!-- FFD54F -->
+</resources>

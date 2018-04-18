@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +17,9 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+//import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -166,7 +166,7 @@ public class EditBookActivity extends Activity {
                             .signOut(this)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
                                     Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
                                     finish();
@@ -236,8 +236,8 @@ public class EditBookActivity extends Activity {
         editbook_et_publishedDate.setText(book.getPublishedDate());
         editbook_et_description.setText(book.getDescription());
         editbook_et_language.setText(book.getLanguage());
-        editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
-
+        if (book.getPageCount() != -1)
+            editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
         //authors to comma separated string
         String[] a_arr = book.getAuthors();
 
@@ -273,7 +273,6 @@ public class EditBookActivity extends Activity {
 
             editbook_et_categories.setText(sb.deleteCharAt(sb.length() - 1).toString());
         }
-
     }
 
 
@@ -473,7 +472,7 @@ public class EditBookActivity extends Activity {
     @Override
     public void onBackPressed() {
 
-        AlertDialog.Builder exitRequest = new AlertDialog.Builder(context); //give a context to Dialog
+        AlertDialog.Builder exitRequest = new AlertDialog.Builder(EditBookActivity.this); //give a context to Dialog
         exitRequest.setTitle(R.string.exit_request_title);
         exitRequest.setMessage(R.string.exit_rationale);
         exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {

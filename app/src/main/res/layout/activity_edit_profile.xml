@@ -11,8 +11,7 @@
     <ScrollView
         android:id="@+id/editbook_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp">
+        android:layout_height="wrap_content">
 
         <!-- external wrapper-->
         <LinearLayout
@@ -51,11 +50,11 @@
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_person_black_135dp"
 
-                    android:tint="@color/darkgrey"
-                    app:civ_border_color="@color/lightgrey"
+                    android:tint="@color/darkGrey"
+                    app:civ_border_color="@color/lightGrey"
                     app:civ_border_width="1dp"
                     app:civ_shadow="true"
-                    app:civ_shadow_color="@color/lightgrey"
+                    app:civ_shadow_color="@color/lightGrey"
                     app:civ_shadow_radius="10" />
 
                 <android.support.design.widget.FloatingActionButton
@@ -162,27 +161,26 @@
 
     </ScrollView>
 
-    <android.support.design.widget.BottomNavigationView
+    <!-- <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/lightgrey"
+        android:background="@color/darkGrey"
         app:itemIconTint="@drawable/nav_bar_selector"
         app:itemTextColor="@drawable/nav_bar_selector"
-        app:menu="@menu/navigation" />
+        app:itemBackground="@drawable/nav_bar_bg_selector"
+        app:menu="@menu/navigation" />-->
 
     <!-- Save Floating Action Button-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="32dp"
         android:src="@drawable/ic_check_black_24dp"
-        app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </android.support.design.widget.CoordinatorLayout>
 

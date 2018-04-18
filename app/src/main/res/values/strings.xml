@@ -11,11 +11,14 @@
     <string name="default_email_heading">Email</string>
     <string name="default_email">Your email.</string>
     <string name="default_bio_heading">Bio</string>
-    <string name="default_bio">Write here your Bio
-    </string>
+    <string name="default_bio">Write here your Bio</string>
     <string name="default_picture_path">void</string>
 
-    <string name="search_hint">Search a book or a user...</string>
+    <string name="welcome_msg">Welcome to Share\'nBook!</string>
+    <string name="search_hint">Search a book or a user…</string>
+
+    <!-- common words -->
+    <string name="search">Search</string>
 
     <!-- ============================== -->
 
@@ -33,15 +36,15 @@
     <string name="default_rating_heading">Rating</string>
 
     <string name="default_isbn" translatable="false">a number composed of 10 to 13 digits</string>
-    <string name="default_title">The book title</string>
-    <string name="default_subtitle">The book subtitle</string>
-    <string name="default_authors">The book authors list</string>
-    <string name="default_publisher">The book publisher</string>
-    <string name="default_published_date">The published date of the book</string>
-    <string name="default_description">Book Description</string>
-    <string name="default_page_count">Page Count of the book</string>
-    <string name="default_categories">Categories of the book</string>
-    <string name="default_language">Book language</string>
+    <string name="default_title">Which is the title?</string>
+    <string name="default_subtitle">Which is the subtitle, if any?</string>
+    <string name="default_authors">Which are the authors?</string>
+    <string name="default_publisher">Who published this book?</string>
+    <string name="default_published_date">When did it has been published?</string>
+    <string name="default_description">Which is the plot?</string>
+    <string name="default_page_count">How many pages has this book?</string>
+    <string name="default_categories">Which genres it belongs to?</string>
+    <string name="default_language">In which language is it written?</string>
 
     <!-- ======================== -->
 
@@ -56,7 +59,7 @@
     <string name="city_key">city</string>
     <string name="bio_key">bio</string>
     <string name="email_key">email</string>
-    <string name="userPicture_key">user_picture</string>
+    <string name="userPicture_key">picture_uri</string>
 
     <!-- copy keys for rollbacks-->
     <string name="fullname_copy_key">fullname_copy</string>
@@ -88,6 +91,8 @@
     <string name="city_bad_lenght_rationale">Please, city name should be at least 2 characters</string>
     <string name="city_bad_format_rationale">Please, city name must contain just letters. Initial capital letters</string>
     <string name="bio_bad_format_rationale">Please, do not use special characters in your biography</string>
+    <string name="required_field">This field is mandatory</string>
+    <string name="isbn_bad_format">ISBN not valid</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Let\'s start!</string>
@@ -110,5 +115,25 @@
     <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
     <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
 
+    <!-- ShareBookActivity String -->
+    <string name="sba_title">Share a Book</string>
+    <string name="sba_subtitle">Select an option…</string>
+    <string name="sba_insert_isbn">Insert ISBN</string>
+    <string name="sba_scan_isbn">Scan ISBN Barcode</string>
+    <string name="sba_manually_input">Manually input Book Details</string>
+    <string name="sba_no_books_found">Book not found</string>
+    <string name="sba_getting_book_details">Retrieving book details…</string>
+    <string name="sba_no_connection">Check your internet connection</string>
+
+    <!-- Firebase keys -->
+    <string name="uid_key">uid_key</string>
+    <string name="user_profile_data_key">user_data</string>
+    <string name="empty_user_value">empty_user</string>
+    <string name="empty_profile_value">empty_profile</string>
+    <string name="users_key">users</string>
+    <string name="profile_key">profile</string>
+    <string name="profile_value_placeholder">profile_empty</string>
+    <string name="users_books_placeholder">books_empty</string>
+    <string name="user_books_key">user_books</string>
 
 </resources>

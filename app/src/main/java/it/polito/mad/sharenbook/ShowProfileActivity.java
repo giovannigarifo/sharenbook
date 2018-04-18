@@ -15,11 +15,28 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.io.File;
+import java.io.IOException;
+
+import it.polito.mad.sharenbook.model.UserProfile;
 
 public class ShowProfileActivity extends Activity {
 
@@ -38,7 +55,10 @@ public class ShowProfileActivity extends Activity {
     private SharedPreferences editedProfile;
 
     //Firebase references
-    FirebaseDatabase firedb;
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
+    private FirebaseUser firebaseUser;
 
     //default profile values
     private String default_city;
@@ -52,6 +72,8 @@ public class ShowProfileActivity extends Activity {
     private static final int EDIT_RETURN_VALUE = 1;
 
     private int widthT = 700;
+
+    private UserProfile user;
 
     /**
      * onCreate callback
@@ -87,29 +109,70 @@ public class ShowProfileActivity extends Activity {
         navBar = (BottomNavigationView) findViewById(R.id.navigation);
         userPicture = (CircularImageView) findViewById(R.id.userPicture);
 
+
+        /**
+         * User creation
+         */
+
+        Bundle data = getIntent().getExtras();
+        user = data.getParcelable(getString(R.string.user_profile_data_key));
+
+        if(user.getPicture_uri() != null) {
+
+            //Set profile picture
+            Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
+
+            userPicture.setOnClickListener(v -> {
+                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class); //TODO glide in showPicture
+                i.putExtra("PicturePath", user.getPicture_uri().toString());
+                startActivity(i);
+            });
+        }
+
+        /**
+         * set texts
+         */
+        fullNameResize();
+        tv_userFullName.setText(user.getFullname());
+        tv_userNickName.setText(user.getUsername());
+        tv_userCityContent.setText(user.getCity());
+        tv_userBioContent.setText(user.getBio());
+        tv_userEmailContent.setText(user.getEmail());
+
+
+
         /**
          * userPicture
          */
 
         //set user picture
-        final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
-        if (!choosenPicture.equals(getString(R.string.default_picture_path)))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
-
-        //register callback that start the showPicture activity when user clicks the photo
-        userPicture.setOnClickListener(v -> {
-            Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-            i.putExtra("PicturePath", choosenPicture);
-            startActivity(i);
-        });
-
+        final String choosenPicture;
 
         /**
          * goEdit_Button
          */
         goEdit_button.setOnClickListener(v -> {
+
+
+            /**
+             *   Create User Object
+             */
+
+/*
+            UserProfile user = new UserProfile(
+                    firebaseUser.getUid(),
+                    editedProfile.getString(getString(R.string.fullname_key), default_fullname),
+                    null,
+                    editedProfile.getString(getString(R.string.email_key), default_email),
+                    null,null,
+                    choosenPicture.toString()
+            );
+*/
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
-            startActivityForResult(i, EDIT_RETURN_VALUE);
+            i.putExtra(getString(R.string.user_profile_data_key),user);
+            i.putExtra("from","profile");
+            startActivityForResult(i, EDIT_RETURN_VALUE); //TODO verify if it works without ForResult
+
         });
 
 
@@ -129,7 +192,7 @@ public class ShowProfileActivity extends Activity {
                             .signOut(this)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SignInActivity.class);
+                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
                                     Toast.makeText(getApplicationContext(), "Signed Out!", Toast.LENGTH_SHORT).show();
                                     finish();
@@ -149,8 +212,101 @@ public class ShowProfileActivity extends Activity {
             return true;
         });
 
+
+
+
+
     }
 
+    /**
+     * firebase init and reading method
+     */
+    private void firebaseInitAndReading(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
+
+        databaseReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                user = dataSnapshot.getValue(UserProfile.class);
+                user.setUserID(firebaseUser.getUid());
+
+
+                //if(user.getPicture_uri() != null) {
+
+                    /**
+                     * Retrieve Image from Storage
+                     */
+
+                   /* FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                    StorageReference storageRef = storage.getReference();
+
+                    storageRef.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            user.setPicture_uri(uri);
+                            String imageURL = uri.toString();
+                            Glide.with(getApplicationContext()).load(imageURL).into(userPicture);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });*/
+
+                    userPicture.setOnClickListener(v -> {
+                        Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                        i.putExtra("PicturePath", user.getPicture_uri().toString());
+                        startActivity(i);
+                    });
+               // }
+
+
+
+                //user.setPicture_uri(Uri.parse(default_picture_path));
+                /**
+                 * set texts
+                 */
+                fullNameResize();
+                tv_userFullName.setText(user.getFullname());
+                tv_userNickName.setText(user.getUsername());
+                tv_userCityContent.setText(user.getCity());
+                tv_userBioContent.setText(user.getBio());
+                tv_userEmailContent.setText(user.getEmail());
+
+                Log.d("DATA:",user.getUserID());
+                Log.d("DATA:",user.getFullname());
+                Log.d("DATA:",user.getUsername());
+                Log.d("DATA:",user.getEmail());
+                Log.d("DATA:",user.getCity());
+                Log.d("DATA:",user.getBio());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+                if(databaseError != null){
+                    Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+            }
+        });
+
+
+
+
+
+    }
 
     /**
      * onActivityResult callback
@@ -181,6 +337,9 @@ public class ShowProfileActivity extends Activity {
 
                 if (!choosenPicture.equals(default_picture_path))
                     userPicture.setImageURI(Uri.parse(choosenPicture));
+
+
+
 
                 userPicture.setOnClickListener(v -> {
 

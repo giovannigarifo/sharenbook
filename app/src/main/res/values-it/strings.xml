@@ -11,10 +11,13 @@
     <string name="default_city_heading">Città</string>
     <string name="default_city">Città, Nazione</string>
     <string name="default_bio_heading">Biografia</string>
-    <string name="default_bio">Scrivi qui la tua biografia.
-    </string>
+    <string name="default_bio">Scrivi qui la tua biografia.</string>
 
-    <string name="search_hint">Ricerca un libro o un utente...</string>
+    <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
+    <string name="search_hint">Ricerca un libro o un utente…</string>
+
+    <!-- common words -->
+    <string name="search">Cerca</string>
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -22,8 +25,20 @@
     <string name="title_shareBook">Nuovo annuncio</string>
 
     <!-- persistence keys -->
+    <string name="fullname_key">fullname</string>
+    <string name="username_key">username</string>
+    <string name="city_key">city</string>
+    <string name="bio_key">bio</string>
+    <string name="email_key">email</string>
+    <string name="userPicture_key">picture_uri</string>
 
     <!-- copy keys for rollbacks-->
+    <string name="fullname_copy_key">fullname_copy</string>
+    <string name="username_copy_key">username_copy</string>
+    <string name="city_copy_key">city_copy</string>
+    <string name="bio_copy_key">bio_copy</string>
+    <string name="email_copy_key">email_copy</string>
+    <string name="userPicture_copy_key">user_picture_copy</string>
 
     <!-- photo dialog items -->
 
@@ -47,6 +62,8 @@
     <string name="city_bad_lenght_rationale">Per favore, la tua città deve contenere almeno 2 caratteri</string>
     <string name="city_bad_format_rationale">Per favore, la tua città deve contenere solo caratteri. Iniziali maiuscole</string>
     <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>
+    <string name="required_field">Questo campo è obbligatorio!</string>
+    <string name="isbn_bad_format">ISBN non valido</string>
 
 
     <!-- permissions -->
@@ -61,8 +78,9 @@
     <string name="camera_permission_granted">Permesso per la fotocamera autorizzato. Inizializzazione dell\'anteprima.</string>
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
+
     <string name="default_title_heading">Titolo</string>
-    <string name="default_sub_title_heading">Sottotitolo</string>
+    <string name="default_subtitle_heading">Sottotitolo</string>
     <string name="default_authors_heading">Autori</string>
     <string name="default_publisher_heading">Editore</string>
     <string name="default_published_date_heading">Data pubblicazione</string>
@@ -73,6 +91,17 @@
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
 
+    <string name="default_isbn" translatable="false">Inserisci il codice ISBN (da 10 a 13 cifre)</string>
+    <string name="default_title">Qual è il titolo del libro?</string>
+    <string name="default_subtitle">Il libro ha un sottotitolo?</string>
+    <string name="default_authors">Chi sono gli autori?</string>
+    <string name="default_publisher">Chi ha pubblicato il libro?</string>
+    <string name="default_published_date">Quando è stato pubblicato?</string>
+    <string name="default_description">Di cosa tratta?</string>
+    <string name="default_page_count">Quante pagine ha?</string>
+    <string name="default_categories">In quali categorie rientra?</string>
+    <string name="default_language">In che lingua è scritto?</string>
+
     <!-- FACEBOOK -->
     <string name="facebook_application_id">375832199559673</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb375832199559673</string>
@@ -80,6 +109,27 @@
     <!-- TWITTER -->
     <string name="twitter_consumer_key" translatable="false">3vrnRb8M1coOnvdWLodpcJsWE</string>
     <string name="twitter_consumer_secret" translatable="false">aELeyVY4NkVn3vql2nV2iy29bbMIwhFfRiG2JAsx4VEasoYVLE</string>
+
+    <!-- ShareBookActivity String -->
+    <string name="sba_title">Condividi un Libro</string>
+    <string name="sba_subtitle">Seleziona un\'opzione…</string>
+    <string name="sba_insert_isbn">Inserisci l\'ISBN</string>
+    <string name="sba_scan_isbn">Scansiona l\'ISBN utilizzando la fotocamera</string>
+    <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
+    <string name="sba_no_books_found">Nessun libro trovato</string>
+    <string name="sba_getting_book_details">Recupero informazioni sul libro…</string>
+    <string name="sba_no_connection">Connessione ad internet non disponibile</string>
+
+    <!-- Firebase keys -->
+    <string name="uid_key">uid_key</string>
+    <string name="user_profile_data_key">user_data</string>
+    <string name="empty_user_value">empty_user</string>
+    <string name="empty_profile_value">empty_profile</string>
+    <string name="users_key">users</string>
+    <string name="profile_key">profile</string>
+    <string name="profile_value_placeholder">profile_empty</string>
+    <string name="users_books_placeholder">books_empty</string>
+    <string name="user_books_key">user_books</string>
 
 
 </resources>
