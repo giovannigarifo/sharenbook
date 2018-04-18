@@ -119,6 +119,7 @@
     <string name="sba_no_books_found">Nessun libro trovato</string>
     <string name="sba_getting_book_details">Recupero informazioni sul libro…</string>
     <string name="sba_no_connection">Connessione ad internet non disponibile</string>
+    <string name="sba_scan_your_barcode">Scansiona il Barcode del tuo Libro</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>

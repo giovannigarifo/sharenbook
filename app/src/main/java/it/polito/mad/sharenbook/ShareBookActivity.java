@@ -67,7 +67,7 @@ public class ShareBookActivity extends AppCompatActivity {
         // Initializing scan object
         qrScan = new IntentIntegrator(this);
         qrScan.setOrientationLocked(false);
-        qrScan.setPrompt("Scan an ISBN Barcode");
+        qrScan.setPrompt(getText(R.string.sba_scan_your_barcode).toString());
 
         // Attach listeners
         btnSearchIsbn.setOnClickListener(new View.OnClickListener() {

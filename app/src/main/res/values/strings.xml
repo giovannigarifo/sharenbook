@@ -119,11 +119,12 @@
     <string name="sba_title">Share a Book</string>
     <string name="sba_subtitle">Select an option…</string>
     <string name="sba_insert_isbn">Insert ISBN</string>
-    <string name="sba_scan_isbn">Scan ISBN Barcode</string>
+    <string name="sba_scan_isbn">Scan ISBN Barcode using camera</string>
     <string name="sba_manually_input">Manually input Book Details</string>
     <string name="sba_no_books_found">Book not found</string>
     <string name="sba_getting_book_details">Retrieving book details…</string>
     <string name="sba_no_connection">Check your internet connection</string>
+    <string name="sba_scan_your_barcode">Scan your Book Barcode</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>
