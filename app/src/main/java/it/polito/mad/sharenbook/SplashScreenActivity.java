@@ -138,7 +138,7 @@ public class SplashScreenActivity extends Activity {
 
                                 }else {
 
-                                    Toast.makeText(getApplicationContext(), R.string.internal_error, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
                                     finish();
                                 }
                             }
@@ -208,7 +208,7 @@ public class SplashScreenActivity extends Activity {
                 public void onCancelled(DatabaseError databaseError) {
 
                     if (databaseError != null) {
-                        Toast.makeText(getApplicationContext(), R.string.internal_error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
                         finish();
                     }
 
@@ -321,7 +321,7 @@ public class SplashScreenActivity extends Activity {
 
                                         }else {
 
-                                            Toast.makeText(getApplicationContext(), R.string.internal_error, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
                                             finish();
                                         }
                                     }
@@ -389,7 +389,7 @@ public class SplashScreenActivity extends Activity {
                         public void onCancelled(DatabaseError databaseError) {
 
                             if (databaseError != null) {
-                                Toast.makeText(getApplicationContext(), R.string.internal_error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
                                 finish();
                             }
 
@@ -404,16 +404,16 @@ public class SplashScreenActivity extends Activity {
 
                 if (response == null) {
                     // User pressed back button
-                    Toast.makeText(this, R.string.sign_in_cancelled, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.sign_in_cancelled), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(this, R.string.no_internet_connection, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, getString(R.string.unknown_error), response.getError());
 
             }

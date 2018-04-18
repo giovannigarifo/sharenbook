@@ -203,7 +203,7 @@ public class EditBookActivity extends Activity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
-                                    Toast.makeText(getApplicationContext(), R.string.log_out, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                                     finish();
                                 }
                             });

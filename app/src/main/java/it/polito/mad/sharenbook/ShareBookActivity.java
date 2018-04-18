@@ -155,7 +155,7 @@ public class ShareBookActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                                     startActivity(i);
-                                    Toast.makeText(getApplicationContext(), R.string.log_out, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                                     finish();
                                 }
                             });
@@ -206,9 +206,9 @@ public class ShareBookActivity extends AppCompatActivity {
             progressDialog.dismiss();
 
             if (result.getTotalItems() == 0) {
-                Toast.makeText(getApplicationContext(), R.string.sba_no_books_found, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.sba_no_books_found), Toast.LENGTH_LONG).show();
             } else if (result.getTotalItems() == -1) {
-                Toast.makeText(getApplicationContext(), R.string.sba_no_connection, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.sba_no_connection), Toast.LENGTH_LONG).show();
             } else {
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", result.getBookList().get(0));
