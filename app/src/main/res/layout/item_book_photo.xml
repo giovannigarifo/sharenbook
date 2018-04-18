@@ -4,4 +4,5 @@
 
     android:id="@+id/editbook_iv_bookphoto"
     android:layout_width="100dp"
-    android:layout_height="150dp" />
+    android:layout_height="150dp"
+    android:layout_marginLeft="16dp"/>

@@ -310,7 +310,7 @@ class Book implements Parcelable {
     }
 
     public void addBookPhoto(Bitmap photo){
-        this.bookPhotos.add(photo);
+        this.bookPhotos.add(0, photo);
     }
 
 

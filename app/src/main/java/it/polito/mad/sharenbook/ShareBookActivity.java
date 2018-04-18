@@ -96,6 +96,7 @@ public class ShareBookActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", new Book());
                 startActivity(i);
+                finish();
             }
         });
 
@@ -208,6 +209,7 @@ public class ShareBookActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", result.getBookList().get(0));
                 startActivity(i);
+                finish();
             }
         }
     }
