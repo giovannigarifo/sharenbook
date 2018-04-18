@@ -76,6 +76,7 @@
     <string name="bio_copy_key">bio_copy</string>
     <string name="email_copy_key">email_copy</string>
     <string name="userPicture_copy_key">user_picture_copy</string>
+    <string name="changed_photo_flag_key">changed_photo_flag</string>
 
     <!-- photo dialog items -->
 

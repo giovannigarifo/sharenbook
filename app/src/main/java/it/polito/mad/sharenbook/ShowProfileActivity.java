@@ -295,9 +295,6 @@ public class ShowProfileActivity extends Activity {
         });
 
 
-
-
-
     }
 
     /**

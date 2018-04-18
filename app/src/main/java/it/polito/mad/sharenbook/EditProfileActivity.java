@@ -125,7 +125,7 @@ public class EditProfileActivity extends Activity {
 
     //User profile data
     private UserProfile user;
-    private Uri pictureURI = null;
+    //private Uri pictureURI = null;
 
     //FIREBASE
     private DatabaseReference firebaseDB;
@@ -280,6 +280,7 @@ public class EditProfileActivity extends Activity {
             choosenPicture = default_picture_path;
 
         writeProfile_copy.putString(getString(R.string.userPicture_copy_key), choosenPicture).commit();
+        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key),false).commit();
 
         Log.d("Gallery:", choosenPicture);
         if (!choosenPicture.equals(default_picture_path))
@@ -329,7 +330,7 @@ public class EditProfileActivity extends Activity {
 
         Log.d("Gallery:", choosenPicture);
         if (!choosenPicture.equals(default_picture_path))
-            userPicture.setImageURI(Uri.parse(choosenPicture));
+            Glide.with(getApplicationContext()).load(choosenPicture).into(userPicture);
 
         fab_editPhoto = (FloatingActionButton) findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setOnClickListener(v -> {
@@ -358,6 +359,8 @@ public class EditProfileActivity extends Activity {
                             //hiding the progress dialog
                             progressDialog.dismiss();
 
+                            writeProfile_copy.clear().commit();
+
                             Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
                             user.setPicture_uri(taskSnapshot.getDownloadUrl()); //pass the download URL
 
@@ -366,7 +369,6 @@ public class EditProfileActivity extends Activity {
                             if(getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                                 setResult(RESULT_OK, i);
                             } else {
-                                Log.d("CI sono", "wewe");
                                 startActivity(i);
                             }
                             finish();
@@ -379,6 +381,8 @@ public class EditProfileActivity extends Activity {
                             //if the upload is not successfull
                             //hiding the progress dialog
                             progressDialog.dismiss();
+
+                            writeProfile_copy.clear().commit();
 
                             //and displaying error message
                             Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
@@ -397,7 +401,7 @@ public class EditProfileActivity extends Activity {
         }
         //if there is not any file
         else {
-            //you can display an error toast
+            writeProfile_copy.clear().commit();
         }
     }
 
@@ -627,7 +631,7 @@ public class EditProfileActivity extends Activity {
                 out.write(buf, 0, len);
             }
             */
-            pictureURI = Uri.parse(galleryPath);
+            //pictureURI = Uri.parse(galleryPath);
 
             out.close();
             //in.close();
@@ -657,7 +661,9 @@ public class EditProfileActivity extends Activity {
 
         // userPicture.setImageURI(photoPathUri);
         //save uri path for persistence
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), imagePath).commit();
+        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), galleryPath).commit();
+        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key),true).commit();
+
     }
 
 
@@ -693,7 +699,7 @@ public class EditProfileActivity extends Activity {
 
             imagePath = outFile.getAbsolutePath();
 
-            pictureURI = data.getData();    //picture URI to be saved on firebase
+            //pictureURI = data.getData();    //picture URI to be saved on firebase
 
             out.close();
             in.close();
@@ -706,7 +712,9 @@ public class EditProfileActivity extends Activity {
 
         userPicture.setImageURI(Uri.parse(imagePath));
 
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), imagePath).commit();
+        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), data.getData().toString()).commit();
+        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key),true).commit();
+
 
     }
 
@@ -767,7 +775,6 @@ public class EditProfileActivity extends Activity {
         }
 
 
-        writeProfile_copy.clear().commit();
 
 
         firebaseDB.child(getString(R.string.profile_key)).updateChildren(userData, new DatabaseReference.CompletionListener() {
@@ -779,14 +786,16 @@ public class EditProfileActivity extends Activity {
                     /**
                      * Check if profile picture has been changed or not
                      */
-                    if(pictureURI != null) {
+                    if(editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key),false)) {
 
-                        uploadFile(pictureURI);
+                        Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
+                        uploadFile(picturePath);
 
                     } else {
                         /**
                          * The user has not changed the profile picture
                          */
+
                         Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
 
                         Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
@@ -795,9 +804,9 @@ public class EditProfileActivity extends Activity {
                         if(getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                             setResult(RESULT_OK, i);
                         } else {
-                            Log.d("CI sono", "wewe");
                             startActivity(i);
                         }
+                        writeProfile_copy.clear().commit();
                         finish();
 
                     }
@@ -806,7 +815,6 @@ public class EditProfileActivity extends Activity {
 
             }
         });
-
 
     }
 
