@@ -75,6 +75,8 @@ public class ShowProfileActivity extends Activity {
 
     private UserProfile user;
 
+    private Uri pictureUri;
+
     /**
      * onCreate callback
      *
@@ -114,10 +116,15 @@ public class ShowProfileActivity extends Activity {
          * User creation
          */
 
-        Bundle data = getIntent().getExtras();
+        Bundle data = null;
+        if(savedInstanceState == null) //ShowProfile is started by SplashActivity
+            data = getIntent().getExtras();
+        else                            //otherwise landascape -> portrait or viceversa
+            data = savedInstanceState;
+
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
-        Uri pictureUri = user.getPicture_uri();
+        pictureUri = user.getPicture_uri();
 
         if(pictureUri != null) {
 
@@ -145,6 +152,8 @@ public class ShowProfileActivity extends Activity {
         tv_userCityContent.setText(user.getCity());
         tv_userBioContent.setText(user.getBio());
         tv_userEmailContent.setText(user.getEmail());
+
+
 
 
 
@@ -210,91 +219,10 @@ public class ShowProfileActivity extends Activity {
 
     }
 
-    /**
-     * firebase init and reading method
-     */
-    private void firebaseInitAndReading(){
-
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-
-
-        databaseReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                user = dataSnapshot.getValue(UserProfile.class);
-                user.setUserID(firebaseUser.getUid());
-
-
-                //if(user.getPicture_uri() != null) {
-
-                    /**
-                     * Retrieve Image from Storage
-                     */
-
-                   /* FirebaseStorage storage = FirebaseStorage.getInstance();
-
-                    StorageReference storageRef = storage.getReference();
-
-                    storageRef.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            user.setPicture_uri(uri);
-                            String imageURL = uri.toString();
-                            Glide.with(getApplicationContext()).load(imageURL).into(userPicture);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle any errors
-                        }
-                    });*/
-
-                    userPicture.setOnClickListener(v -> {
-                        Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                        i.putExtra("PicturePath", user.getPicture_uri().toString());
-                        startActivity(i);
-                    });
-               // }
-
-
-
-                //user.setPicture_uri(Uri.parse(default_picture_path));
-                /**
-                 * set texts
-                 */
-                fullNameResize();
-                tv_userFullName.setText(user.getFullname());
-                tv_userNickName.setText(user.getUsername());
-                tv_userCityContent.setText(user.getCity());
-                tv_userBioContent.setText(user.getBio());
-                tv_userEmailContent.setText(user.getEmail());
-
-                Log.d("DATA:",user.getUserID());
-                Log.d("DATA:",user.getFullname());
-                Log.d("DATA:",user.getUsername());
-                Log.d("DATA:",user.getEmail());
-                Log.d("DATA:",user.getCity());
-                Log.d("DATA:",user.getBio());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-                if(databaseError != null){
-                    Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-
-            }
-        });
-
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState); //the activity is going to be destroyed I need to save user
+        outState.putParcelable(getString(R.string.user_profile_data_key),user);
     }
 
     /**
@@ -318,7 +246,7 @@ public class ShowProfileActivity extends Activity {
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-                Uri pictureUri = user.getPicture_uri();
+                pictureUri = user.getPicture_uri();
 
                 if(pictureUri != null) {
 
