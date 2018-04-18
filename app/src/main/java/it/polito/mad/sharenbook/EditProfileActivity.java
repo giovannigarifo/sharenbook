@@ -855,7 +855,6 @@ public class EditProfileActivity extends Activity {
             result = false;
         }
 
-
         if (!(et_userEmail.getText().toString().equals(email)) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
             Log.d("Email:", et_userEmail.getText().toString());
 
