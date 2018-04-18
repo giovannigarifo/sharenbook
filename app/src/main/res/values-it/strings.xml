@@ -65,7 +65,6 @@
     <string name="required_field">Questo campo è obbligatorio!</string>
     <string name="isbn_bad_format">ISBN non valido</string>
 
-
     <!-- permissions -->
     <string name="permission_already_granted">Cominciamo! :-)</string>
     <string name="permissions_granted">Permessi forniti!</string>
@@ -91,6 +90,9 @@
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
 
+    <!-- ============================== -->
+
+    <!-- edit book strings -->
     <string name="default_isbn" translatable="false">Inserisci il codice ISBN (da 10 a 13 cifre)</string>
     <string name="default_title">Qual è il titolo del libro?</string>
     <string name="default_subtitle">Il libro ha un sottotitolo?</string>
@@ -101,6 +103,11 @@
     <string name="default_page_count">Quante pagine ha?</string>
     <string name="default_categories">In quali categorie rientra?</string>
     <string name="default_language">In che lingua è scritto?</string>
+
+    <string name="max_allowed_book_photo">Puoi caricare al massimo 5 foto!</string>
+
+    <!-- ============================== -->
+
 
     <!-- FACEBOOK -->
     <string name="facebook_application_id">375832199559673</string>

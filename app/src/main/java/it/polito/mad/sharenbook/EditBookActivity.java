@@ -85,6 +85,8 @@ public class EditBookActivity extends Activity {
     //information of the book to be shared
     Book book;
 
+    final static int MAX_ALLOWED_BOOK_PHOTO = 5;
+
 
     /**
      * onCreate callback
@@ -134,7 +136,10 @@ public class EditBookActivity extends Activity {
 
             hasPermissions();//check permissions
 
-            showSelectImageDialog();
+            if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO)
+                Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG).show();
+            else
+                showSelectImageDialog();
         });
 
 

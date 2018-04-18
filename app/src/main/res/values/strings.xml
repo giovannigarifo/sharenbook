@@ -46,6 +46,8 @@
     <string name="default_categories">Which genres it belongs to?</string>
     <string name="default_language">In which language is it written?</string>
 
+    <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>
+
     <!-- ======================== -->
 
     <!-- navigation bar -->
