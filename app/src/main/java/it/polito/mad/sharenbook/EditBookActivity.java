@@ -177,6 +177,7 @@ public class EditBookActivity extends Activity {
 
                 case R.id.navigation_profile:
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(i);
                     break;
 
