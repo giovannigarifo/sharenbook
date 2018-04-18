@@ -193,7 +193,11 @@ public class SplashScreenActivity extends Activity {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
-                                // Handle any errors
+                                user.setPicture_uri(Uri.parse(default_picture_path));
+                                Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                                i.putExtra(getString(R.string.user_profile_data_key), user);
+                                startActivity(i);
+                                finish();
                             }
                         });
 
@@ -312,7 +316,6 @@ public class SplashScreenActivity extends Activity {
                                             dbReference.child(firebaseUser.getUid()).updateChildren(profile_books);
                                             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                                             i.putExtra(getString(R.string.user_profile_data_key),user);
-                                            //i.putExtra("from","signup");
                                             startActivity(i);
                                             finish();
 
@@ -347,7 +350,6 @@ public class SplashScreenActivity extends Activity {
 
                                     Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                                     i.putExtra(getString(R.string.user_profile_data_key), user);
-                                    //i.putExtra("from", "signup");
                                     startActivity(i);
                                     finish();
 
@@ -363,14 +365,17 @@ public class SplashScreenActivity extends Activity {
                                             user.setPicture_uri(uri);
                                             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                                             i.putExtra(getString(R.string.user_profile_data_key), user);
-                                            //i.putExtra("from", "splash");
                                             startActivity(i);
                                             finish();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception exception) {
-                                            // Handle any errors
+                                            user.setPicture_uri(Uri.parse(default_picture_path));
+                                            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                                            i.putExtra(getString(R.string.user_profile_data_key), user);
+                                            startActivity(i);
+                                            finish();
                                         }
                                     });
 

@@ -358,12 +358,13 @@ public class EditProfileActivity extends Activity {
                             //hiding the progress dialog
                             progressDialog.dismiss();
 
-                            //and displaying a success toast
                             Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
+                            user.setPicture_uri(taskSnapshot.getDownloadUrl()); //pass the download URL
 
                             Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
                             i.putExtra(getString(R.string.user_profile_data_key),user);
-                            startActivity(i);
+                            //startActivity(i);
+                            setResult(RESULT_OK,i);
                             finish();
 
                         }
@@ -777,18 +778,17 @@ public class EditProfileActivity extends Activity {
                     if(pictureURI != null) {
 
                         uploadFile(pictureURI);
-                        user.setPicture_uri(pictureURI); //TODO modify this part -> URL not local URI!
 
                     } else {
                         /**
                          * The user has not changed the profile picture
                          */
-                        user.setPicture_uri(user.getPicture_uri());
                         Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
 
                         Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key),user);
-                        startActivity(i);
+                        //startActivity(i);
+                        setResult(RESULT_OK,i);
                         finish();
 
                     }

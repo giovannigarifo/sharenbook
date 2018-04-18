@@ -318,29 +318,37 @@ public class ShowProfileActivity extends Activity {
 
             if (resultCode == RESULT_OK) {
 
-                fullNameResize();
-                tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
-                tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key), default_username));
-                tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key), default_city));
-                tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key), default_bio));
-                tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key), default_email));
+                Bundle userData = data.getExtras();
+                user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-                final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+                Uri pictureUri = user.getPicture_uri();
 
+                if(pictureUri != null) {
 
-                if (!choosenPicture.equals(default_picture_path))
-                    userPicture.setImageURI(Uri.parse(choosenPicture));
+                    //Set profile picture
+                    if(!pictureUri.toString().equals(default_picture_path)){
+                        Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
 
-
-
-
-                userPicture.setOnClickListener(v -> {
-
+                        userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                            i.putExtra("PicturePath", choosenPicture);
+                            i.putExtra("PicturePath", pictureUri.toString());
                             startActivity(i);
-                        }
-                );
+                        });
+
+                    }
+
+
+                }
+
+                /**
+                 * set texts
+                 */
+                fullNameResize();
+                tv_userFullName.setText(user.getFullname());
+                tv_userNickName.setText(user.getUsername());
+                tv_userCityContent.setText(user.getCity());
+                tv_userBioContent.setText(user.getBio());
+                tv_userEmailContent.setText(user.getEmail());
             }
         }
     }
