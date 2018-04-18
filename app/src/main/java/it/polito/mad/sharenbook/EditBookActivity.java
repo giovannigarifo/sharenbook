@@ -569,7 +569,7 @@ public class EditBookActivity extends Activity {
         editbook_et_categories.setTypeface(robotoLight);
         editbook_et_language.setTypeface(robotoLight);
         editbook_et_bookConditions.setTypeface(robotoLight);
-        editbook_tv_tags.setTypeface(robotoLight);
+        editbook_et_tags.setTypeface(robotoLight);
     }
 }
 
