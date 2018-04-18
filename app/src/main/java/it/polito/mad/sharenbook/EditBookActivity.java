@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -191,7 +193,7 @@ public class EditBookActivity extends Activity {
 
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
 
         Log.d("debug", "onStart called by EditBookActivity");
@@ -207,7 +209,6 @@ public class EditBookActivity extends Activity {
         //set correct navigation as selected item
         navBar.setSelectedItemId(R.id.navigation_shareBook);
     }
-
 
 
     /**
@@ -226,7 +227,6 @@ public class EditBookActivity extends Activity {
 
     /**
      * Loads all the info obtained from Google Books API into the view
-     *
      */
     private void loadViewWithBookData() {
 
@@ -277,7 +277,6 @@ public class EditBookActivity extends Activity {
     }
 
 
-
     /**
      * hasPermissions method
      */
@@ -300,8 +299,6 @@ public class EditBookActivity extends Activity {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
         }
     }
-
-
 
 
     /**
@@ -439,7 +436,6 @@ public class EditBookActivity extends Activity {
     }
 
 
-
     /**
      * Method that sends a CROP intent for the photo identified by the Uri
      *
@@ -488,7 +484,6 @@ public class EditBookActivity extends Activity {
 
         exitRequest.show();
     }
-
 
 
     /**
@@ -567,7 +562,7 @@ public class EditBookActivity extends Activity {
 
 /**
  * TEST
- *
+ * <p>
  * BookPhotoAdapter class
  */
 
@@ -585,11 +580,11 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     //Inner Class that provides a reference to the views for each data item of the collection
     public class BookPhotoViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView item_book_photo_iv;
+        public RelativeLayout item_book_photo_iv;
 
-        public BookPhotoViewHolder(ImageView iv) {
-            super(iv);
-            item_book_photo_iv = iv;
+        public BookPhotoViewHolder(RelativeLayout rl) {
+            super(rl);
+            item_book_photo_iv = rl;
         }
     }
 
@@ -605,9 +600,9 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     public BookPhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LayoutInflater li = LayoutInflater.from(parent.getContext());
-        ImageView iv = (ImageView) li.inflate(R.layout.item_book_photo, parent, false);
+        RelativeLayout rl = (RelativeLayout) li.inflate(R.layout.item_book_photo, parent, false);
 
-        return new BookPhotoAdapter.BookPhotoViewHolder(iv);
+        return new BookPhotoAdapter.BookPhotoViewHolder(rl);
     }
 
     /**
@@ -620,12 +615,32 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     public void onBindViewHolder(BookPhotoViewHolder holder, int position) {
 
         Bitmap bmPhoto = this.bookPhotos.get(position);
-        holder.item_book_photo_iv.setImageBitmap(bmPhoto);
+
+        ImageView iv = (ImageView) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
+        ImageButton ib = (ImageButton) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
+
+        iv.setImageBitmap(bmPhoto);
+
+        //onClick listener for the delete photo button
+        ib.setOnClickListener((v) -> {
+
+            if (bookPhotos.size() > 0) {
+                this.bookPhotos.remove(position);
+                this.notifyItemRemoved(position);
+            }
+        });
     }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return this.bookPhotos.size();
     }
+
+
+    /**
+     * callback for the delete photo button
+     */
+
 }

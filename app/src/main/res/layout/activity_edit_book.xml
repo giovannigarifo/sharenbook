@@ -24,13 +24,13 @@
             <!-- Top bar -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp">
+                android:layout_height="200dp">
 
                 <!-- colored bar -->
                 <ImageView
                     android:id="@+id/editbook_topbar_background"
                     android:layout_width="wrap_content"
-                    android:layout_height="180dp"
+                    android:layout_height="200dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentRight="true"
@@ -41,7 +41,7 @@
                 <!-- Book thumbnails -->
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="180dp"
+                    android:layout_height="200dp"
                     android:orientation="horizontal">
 
                     <ImageButton
@@ -65,8 +65,7 @@
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/editbook_rv_bookPhotos"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_marginTop="16dp" />
+                        android:layout_height="200dp" />
 
                 </LinearLayout>
 

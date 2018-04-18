@@ -28,6 +28,7 @@ local.properties
 .idea/caches/*
 .idea/codeStyles/*
 *.iml
+.idea/assetWizardSettings.xml
 
 # OS-specific files
 .DS_Store
