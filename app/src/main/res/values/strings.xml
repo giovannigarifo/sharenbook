@@ -34,6 +34,9 @@
     <string name="default_categories_heading">Categories</string>
     <string name="default_language_heading">Language</string>
     <string name="default_rating_heading">Rating</string>
+    <string name="default_book_condition_heading">Book conditions</string>
+    <string name="default_tags_heading">Tags</string>
+
 
     <string name="default_isbn" translatable="false">a number composed of 10 to 13 digits</string>
     <string name="default_title">Which is the title?</string>
@@ -45,6 +48,9 @@
     <string name="default_page_count">How many pages has this book?</string>
     <string name="default_categories">Which genres it belongs to?</string>
     <string name="default_language">In which language is it written?</string>
+    <string name="default_book_condition">Striped cover, torn pages...</string>
+    <string name="default_tags">Bestseller, recommended for childrens...</string>
+
 
     <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>
 

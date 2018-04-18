@@ -59,14 +59,14 @@
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_add_black_24dp"
                         android:tint="@color/darkGrey"
-                        tools:ignore="ContentDescription"/>
+                        tools:ignore="ContentDescription" />
 
                     <!-- display collection of the user photo book -->
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/editbook_rv_bookPhotos"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_marginLeft="8dp"/>
+                        android:layout_marginLeft="8dp" />
 
                 </LinearLayout>
 
@@ -243,6 +243,56 @@
 
             </LinearLayout>
 
+            <!-- additional informations about the book -->
+            <LinearLayout
+                android:id="@+id/editbook_ll_bookConditions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <!-- book conditions -->
+                <TextView
+                    android:id="@+id/editbook_tv_bookConditions"
+                    style="@style/TextViewHeading"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/default_book_condition_heading" />
+
+                <EditText
+                    android:id="@+id/editbook_et_bookConditions"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/default_book_condition"
+                    android:inputType="text"
+                    android:maxLength="250" />
+
+                <!-- additional tags -->
+                <TextView
+                    android:id="@+id/editbook_tv_tags"
+                    style="@style/TextViewHeading"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/default_tags_heading" />
+
+                <EditText
+                    android:id="@+id/editbook_et_tags"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/default_tags"
+                    android:inputType="text"
+                    android:maxLength="250" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
@@ -253,9 +303,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/darkGrey"
+        app:itemBackground="@drawable/nav_bar_bg_selector"
         app:itemIconTint="@drawable/nav_bar_selector"
         app:itemTextColor="@drawable/nav_bar_selector"
-        app:itemBackground="@drawable/nav_bar_bg_selector"
         app:menu="@menu/navigation" />
 
     <!-- Save Floating Action Button-->

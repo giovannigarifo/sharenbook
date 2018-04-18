@@ -78,6 +78,10 @@
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
 
+
+    <!-- ============================== -->
+
+    <!-- edit book strings -->
     <string name="default_title_heading">Titolo</string>
     <string name="default_subtitle_heading">Sottotitolo</string>
     <string name="default_authors_heading">Autori</string>
@@ -89,10 +93,9 @@
     <string name="default_language_heading">Lingua</string>
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
+    <string name="default_book_condition_heading">Condizioni del libro</string>
+    <string name="default_tags_heading">Tags</string>
 
-    <!-- ============================== -->
-
-    <!-- edit book strings -->
     <string name="default_isbn" translatable="false">Inserisci il codice ISBN (da 10 a 13 cifre)</string>
     <string name="default_title">Qual è il titolo del libro?</string>
     <string name="default_subtitle">Il libro ha un sottotitolo?</string>
@@ -103,6 +106,10 @@
     <string name="default_page_count">Quante pagine ha?</string>
     <string name="default_categories">In quali categorie rientra?</string>
     <string name="default_language">In che lingua è scritto?</string>
+    <string name="default_book_condition">Copertina rigata, pagine strappate...</string>
+    <string name="default_tags">Bestseller, consigliato per bambini...</string>
+
+
 
     <string name="max_allowed_book_photo">Puoi caricare al massimo 5 foto!</string>
 

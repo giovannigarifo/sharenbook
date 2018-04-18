@@ -59,11 +59,13 @@ public class EditBookActivity extends Activity {
     //views
     private TextView editbook_tv_isbn, editbook_tv_title, editbook_tv_subtitle, editbook_tv_authors,
             editbook_tv_publisher, editbook_tv_publishedDate, editbook_tv_description,
-            editbook_tv_pageCount, editbook_tv_categories, editbook_tv_language;
+            editbook_tv_pageCount, editbook_tv_categories, editbook_tv_language, editbook_tv_bookConditions,
+            editbook_tv_tags;
 
     private EditText editbook_et_isbn, editbook_et_title, editbook_et_subtitle, editbook_et_authors,
             editbook_et_publisher, editbook_et_publishedDate, editbook_et_description,
-            editbook_et_pageCount, editbook_et_categories, editbook_et_language;
+            editbook_et_pageCount, editbook_et_categories, editbook_et_language, editbook_et_bookConditions,
+            editbook_et_tags;
 
     private FloatingActionButton editbook_fab_save;
 
@@ -517,6 +519,8 @@ public class EditBookActivity extends Activity {
         editbook_tv_pageCount = (TextView) findViewById(R.id.editbook_tv_pageCount);
         editbook_tv_categories = (TextView) findViewById(R.id.editbook_tv_categories);
         editbook_tv_language = (TextView) findViewById(R.id.editbook_tv_language);
+        editbook_tv_bookConditions = (TextView) findViewById(R.id.editbook_tv_bookConditions);
+        editbook_tv_tags = (TextView) findViewById(R.id.editbook_tv_tags);
 
         editbook_et_isbn = (EditText) findViewById(R.id.editbook_et_isbn);
         editbook_et_title = (EditText) findViewById(R.id.editbook_et_title);
@@ -528,6 +532,8 @@ public class EditBookActivity extends Activity {
         editbook_et_pageCount = (EditText) findViewById(R.id.editbook_et_pageCount);
         editbook_et_categories = (EditText) findViewById(R.id.editbook_et_categories);
         editbook_et_language = (EditText) findViewById(R.id.editbook_et_language);
+        editbook_et_bookConditions = (EditText) findViewById(R.id.editbook_et_bookConditions);
+        editbook_et_tags = (EditText) findViewById(R.id.editbook_et_tags);
 
         /**
          * set typography
@@ -548,6 +554,8 @@ public class EditBookActivity extends Activity {
         editbook_tv_pageCount.setTypeface(robotoBold);
         editbook_tv_categories.setTypeface(robotoBold);
         editbook_tv_language.setTypeface(robotoBold);
+        editbook_tv_bookConditions.setTypeface(robotoBold);
+        editbook_tv_tags.setTypeface(robotoBold);
 
         //edit texts
         editbook_et_isbn.setTypeface(robotoLight);
@@ -560,7 +568,8 @@ public class EditBookActivity extends Activity {
         editbook_et_pageCount.setTypeface(robotoLight);
         editbook_et_categories.setTypeface(robotoLight);
         editbook_et_language.setTypeface(robotoLight);
-
+        editbook_et_bookConditions.setTypeface(robotoLight);
+        editbook_tv_tags.setTypeface(robotoLight);
     }
 }
 
