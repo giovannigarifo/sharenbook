@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -179,6 +178,7 @@ public class ShareBookActivity extends AppCompatActivity {
 
             // Do something like display a progress bar
             progressDialog.setMessage(getText(R.string.sba_getting_book_details));
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
 
@@ -187,10 +187,6 @@ public class ShareBookActivity extends AppCompatActivity {
         protected BookDetails doInBackground(String... params) {
             // Get the isbn string from params, which is an array
             String readIsbn = params[0];
-
-            for (int i=0; i < 100000; i++)
-                Log.d("Testing ProgressDialog:", "iteration n° " + i);
-
             return new BookDetails(readIsbn);
         }
 
@@ -203,7 +199,10 @@ public class ShareBookActivity extends AppCompatActivity {
             progressDialog.dismiss();
 
             if (result.getTotalItems() == 0) {
-                Toast.makeText(getApplicationContext(), R.string.sba_no_books_found, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.sba_no_books_found, Toast.LENGTH_LONG).show();
+            }
+            else if (result.getTotalItems() == -1) {
+                Toast.makeText(getApplicationContext(), R.string.sba_no_connection, Toast.LENGTH_LONG).show();
             }
             else {
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);

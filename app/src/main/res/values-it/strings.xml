@@ -14,7 +14,7 @@
     <string name="default_bio">Scrivi qui la tua biografia.</string>
 
     <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
-    <string name="search_hint">Ricerca un libro o un utente...</string>
+    <string name="search_hint">Ricerca un libro o un utente…</string>
 
     <!-- common words -->
     <string name="search">Cerca</string>
@@ -117,7 +117,8 @@
     <string name="sba_scan_isbn">Scansiona l\'ISBN utilizzando la fotocamera</string>
     <string name="sba_manually_input">Inserisci manualmente i dettagli del libro</string>
     <string name="sba_no_books_found">Nessun libro trovato</string>
-    <string name="sba_getting_book_details">"Recupero informazioni sul libro…"</string>
+    <string name="sba_getting_book_details">Recupero informazioni sul libro…</string>
+    <string name="sba_no_connection">Connessione ad internet non disponibile</string>
 
     <!-- Firebase keys -->
     <string name="uid_key">uid_key</string>

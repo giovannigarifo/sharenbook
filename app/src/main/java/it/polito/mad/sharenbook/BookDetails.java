@@ -1,7 +1,6 @@
 package it.polito.mad.sharenbook;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,12 +12,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 class BookDetails {
     private final String GOOGLE_BOOK_WS = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
@@ -40,7 +36,9 @@ class BookDetails {
             this.jsonBook = readJsonFromUrl(GOOGLE_BOOK_WS + isbnNumber);
             totalItems = jsonBook.getInt("totalItems");
             createBookList();
-        } catch (IOException | JSONException e) {
+        } catch (IOException e) {
+            totalItems = -1;
+        } catch (JSONException e) {
             totalItems = 0;
         }
     }
@@ -143,12 +141,12 @@ class BookDetails {
     /**
      * Return a String containing all data read from a Reader
      */
-    private String readAll(Reader rd) throws IOException {
+    private String readAll(BufferedReader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
-        int cp;
+        String inputLine;
 
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
+        while ((inputLine = rd.readLine()) != null) {
+            sb.append(inputLine);
         }
         return sb.toString();
     }
