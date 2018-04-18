@@ -553,6 +553,7 @@ public class EditBookActivity extends Activity {
     private void firebaseSaveBook() {
         // Retrieve all data
         HashMap<String, Object> bookData = new HashMap<>();
+        bookData.put("owner_uid", firebaseUser.getUid());
         bookData.put("isbn", editbook_et_isbn.getText().toString());
         bookData.put("title", editbook_et_title.getText().toString());
         bookData.put("subtitle", editbook_et_subtitle.getText().toString());
@@ -564,7 +565,7 @@ public class EditBookActivity extends Activity {
         bookData.put("categories", commaStringToList( editbook_et_categories.getText().toString() ));
         bookData.put("language", editbook_et_language.getText().toString());
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
-        bookData.put("tags", editbook_et_tags.getText().toString());
+        bookData.put("tags", commaStringToList( editbook_et_tags.getText().toString() ));
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
