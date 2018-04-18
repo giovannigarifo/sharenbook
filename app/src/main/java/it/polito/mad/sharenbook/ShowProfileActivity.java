@@ -117,16 +117,23 @@ public class ShowProfileActivity extends Activity {
         Bundle data = getIntent().getExtras();
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
-        if(user.getPicture_uri() != null) {
+        Uri pictureUri = user.getPicture_uri();
+
+        if(pictureUri != null) {
 
             //Set profile picture
-            Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
+            if(!pictureUri.toString().equals(default_picture_path)){
+                Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
 
-            userPicture.setOnClickListener(v -> {
-                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class); //TODO glide in showPicture
-                i.putExtra("PicturePath", user.getPicture_uri().toString());
-                startActivity(i);
-            });
+                userPicture.setOnClickListener(v -> {
+                    Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                    i.putExtra("PicturePath", pictureUri.toString());
+                    startActivity(i);
+                });
+
+            }
+
+
         }
 
         /**
@@ -153,25 +160,10 @@ public class ShowProfileActivity extends Activity {
          */
         goEdit_button.setOnClickListener(v -> {
 
-
-            /**
-             *   Create User Object
-             */
-
-/*
-            UserProfile user = new UserProfile(
-                    firebaseUser.getUid(),
-                    editedProfile.getString(getString(R.string.fullname_key), default_fullname),
-                    null,
-                    editedProfile.getString(getString(R.string.email_key), default_email),
-                    null,null,
-                    choosenPicture.toString()
-            );
-*/
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key),user);
             i.putExtra("from","profile");
-            startActivityForResult(i, EDIT_RETURN_VALUE); //TODO verify if it works without ForResult
+            startActivityForResult(i, EDIT_RETURN_VALUE);
 
         });
 
@@ -334,6 +326,7 @@ public class ShowProfileActivity extends Activity {
                 tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key), default_email));
 
                 final String choosenPicture = editedProfile.getString(getString(R.string.userPicture_key), default_picture_path);
+
 
                 if (!choosenPicture.equals(default_picture_path))
                     userPicture.setImageURI(Uri.parse(choosenPicture));

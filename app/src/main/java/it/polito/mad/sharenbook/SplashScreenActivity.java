@@ -104,10 +104,17 @@ public class SplashScreenActivity extends Activity {
                          * Create user to pass it in the bundle for EditProfile
                          */
 
+                        String photoUri;
+                        if(firebaseUser.getPhotoUrl() == null){
+                            photoUri = default_picture_path;
+                        } else {
+                            photoUri = firebaseUser.getPhotoUrl().toString();
+                        }
+
                         UserProfile user = new UserProfile(firebaseUser.getUid(),
-                                firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
-                                null, null,
-                                firebaseUser.getPhotoUrl().toString()
+                                firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
+                                default_city, default_bio,
+                                photoUri
                         );
 
                         users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
@@ -145,11 +152,22 @@ public class SplashScreenActivity extends Activity {
                          * Profile is empty -> start EditProfile
                          */
 
-                        user = new UserProfile(firebaseUser.getUid(),default_fullname,default_username,default_email,
-                                default_city,default_bio,default_picture_path);
+                        //Load user data from the registration account used
+                        String photoUri;
+                        if(firebaseUser.getPhotoUrl() == null){
+                            photoUri = default_picture_path;
+                        } else {
+                            photoUri = firebaseUser.getPhotoUrl().toString();
+                        }
+
+                        user = new UserProfile(firebaseUser.getUid(),
+                                firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
+                                default_city, default_bio,
+                                photoUri
+                        );
+
                         Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);
-                        //i.putExtra("from", "splash");
                         startActivity(i);
                         finish();
 
@@ -169,7 +187,6 @@ public class SplashScreenActivity extends Activity {
                                 user.setPicture_uri(uri);
                                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                                 i.putExtra(getString(R.string.user_profile_data_key), user);
-                                //i.putExtra("from", "splash");
                                 startActivity(i);
                                 finish();
                             }
@@ -267,11 +284,18 @@ public class SplashScreenActivity extends Activity {
                                  * Create user to pass it in the bundle for EditProfile
                                  */
 
-                                UserProfile user = new UserProfile(firebaseUser.getUid(),
-                                        firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
-                                        null, null,
-                                        firebaseUser.getPhotoUrl().toString()
-                                        );
+                                String photoUri;
+                                if(firebaseUser.getPhotoUrl() == null){
+                                    photoUri = default_picture_path;
+                                } else {
+                                    photoUri = firebaseUser.getPhotoUrl().toString();
+                                }
+
+                                user = new UserProfile(firebaseUser.getUid(),
+                                        firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
+                                        default_city, default_bio,
+                                        photoUri
+                                );
 
                                 users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
                                 profile_books.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
@@ -307,8 +331,20 @@ public class SplashScreenActivity extends Activity {
                                  */
                                 if (profileData.equals(getString(R.string.profile_value_placeholder))) {
 
-                                    user = new UserProfile(firebaseUser.getUid(),default_fullname,default_username,default_email,
-                                            default_city,default_bio,default_picture_path);
+
+                                    String photoUri;
+                                    if(firebaseUser.getPhotoUrl() == null){
+                                        photoUri = default_picture_path;
+                                    } else {
+                                        photoUri = firebaseUser.getPhotoUrl().toString();
+                                    }
+
+                                    user = new UserProfile(firebaseUser.getUid(),
+                                            firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
+                                            default_city, default_bio,
+                                            photoUri
+                                    );
+
                                     Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                                     i.putExtra(getString(R.string.user_profile_data_key), user);
                                     //i.putExtra("from", "signup");
