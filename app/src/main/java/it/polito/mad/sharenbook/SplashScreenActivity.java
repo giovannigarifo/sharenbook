@@ -36,19 +36,17 @@ import static android.content.ContentValues.TAG;
 public class SplashScreenActivity extends Activity {
 
     private static final int RC_SIGN_IN = 123;
+
+    /** Firebase variables */
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase firebaseDB;
     private DatabaseReference dbReference;
-
-    //Firebase references
-    //private DatabaseReference databaseReference;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser firebaseUser;
 
     private UserProfile user;
 
-    //default profile values
+    /**default profile values*/
     private String default_city;
     private String default_bio;
     private String default_email;
@@ -60,13 +58,7 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-         /**
-           Verify if the user is already signed-in
-
-         */
-
-        //user = new UserProfile();
-
+        /** Set default values */
         default_city = getString(R.string.default_city);
         default_bio = getString(R.string.default_bio);
         default_email = getString(R.string.default_email);
@@ -76,90 +68,17 @@ public class SplashScreenActivity extends Activity {
 
         firebaseInitAndReading();
 
-
-
-/*
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser() != null) {
-
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.putExtra(getString(R.string.uid_key),firebaseAuth.getCurrentUser().getUid());
-                    Log.d("UID:",firebaseAuth.getCurrentUser().getUid());
-                    Log.d("UID:",firebaseAuth.getCurrentUser().getProviderId());
-
-                    startActivity(i);
-                    finish();
-
-                }else {
-                    // User not signed in
-                    startActivityForResult(
-                            // Get an instance of AuthUI based on the default app
-                            AuthUI.getInstance().createSignInIntentBuilder()
-                                    .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                            new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                            new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                            new AuthUI.IdpConfig.EmailBuilder().build()))
-                                    .setLogo(R.mipmap.ic_launcher)
-                                    .build(),
-                            RC_SIGN_IN);
-                }
-            }
-        };
-
-*/
     }
 
-    private void checkAuth(){
+
+    /*private void checkAuth(){
 
         firebaseAuth = FirebaseAuth.getInstance();
 
 
         if(firebaseAuth.getCurrentUser()!=null){
-            /**
-             *  User already signed in
-            */
-
-            /**
-             *  check se il valore che ha per chiave la uid corrente è empty profile -> EditProfile
-             *  altrimenti ShowProfile
-             */
 
             String userId = firebaseAuth.getCurrentUser().getUid();
-
-            /*
-            DatabaseReference userRef = firebaseDB.getReference().child(getString(R.string.users_key)).child(userId);
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    String profileState = (String) dataSnapshot.getValue();
-
-                    if(profileState.equals("empty_profile")){
-                        //User has not set profile data -> EditProfileActivity
-                        //TODO Complete this part
-                        Log.d("ERROR", "You must complete your profile creation before continuing!");
-
-                    } else {
-                        //User has a valid profile -> ShowProfileActivity
-
-                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                        i.putExtra(getString(R.string.uid_key), userId);
-                        startActivity(i);
-                        finish();
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError Error) {
-
-                }
-            });
-
-*/
 
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.putExtra(getString(R.string.uid_key), userId);
@@ -181,7 +100,7 @@ public class SplashScreenActivity extends Activity {
                     RC_SIGN_IN);
         }
 
-    }
+    }*/
 
     /**
      * firebase init and reading method
@@ -191,30 +110,44 @@ public class SplashScreenActivity extends Activity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        if(firebaseUser != null) {
+        if(firebaseUser != null) { /** User is signed in -> just check if his profile is completed or not*/
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
-
             firebaseDatabase = FirebaseDatabase.getInstance();
+
+            /** Retrieve User profile data */
             dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
 
             dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
+                    Object profileData = dataSnapshot.getValue();
+
+                    if(profileData == null){
+                        Log.d("ERROR: ", "Database not consistent!");
+                    }
 
                     if (dataSnapshot.getValue().equals(getString(R.string.profile_value_placeholder))) {
+
+                        /**
+                         * Profile is empty -> start EditProfile
+                         */
 
                         user = new UserProfile(firebaseUser.getUid(),default_fullname,default_username,default_email,
                                 default_city,default_bio,default_picture_path);
                         Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);
-                        i.putExtra("from", "splash");
+                        //i.putExtra("from", "splash");
                         startActivity(i);
                         finish();
 
                     }else {
+
+                        /**
+                         * Profile is completed -> start ShowProfile
+                         */
 
                         user = dataSnapshot.getValue(UserProfile.class);
 
@@ -226,11 +159,9 @@ public class SplashScreenActivity extends Activity {
                                 user.setPicture_uri(uri);
                                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                                 i.putExtra(getString(R.string.user_profile_data_key), user);
-                                i.putExtra("from", "splash");
+                                //i.putExtra("from", "splash");
                                 startActivity(i);
                                 finish();
-                                /*String imageURL = uri.toString();
-                                Glide.with(getApplicationContext()).load(imageURL).into(userPicture);*/
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -255,7 +186,11 @@ public class SplashScreenActivity extends Activity {
 
 
         }else {
-            // User not signed in
+
+            /**
+             * The user is not signed-in or logged-in
+             */
+
             startActivityForResult(
                     // Get an instance of AuthUI based on the default app
                     AuthUI.getInstance().createSignInIntentBuilder()
@@ -267,109 +202,163 @@ public class SplashScreenActivity extends Activity {
                             .setLogo(R.mipmap.ic_launcher)
                             .build(),
                     RC_SIGN_IN);
+
         }
 
-
-    }
-/*
-    @Override
-    protected void onStart() {
-        super.onStart();
-        firebaseAuth.addAuthStateListener(authStateListener);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (authStateListener != null) {
-            firebaseAuth.removeAuthStateListener(authStateListener);
-        }
-    }
-
-
-*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+
+        /**
+         * Here from Sign_In or Log_In
+         */
+
         if (requestCode == RC_SIGN_IN) {
 
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
-
-            // Successfully signed in
-
             if (resultCode == RESULT_OK) {
-
 
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-
-
                 if(firebaseUser != null) {
 
-                    Map<String,Object> users_dataPlaceholder = new HashMap<String,Object>();
-                    Map<String,Object> profile_books = new HashMap<String,Object>();
-
                     /**
-                     * CREATE USER TO PASS IN THE BUNDLE FOR EDIT_PROFILE
+                     * In this case the user has correctly done the SIGN_IN or LOG_IN ->
+                     * in any case he should go to EditProfile only when the profile is empty
+                     * otherwise go to ShowProfile
                      */
 
-                    UserProfile user = new UserProfile(firebaseUser.getUid(),
-                            firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
-                            null, null,
-                            firebaseUser.getPhotoUrl().toString()
-                            );
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
 
-                    users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
-                    profile_books.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
-                    profile_books.put(getString(R.string.user_books_key),getString(R.string.users_books_placeholder));
+                    firebaseDatabase = FirebaseDatabase.getInstance();
+                    dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
 
-                    dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+                    dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    dbReference.updateChildren(users_dataPlaceholder, new DatabaseReference.CompletionListener() {
+                            Object profileData = dataSnapshot.getValue();
+
+                            if(profileData == null) {
+                                /**
+                                 * The user has just done the Registration -> create new profile on the DB
+                                 */
+
+                                Map<String,Object> users_dataPlaceholder = new HashMap<String,Object>();
+                                Map<String,Object> profile_books = new HashMap<String,Object>();
+
+                                /**
+                                 * Create user to pass it in the bundle for EditProfile
+                                 */
+
+                                UserProfile user = new UserProfile(firebaseUser.getUid(),
+                                        firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
+                                        null, null,
+                                        firebaseUser.getPhotoUrl().toString()
+                                        );
+
+                                users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
+                                profile_books.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
+                                profile_books.put(getString(R.string.user_books_key),getString(R.string.users_books_placeholder));
+
+                                dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+
+                                dbReference.updateChildren(users_dataPlaceholder, new DatabaseReference.CompletionListener() {
+
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                                        if(databaseError == null) {
+                                            dbReference.child(firebaseUser.getUid()).updateChildren(profile_books);
+                                            Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                                            i.putExtra(getString(R.string.user_profile_data_key),user);
+                                            //i.putExtra("from","signup");
+                                            startActivity(i);
+                                            finish();
+
+                                        }else {
+
+                                            Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                    }
+                                });
+
+
+                            } else {
+                                /**
+                                 * The user has just done the Login -> just check if profile is empty or not
+                                 */
+                                if (profileData.equals(getString(R.string.profile_value_placeholder))) {
+
+                                    user = new UserProfile(firebaseUser.getUid(),default_fullname,default_username,default_email,
+                                            default_city,default_bio,default_picture_path);
+                                    Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                                    i.putExtra(getString(R.string.user_profile_data_key), user);
+                                    //i.putExtra("from", "signup");
+                                    startActivity(i);
+                                    finish();
+
+                                }else {
+
+                                    user = dataSnapshot.getValue(UserProfile.class);
+
+                                    user.setUserID(firebaseUser.getUid());
+
+                                    storageRef.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            user.setPicture_uri(uri);
+                                            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                                            i.putExtra(getString(R.string.user_profile_data_key), user);
+                                            //i.putExtra("from", "splash");
+                                            startActivity(i);
+                                            finish();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception exception) {
+                                            // Handle any errors
+                                        }
+                                    });
+
+                                }
+
+                            }
+
+                        }
 
                         @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        public void onCancelled(DatabaseError databaseError) {
 
-                            if(databaseError == null) {
-                                dbReference.child(firebaseUser.getUid()).updateChildren(profile_books);
-                                Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
-                                i.putExtra(getString(R.string.user_profile_data_key),user);
-                                i.putExtra("from","signup");
-                                startActivity(i);
-                                finish();
-
-                            }else {
-
+                            if (databaseError != null) {
                                 Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
                                 finish();
                             }
+
                         }
                     });
-/*
-                    Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
-                    i.putExtra(getString(R.string.user_profile_data_key),user);
-                    i.putExtra("from","signup");
-                    startActivity(i);
-                    finish();
-                    */
+
                 }
+
             } else{
 
-            //if (resultCode != RESULT_OK){
-                // Sign in failed
+                /** Signin or Login failed */
 
                 if (response == null) {
                     // User pressed back button
                     //showSnackbar(R.string.sign_in_cancelled);
-                    Toast.makeText(this, "ERROR: Sign-In Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Sign-In has been canceled", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(this, "ERROR: Sign-In Failed 2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "ERROR: No internet connection!", Toast.LENGTH_SHORT).show();
                     //showSnackbar(R.string.no_internet_connection);
                     return;
                 }
