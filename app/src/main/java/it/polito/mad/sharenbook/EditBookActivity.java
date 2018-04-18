@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -37,13 +39,25 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+
+import it.polito.mad.sharenbook.Utils.InputValidator;
 
 public class EditBookActivity extends Activity {
 
@@ -86,6 +100,15 @@ public class EditBookActivity extends Activity {
 
     //information of the book to be shared
     Book book;
+
+    // FireBase objects
+    private FirebaseUser firebaseUser;
+    private DatabaseReference booksDb;
+    private DatabaseReference userBooksDb;
+    private StorageReference bookImagesStorage;
+
+    // ProgressDialog
+    private ProgressDialog progressDialog;
 
     final static int MAX_ALLOWED_BOOK_PHOTO = 5;
 
@@ -130,6 +153,9 @@ public class EditBookActivity extends Activity {
 
         editbook_fab_save.setOnClickListener((v) -> {
             Log.d("debug", "editbook_fab_save onClickListener fired");
+            if (validateInputFields()) {
+                firebaseSaveBook();
+            }
         });
 
         editbook_ib_addBookPhoto.setOnClickListener((v) -> {
@@ -188,6 +214,7 @@ public class EditBookActivity extends Activity {
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(i);
+                    finish();
                     break;
 
                 case R.id.navigation_shareBook:
@@ -196,8 +223,16 @@ public class EditBookActivity extends Activity {
             return true;
         });
 
-    }
+        // Setup FireBase
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
+        userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
+        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
+        // Setup progress dialog
+        progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
+    }
 
     @Override
     protected void onStart() {
@@ -494,6 +529,76 @@ public class EditBookActivity extends Activity {
 
 
     /**
+     * Validate user inputs
+     */
+    private boolean validateInputFields() {
+        boolean isValid = true;
+
+        if (InputValidator.isWrongIsbn(editbook_et_isbn)) {
+            editbook_et_isbn.setError(getText(R.string.isbn_bad_format));
+            isValid = false;
+        }
+        if (editbook_et_title.getText().toString().isEmpty()) {
+            editbook_et_title.setError(getText(R.string.field_required));
+            isValid = false;
+        }
+        if (editbook_et_authors.getText().toString().isEmpty()) {
+            editbook_et_authors.setError(getText(R.string.field_required));
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Save all data on FireBase
+     */
+    private void firebaseSaveBook() {
+        // Retrieve all data
+        HashMap<String, Object> bookData = new HashMap<>();
+        bookData.put("isbn", editbook_et_isbn.getText().toString());
+        bookData.put("title", editbook_et_title.getText().toString());
+        bookData.put("subtitle", editbook_et_subtitle.getText().toString());
+        bookData.put("authors", editbook_et_authors.getText().toString());
+        bookData.put("publisher", editbook_et_publisher.getText().toString());
+        bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
+        bookData.put("description", editbook_et_description.getText().toString());
+        bookData.put("pageCount", editbook_et_pageCount.getText().toString());
+        bookData.put("categories", editbook_et_categories.getText().toString());
+        bookData.put("language", editbook_et_language.getText().toString());
+
+        // Show ProgressDialog
+        progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        // Write on DB
+        DatabaseReference newBookRef = booksDb.push();
+        newBookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
+
+            if (databaseError == null) {
+
+                userBooksDb.push().setValue(newBookRef.getKey(), (databaseError1, databaseReference1) -> {
+
+                    progressDialog.dismiss();
+                    if (databaseError == null) {
+                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(i);
+                        finish();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
      * getViewsAndSetTypography method
      */
     private void getViewsAndSetTypography() {
@@ -651,10 +756,5 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     public int getItemCount() {
         return this.bookPhotos.size();
     }
-
-
-    /**
-     * callback for the delete photo button
-     */
 
 }

@@ -64,6 +64,7 @@
     <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>
     <string name="required_field">Questo campo è obbligatorio!</string>
     <string name="isbn_bad_format">ISBN non valido</string>
+    <string name="field_required">Campo richiesto</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Cominciamo! :-)</string>
@@ -106,6 +107,7 @@
     <string name="default_page_count">Quante pagine ha?</string>
     <string name="default_categories">In quali categorie rientra?</string>
     <string name="default_language">In che lingua è scritto?</string>
+    <string name="default_saving_on_firebase">Salvataggio dati in corso…</string>
     <string name="default_book_condition">Copertina rigata, pagine strappate...</string>
     <string name="default_tags">Bestseller, consigliato per bambini...</string>
 
@@ -145,6 +147,7 @@
     <string name="profile_value_placeholder">profile_empty</string>
     <string name="users_books_placeholder">books_empty</string>
     <string name="user_books_key">user_books</string>
-
+    <string name="books_key">books</string>
+    <string name="book_images_key">book_images</string>
 
 </resources>

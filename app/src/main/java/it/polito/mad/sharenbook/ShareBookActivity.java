@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import it.polito.mad.sharenbook.Utils.InputValidate;
+import it.polito.mad.sharenbook.Utils.InputValidator;
 
 public class ShareBookActivity extends AppCompatActivity {
 
@@ -36,8 +36,7 @@ public class ShareBookActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_book);
 
@@ -74,7 +73,7 @@ public class ShareBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Validate isbn value
-                if (InputValidate.wrongIsbn(editIsbn)) {
+                if (InputValidator.isWrongIsbn(editIsbn)) {
                     editIsbn.setError(getText(R.string.isbn_bad_format));
                     return;
                 }
@@ -107,27 +106,22 @@ public class ShareBookActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        if(result != null)
-        {
+        if (result != null) {
             if (result.getContents() != null) {
                 // Retrieve book details on a separate thread
                 new GetBookDetailsTask().execute(result.getContents());
             }
-        }
-        else
-        {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
     }
 
     @Override
-    public boolean onSupportNavigateUp()
-    {
+    public boolean onSupportNavigateUp() {
         // Terminate activity (actionbar left arrow pressed)
         finish();
         return true;
@@ -140,8 +134,7 @@ public class ShareBookActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private void setupNavbar()
-    {
+    private void setupNavbar() {
         navBar = findViewById(R.id.navigation);
 
         // Set navigation_shareBook as selected item
@@ -201,11 +194,9 @@ public class ShareBookActivity extends AppCompatActivity {
 
             if (result.getTotalItems() == 0) {
                 Toast.makeText(getApplicationContext(), R.string.sba_no_books_found, Toast.LENGTH_LONG).show();
-            }
-            else if (result.getTotalItems() == -1) {
+            } else if (result.getTotalItems() == -1) {
                 Toast.makeText(getApplicationContext(), R.string.sba_no_connection, Toast.LENGTH_LONG).show();
-            }
-            else {
+            } else {
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", result.getBookList().get(0));
                 startActivity(i);
