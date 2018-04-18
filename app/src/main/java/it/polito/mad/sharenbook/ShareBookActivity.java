@@ -5,20 +5,16 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -73,34 +69,23 @@ public class ShareBookActivity extends AppCompatActivity {
         qrScan.setPrompt(getText(R.string.sba_scan_your_barcode).toString());
 
         // Attach listeners
-        btnSearchIsbn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Validate isbn value
-                if (InputValidator.isWrongIsbn(editIsbn)) {
-                    editIsbn.setError(getText(R.string.isbn_bad_format));
-                    return;
-                }
+        btnSearchIsbn.setOnClickListener(v -> {
+            // Validate isbn value
+            if (InputValidator.isWrongIsbn(editIsbn)) {
+                editIsbn.setError(getText(R.string.isbn_bad_format));
+                return;
+            }
 
-                // Retrieve book details on a separate thread
-                String insertedIsbn = editIsbn.getText().toString();
-                new GetBookDetailsTask().execute(insertedIsbn);
-            }
+            // Retrieve book details on a separate thread
+            String insertedIsbn = editIsbn.getText().toString();
+            new GetBookDetailsTask().execute(insertedIsbn);
         });
-        btnScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                qrScan.initiateScan();
-            }
-        });
-        btnManual.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
-                i.putExtra("book", new Book());
-                startActivity(i);
-                finish();
-            }
+        btnScan.setOnClickListener(v -> qrScan.initiateScan());
+        btnManual.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
+            i.putExtra("book", new Book());
+            startActivity(i);
+            finish();
         });
 
         // Restore previous state
@@ -151,13 +136,11 @@ public class ShareBookActivity extends AppCompatActivity {
                 case R.id.navigation_logout:
                     AuthUI.getInstance()
                             .signOut(this)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                                    startActivity(i);
-                                    Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                                    finish();
-                                }
+                            .addOnCompleteListener(task -> {
+                                Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                                startActivity(i);
+                                Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                                finish();
                             });
                     break;
 
