@@ -71,37 +71,6 @@ public class SplashScreenActivity extends Activity {
     }
 
 
-    /*private void checkAuth(){
-
-        firebaseAuth = FirebaseAuth.getInstance();
-
-
-        if(firebaseAuth.getCurrentUser()!=null){
-
-            String userId = firebaseAuth.getCurrentUser().getUid();
-
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-            i.putExtra(getString(R.string.uid_key), userId);
-            startActivity(i);
-            finish();
-
-        }else {
-            // User not signed in
-            startActivityForResult(
-                    // Get an instance of AuthUI based on the default app
-                    AuthUI.getInstance().createSignInIntentBuilder()
-                            .setAvailableProviders(Arrays.asList(
-                                    new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                    new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                    new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                    new AuthUI.IdpConfig.EmailBuilder().build()))
-                            .setLogo(R.mipmap.ic_launcher)
-                            .build(),
-                    RC_SIGN_IN);
-        }
-
-    }*/
-
     /**
      * firebase init and reading method
      */
@@ -125,11 +94,52 @@ public class SplashScreenActivity extends Activity {
 
                     Object profileData = dataSnapshot.getValue();
 
-                    if(profileData == null){
-                        Log.d("ERROR: ", "Database not consistent!");
+                    if(profileData == null){ //TODO check if this part is necessary or not
+                        Log.d("ERROR: ", "Database not consistent! New account for this user.");
+
+                        Map<String,Object> users_dataPlaceholder = new HashMap<String,Object>();
+                        Map<String,Object> profile_books = new HashMap<String,Object>();
+
+                        /**
+                         * Create user to pass it in the bundle for EditProfile
+                         */
+
+                        UserProfile user = new UserProfile(firebaseUser.getUid(),
+                                firebaseUser.getDisplayName(), null, firebaseUser.getEmail(),
+                                null, null,
+                                firebaseUser.getPhotoUrl().toString()
+                        );
+
+                        users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
+                        profile_books.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
+                        profile_books.put(getString(R.string.user_books_key),getString(R.string.users_books_placeholder));
+
+                        dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
+
+                        dbReference.updateChildren(users_dataPlaceholder, new DatabaseReference.CompletionListener() {
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                                if(databaseError == null) {
+                                    dbReference.child(firebaseUser.getUid()).updateChildren(profile_books);
+                                    Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
+                                    i.putExtra(getString(R.string.user_profile_data_key),user);
+                                    //i.putExtra("from","signup");
+                                    startActivity(i);
+                                    finish();
+
+                                }else {
+
+                                    Toast.makeText(getApplicationContext(), "ERROR: backend database error", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
+                            }
+                        });
+
                     }
 
-                    if (dataSnapshot.getValue().equals(getString(R.string.profile_value_placeholder))) {
+                    else if (dataSnapshot.getValue().equals(getString(R.string.profile_value_placeholder))) {
 
                         /**
                          * Profile is empty -> start EditProfile
@@ -245,6 +255,7 @@ public class SplashScreenActivity extends Activity {
                             Object profileData = dataSnapshot.getValue();
 
                             if(profileData == null) {
+
                                 /**
                                  * The user has just done the Registration -> create new profile on the DB
                                  */

@@ -771,12 +771,26 @@ public class EditProfileActivity extends Activity {
 
                 if(databaseError == null){
 
-                    //Upload profile picture on firebase (if updated)
+                    /**
+                     * Check if profile picture has been changed or not
+                     */
                     if(pictureURI != null) {
+
                         uploadFile(pictureURI);
                         user.setPicture_uri(pictureURI); //TODO modify this part -> URL not local URI!
+
                     } else {
-                        user.setPicture_uri(Uri.parse(default_picture_path));
+                        /**
+                         * The user has not changed the profile picture
+                         */
+                        user.setPicture_uri(user.getPicture_uri());
+                        Toast.makeText(getApplicationContext(), "Profile has been saved!", Toast.LENGTH_LONG).show();
+
+                        Intent i = new Intent (getApplicationContext(), ShowProfileActivity.class);
+                        i.putExtra(getString(R.string.user_profile_data_key),user);
+                        startActivity(i);
+                        finish();
+
                     }
 
                 }
