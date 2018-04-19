@@ -502,6 +502,8 @@ public class EditProfileActivity extends Activity {
      */
     private void selectImage() {
 
+        hasPermissions();
+
         final CharSequence items[] = {getString(R.string.photo_dialog_item_camera), getString(R.string.photo_dialog_item_gallery), getString(android.R.string.cancel)};
         final AlertDialog.Builder select = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
         select.setTitle(getString(R.string.photo_dialog_title));

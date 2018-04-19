@@ -165,4 +165,10 @@
     <string name="books_key">books</string>
     <string name="book_images_key">book_images</string>
 
+    <string name="mba_title">I miei annunci</string>
+    <string name="nav_my_books">Miei annunci</string>
+
+    <string name="no_books_alert_title">Nessun annuncio!</string>
+    <string name="no_books_suggestion">Ti consigliamo di farne uno! Vuoi farlo ora?</string>
+
 </resources>

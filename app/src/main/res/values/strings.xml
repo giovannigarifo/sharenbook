@@ -163,4 +163,10 @@
     <string name="books_key">books</string>
     <string name="book_images_key">book_images</string>
 
+    <string name="mba_title">My books</string>
+    <string name="nav_my_books">My books</string>
+
+    <string name="no_books_alert_title">No books yet!</string>
+    <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
+
 </resources>

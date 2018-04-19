@@ -153,6 +153,12 @@ public class ShareBookActivity extends AppCompatActivity {
 
                 case R.id.navigation_shareBook:
                     break;
+
+                case R.id.navigation_myBook:
+                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+                    startActivity(my_books);
+                    finish();
+                    break;
             }
 
             return true;

@@ -20,4 +20,10 @@
         android:icon="@drawable/ic_add_black_24dp"
         android:title="@string/title_shareBook" />
 
+    <item
+        android:id="@+id/navigation_myBook"
+        android:icon="@drawable/ic_book_64dp"
+        android:title="@string/nav_my_books" />
+
+
 </menu>
