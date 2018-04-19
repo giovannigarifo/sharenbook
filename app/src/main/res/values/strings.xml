@@ -61,6 +61,8 @@
     <string name="default_saving_on_firebase">Saving book on cloud…</string>
     <string name="default_book_condition">Striped cover, torn pages…</string>
     <string name="default_tags">Bestseller, recommended for children…</string>
+    <string name="default_book_saved">Book saved correctly!</string>
+    <string name="default_saving_photo">Saving photo </string>
 
 
     <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>

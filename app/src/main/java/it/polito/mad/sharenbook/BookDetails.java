@@ -192,6 +192,7 @@ class Book implements Parcelable {
     private String owner_uid;
     private String bookConditions;
     private List<String> tags;
+    private int numPhotos;
 
 
 
@@ -250,7 +251,7 @@ class Book implements Parcelable {
         this.owner_uid = "";
         this.bookConditions = "";
         this.tags = new ArrayList<>();
-
+        this.numPhotos = 0;
     }
 
     public Book() {
@@ -270,6 +271,7 @@ class Book implements Parcelable {
         this.owner_uid = "";
         this.bookConditions = "";
         this.tags = new ArrayList<>();
+        this.numPhotos = 0;
     }
 
     public String getIsbn() {
@@ -336,6 +338,10 @@ class Book implements Parcelable {
         return tags;
     }
 
+    public int getNumPhotos() {
+        return numPhotos;
+    }
+
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
@@ -396,6 +402,10 @@ class Book implements Parcelable {
         this.tags = tags;
     }
 
+    public void setNumPhotos(int numPhotos) {
+        this.numPhotos = numPhotos;
+    }
+
     /*******************************
      * Parcelizable implementation
      *
@@ -430,6 +440,7 @@ class Book implements Parcelable {
         this.owner_uid = in.readString();
         this.bookConditions = in.readString();
         this.tags = in.readArrayList(String.class.getClassLoader());
+        this.numPhotos = in.readInt();
     }
 
     /**
@@ -461,6 +472,7 @@ class Book implements Parcelable {
         dest.writeString(getOwner_uid());
         dest.writeString(getBookConditions());
         dest.writeList(getTags());
+        dest.writeInt(getNumPhotos());
     }
 
     @Override

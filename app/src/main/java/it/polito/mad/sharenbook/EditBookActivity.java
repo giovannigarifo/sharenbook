@@ -53,6 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
 
@@ -607,6 +608,7 @@ public class EditBookActivity extends Activity {
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
         bookData.put("tags", commaStringToList(editbook_et_tags.getText().toString()));
         bookData.put("thumbnail", book.getThumbnail());
+        bookData.put("numPhotos", book.getBookPhotos().size());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -642,6 +644,7 @@ public class EditBookActivity extends Activity {
         // Get list of photos
         ArrayList<Bitmap> photos = book.getBookPhotos();
         List<Task<UploadTask>> taskList = new ArrayList<>();
+        AtomicInteger uPhotoState = new AtomicInteger(0);
 
         // Launch a task for every photo that should be updated
         for (int i = 0; i < photos.size(); i++) {
@@ -655,7 +658,9 @@ public class EditBookActivity extends Activity {
             StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
             Task newTask = newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
                 // Handle successful uploads
-                Log.d("Debug", "Photo n. " + num + " uploaded!");
+                Log.d("Debug","Photo n. " + num + " uploaded!");
+                String msg = getText(R.string.default_saving_photo).toString() + " " + uPhotoState.incrementAndGet() + "/" + photos.size();
+                progressDialog.setMessage(msg);
             })
             .addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
@@ -667,7 +672,7 @@ public class EditBookActivity extends Activity {
 
         Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
             progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(), "Caricamento completato!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);

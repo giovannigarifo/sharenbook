@@ -128,6 +128,8 @@
     <string name="default_saving_on_firebase">Salvataggio dati in corso…</string>
     <string name="default_book_condition">Copertina rigata, pagine strappate…</string>
     <string name="default_tags">Bestseller, consigliato per bambini…</string>
+    <string name="default_book_saved">Libro caricato correttamente!</string>
+    <string name="default_saving_photo">Carico la foto </string>
 
 
 
