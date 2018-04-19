@@ -171,4 +171,6 @@
     <string name="no_books_alert_title">Nessun annuncio!</string>
     <string name="no_books_suggestion">Ti consigliamo di farne uno! Vuoi farlo ora?</string>
 
+    <string name="error_save_camera_photo">Si è verificato un errore durante il salvataggio della foto, riprova.</string>
+
 </resources>

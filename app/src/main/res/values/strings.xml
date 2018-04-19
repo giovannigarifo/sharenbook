@@ -169,4 +169,6 @@
     <string name="no_books_alert_title">No books yet!</string>
     <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
 
+    <string name="error_save_camera_photo">There was an error while saving your photo, please retry.</string>
+
 </resources>

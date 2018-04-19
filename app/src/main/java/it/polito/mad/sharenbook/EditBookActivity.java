@@ -4,13 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,16 +30,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -128,18 +126,18 @@ public class EditBookActivity extends Activity {
 
             } else {
 
-                book = (Book) bundle.getParcelable("book"); //retrieve book from intent
+                book = bundle.getParcelable("book"); //retrieve book from intent
             }
 
         } else {
 
-            book = (Book) savedInstanceState.getParcelable("book"); //retrieve book info from saveInstanceState
+            book = savedInstanceState.getParcelable("book"); //retrieve book info from saveInstanceState
         }
 
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData();
 
-        /**
+        /*
          * register callbacks for buttons
          */
 
@@ -163,7 +161,7 @@ public class EditBookActivity extends Activity {
         });
 
 
-        /**
+        /*
          * Recycle View
          */
         editbook_rv_bookPhotos.setHasFixedSize(true); //improves performance
@@ -177,7 +175,7 @@ public class EditBookActivity extends Activity {
         editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
 
-        /**
+        /*
          * navBar
          */
 
@@ -191,13 +189,11 @@ public class EditBookActivity extends Activity {
                     //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
                     AuthUI.getInstance()
                             .signOut(this)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                                    startActivity(i);
-                                    Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                                    finish();
-                                }
+                            .addOnCompleteListener(task -> {
+                                Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                                startActivity(i);
+                                Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                                finish();
                             });
 
                     break;
@@ -212,10 +208,10 @@ public class EditBookActivity extends Activity {
                 case R.id.navigation_shareBook:
                     break;
                 case R.id.navigation_myBook:
-                Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                startActivity(my_books);
-                finish();
-                break;
+                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+                    startActivity(my_books);
+                    finish();
+                    break;
             }
             return true;
         });
@@ -330,7 +326,7 @@ public class EditBookActivity extends Activity {
 
         int result;
 
-        List<String> listPermissionsNeeded = new ArrayList<String>();
+        List<String> listPermissionsNeeded = new ArrayList<>();
 
         for (String permission : permissions) {
             result = ContextCompat.checkSelfPermission(context, permission);
@@ -420,28 +416,25 @@ public class EditBookActivity extends Activity {
 
                 openAndCropGalleryPhoto(data);
 
-            } else if (requestCode == REQUEST_CROP) {
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
-                Bundle extras = data.getExtras();
-                Bitmap croppedPhoto;
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri resultUri = result.getUri();
 
                 try {
 
-                    croppedPhoto = extras.getParcelable("data");
+                    Bitmap croppedPhoto = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
 
-                    //add photo to collection (to position 0)
-                    book.addBookPhoto(croppedPhoto);
+                    book.addBookPhoto(croppedPhoto); //add photo to collection (to position 0)
 
                     //notify update of the collection to Recycle View adapter
                     rvAdapter.notifyItemInserted(0);
                     rvLayoutManager.scrollToPosition(0);
 
-                } catch (NullPointerException exc) {
-
-                    Log.d("exception", "NullPointerException when getting cropped image from parcel");
-                    exc.printStackTrace();
+                } catch (IOException e) {
+                    Log.d("error", "IOException when retrieving cropped image from Uri");
+                    e.printStackTrace();
                 }
-
             }
         }
     }
@@ -450,23 +443,33 @@ public class EditBookActivity extends Activity {
     /**
      * saveAndCropCameraPhoto method
      *
-     * @param data
+     * @param data : Intent that contains the Bundle with the bitmap photo
      */
     private void saveAndCropCameraPhoto(Intent data) {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_" + book.getTitle() + ".jpg";
+
         Bundle extras = data.getExtras();
 
         if (extras != null) {
 
-            Bitmap bitmap = (Bitmap) extras.get("data");
+            try {
 
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, imageFileName, null);
+                Bitmap bitmap = (Bitmap) extras.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
-            cropPhoto(Uri.parse(path));
+                if (bitmap != null)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+                String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, imageFileName, null);
+
+                cropPhoto(Uri.parse(path));
+
+            } catch (NullPointerException exc) {
+
+                Toast.makeText(getApplicationContext(), getString(R.string.error_save_camera_photo), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -489,24 +492,11 @@ public class EditBookActivity extends Activity {
      */
     public void cropPhoto(Uri photoUri) {
 
-        try {
-
-            Intent cropIntent = new Intent("com.android.camera.action.CROP");
-
-            cropIntent.setDataAndType(photoUri, "image/*");
-            cropIntent.putExtra("crop", "true");
-            cropIntent.putExtra("aspectX", 10);
-            cropIntent.putExtra("aspectY", 15);
-            cropIntent.putExtra("outputX", 100);
-            cropIntent.putExtra("outputY", 150);
-            cropIntent.putExtra("return-data", true);
-
-            startActivityForResult(cropIntent, REQUEST_CROP);
-
-        } catch (ActivityNotFoundException exc) { //device doesn't support crop functionality
-
-            Log.d("debug", "Unable to crop the image, activity not found.");
-        }
+        CropImage.activity(photoUri)
+                .setAllowRotation(true)
+                .setAspectRatio(10, 15).setFixAspectRatio(true)
+                .setAutoZoomEnabled(true)
+                .start(this);
     }
 
 
@@ -519,13 +509,9 @@ public class EditBookActivity extends Activity {
         AlertDialog.Builder exitRequest = new AlertDialog.Builder(EditBookActivity.this); //give a context to Dialog
         exitRequest.setTitle(R.string.exit_request_title);
         exitRequest.setMessage(R.string.exit_rationale);
-        exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    finish();
-                }
+        exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> finish()
         ).setNegativeButton(android.R.string.cancel,
-                (dialog, which) -> {
-                    dialog.dismiss();
-                }
+                (dialog, which) -> dialog.dismiss()
         );
 
         exitRequest.show();
@@ -564,7 +550,7 @@ public class EditBookActivity extends Activity {
         bookData.put("isbn", editbook_et_isbn.getText().toString());
         bookData.put("title", editbook_et_title.getText().toString());
         bookData.put("subtitle", editbook_et_subtitle.getText().toString());
-        bookData.put("authors", commaStringToList( editbook_et_authors.getText().toString() ));
+        bookData.put("authors", commaStringToList(editbook_et_authors.getText().toString()));
         bookData.put("publisher", editbook_et_publisher.getText().toString());
         bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
         bookData.put("description", editbook_et_description.getText().toString());
@@ -573,10 +559,10 @@ public class EditBookActivity extends Activity {
             bookData.put("pageCount", 0);
         else
             bookData.put("pageCount", Integer.parseInt(pageCount));
-        bookData.put("categories", commaStringToList( editbook_et_categories.getText().toString() ));
+        bookData.put("categories", commaStringToList(editbook_et_categories.getText().toString()));
         bookData.put("language", editbook_et_language.getText().toString());
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
-        bookData.put("tags", commaStringToList( editbook_et_tags.getText().toString() ));
+        bookData.put("tags", commaStringToList(editbook_et_tags.getText().toString()));
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -599,13 +585,11 @@ public class EditBookActivity extends Activity {
                         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(i);
                         finish();
-                    }
-                    else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
                     }
                 });
-            }
-            else {
+            } else {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
         });
@@ -616,7 +600,7 @@ public class EditBookActivity extends Activity {
      */
     private List<String> commaStringToList(String commaString) {
         List<String> stringList = new ArrayList<>();
-        for (String s: commaString.split(",")) {
+        for (String s : commaString.split(",")) {
             stringList.add(s.trim());
         }
         return stringList;
@@ -631,40 +615,40 @@ public class EditBookActivity extends Activity {
         navBar = (BottomNavigationView) findViewById(R.id.navigation);
 
         //get buttons
-        editbook_fab_save = (FloatingActionButton) findViewById(R.id.editbook_fab_save);
-        editbook_ib_addBookPhoto = (ImageButton) findViewById(R.id.editbook_ib_addBookPhoto);
+        editbook_fab_save = findViewById(R.id.editbook_fab_save);
+        editbook_ib_addBookPhoto = findViewById(R.id.editbook_ib_addBookPhoto);
 
         //get recycle views
-        editbook_rv_bookPhotos = (RecyclerView) findViewById(R.id.editbook_rv_bookPhotos);
+        editbook_rv_bookPhotos = findViewById(R.id.editbook_rv_bookPhotos);
 
         //get the rest of views
-        editbook_tv_isbn = (TextView) findViewById(R.id.editbook_tv_isbn);
-        editbook_tv_title = (TextView) findViewById(R.id.editbook_tv_title);
-        editbook_tv_subtitle = (TextView) findViewById(R.id.editbook_tv_subtitle);
-        editbook_tv_authors = (TextView) findViewById(R.id.editbook_tv_authors);
-        editbook_tv_publisher = (TextView) findViewById(R.id.editbook_tv_publisher);
-        editbook_tv_publishedDate = (TextView) findViewById(R.id.editbook_tv_publishedDate);
-        editbook_tv_description = (TextView) findViewById(R.id.editbook_tv_description);
-        editbook_tv_pageCount = (TextView) findViewById(R.id.editbook_tv_pageCount);
-        editbook_tv_categories = (TextView) findViewById(R.id.editbook_tv_categories);
-        editbook_tv_language = (TextView) findViewById(R.id.editbook_tv_language);
-        editbook_tv_bookConditions = (TextView) findViewById(R.id.editbook_tv_bookConditions);
-        editbook_tv_tags = (TextView) findViewById(R.id.editbook_tv_tags);
+        editbook_tv_isbn = findViewById(R.id.editbook_tv_isbn);
+        editbook_tv_title = findViewById(R.id.editbook_tv_title);
+        editbook_tv_subtitle = findViewById(R.id.editbook_tv_subtitle);
+        editbook_tv_authors = findViewById(R.id.editbook_tv_authors);
+        editbook_tv_publisher = findViewById(R.id.editbook_tv_publisher);
+        editbook_tv_publishedDate = findViewById(R.id.editbook_tv_publishedDate);
+        editbook_tv_description = findViewById(R.id.editbook_tv_description);
+        editbook_tv_pageCount = findViewById(R.id.editbook_tv_pageCount);
+        editbook_tv_categories = findViewById(R.id.editbook_tv_categories);
+        editbook_tv_language = findViewById(R.id.editbook_tv_language);
+        editbook_tv_bookConditions = findViewById(R.id.editbook_tv_bookConditions);
+        editbook_tv_tags = findViewById(R.id.editbook_tv_tags);
 
-        editbook_et_isbn = (EditText) findViewById(R.id.editbook_et_isbn);
-        editbook_et_title = (EditText) findViewById(R.id.editbook_et_title);
-        editbook_et_subtitle = (EditText) findViewById(R.id.editbook_et_subtitle);
-        editbook_et_authors = (EditText) findViewById(R.id.editbook_et_authors);
-        editbook_et_publisher = (EditText) findViewById(R.id.editbook_et_publisher);
-        editbook_et_publishedDate = (EditText) findViewById(R.id.editbook_et_publishedDate);
-        editbook_et_description = (EditText) findViewById(R.id.editbook_et_description);
-        editbook_et_pageCount = (EditText) findViewById(R.id.editbook_et_pageCount);
-        editbook_et_categories = (EditText) findViewById(R.id.editbook_et_categories);
-        editbook_et_language = (EditText) findViewById(R.id.editbook_et_language);
-        editbook_et_bookConditions = (EditText) findViewById(R.id.editbook_et_bookConditions);
-        editbook_et_tags = (EditText) findViewById(R.id.editbook_et_tags);
+        editbook_et_isbn = findViewById(R.id.editbook_et_isbn);
+        editbook_et_title = findViewById(R.id.editbook_et_title);
+        editbook_et_subtitle = findViewById(R.id.editbook_et_subtitle);
+        editbook_et_authors = findViewById(R.id.editbook_et_authors);
+        editbook_et_publisher = findViewById(R.id.editbook_et_publisher);
+        editbook_et_publishedDate = findViewById(R.id.editbook_et_publishedDate);
+        editbook_et_description = findViewById(R.id.editbook_et_description);
+        editbook_et_pageCount = findViewById(R.id.editbook_et_pageCount);
+        editbook_et_categories = findViewById(R.id.editbook_et_categories);
+        editbook_et_language = findViewById(R.id.editbook_et_language);
+        editbook_et_bookConditions = findViewById(R.id.editbook_et_bookConditions);
+        editbook_et_tags = findViewById(R.id.editbook_et_tags);
 
-        /**
+        /*
          * set typography
          */
 
@@ -711,23 +695,23 @@ public class EditBookActivity extends Activity {
 
 class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
 
-    public List<Bitmap> bookPhotos;
+    private List<Bitmap> bookPhotos;
     private Context context;
 
     //constructor
-    public BookPhotoAdapter(ArrayList<Bitmap> bookPhotos, Context context) {
+    BookPhotoAdapter(ArrayList<Bitmap> bookPhotos, Context context) {
         this.bookPhotos = bookPhotos;
         this.context = context;
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
-    public class BookPhotoViewHolder extends RecyclerView.ViewHolder {
+    class BookPhotoViewHolder extends RecyclerView.ViewHolder {
 
-        public RelativeLayout item_book_photo_iv;
+        private RelativeLayout item_book_photo_iv;
 
-        public BookPhotoViewHolder(RelativeLayout rl) {
+        BookPhotoViewHolder(RelativeLayout rl) {
             super(rl);
-            item_book_photo_iv = rl;
+            this.item_book_photo_iv = rl;
         }
     }
 
@@ -735,12 +719,13 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
      * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
      * display it's content
      *
-     * @param parent
-     * @param viewType
-     * @return
+     * @param parent :
+     * @param viewType :
+     * @return BookPhotoViewHolder :
      */
+    @NonNull
     @Override
-    public BookPhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BookPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater li = LayoutInflater.from(parent.getContext());
         RelativeLayout rl = (RelativeLayout) li.inflate(R.layout.item_book_photo, parent, false);
@@ -751,36 +736,18 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     /**
      * Replace the contents of a ViewHolder (invoked by the layout manager)
      *
-     * @param holder
-     * @param position
+     * @param holder :
+     * @param position :
      */
     @Override
-    public void onBindViewHolder(BookPhotoViewHolder holder, int position) {
-
-        /*
-        Bitmap bmPhoto = this.bookPhotos.get(position);
-
-        ImageView iv = (ImageView) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
-        ImageButton ib = (ImageButton) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
-
-        iv.setImageBitmap(bmPhoto);
-
-        //onClick listener for the delete photo button
-        ib.setOnClickListener((v) -> {
-
-            if (bookPhotos.size() > 0) {
-                this.bookPhotos.remove(position);
-                this.notifyItemRemoved(position);
-            }
-        });
-        */
+    public void onBindViewHolder(@NonNull BookPhotoViewHolder holder, int position) {
 
         Bitmap bmPhoto = this.bookPhotos.get(position);
 
-        ImageView iv = (ImageView) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
+        ImageView iv = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
         iv.setImageBitmap(bmPhoto);
 
-        ImageButton ib = (ImageButton) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
+        ImageButton ib = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
         ib.setTag(bmPhoto);
 
         //onClick listener for the delete photo button

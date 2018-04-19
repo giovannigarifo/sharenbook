@@ -23,6 +23,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="18dp"
         android:layout_marginLeft="42dp"
+        android:padding="8dp"
         android:background="@drawable/roundedbuttons"
         android:src="@drawable/ic_clear_black_24dp" />
 
