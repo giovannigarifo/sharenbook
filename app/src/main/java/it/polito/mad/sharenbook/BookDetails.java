@@ -235,9 +235,10 @@ class Book implements Parcelable {
 
         this.bookPhotos = new ArrayList<>();
 
+        //add the thumbnail to the bookPhotos collection
         try {
 
-            URL url = new URL(this.thumbnail.toString());
+            URL url = new URL(this.thumbnail);
             Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             this.bookPhotos.add(bmp);
 

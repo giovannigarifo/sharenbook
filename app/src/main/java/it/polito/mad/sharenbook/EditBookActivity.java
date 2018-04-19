@@ -107,6 +107,7 @@ public class EditBookActivity extends Activity {
     private ProgressDialog progressDialog;
 
     final static int MAX_ALLOWED_BOOK_PHOTO = 5;
+    final static int MIN_REQUIRED_BOOK_PHOTO = 1;
 
 
     /**
@@ -566,6 +567,10 @@ public class EditBookActivity extends Activity {
         if (editbook_et_bookConditions.getText().toString().isEmpty()) {
             editbook_et_bookConditions.setError(getText(R.string.field_required));
             showToast(getString(R.string.field_required));
+            isValid = false;
+        }
+        if (book.getBookPhotos().size() < MIN_REQUIRED_BOOK_PHOTO) {
+            showToast(getString(R.string.min_photo_required));
             isValid = false;
         }
 
