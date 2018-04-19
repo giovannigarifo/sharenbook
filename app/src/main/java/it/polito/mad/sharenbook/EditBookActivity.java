@@ -536,6 +536,10 @@ public class EditBookActivity extends Activity {
             editbook_et_authors.setError(getText(R.string.field_required));
             isValid = false;
         }
+        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
+            editbook_et_bookConditions.setError(getText(R.string.field_required));
+            isValid = false;
+        }
 
         return isValid;
     }
