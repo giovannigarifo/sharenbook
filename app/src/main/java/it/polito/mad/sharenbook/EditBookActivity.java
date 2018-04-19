@@ -332,8 +332,6 @@ public class EditBookActivity extends Activity {
             result = ContextCompat.checkSelfPermission(context, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
-            } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
             }
         }
 
