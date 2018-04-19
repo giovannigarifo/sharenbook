@@ -39,16 +39,27 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <ExpandableListView
+    <TextView
+        android:id="@+id/text_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="STILL IN DEVELOPMENT \nonly for testing purposes"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/sba_header"
+
+        />
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/expanded_books"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/navigation"
-        app:layout_constraintTop_toBottomOf="@id/sba_header">
+        app:layout_constraintTop_toBottomOf="@id/text_warning">
 
 
-    </ExpandableListView>
+    </android.support.v7.widget.RecyclerView>
 
 
     <android.support.design.widget.BottomNavigationView

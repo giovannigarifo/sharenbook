@@ -1,21 +1,20 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,70 +26,38 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-
-import it.polito.mad.sharenbook.model.UserProfile;
+import java.util.List;
 
 public class MyBookActivity extends AppCompatActivity {
 
-    /**
-     * JUST A TRY MUST BE REMOVED
-     */
-    class DataItem {
-        private String name, address;
-        private ArrayList<String> children;
 
-        public DataItem(String name, String address, int n) {
-            this.name = name;
-            this.address = address;
-            children = new ArrayList<>();
-            for (int i = 0; i < n; i++) {
-                children.add("child " + i);
-            }
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getAddress() {
-            return address;
-        }
-
-        int getChildrenCount() {
-            return children.size();
-        }
-
-        String getChild(int pos) {
-            return children.get(pos);
-        }
-
-    }
 
     private BottomNavigationView navBar;
 
-    /**
-     * My books expandable
-     */
-    private ExpandableListView elv;
-    private ArrayList<DataItem> data = new ArrayList<DataItem>();
+
 
     /** FireBase objects */
     private FirebaseUser firebaseUser;
     private DatabaseReference booksDb;
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
-    private ArrayList<String> bookKeys;
+    private ArrayList<Book> books;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_book);
 
+
+        /** teeeeest **/
+        books = new ArrayList<Book>();
+
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
+
 
         userBooksDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -120,22 +87,56 @@ public class MyBookActivity extends AppCompatActivity {
                     bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
                     booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
 
-                for(DataSnapshot announce :dataSnapshot.getChildren()){ /** for each announce that book detail */
-                    //bookKeys.add((String)announce.getValue());
-                    booksDb.child((String)announce.getValue()).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Book book = dataSnapshot.getValue(Book.class);
-                            Log.d("Book:",book.getIsbn());
-                        }
+                    Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    final long numberOfannounces = dataSnapshot.getChildrenCount();
 
-                        }
-                    });
+                    for(DataSnapshot announce :announces){
+
+                        booksDb.child((String)announce.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                //books.add(dataSnapshot.getValue(Book.class));
+                                bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Book book = dataSnapshot.getValue(Book.class);
+                                        book.setThumbnail(uri.toString());
+                                        books.add(book);
+
+                                        if(books.size() == numberOfannounces){
+
+                                            setRecycle(books);
+
+                                        }
+                                    }
+                                });
+
+      /*
+                                if(books.size() == numberOfannounces){
+
+                                    setRecycle(books);
+
+
+
+
+
+                                }
+
+     */
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                     }
+
+
                 }
+
 
             }
 
@@ -153,84 +154,24 @@ public class MyBookActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.mba_title);
 
-        //setMyBooksList();
+
+
 
         // Setup navbar
         setupNavbar();
     }
 
-    private void setMyBooksList(){
-        elv = (ExpandableListView) findViewById(R.id.expanded_books);
+    private void setRecycle(List<Book> announcments){
+        RecyclerView rv = (RecyclerView)findViewById(R.id.expanded_books);
+        LinearLayoutManager llm = new LinearLayoutManager(MyBookActivity.this);
+        rv.setLayoutManager(llm);
 
-        for (int i = 0; i < 100; i++) {
-            DataItem di = new DataItem("name" + i, "address" + i, (int) (Math.sqrt(i)));
-            data.add(di);
-        }
+        RVAdapter adapter = new RVAdapter(announcments,getApplicationContext());
+        rv.setAdapter(adapter);
 
-        BaseExpandableListAdapter bela = new BaseExpandableListAdapter() {
-            @Override
-            public int getGroupCount() {
-                return data.size();
-            }
-
-            @Override
-            public int getChildrenCount(int groupPosition) {
-                return data.get(groupPosition).getChildrenCount();
-            }
-
-            @Override
-            public Object getGroup(int groupPosition) {
-                return data.get(groupPosition);
-            }
-
-            @Override
-            public Object getChild(int groupPosition, int childPosition) {
-                return data.get(groupPosition).getChild(childPosition);
-            }
-
-            @Override
-            public long getGroupId(int groupPosition) {
-                return 0;
-            }
-
-            @Override
-            public long getChildId(int groupPosition, int childPosition) {
-                return 0;
-            }
-
-            @Override
-            public boolean hasStableIds() {
-                return false;
-            }
-
-            @Override
-            public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-                if (convertView==null) {
-                    convertView=getLayoutInflater().inflate(R.layout.mybook_item,parent,false);
-                }
-                TextView name=(TextView)convertView.findViewById(R.id.name_tv);
-                TextView address=(TextView)convertView.findViewById(R.id.address_tv);
-                DataItem di=data.get(groupPosition);
-                name.setText(di.getName());
-                address.setText(di.getAddress());
-                return convertView;
-            }
-
-            @Override
-            public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-                if (convertView==null) convertView=new TextView(MyBookActivity.this);
-                TextView tv=(TextView)convertView;
-                tv.setText(data.get(groupPosition).getChild(childPosition));
-                return tv;
-            }
-
-            @Override
-            public boolean isChildSelectable(int groupPosition, int childPosition) {
-                return false;
-            }
-        };
-        elv.setAdapter(bela);
     }
+
+
 
     private void setupNavbar() {
         navBar = findViewById(R.id.navigation);
