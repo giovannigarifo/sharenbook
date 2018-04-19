@@ -358,12 +358,10 @@ class Book implements Parcelable {
         this.language = in.readString();
         this.thumbnail = in.readString();
 
-        int num_authors = in.readInt();
         this.authors = in.readArrayList(String.class.getClassLoader());
 
         this.pageCount = in.readInt();
 
-        int num_categories = in.readInt();
         this.categories = in.readArrayList(String.class.getClassLoader());
 
         //instantiate the photo collection, it's not parcelled
@@ -392,12 +390,10 @@ class Book implements Parcelable {
         dest.writeString(getLanguage());
         dest.writeString(getThumbnail());
 
-        dest.writeInt(getAuthors().size());
         dest.writeList(getAuthors());
 
         dest.writeInt(getPageCount());
 
-        dest.writeInt(getCategories().size());
         dest.writeList(getCategories());
 
         dest.writeList(getBookPhotos());
