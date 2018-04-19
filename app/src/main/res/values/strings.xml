@@ -24,6 +24,7 @@
     <string name="welcome_msg">Welcome to Share\'nBook!</string>
     <string name="search_hint">Search a book or a user…</string>
     <string name="log_out">Logged Out!</string>
+    <string name="loading_dialog">Uploading..</string>
 
     <!-- common words -->
     <string name="search">Search</string>

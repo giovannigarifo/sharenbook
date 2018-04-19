@@ -356,12 +356,13 @@ public class EditProfileActivity extends Activity {
         if (filePath != null) {
             //displaying a progress dialog while upload is going on
             progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading");
+            progressDialog.setTitle(getString(R.string.loading_dialog));
             progressDialog.show();
 
             StorageReference riversRef = storageReference.child("images/" + user.getUserID() + ".jpg");
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //if the upload is successfull

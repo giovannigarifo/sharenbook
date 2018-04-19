@@ -32,21 +32,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
 
@@ -600,6 +606,7 @@ public class EditBookActivity extends Activity {
         bookData.put("language", editbook_et_language.getText().toString());
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
         bookData.put("tags", commaStringToList(editbook_et_tags.getText().toString()));
+        bookData.put("thumbnail", book.getThumbnail());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -616,13 +623,8 @@ public class EditBookActivity extends Activity {
                 // Push newBook reference on "user_books" section
                 userBooksDb.push().setValue(newBookRef.getKey(), (databaseError1, databaseReference1) -> {
 
-                    progressDialog.dismiss();
                     if (databaseError1 == null) {
                         firebaseSavePhotos(newBookRef.getKey());
-                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(i);
-                        finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
                     }
@@ -639,6 +641,7 @@ public class EditBookActivity extends Activity {
     private void firebaseSavePhotos(String bookKey) {
         // Get list of photos
         ArrayList<Bitmap> photos = book.getBookPhotos();
+        List<Task<UploadTask>> taskList = new ArrayList<>();
 
         // Launch a task for every photo that should be updated
         for (int i = 0; i < photos.size(); i++) {
@@ -650,15 +653,26 @@ public class EditBookActivity extends Activity {
 
             // Generate new file on firebase and write it
             StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
-            newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
+            Task newTask = newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
                 // Handle successful uploads
                 Log.d("Debug", "Photo n. " + num + " uploaded!");
             })
-                    .addOnFailureListener(exception -> {
-                        // Handle unsuccessful uploads
-                        Log.d("Debug", "Error during upload of photo n. " + num);
-                    });
+            .addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads
+                Log.d("Debug","Error during upload of photo n. " + num);
+            });
+
+            taskList.add(newTask);
         }
+
+        Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(), "Caricamento completato!", Toast.LENGTH_LONG).show();
+            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(i);
+            finish();
+        });
     }
 
     /**
