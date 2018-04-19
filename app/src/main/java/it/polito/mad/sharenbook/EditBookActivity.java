@@ -233,14 +233,7 @@ public class EditBookActivity extends Activity {
 
         if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO) {
 
-            //show toast only if not already present
-            if (toast == null || toast.getView().getWindowVisibility() != View.VISIBLE) {
-
-                runOnUiThread(() -> {
-                    toast = Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG);
-                    toast.show();
-                });
-            }
+            showToast(getString(R.string.max_allowed_book_photo));
 
         } else {
 
@@ -331,6 +324,21 @@ public class EditBookActivity extends Activity {
             }
 
             editbook_et_categories.setText(sb.toString());
+        }
+    }
+
+
+    /*
+     * Toast method
+     */
+    private void showToast(String message) {
+
+        if (toast == null || toast.getView().getWindowVisibility() != View.VISIBLE) {
+
+            runOnUiThread(() -> {
+                toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+                toast.show();
+            });
         }
     }
 
@@ -542,18 +550,22 @@ public class EditBookActivity extends Activity {
 
         if (InputValidator.isWrongIsbn(editbook_et_isbn)) {
             editbook_et_isbn.setError(getText(R.string.isbn_bad_format));
+            showToast(getString(R.string.isbn_bad_format));
             isValid = false;
         }
         if (editbook_et_title.getText().toString().isEmpty()) {
             editbook_et_title.setError(getText(R.string.field_required));
+            showToast(getString(R.string.field_required));
             isValid = false;
         }
         if (editbook_et_authors.getText().toString().isEmpty()) {
             editbook_et_authors.setError(getText(R.string.field_required));
+            showToast(getString(R.string.field_required));
             isValid = false;
         }
         if (editbook_et_bookConditions.getText().toString().isEmpty()) {
             editbook_et_bookConditions.setError(getText(R.string.field_required));
+            showToast(getString(R.string.field_required));
             isValid = false;
         }
 
