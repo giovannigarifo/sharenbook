@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,6 +79,8 @@ public class EditBookActivity extends Activity {
     private Button editbook_btn_addBookPhoto;
 
     private BottomNavigationView navBar;
+
+    private Toast toast;
 
     //Recycler View
     private RecyclerView editbook_rv_bookPhotos;
@@ -151,30 +154,8 @@ public class EditBookActivity extends Activity {
             }
         });
 
-        editbook_ib_addBookPhoto.setOnClickListener((v) -> {
-
-            Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
-
-            hasPermissions();//check permissions
-
-            if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO)
-                Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG).show();
-            else
-                showSelectImageDialog();
-        });
-
-        editbook_btn_addBookPhoto.setOnClickListener((v) -> {
-
-            Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
-
-            hasPermissions(); //check permissions
-
-            if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO)
-                Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG).show();
-            else
-                showSelectImageDialog();
-        });
-
+        editbook_ib_addBookPhoto.setOnClickListener(this::addBookPhoto);
+        editbook_btn_addBookPhoto.setOnClickListener(this::addBookPhoto);
 
         /*
          * Recycle View
@@ -242,12 +223,32 @@ public class EditBookActivity extends Activity {
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
 
-        Log.d("debug", "onStart called by EditBookActivity");
+    /*
+     * Add Book photo button listener
+     */
+    private void addBookPhoto(View v) {
+
+        Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
+
+        if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO) {
+
+            //show toast only if not already present
+            if (toast == null || toast.getView().getWindowVisibility() != View.VISIBLE) {
+
+                runOnUiThread(() -> {
+                    toast = Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG);
+                    toast.show();
+                });
+            }
+
+        } else {
+
+            hasPermissions();//check permissions
+            showSelectImageDialog();
+        }
     }
+
 
     /**
      * onResume callback
@@ -634,12 +635,12 @@ public class EditBookActivity extends Activity {
             StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
             newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
                 // Handle successful uploads
-                Log.d("Debug","Photo n. " + num + " uploaded!");
+                Log.d("Debug", "Photo n. " + num + " uploaded!");
             })
-            .addOnFailureListener(exception -> {
-                // Handle unsuccessful uploads
-                Log.d("Debug","Error during upload of photo n. " + num);
-            });
+                    .addOnFailureListener(exception -> {
+                        // Handle unsuccessful uploads
+                        Log.d("Debug", "Error during upload of photo n. " + num);
+                    });
         }
     }
 
@@ -741,7 +742,6 @@ public class EditBookActivity extends Activity {
 
 
 /**
- *
  * BookPhotoAdapter class
  */
 
@@ -771,7 +771,7 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
      * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
      * display it's content
      *
-     * @param parent :
+     * @param parent   :
      * @param viewType :
      * @return BookPhotoViewHolder :
      */
@@ -788,7 +788,7 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     /**
      * Replace the contents of a ViewHolder (invoked by the layout manager)
      *
-     * @param holder :
+     * @param holder   :
      * @param position :
      */
     @Override
