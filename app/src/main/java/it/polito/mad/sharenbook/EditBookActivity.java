@@ -84,7 +84,8 @@ public class EditBookActivity extends Activity {
 
     //permissions needed
     private String[] permissions = new String[]{
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
 
