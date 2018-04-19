@@ -102,7 +102,6 @@ class BookDetails {
         }
 
         List<String> arrayList = new ArrayList<>(jsonArray.length());
-
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 arrayList.add(jsonArray.getString(i));
@@ -334,6 +333,66 @@ class Book implements Parcelable {
 
     public List<String> getTags() {
         return tags;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setPublishedDate(String publishedDate) {
+        this.publishedDate = publishedDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void setBookPhotos(ArrayList<Bitmap> bookPhotos) {
+        this.bookPhotos = bookPhotos;
+    }
+
+    public void setOwner_uid(String owner_uid) {
+        this.owner_uid = owner_uid;
+    }
+
+    public void setBookConditions(String bookConditions) {
+        this.bookConditions = bookConditions;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     /*******************************
