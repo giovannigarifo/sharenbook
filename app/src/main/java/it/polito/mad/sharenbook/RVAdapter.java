@@ -58,7 +58,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.AnnounceViewHolder
     public void onBindViewHolder(@NonNull RVAdapter.AnnounceViewHolder holder, int position) {
 
         holder.bookTitle.setText(announcements.get(position).getTitle());
-        holder.bookSubtitle.setText(announcements.get(position).getSubtitle());
+        holder.bookSubtitle.setText(announcements.get(position).getBookConditions());
         //holder.bookPhoto.setImageURI(Uri.parse(announcements.get(position).getThumbnail()));
         Glide.with(context).load(announcements.get(position).getThumbnail()).into(holder.bookPhoto);
         Log.d("Book:",announcements.get(position).getThumbnail());

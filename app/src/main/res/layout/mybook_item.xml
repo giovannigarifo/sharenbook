@@ -41,7 +41,7 @@ android:padding="16dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/book_photo"
             android:layout_below="@+id/book_title"
-            android:textSize="12sp"
+            android:textSize="14sp"
             />
 
     </RelativeLayout>
