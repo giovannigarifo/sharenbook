@@ -111,6 +111,7 @@
     <string name="default_rating_count_heading">Numero recensioni</string>
     <string name="default_book_condition_heading">Condizioni del libro</string>
     <string name="default_tags_heading">Tags</string>
+    <string name="default_addPhoto_heading">Aggiungi Foto</string>
 
     <string name="default_isbn" translatable="false">Inserisci il codice ISBN (da 10 a 13 cifre)</string>
     <string name="default_title">Qual è il titolo del libro?</string>

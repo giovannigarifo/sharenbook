@@ -44,6 +44,7 @@
     <string name="default_rating_heading">Rating</string>
     <string name="default_book_condition_heading">Book conditions</string>
     <string name="default_tags_heading">Tags</string>
+    <string name="default_addPhoto_heading">Add Photo</string>
 
 
     <string name="default_isbn" translatable="false">a number composed of 10 to 13 digits</string>

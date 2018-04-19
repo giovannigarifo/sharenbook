@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -73,6 +74,8 @@ public class EditBookActivity extends Activity {
     private FloatingActionButton editbook_fab_save;
 
     private ImageButton editbook_ib_addBookPhoto;
+
+    private Button editbook_btn_addBookPhoto;
 
     private BottomNavigationView navBar;
 
@@ -153,6 +156,18 @@ public class EditBookActivity extends Activity {
             Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
 
             hasPermissions();//check permissions
+
+            if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO)
+                Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG).show();
+            else
+                showSelectImageDialog();
+        });
+
+        editbook_btn_addBookPhoto.setOnClickListener((v) -> {
+
+            Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
+
+            hasPermissions(); //check permissions
 
             if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO)
                 Toast.makeText(getApplicationContext(), getString(R.string.max_allowed_book_photo), Toast.LENGTH_LONG).show();
@@ -333,7 +348,7 @@ public class EditBookActivity extends Activity {
             if (result != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
             } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -621,6 +636,7 @@ public class EditBookActivity extends Activity {
         //get buttons
         editbook_fab_save = findViewById(R.id.editbook_fab_save);
         editbook_ib_addBookPhoto = findViewById(R.id.editbook_ib_addBookPhoto);
+        editbook_btn_addBookPhoto = findViewById(R.id.editbook_tv_addBookPhoto);
 
         //get recycle views
         editbook_rv_bookPhotos = findViewById(R.id.editbook_rv_bookPhotos);
@@ -656,9 +672,13 @@ public class EditBookActivity extends Activity {
          * set typography
          */
 
+
         //retrieve fonts
         Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
         Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+
+        //buttons
+        editbook_btn_addBookPhoto.setTypeface(robotoBold);
 
         //headings
         editbook_tv_isbn.setTypeface(robotoBold);

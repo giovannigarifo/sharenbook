@@ -44,29 +44,55 @@
                     android:layout_height="200dp"
                     android:orientation="horizontal">
 
-                    <ImageButton
-                        android:id="@+id/editbook_ib_addBookPhoto"
+                    <RelativeLayout
+                        android:id="@+id/editbook_rl_addPhoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="200dp">
 
-                        android:layout_width="100dp"
-                        android:layout_height="150dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
+                        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
 
-                        android:adjustViewBounds="false"
-                        android:background="@color/lightGrey"
-                        android:padding="0dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_add_black_24dp"
-                        android:tint="@color/darkGrey"
-                        tools:ignore="ContentDescription" />
+                            android:id="@+id/editbook_iv_addBookPhotoBackground"
+                            android:layout_width="100dp"
+                            android:layout_height="150dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@color/lightGrey" />
+
+                        <!-- Delete photo Floating Action Button -->
+                        <ImageButton
+                            android:id="@+id/editbook_ib_addBookPhoto"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="18dp"
+                            android:layout_marginLeft="50dp"
+                            android:paddingTop="50dp"
+                            android:background="@drawable/roundedbuttons_success"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_photo_camera_black_24dp" />
+
+                        <Button
+                            android:id="@+id/editbook_tv_addBookPhoto"
+                            style="@style/TextViewHeading"
+                            android:layout_width="100dp"
+                            android:layout_height="75dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+
+                            android:layout_marginTop="72dp"
+                            android:gravity="center_horizontal"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:text="@string/default_addPhoto_heading"
+                            android:textSize="16dp" />
+                        
+                    </RelativeLayout>
 
                     <!-- display collection of the user photo book -->
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/editbook_rv_bookPhotos"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginLeft="8dp" />
+                        android:layout_height="200dp" />
 
                 </LinearLayout>
 
