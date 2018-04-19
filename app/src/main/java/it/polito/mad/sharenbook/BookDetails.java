@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -18,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
 class BookDetails {
     private final String GOOGLE_BOOK_WS = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
@@ -68,16 +68,14 @@ class BookDetails {
             String isbn = isbnNumber;
             String title = retrieveString(volumeInfo, "title");
             String subTitle = retrieveString(volumeInfo, "subtitle");
-            String[] authors = retrieveArrayString(volumeInfo, "authors");
+            List<String> authors = retrieveArrayList(volumeInfo, "authors");
             String publisher = retrieveString(volumeInfo, "publisher");
             String publishedDate = retrieveString(volumeInfo, "publishedDate");
             String description = retrieveString(volumeInfo, "description");
             int pageCount = retrieveInteger(volumeInfo, "pageCount");
-            String[] categories = retrieveArrayString(volumeInfo, "categories");
+            List<String> categories = retrieveArrayList(volumeInfo, "categories");
             String language = retrieveString(volumeInfo, "language");
             String thumbnail = retrieveImageLink(volumeInfo, "thumbnail");
-            double averageRating = retrieveDouble(volumeInfo, "averageRating");
-            int ratingsCount = retrieveInteger(volumeInfo, "ratingsCount");
 
             // Create a new Book object
             Book newBook = new Book(isbn, title, subTitle, authors, publisher, publishedDate, description,
@@ -94,26 +92,26 @@ class BookDetails {
         }
     }
 
-    private String[] retrieveArrayString(JSONObject volumeInfo, String name) {
+    private List<String> retrieveArrayList(JSONObject volumeInfo, String name) {
         JSONArray jsonArray;
 
         try {
             jsonArray = volumeInfo.getJSONArray(name);
         } catch (JSONException e) {
-            return new String[]{};
+            return new ArrayList<>();
         }
 
-        String[] array = new String[jsonArray.length()];
+        List<String> arrayList = new ArrayList<>(jsonArray.length());
 
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
-                array[i] = jsonArray.getString(i);
+                arrayList.add(jsonArray.getString(i));
             } catch (JSONException e) {
-                array[i] = "";
+                arrayList.add("");
             }
         }
 
-        return array;
+        return arrayList;
     }
 
     private int retrieveInteger(JSONObject volumeInfo, String name) {
@@ -186,11 +184,16 @@ class Book implements Parcelable {
     private String publishedDate;
     private String description;
     private String language;
-    private String[] categories;
-    private String[] authors;
+    private List<String> categories;
+    private List<String> authors;
     private int pageCount;
     private String thumbnail;
     private ArrayList<Bitmap> bookPhotos;
+
+    private String owner_uid;
+    private String bookConditions;
+    private List<String> tags;
+
 
 
     /**
@@ -207,8 +210,8 @@ class Book implements Parcelable {
      * @param language
      * @param thumbnail
      */
-    public Book(String isbn, String title, String subTitle, String[] authors, String publisher,
-                String publishedDate, String description, int pageCount, String[] categories,
+    public Book(String isbn, String title, String subTitle, List<String> authors, String publisher,
+                String publishedDate, String description, int pageCount, List<String> categories,
                 String language, String thumbnail) {
         this.isbn = isbn;
         this.title = title;
@@ -220,18 +223,18 @@ class Book implements Parcelable {
         this.thumbnail = thumbnail;
 
         if (authors == null)
-            this.authors = new String[]{""};
+            this.authors = new ArrayList<>();
         else
             this.authors = authors;
 
         this.pageCount = pageCount;
 
         if (categories == null)
-            this.categories = new String[]{""};
+            this.categories = new ArrayList<>();
         else
             this.categories = categories;
 
-        this.bookPhotos = new ArrayList<Bitmap>();
+        this.bookPhotos = new ArrayList<>();
 
         try {
 
@@ -244,6 +247,10 @@ class Book implements Parcelable {
             Log.d("error", "Unable to retrieve the bitmap from the thumbnail Uri.");
         }
 
+        this.owner_uid = "";
+        this.bookConditions = "";
+        this.tags = new ArrayList<>();
+
     }
 
     public Book() {
@@ -254,11 +261,15 @@ class Book implements Parcelable {
         this.publishedDate = "";
         this.description = "";
         this.language = "";
-        this.categories = new String[]{""};
-        this.authors = new String[]{""};
+        this.categories = new ArrayList<>();
+        this.authors = new ArrayList<>();
         this.pageCount = -1;
         this.thumbnail = "";
-        this.bookPhotos= new ArrayList<>();
+        this.bookPhotos = new ArrayList<>();
+
+        this.owner_uid = "";
+        this.bookConditions = "";
+        this.tags = new ArrayList<>();
     }
 
     public String getIsbn() {
@@ -273,7 +284,7 @@ class Book implements Parcelable {
         return subTitle;
     }
 
-    public String[] getAuthors() {
+    public List<String> getAuthors() {
         return authors;
     }
 
@@ -293,7 +304,7 @@ class Book implements Parcelable {
         return pageCount;
     }
 
-    public String[] getCategories() {
+    public List<String> getCategories() {
         return categories;
     }
 
@@ -313,6 +324,17 @@ class Book implements Parcelable {
         this.bookPhotos.add(0, photo);
     }
 
+    public String getOwner_uid() {
+        return owner_uid;
+    }
+
+    public String getBookConditions() {
+        return bookConditions;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
 
     /*******************************
      * Parcelizable implementation
@@ -336,20 +358,18 @@ class Book implements Parcelable {
         this.language = in.readString();
         this.thumbnail = in.readString();
 
-        int num_authors = in.readInt();
-        String[] a = new String[num_authors];
-        in.readStringArray(a);
-        this.authors = a;
+        this.authors = in.readArrayList(String.class.getClassLoader());
 
         this.pageCount = in.readInt();
 
-        int num_categories = in.readInt();
-        String[] c = new String[num_categories];
-        in.readStringArray(c);
-        this.categories = c;
+        this.categories = in.readArrayList(String.class.getClassLoader());
 
         //instantiate the photo collection, it's not parcelled
         this.bookPhotos = in.readArrayList(null);
+
+        this.owner_uid = in.readString();
+        this.bookConditions = in.readString();
+        this.tags = in.readArrayList(String.class.getClassLoader());
     }
 
     /**
@@ -370,15 +390,17 @@ class Book implements Parcelable {
         dest.writeString(getLanguage());
         dest.writeString(getThumbnail());
 
-        dest.writeInt(getAuthors().length);
-        dest.writeStringArray(getAuthors());
+        dest.writeList(getAuthors());
 
         dest.writeInt(getPageCount());
 
-        dest.writeInt(getCategories().length);
-        dest.writeStringArray(getCategories());
+        dest.writeList(getCategories());
 
         dest.writeList(getBookPhotos());
+
+        dest.writeString(getOwner_uid());
+        dest.writeString(getBookConditions());
+        dest.writeList(getTags());
     }
 
     @Override

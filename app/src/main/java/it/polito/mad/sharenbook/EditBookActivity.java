@@ -280,13 +280,13 @@ public class EditBookActivity extends Activity {
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
 
         //authors to comma separated string
-        String[] a_arr = book.getAuthors();
+        List<String> a_arr = book.getAuthors();
 
-        if (a_arr.length == 1) {
+        if (a_arr.size() == 1) {
 
-            editbook_et_authors.setText(book.getAuthors()[0]);
+            editbook_et_authors.setText(book.getAuthors().get(0));
 
-        } else if (a_arr.length > 1) {
+        } else if (a_arr.size() > 1) {
 
             StringBuilder sb = new StringBuilder();
 
@@ -301,13 +301,13 @@ public class EditBookActivity extends Activity {
         }
 
         //categories to comma separated string
-        String[] c_arr = book.getCategories();
+        List<String> c_arr = book.getCategories();
 
-        if (c_arr.length == 1) {
+        if (c_arr.size() == 1) {
 
-            editbook_et_categories.setText(book.getCategories()[0]);
+            editbook_et_categories.setText(book.getCategories().get(0));
 
-        } else if (c_arr.length > 1) {
+        } else if (c_arr.size() > 1) {
 
             StringBuilder sb = new StringBuilder();
 
@@ -568,7 +568,11 @@ public class EditBookActivity extends Activity {
         bookData.put("publisher", editbook_et_publisher.getText().toString());
         bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
         bookData.put("description", editbook_et_description.getText().toString());
-        bookData.put("pageCount", editbook_et_pageCount.getText().toString());
+        String pageCount = editbook_et_pageCount.getText().toString();
+        if (pageCount.equals(""))
+            bookData.put("pageCount", 0);
+        else
+            bookData.put("pageCount", Integer.parseInt(pageCount));
         bookData.put("categories", commaStringToList( editbook_et_categories.getText().toString() ));
         bookData.put("language", editbook_et_language.getText().toString());
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
