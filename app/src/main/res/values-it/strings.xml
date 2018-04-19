@@ -23,6 +23,8 @@
     <string name="welcome_msg">Benvenuto su Share\'nBook!</string>
     <string name="search_hint">Ricerca un libro o un utente…</string>
     <string name="log_out">Logged Out!</string>
+    <string name="loading_dialog">Upload in corso..</string>
+
 
 
     <!-- common words -->
