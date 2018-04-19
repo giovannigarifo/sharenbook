@@ -178,7 +178,7 @@ class Book implements Parcelable {
 
     private String isbn;
     private String title;
-    private String subTitle;
+    private String subtitle;
     private String publisher;
     private String publishedDate;
     private String description;
@@ -200,7 +200,7 @@ class Book implements Parcelable {
      * Constructor for the Book Class
      * @param isbn
      * @param title
-     * @param subTitle
+     * @param subtitle
      * @param authors
      * @param publisher
      * @param publishedDate
@@ -210,12 +210,12 @@ class Book implements Parcelable {
      * @param language
      * @param thumbnail
      */
-    public Book(String isbn, String title, String subTitle, List<String> authors, String publisher,
+    public Book(String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories,
                 String language, String thumbnail) {
         this.isbn = isbn;
         this.title = title;
-        this.subTitle = subTitle;
+        this.subtitle = subtitle;
         this.publisher = publisher;
         this.publishedDate = publishedDate;
         this.description = description;
@@ -257,7 +257,7 @@ class Book implements Parcelable {
     public Book() {
         this.isbn = "";
         this.title = "";
-        this.subTitle = "";
+        this.subtitle = "";
         this.publisher = "";
         this.publishedDate = "";
         this.description = "";
@@ -282,8 +282,8 @@ class Book implements Parcelable {
         return title;
     }
 
-    public String getSubTitle() {
-        return subTitle;
+    public String getSubtitle() {
+        return subtitle;
     }
 
     public List<String> getAuthors() {
@@ -350,8 +350,8 @@ class Book implements Parcelable {
         this.title = title;
     }
 
-    public void setSubTitle(String subTitle) {
-        this.subTitle = subTitle;
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public void setPublisher(String publisher) {
@@ -421,7 +421,7 @@ class Book implements Parcelable {
 
         this.isbn = in.readString();
         this.title = in.readString();
-        this.subTitle = in.readString();
+        this.subtitle = in.readString();
         this.publisher = in.readString();
         this.publishedDate = in.readString();
         this.description = in.readString();
@@ -454,7 +454,7 @@ class Book implements Parcelable {
 
         dest.writeString(getIsbn());
         dest.writeString(getTitle());
-        dest.writeString(getSubTitle());
+        dest.writeString(getSubtitle());
         dest.writeString(getPublisher());
         dest.writeString(getPublishedDate());
         dest.writeString(getDescription());

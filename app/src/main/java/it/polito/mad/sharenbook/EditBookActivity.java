@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,11 +47,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
@@ -284,7 +281,7 @@ public class EditBookActivity extends Activity {
 
         editbook_et_isbn.setText(book.getIsbn());
         editbook_et_title.setText(book.getTitle());
-        editbook_et_subtitle.setText(book.getSubTitle());
+        editbook_et_subtitle.setText(book.getSubtitle());
         editbook_et_publisher.setText(book.getPublisher());
         editbook_et_publishedDate.setText(book.getPublishedDate());
         editbook_et_description.setText(book.getDescription());
