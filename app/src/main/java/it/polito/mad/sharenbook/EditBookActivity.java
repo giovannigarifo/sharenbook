@@ -567,7 +567,11 @@ public class EditBookActivity extends Activity {
         bookData.put("publisher", editbook_et_publisher.getText().toString());
         bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
         bookData.put("description", editbook_et_description.getText().toString());
-        bookData.put("pageCount", Integer.parseInt(editbook_et_pageCount.getText().toString()));
+        String pageCount = editbook_et_pageCount.getText().toString();
+        if (pageCount.equals(""))
+            bookData.put("pageCount", 0);
+        else
+            bookData.put("pageCount", Integer.parseInt(pageCount));
         bookData.put("categories", commaStringToList( editbook_et_categories.getText().toString() ));
         bookData.put("language", editbook_et_language.getText().toString());
         bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
