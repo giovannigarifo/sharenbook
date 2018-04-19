@@ -70,6 +70,8 @@ public class EditProfileActivity extends Activity {
     //context of the activity
     private Context context;
 
+    ProgressDialog progressDialog = null;
+
     // request codes to edit user photo
     private static final int REQUEST_CAMERA = 1;
     private static final int REQUEST_GALLERY = 2;
@@ -353,7 +355,7 @@ public class EditProfileActivity extends Activity {
 
         if (filePath != null) {
             //displaying a progress dialog while upload is going on
-            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
@@ -1026,4 +1028,16 @@ public class EditProfileActivity extends Activity {
         et_userEmail.setTypeface(robotoLight);
     }
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(progressDialog != null && progressDialog.isShowing()){
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 }

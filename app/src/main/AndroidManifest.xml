@@ -21,7 +21,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ShowProfileActivity"
             android:launchMode="singleInstance"/>
-        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".EditProfileActivity"
+            android:launchMode="singleInstance"/>
         <activity
             android:name=".ShowPictureActivity"
             android:theme="@style/myShowPictureWindow" />
