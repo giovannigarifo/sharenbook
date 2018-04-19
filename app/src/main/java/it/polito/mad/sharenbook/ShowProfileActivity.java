@@ -52,7 +52,7 @@ public class ShowProfileActivity extends Activity {
     private CircularImageView userPicture;
 
     //key value database
-    private SharedPreferences editedProfile;
+    //private SharedPreferences editedProfile;
 
     //Firebase references
     private FirebaseAuth firebaseAuth;
@@ -92,8 +92,6 @@ public class ShowProfileActivity extends Activity {
         Context context = this.getApplicationContext(); //retrieve context
 
 
-        //retrieve the shared preference file
-        editedProfile = context.getSharedPreferences(getString(R.string.profile_preferences), Context.MODE_PRIVATE);
 
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
@@ -102,15 +100,6 @@ public class ShowProfileActivity extends Activity {
         default_fullname = context.getResources().getString(R.string.default_fullname_heading);
         default_username = context.getResources().getString(R.string.default_username_heading);
         default_picture_path = context.getResources().getString(R.string.default_picture_path);
-
-        //modify default typography
-        getViewsAndSetTypography();
-
-        //get references to UI elements
-        goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
-        navBar = (BottomNavigationView) findViewById(R.id.navigation);
-        userPicture = (CircularImageView) findViewById(R.id.userPicture);
-
 
         /**
          * User creation
@@ -123,6 +112,17 @@ public class ShowProfileActivity extends Activity {
             data = savedInstanceState;
 
         user = data.getParcelable(getString(R.string.user_profile_data_key));
+
+        //modify default typography
+        getViewsAndSetTypography();
+
+        //get references to UI elements
+        goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
+        navBar = (BottomNavigationView) findViewById(R.id.navigation);
+        userPicture = (CircularImageView) findViewById(R.id.userPicture);
+
+
+
 
         pictureUri = user.getPicture_uri();
 
@@ -146,7 +146,7 @@ public class ShowProfileActivity extends Activity {
         /**
          * set texts
          */
-        fullNameResize();
+        fullNameResize(user);
         tv_userFullName.setText(user.getFullname());
         tv_userNickName.setText(user.getUsername());
         tv_userCityContent.setText(user.getCity());
@@ -177,12 +177,24 @@ public class ShowProfileActivity extends Activity {
         });
 
 
-        /**
-         * navBar
-         */
+
+
+        setupNavbar();
+
+
+    }
+
+    /**
+     * navBar
+     */
+
+    private void setupNavbar(){
+
 
         //set navigation_profile as selected item
         navBar.setSelectedItemId(R.id.navigation_profile);
+
+
 
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
@@ -209,12 +221,14 @@ public class ShowProfileActivity extends Activity {
                     Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
                     startActivity(i);
                     break;
+                case R.id.navigation_myBook:
+                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+                    startActivity(my_books);
+
+                    break;
             }
             return true;
         });
-
-
-
 
 
     }
@@ -268,7 +282,7 @@ public class ShowProfileActivity extends Activity {
                 /**
                  * set texts
                  */
-                fullNameResize();
+                fullNameResize(user);
                 tv_userFullName.setText(user.getFullname());
                 tv_userNickName.setText(user.getUsername());
                 tv_userCityContent.setText(user.getCity());
@@ -287,7 +301,7 @@ public class ShowProfileActivity extends Activity {
     /**
      * fullNameResize method
      */
-    private void fullNameResize() {
+    private void fullNameResize(UserProfile user) {
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -296,7 +310,7 @@ public class ShowProfileActivity extends Activity {
 
         if (metrics.densityDpi != metrics.DENSITY_HIGH || metrics.widthPixels < widthT) {
 
-            int fullname_lenght = editedProfile.getString(getString(R.string.fullname_key), default_fullname).length();
+            int fullname_lenght = user.getFullname().length();
 
             if (fullname_lenght <= 16) {
                 tv_userFullName.setTextSize(2, 24);
@@ -337,11 +351,11 @@ public class ShowProfileActivity extends Activity {
          */
 
         tv_userFullName.setTypeface(robotoBold);
-        fullNameResize();
-        tv_userFullName.setText(editedProfile.getString(getString(R.string.fullname_key), default_fullname));
+        fullNameResize(user);
+        tv_userFullName.setText(user.getFullname());
 
         tv_userNickName.setTypeface(robotoLight);
-        tv_userNickName.setText(editedProfile.getString(getString(R.string.username_key), default_username));
+        tv_userNickName.setText(user.getUsername());
         tv_userRatingInfo.setTypeface(robotoLight);
 
         //headings
@@ -351,13 +365,13 @@ public class ShowProfileActivity extends Activity {
 
         //contents
         tv_userCityContent.setTypeface(robotoLight);
-        tv_userCityContent.setText(editedProfile.getString(getString(R.string.city_key), default_city));
+        tv_userCityContent.setText(user.getCity());
 
         tv_userBioContent.setTypeface(robotoLight);
-        tv_userBioContent.setText(editedProfile.getString(getString(R.string.bio_key), default_bio));
+        tv_userBioContent.setText(user.getBio());
 
         tv_userEmailContent.setTypeface(robotoLight);
-        tv_userEmailContent.setText(editedProfile.getString(getString(R.string.email_key), default_email));
+        tv_userEmailContent.setText(user.getEmail());
     }
 
 }
