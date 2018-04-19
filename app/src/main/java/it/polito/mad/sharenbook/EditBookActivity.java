@@ -279,13 +279,13 @@ public class EditBookActivity extends Activity {
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
 
         //authors to comma separated string
-        String[] a_arr = book.getAuthors();
+        List<String> a_arr = book.getAuthors();
 
-        if (a_arr.length == 1) {
+        if (a_arr.size() == 1) {
 
-            editbook_et_authors.setText(book.getAuthors()[0]);
+            editbook_et_authors.setText(book.getAuthors().get(0));
 
-        } else if (a_arr.length > 1) {
+        } else if (a_arr.size() > 1) {
 
             StringBuilder sb = new StringBuilder();
 
@@ -300,13 +300,13 @@ public class EditBookActivity extends Activity {
         }
 
         //categories to comma separated string
-        String[] c_arr = book.getCategories();
+        List<String> c_arr = book.getCategories();
 
-        if (c_arr.length == 1) {
+        if (c_arr.size() == 1) {
 
-            editbook_et_categories.setText(book.getCategories()[0]);
+            editbook_et_categories.setText(book.getCategories().get(0));
 
-        } else if (c_arr.length > 1) {
+        } else if (c_arr.size() > 1) {
 
             StringBuilder sb = new StringBuilder();
 
