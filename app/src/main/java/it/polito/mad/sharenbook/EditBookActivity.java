@@ -600,6 +600,7 @@ public class EditBookActivity extends Activity {
 
                     progressDialog.dismiss();
                     if (databaseError1 == null) {
+                        firebaseSavePhotos(newBookRef.getKey());
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         startActivity(i);
@@ -612,6 +613,34 @@ public class EditBookActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    /**
+     * Save al photos on firebase
+     */
+    private void firebaseSavePhotos(String bookKey) {
+        // Get list of photos
+        ArrayList<Bitmap> photos = book.getBookPhotos();
+
+        // Launch a task for every photo that should be updated
+        for (int i = 0; i < photos.size(); i++) {
+            final int num = i;
+
+            // Compress bitmap into jpeg
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            photos.get(i).compress(Bitmap.CompressFormat.JPEG, 95, output);
+
+            // Generate new file on firebase and write it
+            StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
+            newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
+                // Handle successful uploads
+                Log.d("Debug","Photo n. " + num + " uploaded!");
+            })
+            .addOnFailureListener(exception -> {
+                // Handle unsuccessful uploads
+                Log.d("Debug","Error during upload of photo n. " + num);
+            });
+        }
     }
 
     /**
