@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -752,6 +753,7 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     @Override
     public void onBindViewHolder(BookPhotoViewHolder holder, int position) {
 
+        /*
         Bitmap bmPhoto = this.bookPhotos.get(position);
 
         ImageView iv = (ImageView) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
@@ -765,6 +767,27 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
             if (bookPhotos.size() > 0) {
                 this.bookPhotos.remove(position);
                 this.notifyItemRemoved(position);
+            }
+        });
+        */
+
+        Bitmap bmPhoto = this.bookPhotos.get(position);
+
+        ImageView iv = (ImageView) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
+        iv.setImageBitmap(bmPhoto);
+
+        ImageButton ib = (ImageButton) holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
+        ib.setTag(bmPhoto);
+
+        //onClick listener for the delete photo button
+        ib.setOnClickListener((v) -> {
+
+            if (bookPhotos.size() > 0) {
+
+                Bitmap bmp = (Bitmap) v.getTag();
+                int ib_position = bookPhotos.indexOf(bmp);
+                bookPhotos.remove(ib_position);
+                notifyItemRemoved(ib_position);
             }
         });
     }
