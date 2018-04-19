@@ -712,8 +712,7 @@ public class EditBookActivity extends Activity {
 
 
 /**
- * TEST
- * <p>
+ *
  * BookPhotoAdapter class
  */
 

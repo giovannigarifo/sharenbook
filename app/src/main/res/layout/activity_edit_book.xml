@@ -85,7 +85,7 @@
                             android:paddingRight="8dp"
                             android:text="@string/default_addPhoto_heading"
                             android:textSize="16dp" />
-                        
+
                     </RelativeLayout>
 
                     <!-- display collection of the user photo book -->
