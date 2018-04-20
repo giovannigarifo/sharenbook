@@ -50,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
 
@@ -110,6 +109,7 @@ public class EditBookActivity extends Activity {
 
     // ProgressDialog
     private ProgressDialog progressDialog;
+    int photoLoaded;
 
     final static int MAX_ALLOWED_BOOK_PHOTO = 5;
     final static int MIN_REQUIRED_BOOK_PHOTO = 1;
@@ -680,7 +680,11 @@ public class EditBookActivity extends Activity {
         // Get list of photos
         ArrayList<Bitmap> photos = book.getBookPhotos();
         List<Task<UploadTask>> taskList = new ArrayList<>();
-        AtomicInteger uPhotoState = new AtomicInteger(0);
+        photoLoaded = 0;
+        int numPhotos = photos.size();
+
+        // Show message "uploading books"
+        updateProgressDialogMessage(++photoLoaded, numPhotos);
 
         // Launch a task for every photo that should be updated
         for (int i = 0; i < photos.size(); i++) {
@@ -695,8 +699,7 @@ public class EditBookActivity extends Activity {
             Task newTask = newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
                 // Handle successful uploads
                 Log.d("Debug","Photo n. " + num + " uploaded!");
-                String msg = getText(R.string.default_saving_photo).toString() + " " + uPhotoState.incrementAndGet() + "/" + photos.size();
-                progressDialog.setMessage(msg);
+                updateProgressDialogMessage(++photoLoaded, numPhotos);
             })
             .addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
@@ -722,6 +725,13 @@ public class EditBookActivity extends Activity {
      */
     private void firebaseSaveOrUpdateWords() {
 
+    }
+
+    private void updateProgressDialogMessage(int num, int den) {
+        if (num <= den) {
+            String msg = getString(R.string.default_saving_photo) + num + getString(R.string.of_preposition) + den + getString(R.string.default_ongoing);
+            progressDialog.setMessage(msg);
+        }
     }
 
     /**

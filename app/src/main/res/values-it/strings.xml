@@ -129,7 +129,9 @@
     <string name="default_book_condition">Copertina rigata, pagine strappate…</string>
     <string name="default_tags">Bestseller, consigliato per bambini…</string>
     <string name="default_book_saved">Libro caricato correttamente!</string>
-    <string name="default_saving_photo">Carico la foto </string>
+    <string name="default_saving_photo">Caricamento foto\u0020</string>
+    <string name="of_preposition">\u0020di\u0020</string>
+    <string name="default_ongoing">\u0020in corso…</string>
 
 
 
