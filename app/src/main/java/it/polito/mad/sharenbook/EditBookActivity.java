@@ -104,6 +104,7 @@ public class EditBookActivity extends Activity {
     // FireBase objects
     private FirebaseUser firebaseUser;
     private DatabaseReference booksDb;
+    private DatabaseReference wordsDb;
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
 
@@ -155,7 +156,10 @@ public class EditBookActivity extends Activity {
         editbook_fab_save.setOnClickListener((v) -> {
             Log.d("debug", "editbook_fab_save onClickListener fired");
             if (validateInputFields()) {
+
+                updateBookWithUserInfo();
                 firebaseSaveBook();
+                firebaseSaveOrUpdateWords();
             }
         });
 
@@ -220,12 +224,43 @@ public class EditBookActivity extends Activity {
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
+        wordsDb = firebaseDatabase.getReference(getString(R.string.words_key));
+
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
+
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
+    }
+
+
+    /*
+     * Update the Book object with the final information inserted by the user in the edittexts
+     */
+    private void updateBookWithUserInfo() {
+
+        book.setIsbn(editbook_et_isbn.getText().toString());
+        book.setTitle(editbook_et_title.getText().toString());
+        book.setSubtitle(editbook_et_subtitle.getText().toString());
+        book.setAuthors(commaStringToList(editbook_et_authors.getText().toString()));
+        book.setPublisher(editbook_et_publisher.getText().toString());
+        book.setPublishedDate(editbook_et_publishedDate.getText().toString());
+        book.setDescription(editbook_et_description.getText().toString());
+
+        String pageCount = editbook_et_pageCount.getText().toString();
+
+        if (pageCount.equals(""))
+            book.setPageCount(0);
+        else
+            book.setPageCount(Integer.parseInt(pageCount));
+
+        book.setCategories(commaStringToList(editbook_et_categories.getText().toString()));
+        book.setLanguage(editbook_et_language.getText().toString());
+        book.setBookConditions(editbook_et_bookConditions.getText().toString());
+        book.setTags(commaStringToList(editbook_et_tags.getText().toString()));
     }
 
 
@@ -588,22 +623,18 @@ public class EditBookActivity extends Activity {
         // Retrieve all data
         HashMap<String, Object> bookData = new HashMap<>();
         bookData.put("owner_uid", firebaseUser.getUid());
-        bookData.put("isbn", editbook_et_isbn.getText().toString());
-        bookData.put("title", editbook_et_title.getText().toString());
-        bookData.put("subtitle", editbook_et_subtitle.getText().toString());
-        bookData.put("authors", commaStringToList(editbook_et_authors.getText().toString()));
-        bookData.put("publisher", editbook_et_publisher.getText().toString());
-        bookData.put("publishedDate", editbook_et_publishedDate.getText().toString());
-        bookData.put("description", editbook_et_description.getText().toString());
-        String pageCount = editbook_et_pageCount.getText().toString();
-        if (pageCount.equals(""))
-            bookData.put("pageCount", 0);
-        else
-            bookData.put("pageCount", Integer.parseInt(pageCount));
-        bookData.put("categories", commaStringToList(editbook_et_categories.getText().toString()));
-        bookData.put("language", editbook_et_language.getText().toString());
-        bookData.put("bookConditions", editbook_et_bookConditions.getText().toString());
-        bookData.put("tags", commaStringToList(editbook_et_tags.getText().toString()));
+        bookData.put("isbn", book.getIsbn());
+        bookData.put("title", book.getTitle());
+        bookData.put("subtitle", book.getSubtitle());
+        bookData.put("authors", book.getAuthors());
+        bookData.put("publisher", book.getPublisher());
+        bookData.put("publishedDate", book.getPublishedDate());
+        bookData.put("description", book.getDescription());
+        bookData.put("pageCount", book.getPageCount());
+        bookData.put("categories", book.getCategories());
+        bookData.put("language", book.getLanguage());
+        bookData.put("bookConditions", book.getBookConditions());
+        bookData.put("tags", book.getTags());
         bookData.put("thumbnail", book.getThumbnail());
         bookData.put("numPhotos", book.getBookPhotos().size());
 
@@ -675,6 +706,14 @@ public class EditBookActivity extends Activity {
             startActivity(i);
             finish();
         });
+    }
+
+
+    /*
+     * Save all the book words in firebase, or update the word if already present in the backend
+     */
+    private void firebaseSaveOrUpdateWords() {
+
     }
 
     /**

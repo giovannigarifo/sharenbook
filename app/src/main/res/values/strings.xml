@@ -156,20 +156,21 @@
     <string name="sba_scan_your_barcode">Scan your Book Barcode</string>
 
     <!-- Firebase keys -->
-    <string name="uid_key">uid_key</string>
-    <string name="user_profile_data_key">user_data</string>
-    <string name="empty_user_value">empty_user</string>
-    <string name="empty_profile_value">empty_profile</string>
-    <string name="users_key">users</string>
-    <string name="profile_key">profile</string>
-    <string name="profile_value_placeholder">profile_empty</string>
-    <string name="users_books_placeholder">books_empty</string>
-    <string name="user_books_key">user_books</string>
-    <string name="books_key">books</string>
-    <string name="book_images_key">book_images</string>
+    <string name="uid_key" translatable="false">uid_key</string>
+    <string name="user_profile_data_key" translatable="false">user_data</string>
+    <string name="empty_user_value" translatable="false">empty_user</string>
+    <string name="empty_profile_value" translatable="false">empty_profile</string>
+    <string name="users_key" translatable="false">users</string>
+    <string name="profile_key" translatable="false">profile</string>
+    <string name="profile_value_placeholder" translatable="false">profile_empty</string>
+    <string name="users_books_placeholder" translatable="false">books_empty</string>
+    <string name="user_books_key" translatable="false">user_books</string>
+    <string name="books_key" translatable="false">books</string>
+    <string name="book_images_key" translatable="false">book_images</string>
+    <string name="words_key" translatable="false">words</string>
 
-    <string name="mba_title">My books</string>
-    <string name="nav_my_books">My books</string>
+    <string name="mba_title" translatable="false">My books</string>
+    <string name="nav_my_books" translatable="false">My books</string>
 
     <string name="no_books_alert_title">No books yet!</string>
     <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
