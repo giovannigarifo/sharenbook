@@ -308,6 +308,14 @@ public class EditBookActivity extends Activity {
         outState.putParcelable("book", book);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 
     /**
      * Loads all the info obtained from Google Books API into the view
