@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.polito.mad.sharenbook.Utils.InputValidator;
+import it.polito.mad.sharenbook.Utils.UserInterface;
 
 public class EditBookActivity extends Activity {
 
@@ -74,6 +76,8 @@ public class EditBookActivity extends Activity {
             editbook_et_publisher, editbook_et_publishedDate, editbook_et_description,
             editbook_et_pageCount, editbook_et_categories, editbook_et_language, editbook_et_bookConditions,
             editbook_et_tags;
+
+    private ScrollView editbook_scrollview;
 
     private FloatingActionButton editbook_fab_save;
 
@@ -191,7 +195,6 @@ public class EditBookActivity extends Activity {
         navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_logout:
-                    //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
                     AuthUI.getInstance()
                             .signOut(this)
                             .addOnCompleteListener(task -> {
@@ -589,41 +592,6 @@ public class EditBookActivity extends Activity {
         exitRequest.show();
     }
 
-
-    /**
-     * Validate user inputs
-     */
-    private boolean validateInputFields() {
-        boolean isValid = true;
-
-        if (InputValidator.isWrongIsbn(editbook_et_isbn)) {
-            editbook_et_isbn.setError(getText(R.string.isbn_bad_format));
-            showToast(getString(R.string.isbn_bad_format));
-            isValid = false;
-        }
-        if (editbook_et_title.getText().toString().isEmpty()) {
-            editbook_et_title.setError(getText(R.string.field_required));
-            showToast(getString(R.string.field_required));
-            isValid = false;
-        }
-        if (editbook_et_authors.getText().toString().isEmpty()) {
-            editbook_et_authors.setError(getText(R.string.field_required));
-            showToast(getString(R.string.field_required));
-            isValid = false;
-        }
-        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
-            editbook_et_bookConditions.setError(getText(R.string.field_required));
-            showToast(getString(R.string.field_required));
-            isValid = false;
-        }
-        if (book.getBookPhotos().size() < MIN_REQUIRED_BOOK_PHOTO) {
-            showToast(getString(R.string.min_photo_required));
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
     /**
      * Save all data on FireBase
      */
@@ -727,6 +695,53 @@ public class EditBookActivity extends Activity {
 
     }
 
+    /**
+     * Validate user inputs
+     */
+    private boolean validateInputFields() {
+        boolean isValid = true;
+        boolean alreadyScrolled = false;
+
+        if (InputValidator.isWrongIsbn(editbook_et_isbn)) {
+            editbook_et_isbn.setError(getText(R.string.isbn_bad_format));
+            isValid = false;
+            UserInterface.scrollToView(editbook_scrollview, editbook_et_isbn);
+            alreadyScrolled = true;
+        }
+        if (editbook_et_title.getText().toString().isEmpty()) {
+            editbook_et_title.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyScrolled) {
+                UserInterface.scrollToView(editbook_scrollview, editbook_et_title);
+                alreadyScrolled = true;
+            }
+        }
+        if (editbook_et_authors.getText().toString().isEmpty()) {
+            editbook_et_authors.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyScrolled) {
+                UserInterface.scrollToView(editbook_scrollview, editbook_et_authors);
+                alreadyScrolled = true;
+            }
+        }
+        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
+            editbook_et_bookConditions.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyScrolled) {
+                UserInterface.scrollToView(editbook_scrollview, editbook_et_bookConditions);
+            }
+        }
+        if (book.getBookPhotos().size() < MIN_REQUIRED_BOOK_PHOTO) {
+            showToast(getString(R.string.min_photo_required));
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Update progressDialog message with new upload photo state
+     */
     private void updateProgressDialogMessage(int num, int den) {
         if (num <= den) {
             String msg = getString(R.string.default_saving_photo) + num + getString(R.string.of_preposition) + den + getString(R.string.default_ongoing);
@@ -749,6 +764,9 @@ public class EditBookActivity extends Activity {
      * getViewsAndSetTypography method
      */
     private void getViewsAndSetTypography() {
+
+        //get scrollview
+        editbook_scrollview = findViewById(R.id.editbook_scrollview);
 
         //get navbar
         navBar = (BottomNavigationView) findViewById(R.id.navigation);

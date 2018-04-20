@@ -267,16 +267,6 @@
                     android:inputType="text"
                     android:maxLength="150" />
 
-            </LinearLayout>
-
-            <!-- additional informations about the book -->
-            <LinearLayout
-                android:id="@+id/editbook_ll_bookConditions"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
                 <!-- book conditions -->
                 <TextView
                     android:id="@+id/editbook_tv_bookConditions"
@@ -286,6 +276,7 @@
                     android:background="@color/colorPrimary"
                     android:gravity="center"
                     android:padding="8dp"
+                    android:layout_marginTop="16dp"
                     android:text="@string/default_book_condition_heading" />
 
                 <EditText
