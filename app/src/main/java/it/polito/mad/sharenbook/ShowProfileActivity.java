@@ -40,7 +40,10 @@ import it.polito.mad.sharenbook.model.UserProfile;
 
 public class ShowProfileActivity extends Activity {
 
-    //views
+    /**
+     * views
+     **/
+
     private TextView tv_userFullName, tv_userNickName, tv_userRatingInfo,
             tv_userCityHeading, tv_userBioHeading, tv_userEmailHeading,
             tv_userCityContent, tv_userBioContent, tv_userEmailContent;
@@ -51,16 +54,10 @@ public class ShowProfileActivity extends Activity {
 
     private CircularImageView userPicture;
 
-    //key value database
-    //private SharedPreferences editedProfile;
+    /**
+     * default profile values
+     **/
 
-    //Firebase references
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
-    private FirebaseDatabase firebaseDatabase;
-    private FirebaseUser firebaseUser;
-
-    //default profile values
     private String default_city;
     private String default_bio;
     private String default_email;
@@ -68,7 +65,9 @@ public class ShowProfileActivity extends Activity {
     private String default_username;
     private String default_picture_path;
 
-    //result values returned by called activities
+    /**
+     * result values returned by called activities
+     **/
     private static final int EDIT_RETURN_VALUE = 1;
 
     private int widthT = 700;
@@ -91,8 +90,6 @@ public class ShowProfileActivity extends Activity {
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
 
-
-
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
         default_bio = context.getResources().getString(R.string.default_bio);
@@ -106,7 +103,7 @@ public class ShowProfileActivity extends Activity {
          */
 
         Bundle data = null;
-        if(savedInstanceState == null) //ShowProfile is started by SplashActivity
+        if (savedInstanceState == null) //ShowProfile is started by SplashActivity
             data = getIntent().getExtras();
         else                            //otherwise landascape -> portrait or viceversa
             data = savedInstanceState;
@@ -122,14 +119,12 @@ public class ShowProfileActivity extends Activity {
         userPicture = (CircularImageView) findViewById(R.id.userPicture);
 
 
-
-
         pictureUri = user.getPicture_uri();
 
-        if(pictureUri != null) {
+        if (pictureUri != null) {
 
             //Set profile picture
-            if(!pictureUri.toString().equals(default_picture_path)){
+            if (!pictureUri.toString().equals(default_picture_path)) {
                 Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
 
                 userPicture.setOnClickListener(v -> {
@@ -154,9 +149,6 @@ public class ShowProfileActivity extends Activity {
         tv_userEmailContent.setText(user.getEmail());
 
 
-
-
-
         /**
          * userPicture
          */
@@ -170,13 +162,11 @@ public class ShowProfileActivity extends Activity {
         goEdit_button.setOnClickListener(v -> {
 
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key),user);
-            i.putExtra("from","profile");
+            i.putExtra(getString(R.string.user_profile_data_key), user);
+            i.putExtra("from", "profile");
             startActivityForResult(i, EDIT_RETURN_VALUE);
 
         });
-
-
 
 
         setupNavbar();
@@ -188,12 +178,11 @@ public class ShowProfileActivity extends Activity {
      * navBar
      */
 
-    private void setupNavbar(){
+    private void setupNavbar() {
 
 
         //set navigation_profile as selected item
         navBar.setSelectedItemId(R.id.navigation_profile);
-
 
 
         //set the listener for the navigation bar items
@@ -236,7 +225,7 @@ public class ShowProfileActivity extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState); //the activity is going to be destroyed I need to save user
-        outState.putParcelable(getString(R.string.user_profile_data_key),user);
+        outState.putParcelable(getString(R.string.user_profile_data_key), user);
     }
 
     /**
@@ -262,10 +251,10 @@ public class ShowProfileActivity extends Activity {
 
                 pictureUri = user.getPicture_uri();
 
-                if(pictureUri != null) {
+                if (pictureUri != null) {
 
                     //Set profile picture
-                    if(!pictureUri.toString().equals(default_picture_path)){
+                    if (!pictureUri.toString().equals(default_picture_path)) {
                         Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
 
                         userPicture.setOnClickListener(v -> {
@@ -326,7 +315,6 @@ public class ShowProfileActivity extends Activity {
 
     /**
      * getViewsAndSetTypography method
-     *
      */
     private void getViewsAndSetTypography() {
 

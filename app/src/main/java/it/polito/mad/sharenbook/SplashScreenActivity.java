@@ -76,6 +76,8 @@ public class SplashScreenActivity extends Activity {
      */
     private void initFirebase(){
         /*Authentication*/
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         /*Storage*/

@@ -49,6 +49,8 @@ public class MyBookActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_book);
 
 
+
+
         /** teeeeest **/
         books = new ArrayList<Book>();
 
@@ -97,6 +99,7 @@ public class MyBookActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 //books.add(dataSnapshot.getValue(Book.class));
+
                                 bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
@@ -112,18 +115,15 @@ public class MyBookActivity extends AppCompatActivity {
                                     }
                                 });
 
-      /*
+
+    /*
                                 if(books.size() == numberOfannounces){
 
                                     setRecycle(books);
 
-
-
-
-
                                 }
 
-     */
+*/
 
                             }
 
