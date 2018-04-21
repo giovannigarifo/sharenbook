@@ -21,7 +21,7 @@ public class UserProfile implements Parcelable {
     private String email;
     private String city;
     private String bio;
-    private Uri picture_uri;
+    private String picture_timestamp;
 
     public UserProfile(){
 
@@ -35,14 +35,14 @@ public class UserProfile implements Parcelable {
         this.email = in.readString();
         this.city = in.readString();
         this.bio = in.readString();
-        this.picture_uri = Uri.parse(in.readString());
+        this.picture_timestamp = in.readString();
 
     }
 
     /**
      * UserProfile Complete Constructor
      */
-    public UserProfile (String userID, String fullname, String username, String email, String city, String bio, String pictureURI){
+    public UserProfile (String userID, String fullname, String username, String email, String city, String bio, String picture_timestamp){
 
         this.userID = userID;
         this.fullname = fullname;
@@ -51,8 +51,8 @@ public class UserProfile implements Parcelable {
         this.city = city;
         this.bio = bio;
 
-        if(pictureURI != null)
-            this.picture_uri = Uri.parse(pictureURI);
+        if(picture_timestamp != null)
+            this.picture_timestamp = picture_timestamp;
 
     }
 
@@ -66,7 +66,7 @@ public class UserProfile implements Parcelable {
         result.put("email",getEmail());
         result.put("city",getCity());
         result.put("bio",getBio());
-        result.put("picture_uri", getPicture_uri());
+        result.put("picture_timestamp", getPicture_timestamp());
 
         return result;
     }
@@ -96,8 +96,8 @@ public class UserProfile implements Parcelable {
         return bio;
     }
 
-    public Uri getPicture_uri() {
-        return picture_uri;
+    public String getPicture_timestamp() {
+        return picture_timestamp;
     }
 
     public void setUserID(String userID) {
@@ -124,8 +124,8 @@ public class UserProfile implements Parcelable {
         this.bio = bio;
     }
 
-    public void setPicture_uri(Uri picture_uri) {
-        this.picture_uri = picture_uri;
+    public void setPicture_timestamp(String picture_timestamp) {
+        this.picture_timestamp = picture_timestamp;
     }
 
 
@@ -143,7 +143,7 @@ public class UserProfile implements Parcelable {
         dest.writeString(getEmail());
         dest.writeString(getCity());
         dest.writeString(getBio());
-        dest.writeString(getPicture_uri().toString());
+        dest.writeString(getPicture_timestamp());
 
     }
 

@@ -2,15 +2,18 @@ package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,12 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
@@ -269,18 +274,31 @@ public class SplashScreenActivity extends Activity {
     private void goShowProfile(){
 
         storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child("images/"+user.getUserID()+".jpg").getDownloadUrl().addOnSuccessListener(uri -> {
-            user.setPicture_uri(uri);
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), user);
-            startActivity(i);
-            finish();
-        }).addOnFailureListener(exception -> {
-            user.setPicture_uri(Uri.parse(default_picture_path));
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), user);
-            startActivity(i);
-            finish();
+        StorageReference storageRef = storageReference.child("images/"+user.getUserID()+".jpg");
+
+        Task task = storageRef.getMetadata();
+        task.addOnSuccessListener(new OnSuccessListener() {
+            @Override
+            public void onSuccess(Object o) {
+                StorageMetadata sm = (StorageMetadata) o;
+                user.setPicture_timestamp(String.valueOf(sm.getCreationTimeMillis()));
+                Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                i.putExtra(getString(R.string.user_profile_data_key), user);
+                startActivity(i);
+                finish();
+            }
+
+        });
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                user.setPicture_timestamp(default_picture_path);
+                Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                i.putExtra(getString(R.string.user_profile_data_key), user);
+                startActivity(i);
+                finish();
+
+            }
         });
 
     }

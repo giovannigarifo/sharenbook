@@ -20,6 +20,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="it.polito.mad.sharenbook.Utils.MyAppGlideModule"
+            android:value="GlideApp" />
+
         <activity android:name=".ShowProfileActivity"
             android:launchMode="singleInstance"/>
         <activity android:name=".EditProfileActivity"

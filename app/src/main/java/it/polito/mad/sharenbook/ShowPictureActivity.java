@@ -22,7 +22,7 @@ public class ShowPictureActivity extends Activity {
         Intent i = getIntent();
 
         String picturePath = i.getStringExtra("PicturePath");
-
+//TODO modifiy here no pictureURI!!!
         Uri pictureUri = Uri.parse(picturePath);
 /*
         Bitmap resultBMP;
@@ -53,7 +53,7 @@ public class ShowPictureActivity extends Activity {
 
 
 
-        Log.d("Path:",picturePath.toString());
+        Log.d("Path:",picturePath);
 
 
     }

@@ -3,9 +3,7 @@ package it.polito.mad.sharenbook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -15,27 +13,14 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.io.File;
-import java.io.IOException;
-
+import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 public class ShowProfileActivity extends Activity {
@@ -63,7 +48,7 @@ public class ShowProfileActivity extends Activity {
     private String default_email;
     private String default_fullname;
     private String default_username;
-    private String default_picture_path;
+    private String default_picture_timestamp;
 
     /**
      * result values returned by called activities
@@ -74,7 +59,8 @@ public class ShowProfileActivity extends Activity {
 
     private UserProfile user;
 
-    private Uri pictureUri;
+    private String picture_timestamp;
+
 
     /**
      * onCreate callback
@@ -90,13 +76,15 @@ public class ShowProfileActivity extends Activity {
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
 
+        //GlideApp.init(getApplicationContext(), new GlideBuilder());
+
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
         default_bio = context.getResources().getString(R.string.default_bio);
         default_email = context.getResources().getString(R.string.default_email);
         default_fullname = context.getResources().getString(R.string.default_fullname_heading);
         default_username = context.getResources().getString(R.string.default_username_heading);
-        default_picture_path = context.getResources().getString(R.string.default_picture_path);
+        default_picture_timestamp = context.getResources().getString(R.string.default_picture_path);
 
         /**
          * User creation
@@ -119,22 +107,18 @@ public class ShowProfileActivity extends Activity {
         userPicture = (CircularImageView) findViewById(R.id.userPicture);
 
 
-        pictureUri = user.getPicture_uri();
-
-        if (pictureUri != null) {
+        picture_timestamp = user.getPicture_timestamp();
 
             //Set profile picture
-            if (!pictureUri.toString().equals(default_picture_path)) {
-                Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
+            if (!picture_timestamp.equals(default_picture_timestamp)) {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(picture_timestamp));
 
                 userPicture.setOnClickListener(v -> {
                     Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                    i.putExtra("PicturePath", pictureUri.toString());
+                    i.putExtra("PicturePath", picture_timestamp);
                     startActivity(i);
                 });
-
-            }
-
 
         }
 
@@ -163,7 +147,6 @@ public class ShowProfileActivity extends Activity {
 
             Intent i = new Intent(getApplicationContext(), EditProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key), user);
-            i.putExtra("from", "profile");
             startActivityForResult(i, EDIT_RETURN_VALUE);
 
         });
@@ -213,7 +196,6 @@ public class ShowProfileActivity extends Activity {
                 case R.id.navigation_myBook:
                     Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
                     startActivity(my_books);
-
                     break;
             }
             return true;
@@ -249,22 +231,18 @@ public class ShowProfileActivity extends Activity {
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-                pictureUri = user.getPicture_uri();
+                picture_timestamp = user.getPicture_timestamp();
 
-                if (pictureUri != null) {
+                if (!picture_timestamp.equals(default_picture_path)) {
 
-                    //Set profile picture
-                    if (!pictureUri.toString().equals(default_picture_path)) {
-                        Glide.with(getApplicationContext()).load(user.getPicture_uri().toString()).into(userPicture);
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                        UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(picture_timestamp));
 
                         userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                            i.putExtra("PicturePath", pictureUri.toString());
+                            i.putExtra("PicturePath", picture_timestamp);
                             startActivity(i);
                         });
-
-                    }
-
 
                 }
 

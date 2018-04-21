@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 
@@ -251,16 +252,16 @@ public class EditProfileActivity extends Activity {
         userPicture = findViewById(R.id.userPicture_edit);
 
         String chosenPicture;
-        if (user.getPicture_uri() != null)
-            chosenPicture = user.getPicture_uri().toString();
-        else
-            chosenPicture = default_picture_path;
+        if (!user.getPicture_timestamp().equals(default_picture_path)) {
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/"+user.getUserID()+".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+        }
+            //chosenPicture = user.getPicture_uri().toString();
+        //else
+          //  chosenPicture = default_picture_path;
 
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), chosenPicture).commit();
-        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), false).commit();
+        //writeProfile_copy.putString(getString(R.string.userPicture_copy_key), chosenPicture).commit();
+        //writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), false).commit();
 
-        if (!chosenPicture.equals(default_picture_path))
-            Glide.with(getApplicationContext()).load(chosenPicture).into(userPicture);
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this, R.drawable.ic_check_black_24dp));
@@ -300,8 +301,9 @@ public class EditProfileActivity extends Activity {
         userPicture = findViewById(R.id.userPicture_edit);
         String chosenPicture = editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path);
 
-        if (!chosenPicture.equals(default_picture_path))
-            Glide.with(getApplicationContext()).load(chosenPicture).into(userPicture);
+        if (!user.getPicture_timestamp().equals(default_picture_path)) {
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/"+user.getUserID()+".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+        }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setOnClickListener(v -> selectImage());
@@ -840,7 +842,10 @@ public class EditProfileActivity extends Activity {
                         writeProfile_copy.clear().commit();
 
                         Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
-                        user.setPicture_uri(taskSnapshot.getDownloadUrl()); //save the download URL
+
+
+                        user.setPicture_timestamp(String.valueOf(taskSnapshot.getMetadata().getCreationTimeMillis()));
+                        //user.setPicture_uri(taskSnapshot.getDownloadUrl()); //save the download URL
 
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);
