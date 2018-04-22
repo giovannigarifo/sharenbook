@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
@@ -53,7 +51,7 @@ public class SplashScreenActivity extends Activity {
     private String default_email;
     private String default_fullname;
     private String default_username;
-    private String default_picture_path;
+    private String default_picture_signature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,7 @@ public class SplashScreenActivity extends Activity {
         default_email = getString(R.string.default_email);
         default_fullname = getString(R.string.default_fullname_heading);
         default_username = getString(R.string.default_username_heading);
-        default_picture_path = getString(R.string.default_picture_path);
+        default_picture_signature = getString(R.string.default_picture_path);
 
         /*
          * Execute User authentication
@@ -273,15 +271,16 @@ public class SplashScreenActivity extends Activity {
 
     private void goShowProfile(){
 
+        /*First take the profile picture signature from the storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference storageRef = storageReference.child("images/"+user.getUserID()+".jpg");
+        StorageReference profile_pic_ref = storageReference.child("images/"+user.getUserID()+".jpg");
 
-        Task task = storageRef.getMetadata();
+        Task task = profile_pic_ref.getMetadata();
         task.addOnSuccessListener(new OnSuccessListener() {
             @Override
-            public void onSuccess(Object o) {
-                StorageMetadata sm = (StorageMetadata) o;
-                user.setPicture_timestamp(String.valueOf(sm.getCreationTimeMillis()));
+            public void onSuccess(Object result) {
+                StorageMetadata metadata = (StorageMetadata) result;
+                user.setPicture_timestamp(String.valueOf(metadata.getCreationTimeMillis()));
                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                 i.putExtra(getString(R.string.user_profile_data_key), user);
                 startActivity(i);
@@ -292,7 +291,7 @@ public class SplashScreenActivity extends Activity {
         task.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                user.setPicture_timestamp(default_picture_path);
+                user.setPicture_timestamp(default_picture_signature);
                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                 i.putExtra(getString(R.string.user_profile_data_key), user);
                 startActivity(i);
@@ -321,7 +320,7 @@ public class SplashScreenActivity extends Activity {
         user = new UserProfile(firebaseUser.getUid(),
                 firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
                 default_city, default_bio,
-                default_picture_path
+                default_picture_signature
         );
     }
 

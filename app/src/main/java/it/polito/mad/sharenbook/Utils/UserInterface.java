@@ -1,6 +1,8 @@
 package it.polito.mad.sharenbook.Utils;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,10 +29,22 @@ public class UserInterface {
         GlideApp.with(context)
                 .load(ref)
                 .apply(RequestOptions.circleCropTransform()
-                .signature(new ObjectKey(creationTime))
-                .diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .placeholder(getProgressBarIndeterminate(context))
+                    .signature(new ObjectKey(creationTime))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL))
                 .into(iv);
 
+    }
+
+    public static Drawable getProgressBarIndeterminate(Context context) {
+        final int[] attrs = {android.R.attr.indeterminateDrawable};
+        final int attrs_indeterminateDrawable_index = 0;
+        TypedArray a = context.obtainStyledAttributes(android.R.style.Widget_ProgressBar, attrs);
+        try {
+            return a.getDrawable(attrs_indeterminateDrawable_index);
+        } finally {
+            a.recycle();
+        }
     }
 
 }

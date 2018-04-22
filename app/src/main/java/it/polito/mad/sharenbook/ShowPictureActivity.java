@@ -2,69 +2,36 @@ package it.polito.mad.sharenbook;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import it.polito.mad.sharenbook.Utils.UserInterface;
 
 public class ShowPictureActivity extends Activity {
-
-    private ImageView fullSizePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_picture);
 
-        fullSizePicture = (ImageView) findViewById(R.id.fullSize_Picture);
+        ImageView fullSizePicture = findViewById(R.id.fullSize_Picture);
+
+        /* Get extras */
         Intent i = getIntent();
+        String pic_signature = i.getStringExtra("PictureSignature");
+        String userId = i.getStringExtra("userId");
 
-        String picturePath = i.getStringExtra("PicturePath");
-//TODO modifiy here no pictureURI!!!
-        Uri pictureUri = Uri.parse(picturePath);
-/*
-        Bitmap resultBMP;
-
-
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(picturePath, options);
-        final int REQUIRED_SIZE = 200;
-        int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
-        //options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;
-        DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-        options.inScreenDensity = metrics.densityDpi;
-        options.inTargetDensity =  metrics.densityDpi;
-        options.inDensity = DisplayMetrics.DENSITY_DEFAULT;
-
-        resultBMP = BitmapFactory.decodeFile(picturePath, options);
-
-        fullSizePicture.setImageBitmap(resultBMP);
-        */
-        //fullSizePicture.setImageURI(pictureUri);
-        Glide.with(getApplicationContext()).load(pictureUri).into(fullSizePicture);
-
-
-
-        Log.d("Path:",picturePath);
-
-
+        /* Show Image */
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + userId + ".jpg");
+        UserInterface.showGlideImage(getApplicationContext(), storageRef, fullSizePicture, Long.valueOf(pic_signature));
     }
 
     @Override
-    public void onBackPressed(){
-
+    public void onBackPressed() {
         finish();
-
-
     }
-
 
 }

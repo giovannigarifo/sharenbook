@@ -59,7 +59,7 @@ public class ShowProfileActivity extends Activity {
 
     private UserProfile user;
 
-    private String picture_timestamp;
+    private String profile_picture_signature;
 
 
     /**
@@ -76,8 +76,6 @@ public class ShowProfileActivity extends Activity {
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
 
-        //GlideApp.init(getApplicationContext(), new GlideBuilder());
-
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
         default_bio = context.getResources().getString(R.string.default_bio);
@@ -86,11 +84,8 @@ public class ShowProfileActivity extends Activity {
         default_username = context.getResources().getString(R.string.default_username_heading);
         default_picture_timestamp = context.getResources().getString(R.string.default_picture_path);
 
-        /**
-         * User creation
-         */
-
-        Bundle data = null;
+        /* Take user data from the bundle */
+        Bundle data;
         if (savedInstanceState == null) //ShowProfile is started by SplashActivity
             data = getIntent().getExtras();
         else                            //otherwise landascape -> portrait or viceversa
@@ -102,21 +97,21 @@ public class ShowProfileActivity extends Activity {
         getViewsAndSetTypography();
 
         //get references to UI elements
-        goEdit_button = (FloatingActionButton) findViewById(R.id.fab_edit);
-        navBar = (BottomNavigationView) findViewById(R.id.navigation);
-        userPicture = (CircularImageView) findViewById(R.id.userPicture);
+        goEdit_button = findViewById(R.id.fab_edit);
+        navBar = findViewById(R.id.navigation);
+        userPicture = findViewById(R.id.userPicture);
 
+        //Set profile picture
+        profile_picture_signature = user.getPicture_timestamp();
 
-        picture_timestamp = user.getPicture_timestamp();
-
-            //Set profile picture
-            if (!picture_timestamp.equals(default_picture_timestamp)) {
+            if (!profile_picture_signature.equals(default_picture_timestamp)) {
                 StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
-                UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(picture_timestamp));
+                UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 
                 userPicture.setOnClickListener(v -> {
                     Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                    i.putExtra("PicturePath", picture_timestamp);
+                    i.putExtra("PictureSignature", profile_picture_signature);
+                    i.putExtra("userId", user.getUserID());
                     startActivity(i);
                 });
 
@@ -231,16 +226,17 @@ public class ShowProfileActivity extends Activity {
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-                picture_timestamp = user.getPicture_timestamp();
+                profile_picture_signature = user.getPicture_timestamp();
 
-                if (!picture_timestamp.equals(default_picture_path)) {
+                if (!profile_picture_signature.equals(default_picture_path)) {
 
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
-                        UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(picture_timestamp));
+                        UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 
                         userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
-                            i.putExtra("PicturePath", picture_timestamp);
+                            i.putExtra("PictureSignature", profile_picture_signature);
+                            i.putExtra("userId", user.getUserID());
                             startActivity(i);
                         });
 
