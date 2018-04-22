@@ -563,7 +563,12 @@ public class EditProfileActivity extends Activity {
         //save on click
         save_button.setOnClickListener(view -> {
 
-            if(NetworkUtilities.isConnected()) {
+            if (!validateForm())
+                return;
+
+            firebaseSaveProfile();
+
+            /*if(NetworkUtilities.isConnected()) {
 
                 if (!validateForm())
                     return;
@@ -582,7 +587,7 @@ public class EditProfileActivity extends Activity {
                 );
 
                 internetRequest.show();
-            }
+            }*/
         });
 
     }
