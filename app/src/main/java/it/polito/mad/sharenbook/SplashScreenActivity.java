@@ -3,7 +3,9 @@ package it.polito.mad.sharenbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,9 +30,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.polito.mad.sharenbook.Utils.ConnectionChangedListener;
+import it.polito.mad.sharenbook.Utils.NetworkUtilities;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
+import static it.polito.mad.sharenbook.Utils.NetworkUtilities.checkNetworkConnection;
 
 public class SplashScreenActivity extends Activity {
 
@@ -53,6 +58,8 @@ public class SplashScreenActivity extends Activity {
     private String default_username;
     private String default_picture_signature;
 
+    private static ConnectionChangedListener connListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +72,36 @@ public class SplashScreenActivity extends Activity {
         default_username = getString(R.string.default_username_heading);
         default_picture_signature = getString(R.string.default_picture_path);
 
+        initFirebase();
+
+        /*
+         * Set a listener for network connection loss during authentication operations
+         */
+        checkNetworkConnection();
+
+        /*connListener = () -> {
+            if(!NetworkUtilities.isConnected()){
+                Log.d("we", "ci sono");
+                AlertDialog.Builder internetRequest = new AlertDialog.Builder(SplashScreenActivity.this);
+                internetRequest.setTitle(R.string.no_internet_connection);
+                internetRequest.setMessage(R.string.network_alert);
+                internetRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+                            startActivityForResult(settingsIntent, 9003);
+                        }
+                ).setNegativeButton(android.R.string.cancel,
+                        (dialog, which) -> dialog.dismiss()
+                );
+
+                internetRequest.show();
+            }
+        };
+        NetworkUtilities.addConnectionStateListener(connListener);*/
+
+
         /*
          * Execute User authentication
          */
-
-        initFirebase();
         checkAuthentication();
 
     }
@@ -82,7 +114,7 @@ public class SplashScreenActivity extends Activity {
         /*Database*/
         if(firebaseDatabase == null) {
             firebaseDatabase = FirebaseDatabase.getInstance();
-            firebaseDatabase.setPersistenceEnabled(true);
+            firebaseDatabase.setPersistenceEnabled(true);           //set Persistance only one time at app startup
         }
 
         /*Authentication*/
@@ -144,7 +176,6 @@ public class SplashScreenActivity extends Activity {
 
                 }
             });
-
 
         }else {
             /* The user is not signed-in or logged-in -> Show the Authentication UI */

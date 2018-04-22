@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import it.polito.mad.sharenbook.Utils.NetworkUtilities;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -561,11 +563,26 @@ public class EditProfileActivity extends Activity {
         //save on click
         save_button.setOnClickListener(view -> {
 
-            if (!validateForm())
-                return;
+            if(NetworkUtilities.isConnected()) {
 
-            firebaseSaveProfile();
+                if (!validateForm())
+                    return;
 
+                firebaseSaveProfile();
+            } else {
+                AlertDialog.Builder internetRequest = new AlertDialog.Builder(EditProfileActivity.this);
+                internetRequest.setTitle(R.string.no_internet_connection);
+                internetRequest.setMessage(R.string.network_alert);
+                internetRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+                        startActivityForResult(settingsIntent, 9003);
+                        }
+                ).setNegativeButton(android.R.string.cancel,
+                        (dialog, which) -> dialog.dismiss()
+                );
+
+                internetRequest.show();
+            }
         });
 
     }

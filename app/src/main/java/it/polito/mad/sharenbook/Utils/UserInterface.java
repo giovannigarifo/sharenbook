@@ -1,8 +1,11 @@
 package it.polito.mad.sharenbook.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +16,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 import com.google.firebase.storage.StorageReference;
+
+import it.polito.mad.sharenbook.EditProfileActivity;
+import it.polito.mad.sharenbook.R;
 
 public class UserInterface {
 

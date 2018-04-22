@@ -25,6 +25,7 @@
     <string name="search_hint">Search a book or a user…</string>
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Uploading..</string>
+    <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
 
     <!-- common words -->
     <string name="search">Search</string>

@@ -24,6 +24,8 @@
     <string name="search_hint">Ricerca un libro o un utente…</string>
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Upload in corso..</string>
+    <string name="network_alert">Non è stata rilevata alcuna connessione a internet! E\' necessaria per il corretto funzionamento dell\'app! Vuoi controllare le tue impostazioni?</string>
+
 
 
 
