@@ -45,7 +45,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -553,7 +552,7 @@ public class EditBookActivity extends Activity {
                 Log.d("Debug", "Photo n. " + num + " uploaded!");
                 updateProgressDialogMessage(++photoLoaded, numPhotos);
                 // Delete file in the end
-                getContentResolver().delete(photos.get(num), null, null);
+                // getContentResolver().delete(photos.get(num), null, null);
             })
             .addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
