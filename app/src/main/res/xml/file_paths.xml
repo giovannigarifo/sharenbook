@@ -5,5 +5,5 @@
         path="Android/data/it.polito.mad.sharenbook/files/Pictures" />
     <external-path
         name="my_public_images"
-        path="Pictures" />
+        path="Pictures/Share'nBook" />
 </paths>
