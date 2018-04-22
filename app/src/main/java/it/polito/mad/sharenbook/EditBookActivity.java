@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -44,29 +45,30 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.InputValidator;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 
 public class EditBookActivity extends Activity {
 
-    //context of the activity
+    // request codes to edit user photo
+    private static final int REQUEST_CAMERA = ImageUtils.REQUEST_CAMERA;
+    private static final int REQUEST_GALLERY = ImageUtils.REQUEST_GALLERY;
+    private static final int MULTIPLE_PERMISSIONS = 3;
+
+    final static int MAX_ALLOWED_BOOK_PHOTO = 5;
+    final static int MIN_REQUIRED_BOOK_PHOTO = 1;
+
+    // context of the activity
     private Context context;
 
-    // request codes to edit user photo
-    private static final int REQUEST_CAMERA = 1;
-    private static final int REQUEST_GALLERY = 2;
-    private static final int MULTIPLE_PERMISSIONS = 3;
-    private static final int REQUEST_CROP = 4;
-
-    //views
+    // views
     private TextView editbook_tv_isbn, editbook_tv_title, editbook_tv_subtitle, editbook_tv_authors,
             editbook_tv_publisher, editbook_tv_publishedDate, editbook_tv_description,
             editbook_tv_pageCount, editbook_tv_categories, editbook_tv_language, editbook_tv_bookConditions,
@@ -88,6 +90,8 @@ public class EditBookActivity extends Activity {
     private BottomNavigationView navBar;
 
     private Toast toast;
+
+    private ImageUtils imageUtils;
 
     //Recycler View
     private RecyclerView editbook_rv_bookPhotos;
@@ -114,9 +118,6 @@ public class EditBookActivity extends Activity {
     // ProgressDialog
     private ProgressDialog progressDialog;
     int photoLoaded;
-
-    final static int MAX_ALLOWED_BOOK_PHOTO = 5;
-    final static int MIN_REQUIRED_BOOK_PHOTO = 1;
 
 
     /**
@@ -180,7 +181,7 @@ public class EditBookActivity extends Activity {
         editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
 
         // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
-        rvAdapter = new BookPhotoAdapter(book.getBookPhotos(), context);
+        rvAdapter = new BookPhotoAdapter(book.getBookPhotosUri(), this.getContentResolver());
         editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
 
@@ -237,6 +238,9 @@ public class EditBookActivity extends Activity {
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
+
+        // Setup image utils class
+        imageUtils = new ImageUtils(this);
     }
 
 
@@ -274,14 +278,14 @@ public class EditBookActivity extends Activity {
 
         Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
 
-        if (book.getBookPhotos().size() >= MAX_ALLOWED_BOOK_PHOTO) {
+        if (book.getBookPhotosUri().size() >= MAX_ALLOWED_BOOK_PHOTO) {
 
             showToast(getString(R.string.max_allowed_book_photo));
 
         } else {
 
             hasPermissions();//check permissions
-            showSelectImageDialog();
+            imageUtils.showSelectImageDialog();
         }
     }
 
@@ -407,65 +411,12 @@ public class EditBookActivity extends Activity {
             result = ContextCompat.checkSelfPermission(context, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
-            } else {
-                //Toast.makeText(getApplicationContext(), getString(R.string.permission_already_granted), Toast.LENGTH_LONG).show();
             }
         }
 
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
         }
-    }
-
-
-    /**
-     * selectImage method
-     */
-    private void showSelectImageDialog() {
-
-        final CharSequence items[] = {
-                getString(R.string.photo_dialog_item_camera),
-                getString(R.string.photo_dialog_item_gallery),
-                getString(android.R.string.cancel)
-        };
-
-        final AlertDialog.Builder select = new AlertDialog.Builder(EditBookActivity.this); //give a context to Dialog
-
-        select.setTitle(getString(R.string.photo_dialog_title));
-
-        //set onclick listener, different intents for different items
-        select.setItems(items, (dialogInterface, i) -> {
-
-            if (items[i].equals(getString(R.string.photo_dialog_item_camera))) {
-
-                //send intent to camera
-                Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                if (takePhoto.resolveActivity(getPackageManager()) != null) {
-
-                    startActivityForResult(takePhoto, REQUEST_CAMERA);
-                }
-
-            } else if (items[i].equals(getString(R.string.photo_dialog_item_gallery))) {
-
-                //send intent to gallery
-                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                if (gallery.resolveActivity(getPackageManager()) != null) {
-
-                    gallery.setType("image/*");
-                    startActivityForResult(Intent.createChooser(gallery, getString(R.string.photo_dialog_select_gallery_method_title)), REQUEST_GALLERY);
-                }
-
-            } else if (items[i].equals(getString(android.R.string.cancel))) {
-
-                //dialog aborted
-                dialogInterface.dismiss();
-            }
-        });
-
-        //show dialog
-        select.show();
     }
 
 
@@ -485,93 +436,30 @@ public class EditBookActivity extends Activity {
 
             if (requestCode == REQUEST_CAMERA) {
 
-                saveAndCropCameraPhoto(data);
+                imageUtils.dispatchCropCurrentPhotoIntent();
 
             } else if (requestCode == REQUEST_GALLERY) {
 
-                openAndCropGalleryPhoto(data);
+                imageUtils.dispatchCropPhotoIntent(data.getData());
 
             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Uri resultUri = result.getUri();
+                Uri resultUri = CropImage.getActivityResult(data).getUri();
 
                 try {
-
-                    Bitmap croppedPhoto = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
-
-                    book.addBookPhoto(croppedPhoto); //add photo to collection (to position 0)
+                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, resultUri, 540, 0);
+                    book.addBookPhotoUri(resizedPhotoUri); //add photo uri to collection (to position 0)
 
                     //notify update of the collection to Recycle View adapter
                     rvAdapter.notifyItemInserted(0);
                     rvLayoutManager.scrollToPosition(0);
 
                 } catch (IOException e) {
-                    Log.d("error", "IOException when retrieving cropped image from Uri");
+                    Log.d("error", "IOException when retrieving resized image Uri");
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-
-    /**
-     * saveAndCropCameraPhoto method
-     *
-     * @param data : Intent that contains the Bundle with the bitmap photo
-     */
-    private void saveAndCropCameraPhoto(Intent data) {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_" + book.getTitle() + ".jpg";
-
-        Bundle extras = data.getExtras();
-
-        if (extras != null) {
-
-            try {
-
-                Bitmap bitmap = (Bitmap) extras.get("data");
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-                if (bitmap != null)
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-
-                String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, imageFileName, null);
-
-                cropPhoto(Uri.parse(path));
-
-            } catch (NullPointerException exc) {
-
-                Toast.makeText(getApplicationContext(), getString(R.string.error_save_camera_photo), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-
-    /**
-     * openAndCropGalleryphoto method
-     *
-     * @param data : the image selected from gallery
-     */
-    private void openAndCropGalleryPhoto(Intent data) {
-
-        cropPhoto(data.getData()); //getData returns a Uri
-    }
-
-
-    /**
-     * Method that sends a CROP intent for the photo identified by the Uri
-     *
-     * @param photoUri : uri of the photo to be cropped
-     */
-    public void cropPhoto(Uri photoUri) {
-
-        CropImage.activity(photoUri)
-                .setAllowRotation(true)
-                .setAspectRatio(10, 15).setFixAspectRatio(true)
-                .setAutoZoomEnabled(true)
-                .start(this);
     }
 
 
@@ -612,7 +500,7 @@ public class EditBookActivity extends Activity {
         bookData.put("bookConditions", book.getBookConditions());
         bookData.put("tags", book.getTags());
         bookData.put("thumbnail", book.getThumbnail());
-        bookData.put("numPhotos", book.getBookPhotos().size());
+        bookData.put("numPhotos", book.getBookPhotosUri().size());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -646,7 +534,7 @@ public class EditBookActivity extends Activity {
      */
     private void firebaseSavePhotos(String bookKey) {
         // Get list of photos
-        ArrayList<Bitmap> photos = book.getBookPhotos();
+        List<Uri> photos = book.getBookPhotosUri();
         List<Task<UploadTask>> taskList = new ArrayList<>();
         photoLoaded = 0;
         int numPhotos = photos.size();
@@ -658,20 +546,18 @@ public class EditBookActivity extends Activity {
         for (int i = 0; i < photos.size(); i++) {
             final int num = i;
 
-            // Compress bitmap into jpeg
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            photos.get(i).compress(Bitmap.CompressFormat.JPEG, 95, output);
-
             // Generate new file on firebase and write it
             StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
-            Task newTask = newFile.putBytes(output.toByteArray()).addOnSuccessListener(taskSnapshot -> {
+            Task newTask = newFile.putFile(photos.get(i)).addOnSuccessListener(taskSnapshot -> {
                 // Handle successful uploads
-                Log.d("Debug","Photo n. " + num + " uploaded!");
+                Log.d("Debug", "Photo n. " + num + " uploaded!");
                 updateProgressDialogMessage(++photoLoaded, numPhotos);
+                // Delete file in the end
+                getContentResolver().delete(photos.get(num), null, null);
             })
             .addOnFailureListener(exception -> {
                 // Handle unsuccessful uploads
-                Log.d("Debug","Error during upload of photo n. " + num);
+                Log.d("Debug", "Error during upload of photo n. " + num);
             });
 
             taskList.add(newTask);
@@ -700,40 +586,44 @@ public class EditBookActivity extends Activity {
      */
     private boolean validateInputFields() {
         boolean isValid = true;
-        boolean alreadyScrolled = false;
+        boolean alreadyFocused = false;
 
         if (InputValidator.isWrongIsbn(editbook_et_isbn)) {
             editbook_et_isbn.setError(getText(R.string.isbn_bad_format));
             isValid = false;
-            UserInterface.scrollToView(editbook_scrollview, editbook_et_isbn);
-            alreadyScrolled = true;
+            editbook_et_isbn.requestFocus();
+            alreadyFocused = true;
         }
         if (editbook_et_title.getText().toString().isEmpty()) {
             editbook_et_title.setError(getText(R.string.field_required));
             isValid = false;
-            if (!alreadyScrolled) {
-                UserInterface.scrollToView(editbook_scrollview, editbook_et_title);
-                alreadyScrolled = true;
+            if (!alreadyFocused) {
+                editbook_et_title.requestFocus();
+                alreadyFocused = true;
             }
         }
         if (editbook_et_authors.getText().toString().isEmpty()) {
             editbook_et_authors.setError(getText(R.string.field_required));
             isValid = false;
-            if (!alreadyScrolled) {
-                UserInterface.scrollToView(editbook_scrollview, editbook_et_authors);
-                alreadyScrolled = true;
+            if (!alreadyFocused) {
+                editbook_et_authors.requestFocus();
+                alreadyFocused = true;
             }
         }
         if (editbook_et_bookConditions.getText().toString().isEmpty()) {
             editbook_et_bookConditions.setError(getText(R.string.field_required));
             isValid = false;
-            if (!alreadyScrolled) {
-                UserInterface.scrollToView(editbook_scrollview, editbook_et_bookConditions);
+            if (!alreadyFocused) {
+                editbook_et_bookConditions.requestFocus();
+                alreadyFocused = true;
             }
         }
-        if (book.getBookPhotos().size() < MIN_REQUIRED_BOOK_PHOTO) {
-            showToast(getString(R.string.min_photo_required));
+        if (book.getBookPhotosUri().size() < MIN_REQUIRED_BOOK_PHOTO) {
             isValid = false;
+            if (!alreadyFocused) {
+                UserInterface.scrollToViewTop(editbook_scrollview, editbook_rv_bookPhotos);
+                showToast(getString(R.string.min_photo_required));
+            }
         }
 
         return isValid;
@@ -855,13 +745,13 @@ public class EditBookActivity extends Activity {
 
 class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
 
-    private List<Bitmap> bookPhotos;
-    private Context context;
+    private List<Uri> bookPhotosUri;
+    private ContentResolver mContentResolver;
 
     //constructor
-    BookPhotoAdapter(ArrayList<Bitmap> bookPhotos, Context context) {
-        this.bookPhotos = bookPhotos;
-        this.context = context;
+    BookPhotoAdapter(List<Uri> bookPhotosUri, ContentResolver contentResolver) {
+        this.bookPhotosUri = bookPhotosUri;
+        this.mContentResolver = contentResolver;
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
@@ -902,32 +792,40 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     @Override
     public void onBindViewHolder(@NonNull BookPhotoViewHolder holder, int position) {
 
-        Bitmap bmPhoto = this.bookPhotos.get(position);
+        Uri photoUri = this.bookPhotosUri.get(position);
+        Bitmap bmPhoto;
 
-        ImageView iv = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
-        iv.setImageBitmap(bmPhoto);
+        try {
+            bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
 
-        ImageButton ib = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
-        ib.setTag(bmPhoto);
+            ImageView iv = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
+            iv.setImageBitmap(bmPhoto);
 
-        //onClick listener for the delete photo button
-        ib.setOnClickListener((v) -> {
+            ImageButton ib = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
+            ib.setTag(photoUri);
 
-            if (bookPhotos.size() > 0) {
+            //onClick listener for the delete photo button
+            ib.setOnClickListener((v) -> {
 
-                Bitmap bmp = (Bitmap) v.getTag();
-                int ib_position = bookPhotos.indexOf(bmp);
-                bookPhotos.remove(ib_position);
-                notifyItemRemoved(ib_position);
-            }
-        });
+                if (bookPhotosUri.size() > 0) {
+
+                    Uri uri = (Uri) v.getTag();
+                    int ib_position = bookPhotosUri.indexOf(uri);
+                    bookPhotosUri.remove(ib_position);
+                    notifyItemRemoved(ib_position);
+                }
+            });
+        } catch (IOException e) {
+            Log.d("error", "IOException when retrieving image Bitmap");
+            e.printStackTrace();
+        }
     }
 
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return this.bookPhotos.size();
+        return this.bookPhotosUri.size();
     }
 
 }

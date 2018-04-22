@@ -23,9 +23,16 @@ import it.polito.mad.sharenbook.R;
 public class UserInterface {
 
     /**
-     * Scroll to a specific View
+     * Scroll to top of a specific View
      */
-    public static void scrollToView(ScrollView scrollView, View view) {
+    public static void scrollToViewTop(ScrollView scrollView, View view) {
+        scrollView.post(() -> scrollView.smoothScrollTo(0, view.getTop()));
+    }
+
+    /**
+     * Scroll to bottom of a specific View
+     */
+    public static void scrollToViewBottom(ScrollView scrollView, View view) {
         scrollView.post(() -> scrollView.smoothScrollTo(0, view.getBottom()));
     }
 

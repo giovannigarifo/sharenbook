@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -22,6 +23,8 @@ import it.polito.mad.sharenbook.Utils.InputValidator;
 
 public class ShareBookActivity extends AppCompatActivity {
 
+    private Activity mActivity;
+
     // View objects
     private EditText editIsbn;
     private Button btnSearchIsbn;
@@ -39,6 +42,9 @@ public class ShareBookActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_book);
+
+        // Get activity instance
+        this.mActivity = this;
 
         // Set strict mode
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -183,7 +189,7 @@ public class ShareBookActivity extends AppCompatActivity {
         protected BookDetails doInBackground(String... params) {
             // Get the isbn string from params, which is an array
             String readIsbn = params[0];
-            return new BookDetails(readIsbn);
+            return new BookDetails(mActivity, readIsbn);
         }
 
         // This runs in UI when background thread finishes
@@ -199,6 +205,7 @@ public class ShareBookActivity extends AppCompatActivity {
             } else if (result.getTotalItems() == -1) {
                 Toast.makeText(getApplicationContext(), getString(R.string.sba_no_connection), Toast.LENGTH_LONG).show();
             } else {
+                Book book = result.getBookList().get(0);
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", result.getBookList().get(0));
                 startActivity(i);

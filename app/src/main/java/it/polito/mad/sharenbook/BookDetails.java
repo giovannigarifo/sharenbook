@@ -1,10 +1,9 @@
 package it.polito.mad.sharenbook;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.app.Activity;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +18,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polito.mad.sharenbook.Utils.ImageUtils;
+
 class BookDetails {
+
     private final String GOOGLE_BOOK_WS = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
+
+    private Activity mActivity;
     private String isbnNumber;
     private JSONObject jsonBook;
     private int totalItems;
@@ -31,9 +35,11 @@ class BookDetails {
      *
      * @param isbnNumber
      */
-    public BookDetails(String isbnNumber) {
-        bookList = new ArrayList<>();
+    public BookDetails(Activity activity, String isbnNumber) {
+
+        this.mActivity = activity;
         this.isbnNumber = isbnNumber;
+        bookList = new ArrayList<>();
 
         try {
             this.jsonBook = readJsonFromUrl(GOOGLE_BOOK_WS + isbnNumber);
@@ -80,6 +86,14 @@ class BookDetails {
             // Create a new Book object
             Book newBook = new Book(isbn, title, subTitle, authors, publisher, publishedDate, description,
                     pageCount, categories, language, thumbnail);
+
+            // Download thumbnail if present
+            if (!thumbnail.equals("")) {
+                Uri tnUri = ImageUtils.downloadImageToStorage(mActivity, thumbnail, ImageUtils.EXTERNAL_PICTURES);
+                if (tnUri != null) newBook.addBookPhotoUri(tnUri);
+            }
+
+            // Add newbook to book list
             bookList.add(newBook);
         }
     }
@@ -187,7 +201,7 @@ class Book implements Parcelable {
     private List<String> authors;
     private int pageCount;
     private String thumbnail;
-    private ArrayList<Bitmap> bookPhotos;
+    private List<Uri> bookPhotosUri;
 
     private String owner_uid;
     private String bookConditions;
@@ -234,19 +248,7 @@ class Book implements Parcelable {
         else
             this.categories = categories;
 
-        this.bookPhotos = new ArrayList<>();
-
-        //add the thumbnail to the bookPhotos collection
-        try {
-
-            URL url = new URL(this.thumbnail);
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            this.bookPhotos.add(bmp);
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            Log.d("error", "Unable to retrieve the bitmap from the thumbnail Uri.");
-        }
+        this.bookPhotosUri = new ArrayList<>();
 
         this.owner_uid = "";
         this.bookConditions = "";
@@ -266,7 +268,7 @@ class Book implements Parcelable {
         this.authors = new ArrayList<>();
         this.pageCount = -1;
         this.thumbnail = "";
-        this.bookPhotos = new ArrayList<>();
+        this.bookPhotosUri = new ArrayList<>();
 
         this.owner_uid = "";
         this.bookConditions = "";
@@ -318,12 +320,12 @@ class Book implements Parcelable {
         return thumbnail;
     }
 
-    public ArrayList<Bitmap> getBookPhotos() {
-        return this.bookPhotos;
+    public List<Uri> getBookPhotosUri() {
+        return this.bookPhotosUri;
     }
 
-    public void addBookPhoto(Bitmap photo){
-        this.bookPhotos.add(0, photo);
+    public void addBookPhotoUri(Uri photoUri){
+        this.bookPhotosUri.add(0, photoUri);
     }
 
     public String getOwner_uid() {
@@ -386,8 +388,8 @@ class Book implements Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    public void setBookPhotos(ArrayList<Bitmap> bookPhotos) {
-        this.bookPhotos = bookPhotos;
+    public void setBookPhotosUri(List<Uri> bookPhotosUri) {
+        this.bookPhotosUri = bookPhotosUri;
     }
 
     public void setOwner_uid(String owner_uid) {
@@ -434,8 +436,7 @@ class Book implements Parcelable {
 
         this.categories = in.readArrayList(String.class.getClassLoader());
 
-        //instantiate the photo collection, it's not parcelled
-        this.bookPhotos = in.readArrayList(null);
+        this.bookPhotosUri = in.readArrayList(Uri.class.getClassLoader());
 
         this.owner_uid = in.readString();
         this.bookConditions = in.readString();
@@ -467,7 +468,7 @@ class Book implements Parcelable {
 
         dest.writeList(getCategories());
 
-        dest.writeList(getBookPhotos());
+        dest.writeList(getBookPhotosUri());
 
         dest.writeString(getOwner_uid());
         dest.writeString(getBookConditions());
