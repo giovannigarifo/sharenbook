@@ -29,22 +29,10 @@ public class UserInterface {
         GlideApp.with(context)
                 .load(ref)
                 .apply(RequestOptions.circleCropTransform()
-                    .placeholder(getProgressBarIndeterminate(context))
                     .signature(new ObjectKey(creationTime))
                     .diskCacheStrategy(DiskCacheStrategy.ALL))
                 .into(iv);
 
-    }
-
-    public static Drawable getProgressBarIndeterminate(Context context) {
-        final int[] attrs = {android.R.attr.indeterminateDrawable};
-        final int attrs_indeterminateDrawable_index = 0;
-        TypedArray a = context.obtainStyledAttributes(android.R.style.Widget_ProgressBar, attrs);
-        try {
-            return a.getDrawable(attrs_indeterminateDrawable_index);
-        } finally {
-            a.recycle();
-        }
     }
 
 }
