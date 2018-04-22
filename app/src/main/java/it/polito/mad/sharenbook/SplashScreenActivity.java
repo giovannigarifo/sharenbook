@@ -39,7 +39,7 @@ public class SplashScreenActivity extends Activity {
     /* Firebase variables */
     private FirebaseAuth firebaseAuth;
     private DatabaseReference dbReference;
-    private FirebaseDatabase firebaseDatabase;
+    private static FirebaseDatabase firebaseDatabase;
     private FirebaseUser firebaseUser;
     private StorageReference storageReference;
 
@@ -68,6 +68,7 @@ public class SplashScreenActivity extends Activity {
         /*
          * Execute User authentication
          */
+
         initFirebase();
         checkAuthentication();
 
@@ -78,15 +79,18 @@ public class SplashScreenActivity extends Activity {
      * Method for Firebase Initialization
      */
     private void initFirebase(){
-        /*Authentication*/
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        /*Database*/
+        if(firebaseDatabase == null) {
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            firebaseDatabase.setPersistenceEnabled(true);
+        }
 
+        /*Authentication*/
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
         /*Storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
-        /*Database*/
-        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
 
