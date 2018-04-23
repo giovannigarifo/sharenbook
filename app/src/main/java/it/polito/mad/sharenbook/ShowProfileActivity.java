@@ -3,7 +3,6 @@ package it.polito.mad.sharenbook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,25 +17,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.io.File;
-import java.io.IOException;
-
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.Utils.UserInterface;
+
 
 public class ShowProfileActivity extends Activity {
 
@@ -171,7 +158,10 @@ public class ShowProfileActivity extends Activity {
 
         setupNavbar();
 
-
+        /*
+         * SearchBar
+         */
+        setupSearchBar(findViewById(R.id.searchBar));
     }
 
     /**
@@ -218,9 +208,44 @@ public class ShowProfileActivity extends Activity {
             }
             return true;
         });
-
-
     }
+
+
+    /*
+     * Setup the material search bar
+     */
+    private void setupSearchBar(MaterialSearchBar msb) {
+
+        msb.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+                String s = enabled ? "enabled" : "disabled";
+                Toast.makeText(ShowProfileActivity.this, "Search " + s, Toast.LENGTH_SHORT).show();
+            }
+
+            //send intent to SearchActivity
+            @Override
+            public void onSearchConfirmed(CharSequence searchInputText) {
+
+                Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+
+                i.putExtra("searchInputText", searchInputText);
+                startActivity(i);
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                switch (buttonCode) {
+                    case MaterialSearchBar.BUTTON_NAVIGATION:
+                        break;
+                    case MaterialSearchBar.BUTTON_SPEECH:
+                        break;
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

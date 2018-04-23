@@ -133,12 +133,17 @@
     <string name="of_preposition">\u0020di\u0020</string>
     <string name="default_ongoing">\u0020in corso…</string>
 
-
-
     <string name="max_allowed_book_photo">Puoi caricare al massimo 5 foto!</string>
     <string name="min_photo_required">Devi aggiungere almeno una foto!</string>
 
-    <!-- ============================== -->
+
+    <!-- ======================== -->
+
+    <!-- Search Bar  -->
+
+    <string name="searchbar_placeholder">Cerca un libro...</string>
+
+    <!-- ======================== -->
 
 
     <!-- FACEBOOK -->

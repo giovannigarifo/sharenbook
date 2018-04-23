@@ -70,6 +70,11 @@ dependencies {
     //
     // Android Image Cropper
     compile 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
+
+    //
+    // Algolia search engine
+    compile 'com.algolia:algoliasearch-android:2.4.0@aar'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

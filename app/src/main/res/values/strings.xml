@@ -72,6 +72,12 @@
 
     <!-- ======================== -->
 
+    <!-- Search Bar  -->
+
+    <string name="searchbar_placeholder">Search a book...</string>
+
+    <!-- ======================== -->
+
     <!-- navigation bar -->
     <string name="title_profile">Profile</string>
     <string name="title_showcase">Showcase</string>
