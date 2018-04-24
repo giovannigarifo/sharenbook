@@ -47,7 +47,6 @@ public class ShowProfileActivity  extends AppCompatActivity
     private FloatingActionButton goEdit_button;
 
     private CircularImageView userPicture;
-
     /**
      * default profile values
      **/
