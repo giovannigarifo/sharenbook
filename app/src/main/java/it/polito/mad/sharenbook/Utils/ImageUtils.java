@@ -13,6 +13,7 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +36,12 @@ public class ImageUtils {
     // Intent request code
     public static final int REQUEST_CAMERA = 1;
     public static final int REQUEST_GALLERY = 2;
+    // Aspect Ratio constant
+    public static final int ASPECT_RATIO_FREE = 0;
+    public static final int ASPECT_RATIO_PHOTO_PORT = 1;
+    public static final int ASPECT_RATIO_PHOTO_LAND = 2;
+    public static final int ASPECT_RATIO_SQUARE = 3;
+    public static final int ASPECT_RATIO_CIRCLE = 4;
 
     private Context mContext;
     private Activity mActivity;
@@ -83,20 +90,40 @@ public class ImageUtils {
      *
      * @param photoUri : uri of passed photo
      */
-    public void dispatchCropPhotoIntent(Uri photoUri) {
-        CropImage.activity(photoUri)
+    public void dispatchCropPhotoIntent(Uri photoUri, int aspectRatio) {
+        CropImage.ActivityBuilder cropActivity = CropImage.activity(photoUri)
                 .setAllowRotation(true)
-                .setAspectRatio(10, 15)
                 .setFixAspectRatio(true)
-                .setAutoZoomEnabled(true)
-                .start(mActivity);
+                .setAutoZoomEnabled(true);
+
+        switch (aspectRatio) {
+            case ImageUtils.ASPECT_RATIO_FREE:
+                cropActivity.setFixAspectRatio(false);
+            case ImageUtils.ASPECT_RATIO_PHOTO_PORT:
+                cropActivity.setAspectRatio(10, 15);
+                break;
+            case ImageUtils.ASPECT_RATIO_PHOTO_LAND:
+                cropActivity.setAspectRatio(15, 10);
+                break;
+            case ImageUtils.ASPECT_RATIO_SQUARE:
+                cropActivity.setAspectRatio(1, 1);
+                break;
+            case ImageUtils.ASPECT_RATIO_CIRCLE:
+                cropActivity.setAspectRatio(1, 1);
+                cropActivity.setCropShape(CropImageView.CropShape.OVAL);
+                break;
+            default:
+                cropActivity.setFixAspectRatio(false);
+        }
+
+        cropActivity.start(mActivity);
     }
 
     /**
      * Overload for dispatchCropPhotoIntent (using current photo Uri)
      */
-    public void dispatchCropCurrentPhotoIntent() {
-        dispatchCropPhotoIntent(mCurrentPhotoUri);
+    public void dispatchCropCurrentPhotoIntent(int aspectRatio) {
+        dispatchCropPhotoIntent(mCurrentPhotoUri, aspectRatio);
     }
 
     /**

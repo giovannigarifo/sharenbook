@@ -436,11 +436,11 @@ public class EditBookActivity extends Activity {
 
             if (requestCode == REQUEST_CAMERA) {
 
-                imageUtils.dispatchCropCurrentPhotoIntent();
+                imageUtils.dispatchCropCurrentPhotoIntent(ImageUtils.ASPECT_RATIO_PHOTO_PORT);
 
             } else if (requestCode == REQUEST_GALLERY) {
 
-                imageUtils.dispatchCropPhotoIntent(data.getData());
+                imageUtils.dispatchCropPhotoIntent(data.getData(), ImageUtils.ASPECT_RATIO_PHOTO_PORT);
 
             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 

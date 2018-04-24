@@ -16,7 +16,7 @@
 
     <!-- Various Messages -->
     <string name="profile_saved">Your profile has been saved!</string>
-    <string name="upload_progress">Upload progress: </string>
+    <string name="upload_progress">Upload progress:\u0020</string>
     <string name="no_internet_connection">No internet connection!</string>
     <string name="sign_in_cancelled">Canceled!</string>
     <string name="unknown_error">Unknown Error!</string>

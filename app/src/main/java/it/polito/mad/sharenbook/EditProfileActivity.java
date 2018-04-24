@@ -48,6 +48,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.NetworkUtilities;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
@@ -76,8 +78,8 @@ public class EditProfileActivity extends Activity {
     ProgressDialog progressDialog = null;
 
     // request codes to edit user photo
-    private static final int REQUEST_CAMERA = 1;
-    private static final int REQUEST_GALLERY = 2;
+    private static final int REQUEST_CAMERA = ImageUtils.REQUEST_CAMERA;
+    private static final int REQUEST_GALLERY = ImageUtils.REQUEST_GALLERY;
     private static final int MULTIPLE_PERMISSIONS = 3;
 
     //views
@@ -91,11 +93,10 @@ public class EditProfileActivity extends Activity {
 
     //Shared Preferences
     private SharedPreferences editedProfile_copy;
-
     private SharedPreferences.Editor writeProfile_copy;
+
     //default profile values
     private String default_city;
-
     private String default_bio;
     private String default_email;
     private String default_fullname;
@@ -107,6 +108,7 @@ public class EditProfileActivity extends Activity {
     private String email;
     private String city;
     private String bio;
+
     //Required Permissions
     private String[] permissions = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -126,6 +128,9 @@ public class EditProfileActivity extends Activity {
     //Firebase References
     private DatabaseReference dbReference;
     private StorageReference storageReference;
+
+    // ImageUtils for image handling
+    private ImageUtils imageUtils;
 
     /**
      * onCreate callback
@@ -175,6 +180,9 @@ public class EditProfileActivity extends Activity {
 
         // Get the database reference to this User Data
         dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+
+        // Initialize image class
+        imageUtils = new ImageUtils(this);
 
         // Methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //First time make copies and visualize stable profile
@@ -253,22 +261,18 @@ public class EditProfileActivity extends Activity {
         /* Edit photo section */
         userPicture = findViewById(R.id.userPicture_edit);
 
-        String chosenPicture;
+        // Load photo from Firebase using Glide cache
         if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/"+user.getUserID()+".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
-            //chosenPicture = user.getPicture_uri().toString();
-        //else
-          //  chosenPicture = default_picture_path;
-
-        //writeProfile_copy.putString(getString(R.string.userPicture_copy_key), chosenPicture).commit();
-        //writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), false).commit();
-
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this, R.drawable.ic_check_black_24dp));
 
-        fab_editPhoto.setOnClickListener(v -> selectImage());
+        fab_editPhoto.setOnClickListener(v -> {
+            hasPermissions();
+            imageUtils.showSelectImageDialog();
+        });
     }
 
 
@@ -301,14 +305,20 @@ public class EditProfileActivity extends Activity {
 
         /* Edit photo section */
         userPicture = findViewById(R.id.userPicture_edit);
-        String chosenPicture = editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path);
 
-        if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/"+user.getUserID()+".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+        // Load photo from local if modified or from Firebase using Glide cache
+        String chosenPicture = editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path);
+        if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
+            userPicture.setImageURI(Uri.parse(chosenPicture));
+        } else if (!user.getPicture_timestamp().equals(default_picture_path)) {
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
-        fab_editPhoto.setOnClickListener(v -> selectImage());
+        fab_editPhoto.setOnClickListener(v -> {
+            hasPermissions();
+            imageUtils.showSelectImageDialog();
+        });
     }
 
 
@@ -379,48 +389,6 @@ public class EditProfileActivity extends Activity {
 
 
     /**
-     * selectImage method
-     */
-    private void selectImage() {
-
-        hasPermissions();
-
-        final CharSequence items[] = {getString(R.string.photo_dialog_item_camera), getString(R.string.photo_dialog_item_gallery), getString(android.R.string.cancel)};
-        final AlertDialog.Builder select = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
-        select.setTitle(getString(R.string.photo_dialog_title));
-
-        select.setItems(items, (dialogInterface, i) -> {
-
-            if (items[i].equals(getString(R.string.photo_dialog_item_camera))) {
-
-                Intent selfie = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                if (selfie.resolveActivity(getPackageManager()) != null) {
-
-                    startActivityForResult(selfie, REQUEST_CAMERA);
-
-                }
-
-            } else if (items[i].equals(getString(R.string.photo_dialog_item_gallery))) {
-
-                Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                if (gallery.resolveActivity(getPackageManager()) != null) {
-
-                    gallery.setType("image/*");
-                    startActivityForResult(Intent.createChooser(gallery, getString(R.string.photo_dialog_select_gallery_method_title)), REQUEST_GALLERY);
-                }
-
-            } else if (items[i].equals(getString(android.R.string.cancel))) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        select.show();
-    }
-
-
-    /**
      * onActivityResult method
      *
      * @param requestCode
@@ -436,113 +404,30 @@ public class EditProfileActivity extends Activity {
 
             if (requestCode == REQUEST_CAMERA) {
 
-                saveCameraPhoto(data);
+                imageUtils.dispatchCropCurrentPhotoIntent(ImageUtils.ASPECT_RATIO_CIRCLE);
 
             } else if (requestCode == REQUEST_GALLERY) {
 
-                saveGalleryPhoto(data);
+                imageUtils.dispatchCropPhotoIntent(data.getData(), ImageUtils.ASPECT_RATIO_CIRCLE);
 
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
+                Uri resultUri = CropImage.getActivityResult(data).getUri();
+
+                try {
+                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, resultUri, 600, 0);
+
+                    userPicture.setImageURI(resizedPhotoUri);
+
+                    writeProfile_copy.putString(getString(R.string.userPicture_copy_key), resizedPhotoUri.toString()).commit();
+                    writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), true).commit();
+
+                } catch (IOException e) {
+                    Log.d("error", "IOException when retrieving resized image Uri");
+                    e.printStackTrace();
+                }
             }
         }
-    }
-
-    /**
-     * saveCameraPhoto method
-     *
-     * @param data
-     */
-    private void saveCameraPhoto(Intent data) {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_userProfile.jpg";
-        String galleryPath = null;
-
-        OutputStream out;
-
-        File outFile;
-
-        Bundle resultImage = data.getExtras();
-        Bitmap resultBMP = null;
-        if (resultImage != null) {
-            resultBMP = (Bitmap) resultImage.get("data");
-        } else {
-            Log.d("ERROR:", "Result image empty");
-        }
-
-        try {
-
-            //save image in gallery
-            galleryPath = MediaStore.Images.Media.insertImage(getContentResolver(), resultBMP, imageFileName, "user profile image");
-
-            outFile = new File(EditProfileActivity.this.getExternalFilesDir(null), imageFileName);
-
-            out = new FileOutputStream(outFile);
-
-            resultBMP.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-            out.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            finish();
-        } catch (IOException e) {
-            e.printStackTrace();
-            finish();
-        }
-
-        userPicture.setImageBitmap(resultBMP);
-
-        //save uri path for persistence
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), galleryPath).commit();
-        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), true).commit();
-
-    }
-
-
-    /**
-     * saveGalleryPhoto method
-     *
-     * @param data
-     */
-    private void saveGalleryPhoto(Intent data) {
-
-        String imagePath = null;
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_userProfile.jpg";
-        File outFile;
-
-        InputStream in;
-        OutputStream out;
-        try {
-
-            outFile = new File(EditProfileActivity.this.getExternalFilesDir(null), imageFileName);
-
-            in = getContentResolver().openInputStream(data.getData());
-
-            out = new FileOutputStream(outFile);
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-
-            imagePath = outFile.getAbsolutePath();
-
-            out.close();
-            in.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        userPicture.setImageURI(Uri.parse(imagePath));
-
-        writeProfile_copy.putString(getString(R.string.userPicture_copy_key), data.getData().toString()).commit();
-        writeProfile_copy.putBoolean(getString(R.string.changed_photo_flag_key), true).commit();
-
     }
 
 

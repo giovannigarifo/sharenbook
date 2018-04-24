@@ -15,7 +15,7 @@
 
     <!-- Various Messages -->
     <string name="profile_saved">Profilo salvato!</string>
-    <string name="upload_progress">Caricamento in corso: </string>
+    <string name="upload_progress">Caricamento in corso:\u0020</string>
     <string name="no_internet_connection">Nessuna connessione a internet!</string>
     <string name="sign_in_cancelled">Operazione annullata!</string>
     <string name="unknown_error">Errore sconosciuto!</string>
