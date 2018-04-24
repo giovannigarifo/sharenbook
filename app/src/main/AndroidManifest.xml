@@ -26,7 +26,7 @@
             android:value="GlideApp" />
 
         <activity android:name=".ShowProfileActivity"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance" />
         <activity android:name=".EditProfileActivity"
             android:launchMode="singleInstance"/>
         <activity

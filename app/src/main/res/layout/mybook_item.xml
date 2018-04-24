@@ -2,60 +2,74 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent" android:layout_height="wrap_content"
-android:padding="10dp">
+android:padding="5dp">
 
 <android.support.v7.widget.CardView
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="150dp"
     android:id="@+id/mybook_item"
-    >
+    style="CardViewStyle">
 
     <RelativeLayout
+        android:id="@+id/wrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/cardview_book_info_margin"
         >
 
         <ImageView
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="match_parent"
             android:id="@+id/book_photo"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="16dp"
-            android:clickable="true"
-
             />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/book_title"
+
+            android:layout_marginLeft="@dimen/cardview_book_info_margin"
+            android:layout_marginStart="@dimen/cardview_book_info_margin"
             android:layout_toRightOf="@+id/book_photo"
+            android:layout_toEndOf="@+id/book_photo"
             android:layout_alignParentTop="true"
-            android:textSize="18sp"
+
+            android:textStyle="bold"
+            android:textSize="@dimen/book_title_font_dim"
+            android:ellipsize="end"
+            android:maxLines="2"
             />
 
         <TextView
             android:id="@+id/book_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+
+            android:layout_marginLeft="@dimen/cardview_book_info_margin"
+            android:layout_marginStart="@dimen/cardview_book_info_margin"
+            android:layout_marginTop="@dimen/cardview_book_info_margin"
             android:layout_toRightOf="@+id/book_photo"
+            android:layout_toEndOf="@+id/book_photo"
             android:layout_below="@+id/book_title"
-            android:textSize="14sp"
+
+            android:textSize="@dimen/book_subtitle_font_dim"
             />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/my_book_modify"
+        <Button
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/edit_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/book_subtitle"
-            android:layout_marginEnd="14dp"
-            android:layout_marginRight="14dp"
-            android:layout_marginTop="28dp"
-            android:src="@drawable/ic_edit_black_48dp" />
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/book_photo"
+            android:layout_toRightOf="@+id/book_photo"
+            android:gravity="start"
+            android:text="@string/edit_book"
+            android:textColor="@color/secondaryText"
+            android:textSize="16sp" />
 
 
     </RelativeLayout>

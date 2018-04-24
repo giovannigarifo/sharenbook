@@ -24,7 +24,6 @@ public class NetworkUtilities {
 
         if(!isConnected && !justConnected) {
             justConnected = false;
-            Log.d("we", "si");
             for (ConnectionChangedListener l : listeners) {
                 l.OnConnectionStateChanged();
             }

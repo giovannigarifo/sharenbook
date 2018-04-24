@@ -71,6 +71,8 @@
     <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>
     <string name="min_photo_required">There must be at least one photo!</string>
 
+    <string name="edit_book">EDIT</string>
+
     <!-- ======================== -->
 
     <!-- navigation bar -->

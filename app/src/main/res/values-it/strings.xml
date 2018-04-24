@@ -140,6 +140,8 @@
     <string name="max_allowed_book_photo">Puoi caricare al massimo 5 foto!</string>
     <string name="min_photo_required">Devi aggiungere almeno una foto!</string>
 
+    <string name="edit_book">MODIFICA</string>
+
     <!-- ============================== -->
 
 
