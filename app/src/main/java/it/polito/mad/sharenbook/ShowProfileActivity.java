@@ -71,8 +71,12 @@ public class ShowProfileActivity  extends AppCompatActivity
     private String profile_picture_signature;
 
     /** DRAWER AND SEARCHBAR **/
-    MaterialSearchBar searchBar;
+    private MaterialSearchBar searchBar;
     private DrawerLayout drawer;
+    private View nav;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+    private CircularImageView drawer_userPicture;
 
 
     /**
@@ -231,12 +235,22 @@ public class ShowProfileActivity  extends AppCompatActivity
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
+
+                /** update user info in nav drawer **/
+                fullNameResize(user);
+                if(drawer_fullname != null )
+                    drawer_fullname.setText(user.getFullname());
+                if(drawer_email != null)
+                    drawer_email.setText(user.getEmail());
+
                 profile_picture_signature = user.getPicture_timestamp();
 
                 if (!profile_picture_signature.equals(default_picture_path)) {
 
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+
                         UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
+                        UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture,  Long.valueOf(profile_picture_signature));
 
                         userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
@@ -309,11 +323,11 @@ public class ShowProfileActivity  extends AppCompatActivity
         searchBar.setOnSearchActionListener(ShowProfileActivity.this);
         //searchBar.inflateMenu(R.menu.main); //to have the popup menu on the right
 
-        View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+        nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
 
-        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
-        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
-        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
 
         fullNameResize(user);
         if(drawer_fullname != null )
