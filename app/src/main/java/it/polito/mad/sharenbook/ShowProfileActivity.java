@@ -72,6 +72,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     /** DRAWER AND SEARCHBAR **/
     private MaterialSearchBar searchBar;
     private DrawerLayout drawer;
+    private NavigationView navigationView;
     private View nav;
     private TextView drawer_fullname;
     private TextView drawer_email;
@@ -236,7 +237,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
 
                 /** update user info in nav drawer **/
-                fullNameResize(user);
+                //fullNameResize(user); //TODO EXTEND AS TEXTRESIZE PASSING ALSO THE TEXTVIEW TO RESIZE
                 if(drawer_fullname != null )
                     drawer_fullname.setText(user.getFullname());
                 if(drawer_email != null)
@@ -259,6 +260,8 @@ public class ShowProfileActivity  extends AppCompatActivity
                         });
 
                 }
+
+                navigationView.setCheckedItem(R.id.drawer_navigation_profile);
 
                 /**
                  * set texts
@@ -307,15 +310,13 @@ public class ShowProfileActivity  extends AppCompatActivity
     }
 
 
-    /**
-     * getViewsAndSetTypography method
-     */
+
     private void setDrawer(){
 
         /** DRAWER AND SEARCHBAR **/
 
         drawer =  findViewById(R.id.show_profile_drawer_layout);
-        NavigationView navigationView =  findViewById(R.id.show_profile_nav_view);
+        navigationView =  findViewById(R.id.show_profile_nav_view);
         navigationView.setCheckedItem(R.id.drawer_navigation_profile);
         navigationView.setNavigationItemSelectedListener(ShowProfileActivity.this);
         searchBar =  findViewById(R.id.searchBar);
@@ -328,7 +329,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        fullNameResize(user);
+        //fullNameResize(user);
         if(drawer_fullname != null )
             drawer_fullname.setText(user.getFullname());
         if(drawer_email != null)
@@ -399,6 +400,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
     }
 
     @Override
