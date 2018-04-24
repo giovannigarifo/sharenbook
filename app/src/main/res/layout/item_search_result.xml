@@ -1,36 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/itemsearchresult_rl"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-
-
-
-</RelativeLayout>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-xmlns:card_view="http://schemas.android.com/apk/res-auto"
-android:id="@+id/item_searchresult_rl"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-    >
+    android:id="@+id/item_searchresult_rl"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
 
-<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-android:id="@+id/item_searchresult_cv"
-android:layout_gravity="center"
-android:layout_width="math_parent"
-android:layout_height="200dp"
-card_view:cardCornerRadius="4dp">
+    <android.support.v7.widget.CardView
+        android:id="@+id/item_searchresult_cv"
+        style="CardViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
 
-    <TextView
-        android:id="@+id/item_search_result_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:id="@+id/wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/cardview_book_info_margin">
 
-</android.support.v7.widget.CardView>
+            <ImageView
+                android:id="@+id/item_searchresult_photo"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/item_searchresult_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="@dimen/cardview_book_info_margin"
+                android:layout_marginStart="@dimen/cardview_book_info_margin"
+                android:layout_toEndOf="@+id/item_searchresult_photo"
+                android:layout_toRightOf="@+id/item_searchresult_photo"
+
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textSize="@dimen/book_title_font_dim"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/item_searchresult_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+
+                android:layout_below="@+id/item_searchresult_title"
+                android:layout_marginLeft="@dimen/cardview_book_info_margin"
+                android:layout_marginStart="@dimen/cardview_book_info_margin"
+                android:layout_marginTop="@dimen/cardview_book_info_margin"
+                android:layout_toEndOf="@+id/item_searchresult_title"
+                android:layout_toRightOf="@+id/item_searchresult_title"
+
+                android:textSize="@dimen/book_subtitle_font_dim" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

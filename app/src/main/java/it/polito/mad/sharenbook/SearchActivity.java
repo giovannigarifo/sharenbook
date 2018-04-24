@@ -35,6 +35,7 @@ import com.algolia.instantsearch.ui.views.AlgoliaHitView;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Query;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -274,8 +275,16 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
     @Override
     public void onBindViewHolder(@NonNull SearchBookViewHolder holder, int position) {
 
-        TextView title = holder.item_search_result.findViewById(R.id.item_search_result_title);
+        //photo
+        ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
+
+
+        //title
+        TextView title = holder.item_search_result.findViewById(R.id.item_searchresult_title);
         title.setText(this.searchResult.get(position).getTitle());
+
+        //subtitle
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)
