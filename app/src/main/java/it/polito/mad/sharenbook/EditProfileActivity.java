@@ -4,24 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -30,42 +20,24 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-
 import android.widget.EditText;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import it.polito.mad.sharenbook.Utils.ImageUtils;
-import it.polito.mad.sharenbook.Utils.NetworkUtilities;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -189,6 +161,10 @@ public class EditProfileActivity extends Activity {
             onCreateWithBundleEmpty(user);
         } else {
             onCreateWithBundleNotEmpty();
+
+            // retrieve currentPhotoUri for imageUtils class
+            Uri currentPhotoUri = Uri.parse(savedInstanceState.getString("currentPhotoUri"));
+            imageUtils.setCurrentPhotoUri(currentPhotoUri);
         }
     }
 
@@ -662,6 +638,7 @@ public class EditProfileActivity extends Activity {
     protected void onSaveInstanceState(Bundle save) {
         super.onSaveInstanceState(save);
         save.putString("Flag_changes", "true");
+        save.putString("currentPhotoUri", imageUtils.getCurrentPhotoUri().toString());
     }
 
 

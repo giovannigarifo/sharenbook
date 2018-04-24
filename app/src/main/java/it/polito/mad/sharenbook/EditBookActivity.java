@@ -132,6 +132,9 @@ public class EditBookActivity extends Activity {
         context = this.getApplicationContext();
         getViewsAndSetTypography(); //retrieve references to views objects and change default fonts
 
+        // Setup image utils class
+        imageUtils = new ImageUtils(this);
+
         //retrieve book info
         if (savedInstanceState == null) {
 
@@ -147,8 +150,12 @@ public class EditBookActivity extends Activity {
             }
 
         } else {
+            // retrieve book info from saveInstanceState
+            book = savedInstanceState.getParcelable("book");
 
-            book = savedInstanceState.getParcelable("book"); //retrieve book info from saveInstanceState
+            // retrieve currentPhotoUri for imageUtils class
+            Uri currentPhotoUri = Uri.parse(savedInstanceState.getString("currentPhotoUri"));
+            imageUtils.setCurrentPhotoUri(currentPhotoUri);
         }
 
         //Populate the view with all the information retrieved from Google Books API
@@ -238,9 +245,6 @@ public class EditBookActivity extends Activity {
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
-
-        // Setup image utils class
-        imageUtils = new ImageUtils(this);
     }
 
 
@@ -309,10 +313,10 @@ public class EditBookActivity extends Activity {
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("book", book);
+        outState.putString("currentPhotoUri", imageUtils.getCurrentPhotoUri().toString());
     }
 
     @Override

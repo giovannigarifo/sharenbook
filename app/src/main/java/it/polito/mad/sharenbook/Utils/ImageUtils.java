@@ -45,7 +45,7 @@ public class ImageUtils {
 
     private Context mContext;
     private Activity mActivity;
-    private Uri mCurrentPhotoUri;
+    private Uri currentPhotoUri;
 
     /**
      * Constructor
@@ -55,6 +55,15 @@ public class ImageUtils {
     public ImageUtils(Activity activity) {
         this.mContext = activity.getApplicationContext();
         this.mActivity = activity;
+        this.currentPhotoUri = Uri.parse("");
+    }
+
+    public Uri getCurrentPhotoUri() {
+        return currentPhotoUri;
+    }
+
+    public void setCurrentPhotoUri(Uri currentPhotoUri) {
+        this.currentPhotoUri = currentPhotoUri;
     }
 
     /**
@@ -78,8 +87,8 @@ public class ImageUtils {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                mCurrentPhotoUri = getUriForFile(mActivity, photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                currentPhotoUri = getUriForFile(mActivity, photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
                 mActivity.startActivityForResult(takePictureIntent, REQUEST_CAMERA);
             }
         }
@@ -123,7 +132,7 @@ public class ImageUtils {
      * Overload for dispatchCropPhotoIntent (using current photo Uri)
      */
     public void dispatchCropCurrentPhotoIntent(int aspectRatio) {
-        dispatchCropPhotoIntent(mCurrentPhotoUri, aspectRatio);
+        dispatchCropPhotoIntent(currentPhotoUri, aspectRatio);
     }
 
     /**
