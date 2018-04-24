@@ -202,18 +202,6 @@ public class EditBookActivity extends Activity {
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_logout:
-                    AuthUI.getInstance()
-                            .signOut(this)
-                            .addOnCompleteListener(task -> {
-                                Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                                startActivity(i);
-                                Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                                finish();
-                            });
-
-                    break;
-
                 case R.id.navigation_profile:
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

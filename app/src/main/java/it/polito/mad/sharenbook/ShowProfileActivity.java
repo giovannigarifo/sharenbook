@@ -186,21 +186,6 @@ public class ShowProfileActivity  extends AppCompatActivity
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.navigation_logout:
-                    //Toast.makeText(getApplicationContext(), "Selected Showcase!", Toast.LENGTH_SHORT).show();
-                    AuthUI.getInstance()
-                            .signOut(this)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                                    startActivity(i);
-                                    Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                                    finish();
-                                }
-                            });
-
-                    break;
-
                 case R.id.navigation_profile:
                     break;
 
@@ -374,11 +359,20 @@ public class ShowProfileActivity  extends AppCompatActivity
         if (id == R.id.drawer_navigation_profile) {
             // Handle the camera action
         } else if (id == R.id.drawer_navigation_shareBook) {
-
+            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+            startActivity(i);
         } else if (id == R.id.drawer_navigation_myBook) {
-
+            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(my_books);
         } else if (id == R.id.drawer_navigation_logout) {
-
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
