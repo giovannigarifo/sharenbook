@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -23,6 +25,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import it.polito.mad.sharenbook.R;
 
@@ -86,9 +89,20 @@ public class ImageUtils {
                 Log.d("DEBUG", "Can't take picture now: error during tempfile generation.");
                 ex.printStackTrace();
             }
+
             // Continue only if the File was successfully created
             if (photoFile != null) {
+                // Get new created file uri
                 currentPhotoUri = getUriForFile(mActivity, photoFile);
+
+                // Give Uri Permission to camera (solve camera crash on older android version < 5)
+                List<ResolveInfo> resolvedIntentActivities = mContext.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+                    String packageName = resolvedIntentInfo.activityInfo.packageName;
+                    mContext.grantUriPermission(packageName, currentPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+
+                // Dispatch camera intent
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
                 mActivity.startActivityForResult(takePictureIntent, REQUEST_CAMERA);
             }
@@ -174,6 +188,13 @@ public class ImageUtils {
     }
 
     /**
+     * Revoke uri permission given to camera intents due to compatibility reason with android versions < 5
+     */
+    public void revokeCurrentPhotoUriPermission() {
+        mContext.revokeUriPermission(currentPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    /**
      * Resize passed photo to given dimension (maintain aspect ratio if one of dimension is 0)
      *
      * @param activity  : activity object caller
@@ -217,9 +238,9 @@ public class ImageUtils {
     /**
      * Overload -> Resize passed photo to given width dimension (maintaining aspect ratio)
      *
-     * @param activity  : activity object caller
-     * @param photoUri  : uri of image to be resized
-     * @param newWidth  : width dimension in pixel (can be 0 if newHeight is given)
+     * @param activity : activity object caller
+     * @param photoUri : uri of image to be resized
+     * @param newWidth : width dimension in pixel (can be 0 if newHeight is given)
      * @return : uri of resized photo
      * @throws IOException
      */

@@ -381,6 +381,7 @@ public class EditProfileActivity extends Activity {
             if (requestCode == REQUEST_CAMERA) {
 
                 imageUtils.dispatchCropCurrentPhotoIntent(ImageUtils.ASPECT_RATIO_CIRCLE);
+                imageUtils.revokeCurrentPhotoUriPermission();
 
             } else if (requestCode == REQUEST_GALLERY) {
 

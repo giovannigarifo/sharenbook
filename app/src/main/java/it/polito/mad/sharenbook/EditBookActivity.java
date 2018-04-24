@@ -441,6 +441,7 @@ public class EditBookActivity extends Activity {
             if (requestCode == REQUEST_CAMERA) {
 
                 imageUtils.dispatchCropCurrentPhotoIntent(ImageUtils.ASPECT_RATIO_PHOTO_PORT);
+                imageUtils.revokeCurrentPhotoUriPermission();
 
             } else if (requestCode == REQUEST_GALLERY) {
 
