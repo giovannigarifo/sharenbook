@@ -1,234 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinator"
+    android:id="@+id/show_profile_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.sharenbook.ShowProfileActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <ScrollView
-        android:id="@+id/editbook_scrollview"
+    <include
+        layout="@layout/show_profile_app_bar_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp">
+        android:layout_height="match_parent" />
 
-        <!-- external wrapper-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Search Bar -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary">
-
-
-                <com.mancj.materialsearchbar.MaterialSearchBar
-                    android:id="@+id/searchBar"
-                    style="@style/MaterialSearchBarLight"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_centerHorizontal="true"
-                    app:mt_hint="@string/search_hint"
-                    app:mt_maxSuggestionsCount="10"
-                    app:mt_navIconEnabled="true"
-                    app:mt_placeholder="Share'nBook"
-                    app:mt_searchBarColor="@color/colorPrimaryLight"
-                    app:mt_speechMode="false"
-                    app:mt_textCursorTint="@color/colorPrimary" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="150dp">
-
-                <!-- colored bar -->
-                <ImageView
-                    android:id="@+id/editbook_topbar_background"
-                    android:layout_width="wrap_content"
-                    android:layout_height="85sp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:background="@drawable/gradient"
-                    android:elevation="10dp"/>
-
-                <!-- user profile picture -->
-
-
-                <com.mikhaellopez.circularimageview.CircularImageView
-                    android:id="@+id/userPicture"
-
-                    android:layout_width="135dp"
-                    android:layout_height="135dp"
-
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="16dp"
-                    android:clickable="true"
-                    android:src="@drawable/ic_person_black_135dp"
-                    android:tint="@color/darkGrey"
-                    app:civ_border_color="@color/lightGrey"
-                    app:civ_border_width="1dp"
-                    app:civ_shadow="true"
-                    app:civ_shadow_color="@color/lightGrey"
-                    app:civ_shadow_radius="10"
-                    android:elevation="10dp"/>
-
-                <!-- user full name -->
-                <TextView
-                    android:id="@+id/tv_userFullName"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_alignTop="@id/userPicture"
-                    android:layout_marginLeft="8dp"
-
-                    android:layout_marginTop="8dp"
-                    android:layout_toRightOf="@id/userPicture"
-                    android:elevation="10dp"
-                    android:textColor="@color/darkGrey"
-                    android:textSize="24sp" />
-
-                <!-- user nick name-->
-                <TextView
-                    android:id="@+id/tv_userNickName"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_userFullName"
-                    android:layout_marginLeft="8dp"
-                    android:layout_toRightOf="@id/userPicture"
-                    android:elevation="10dp"
-                    android:textColor="@color/darkGrey"
-                    android:alpha="0.5" />
-
-                <!-- user rating stars -->
-                <RatingBar
-                    android:id="@+id/userRatingBar"
-
-                    style="?android:attr/ratingBarStyleSmall"
-                    android:layout_width="wrap_content"
-
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/editbook_topbar_background"
-
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_toRightOf="@id/userPicture"
-                    android:isIndicator="false"
-                    android:numStars="5"
-                    android:progressBackgroundTint="@color/lightGrey"
-                    android:progressTint="@color/colorPrimary"
-                    android:rating="3.5"
-                    android:stepSize="0.5" />
-
-
-                <!-- user rating info-->
-                <TextView
-                    android:id="@+id/tv_userRatingInfo"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_below="@id/editbook_topbar_background"
-                    android:layout_marginLeft="8dp"
-
-                    android:layout_marginTop="7dp"
-                    android:layout_toRightOf="@+id/userRatingBar"
-                    android:text="Feedback: 75,2%"
-                    android:textColor="@color/darkGrey" />
-
-
-            </RelativeLayout>
-
-
-            <!-- Content -->
-            <LinearLayout
-                android:id="@+id/editbook_content_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
-                <!-- user Email-->
-                <TextView
-                    android:id="@+id/tv_userEmailHeading"
-                    style="@style/TextViewHeading"
-
-                    android:text="@string/default_email_heading" />
-
-                <TextView
-                    android:id="@+id/tv_userEmailContent"
-                    style="@style/TextViewContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <!-- user city-->
-                <TextView
-                    android:id="@+id/tv_userCityHeading"
-                    style="@style/TextViewHeading"
-
-                    android:text="@string/default_city_heading" />
-
-                <TextView
-                    android:id="@+id/tv_userCityContent"
-                    style="@style/TextViewContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-
-                <!-- user bio -->
-                <TextView
-                    android:id="@+id/tv_userBioHeading"
-                    style="@style/TextViewHeading"
-
-                    android:text="@string/default_bio_heading" />
-
-                <TextView
-                    android:id="@+id/tv_userBioContent"
-                    style="@style/TextViewContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:background="@color/darkGrey"
-        app:itemIconTint="@drawable/nav_bar_selector"
-        app:itemTextColor="@drawable/nav_bar_selector"
-        app:itemBackground="@drawable/nav_bar_bg_selector"
-        app:menu="@menu/navigation" />
-
-    <!-- Edit Floating Action Button-->
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_edit"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/show_profile_nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="75dp"
-        android:layout_marginRight="20dp"
-        android:src="@drawable/ic_create_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end" />
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/main_drawer" />
 
-</android.support.design.widget.CoordinatorLayout>
+</android.support.v4.widget.DrawerLayout>

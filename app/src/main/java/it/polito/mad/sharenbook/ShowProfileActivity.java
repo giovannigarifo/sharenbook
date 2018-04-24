@@ -8,8 +8,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +24,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
-public class ShowProfileActivity extends Activity {
+public class ShowProfileActivity  extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
     /**
      * views
@@ -61,6 +69,10 @@ public class ShowProfileActivity extends Activity {
 
     private String profile_picture_signature;
 
+    /** DRAWER AND SEARCHBAR **/
+    MaterialSearchBar searchBar;
+    private DrawerLayout drawer;
+
 
     /**
      * onCreate callback
@@ -75,6 +87,14 @@ public class ShowProfileActivity extends Activity {
         this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
+
+        /** DRAWER AND SEARCHBAR **/
+        drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.show_profile_nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
+        searchBar.setOnSearchActionListener(this);
+        //searchBar.inflateMenu(R.menu.main); //to have the popup menu on the right
 
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
@@ -336,4 +356,58 @@ public class ShowProfileActivity extends Activity {
         tv_userEmailContent.setText(user.getEmail());
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.drawer_navigation_profile) {
+            // Handle the camera action
+        } else if (id == R.id.drawer_navigation_shareBook) {
+
+        } else if (id == R.id.drawer_navigation_myBook) {
+
+        } else if (id == R.id.drawer_navigation_logout) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+        switch (buttonCode){
+            case MaterialSearchBar.BUTTON_NAVIGATION:
+                drawer.openDrawer(Gravity.LEFT);
+                break;
+            case MaterialSearchBar.BUTTON_SPEECH:
+                break;
+            case MaterialSearchBar.BUTTON_BACK:
+                searchBar.disableSearch();
+                break;
+        }
+
+    }
 }
