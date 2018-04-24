@@ -44,9 +44,7 @@ import it.polito.mad.sharenbook.model.UserProfile;
 
 public class EditProfileActivity extends Activity {
 
-    //context of the activity
-    private Context context;
-
+    // ProgressDialog used to show loading messages
     ProgressDialog progressDialog = null;
 
     // request codes to edit user photo
@@ -84,6 +82,7 @@ public class EditProfileActivity extends Activity {
     //Required Permissions
     private String[] permissions = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
 
@@ -112,7 +111,6 @@ public class EditProfileActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_edit_profile);
 
         if (getCallingActivity() == null && savedInstanceState == null) {
@@ -132,15 +130,13 @@ public class EditProfileActivity extends Activity {
         //modify default typography
         getViewsAndSetTypography();
 
-        context = this.getApplicationContext();
-
         //retrieve the default values if the profile is not yet edited
-        default_city = context.getResources().getString(R.string.default_city);
-        default_bio = context.getResources().getString(R.string.default_bio);
-        default_email = context.getResources().getString(R.string.default_email);
-        default_fullname = context.getResources().getString(R.string.default_fullname);
-        default_username = context.getResources().getString(R.string.default_username);
-        default_picture_path = context.getResources().getString(R.string.default_picture_path);
+        default_city = getString(R.string.default_city);
+        default_bio = getString(R.string.default_bio);
+        default_email = getString(R.string.default_email);
+        default_fullname = getString(R.string.default_fullname);
+        default_username = getString(R.string.default_username);
+        default_picture_path = getString(R.string.default_picture_path);
 
         // Create a storage reference from our app
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -175,7 +171,7 @@ public class EditProfileActivity extends Activity {
     private void onCreateWithBundleEmpty(UserProfile user) {
 
         // Copy for rollbacks
-        editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
+        editedProfile_copy = getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
         writeProfile_copy = editedProfile_copy.edit();
 
         save_button = findViewById(R.id.fab_save);
@@ -258,7 +254,7 @@ public class EditProfileActivity extends Activity {
     private void onCreateWithBundleNotEmpty() {
 
         //make a copy for rollbacks
-        editedProfile_copy = context.getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
+        editedProfile_copy = getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
         writeProfile_copy = editedProfile_copy.edit();
 
         //get view button
