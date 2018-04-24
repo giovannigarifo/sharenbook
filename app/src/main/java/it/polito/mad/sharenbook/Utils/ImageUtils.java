@@ -33,6 +33,7 @@ public class ImageUtils {
     // ImageFolder constants
     public static final int EXTERNAL_PICTURES = 1;          // Android/data/it.polito.mad.sharenbook/files/Pictures
     public static final int EXTERNAL_PUBLIC_PICTURES = 2;   // Pictures/Share'nBook
+    public static final int EXTERNAL_CACHE = 3;             // Android/data/it.polito.mad.sharenbook/cache
     // Intent request code
     public static final int REQUEST_CAMERA = 1;
     public static final int REQUEST_GALLERY = 2;
@@ -182,7 +183,7 @@ public class ImageUtils {
      * @return : uri of resized photo
      * @throws IOException
      */
-    public static Uri resizeJpegPhoto(Activity activity, Uri photoUri, int newWidth, int newHeight) throws IOException {
+    public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth, int newHeight) throws IOException {
         Bitmap photo = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoUri);
 
         if (newWidth == 0 && newHeight == 0) {
@@ -200,7 +201,7 @@ public class ImageUtils {
         Bitmap resizedPhoto = Bitmap.createScaledBitmap(photo, newWidth, newHeight, false);
 
         // Compress bitmap into jpeg
-        File outputFile = createImageFile(activity, EXTERNAL_PICTURES);
+        File outputFile = createImageFile(activity, imageFolder);
         FileOutputStream outputFileStream = new FileOutputStream(outputFile);
         resizedPhoto.compress(Bitmap.CompressFormat.JPEG, 95, outputFileStream);
 
@@ -211,6 +212,21 @@ public class ImageUtils {
 
         return getUriForFile(activity, outputFile);
     }
+
+
+    /**
+     * Overload -> Resize passed photo to given width dimension (maintaining aspect ratio)
+     *
+     * @param activity  : activity object caller
+     * @param photoUri  : uri of image to be resized
+     * @param newWidth  : width dimension in pixel (can be 0 if newHeight is given)
+     * @return : uri of resized photo
+     * @throws IOException
+     */
+    public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth) throws IOException {
+        return resizeJpegPhoto(activity, imageFolder, photoUri, newWidth, 0);
+    }
+
 
     /**
      * Resize passed bitmap to given dimension (maintain aspect ratio if one of dimension is 0)
@@ -259,6 +275,8 @@ public class ImageUtils {
         } else if (imageFolder == EXTERNAL_PUBLIC_PICTURES) {
             File picturesDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             storageDir = new File(picturesDir, "Share'nBook");
+        } else if (imageFolder == EXTERNAL_CACHE) {
+            storageDir = activity.getExternalCacheDir();
         }
 
         // Check if exists

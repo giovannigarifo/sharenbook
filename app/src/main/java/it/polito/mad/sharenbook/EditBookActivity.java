@@ -451,7 +451,7 @@ public class EditBookActivity extends Activity {
                 Uri resultUri = CropImage.getActivityResult(data).getUri();
 
                 try {
-                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, resultUri, 540, 0);
+                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, ImageUtils.EXTERNAL_CACHE, resultUri, 540);
                     book.addBookPhotoUri(resizedPhotoUri); //add photo uri to collection (to position 0)
 
                     //notify update of the collection to Recycle View adapter

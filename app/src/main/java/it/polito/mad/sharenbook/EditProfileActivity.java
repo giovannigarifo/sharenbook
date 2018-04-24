@@ -391,7 +391,7 @@ public class EditProfileActivity extends Activity {
                 Uri resultUri = CropImage.getActivityResult(data).getUri();
 
                 try {
-                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, resultUri, 600, 0);
+                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, ImageUtils.EXTERNAL_CACHE, resultUri, 600);
 
                     userPicture.setImageURI(resizedPhotoUri);
 

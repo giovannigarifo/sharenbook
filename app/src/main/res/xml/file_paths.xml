@@ -6,4 +6,7 @@
     <external-path
         name="my_public_images"
         path="Pictures/Share'nBook" />
+    <external-path
+        name="my_cache"
+        path="Android/data/it.polito.mad.sharenbook/cache" />
 </paths>
