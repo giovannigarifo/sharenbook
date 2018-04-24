@@ -28,6 +28,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polito.mad.sharenbook.model.Book;
+
 public class MyBookActivity extends AppCompatActivity {
 
 

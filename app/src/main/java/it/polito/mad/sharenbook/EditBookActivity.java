@@ -53,6 +53,7 @@ import java.util.List;
 import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.InputValidator;
 import it.polito.mad.sharenbook.Utils.UserInterface;
+import it.polito.mad.sharenbook.model.Book;
 
 public class EditBookActivity extends Activity {
 

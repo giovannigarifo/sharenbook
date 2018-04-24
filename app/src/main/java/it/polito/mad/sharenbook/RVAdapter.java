@@ -1,7 +1,6 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+
+import it.polito.mad.sharenbook.model.Book;
 
 
 /**

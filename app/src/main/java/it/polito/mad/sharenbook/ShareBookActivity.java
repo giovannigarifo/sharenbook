@@ -19,7 +19,9 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import it.polito.mad.sharenbook.Utils.BookDetails;
 import it.polito.mad.sharenbook.Utils.InputValidator;
+import it.polito.mad.sharenbook.model.Book;
 
 public class ShareBookActivity extends AppCompatActivity {
 
