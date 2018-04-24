@@ -21,7 +21,12 @@ import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.Utils.UserInterface;
+import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.Utils.UserInterface;
+
 
 public class ShowProfileActivity extends Activity {
 
@@ -149,7 +154,10 @@ public class ShowProfileActivity extends Activity {
 
         setupNavbar();
 
-
+        /*
+         * SearchBar
+         */
+        setupSearchBar(findViewById(R.id.searchBar));
     }
 
     /**
@@ -195,9 +203,44 @@ public class ShowProfileActivity extends Activity {
             }
             return true;
         });
-
-
     }
+
+
+    /*
+     * Setup the material search bar
+     */
+    private void setupSearchBar(MaterialSearchBar msb) {
+
+        msb.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+                String s = enabled ? "enabled" : "disabled";
+                Toast.makeText(ShowProfileActivity.this, "Search " + s, Toast.LENGTH_SHORT).show();
+            }
+
+            //send intent to SearchActivity
+            @Override
+            public void onSearchConfirmed(CharSequence searchInputText) {
+
+                Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+
+                i.putExtra("searchInputText", searchInputText);
+                startActivity(i);
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                switch (buttonCode) {
+                    case MaterialSearchBar.BUTTON_NAVIGATION:
+                        break;
+                    case MaterialSearchBar.BUTTON_SPEECH:
+                        break;
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

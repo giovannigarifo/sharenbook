@@ -19,6 +19,7 @@ import com.google.firebase.storage.StorageReference;
 
 import it.polito.mad.sharenbook.EditProfileActivity;
 import it.polito.mad.sharenbook.R;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 public class UserInterface {
 

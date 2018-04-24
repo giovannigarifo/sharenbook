@@ -29,6 +29,7 @@
             android:launchMode="singleInstance" />
         <activity android:name=".EditProfileActivity"
             android:launchMode="singleInstance"/>
+
         <activity
             android:name=".ShowPictureActivity"
             android:theme="@style/myShowPictureWindow" />
@@ -58,13 +59,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MyBookActivity"/>
+        <activity android:name=".MyBookActivity" />
 
         <!-- crop image activity -->
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
+            android:theme="@style/Base.Theme.AppCompat" />
 
+        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

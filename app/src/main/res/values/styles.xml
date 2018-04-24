@@ -27,7 +27,6 @@
     </style>
 
 
-
     <style name="TextViewContent">
 
         <item name="android:textColor">@color/darkGrey</item>
@@ -57,5 +56,24 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_theme</item>
     </style>
+
+    <!-- ============================= -->
+    <!-- Style for the search activity -->
+
+    <style name="item_searchresult_title">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:textColor">@color/darkGrey</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+
+    <!-- ============================= -->
 
 </resources>
