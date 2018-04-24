@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,13 +89,8 @@ public class ShowProfileActivity  extends AppCompatActivity
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
 
-        /** DRAWER AND SEARCHBAR **/
-        drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.show_profile_nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
-        searchBar.setOnSearchActionListener(this);
-        //searchBar.inflateMenu(R.menu.main); //to have the popup menu on the right
+
+
 
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
@@ -136,6 +132,10 @@ public class ShowProfileActivity  extends AppCompatActivity
                 });
 
         }
+
+        /** set drawer **/
+
+        setDrawer();
 
         /**
          * set texts
@@ -256,6 +256,8 @@ public class ShowProfileActivity  extends AppCompatActivity
                 tv_userCityContent.setText(user.getCity());
                 tv_userBioContent.setText(user.getBio());
                 tv_userEmailContent.setText(user.getEmail());
+
+
             }
         }
     }
@@ -295,7 +297,42 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * getViewsAndSetTypography method
      */
+    private void setDrawer(){
+
+        /** DRAWER AND SEARCHBAR **/
+
+        drawer =  findViewById(R.id.show_profile_drawer_layout);
+        NavigationView navigationView =  findViewById(R.id.show_profile_nav_view);
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+        navigationView.setNavigationItemSelectedListener(ShowProfileActivity.this);
+        searchBar =  findViewById(R.id.searchBar);
+        searchBar.setOnSearchActionListener(ShowProfileActivity.this);
+        //searchBar.inflateMenu(R.menu.main); //to have the popup menu on the right
+
+        View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+
+        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+
+        fullNameResize(user);
+        if(drawer_fullname != null )
+            drawer_fullname.setText(user.getFullname());
+        if(drawer_email != null)
+            drawer_email.setText(user.getEmail());
+
+        /** set drawer user picture **/
+
+        if (!profile_picture_signature.equals(default_picture_timestamp)) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+            UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture,  Long.valueOf(profile_picture_signature));
+        }
+
+
+
+    }
     private void getViewsAndSetTypography() {
+
 
         //get views
         tv_userFullName = (TextView) findViewById(R.id.tv_userFullName);
