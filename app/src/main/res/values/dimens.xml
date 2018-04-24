@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="book_title_font_dim">20sp</dimen>
+    <dimen name="book_title_font_dim">18sp</dimen>
     <dimen name="book_subtitle_font_dim">12sp</dimen>
 
     <dimen name="cardview_book_info_margin">12dp</dimen>

@@ -190,6 +190,7 @@ class BookDetails {
  */
 class Book implements Parcelable {
 
+    private String bookId;
     private String isbn;
     private String title;
     private String subtitle;
@@ -227,6 +228,8 @@ class Book implements Parcelable {
     public Book(String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories,
                 String language, String thumbnail) {
+
+        this.bookId = "";
         this.isbn = isbn;
         this.title = title;
         this.subtitle = subtitle;
@@ -256,6 +259,34 @@ class Book implements Parcelable {
         this.numPhotos = 0;
     }
 
+
+    /**
+     * Constructor for the Book Class
+     * @param isbn
+     * @param title
+     * @param subtitle
+     * @param authors
+     * @param publisher
+     * @param publishedDate
+     * @param description
+     * @param pageCount
+     * @param categories
+     * @param language
+     * @param thumbnail
+     * @param numPhotos
+     */
+    public Book(String isbn, String title, String subtitle, List<String> authors, String publisher,
+                String publishedDate, String description, int pageCount, List<String> categories,
+                String language, String thumbnail, int numPhotos) {
+
+        this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
+        this.bookId = "";
+        this.numPhotos = numPhotos;
+    }
+
+    /**
+     * Constructor for the Book Class
+     */
     public Book() {
         this.isbn = "";
         this.title = "";
@@ -275,6 +306,12 @@ class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
     }
+
+
+
+    public String getBookId() { return bookId; }
+
+    public void setBookId(String bookId) { this.bookId = bookId; }
 
     public String getIsbn() {
         return isbn;

@@ -1,48 +1,29 @@
 package it.polito.mad.sharenbook;
 
-import android.content.ContentResolver;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
-//import com.algolia.search.saas.APIClient;
-//import com.algolia.search.saas.AlgoliaException;
-//import com.algolia.search.saas.Index;
-//import com.algolia.search.saas.Query;
-//import com.algolia.search.saas.listeners.SearchListener;
 
-import com.algolia.instantsearch.*;
-import com.algolia.instantsearch.model.AlgoliaErrorListener;
-import com.algolia.instantsearch.model.AlgoliaResultsListener;
-import com.algolia.instantsearch.model.SearchResults;
-import com.algolia.instantsearch.ui.views.AlgoliaHitView;
-import com.algolia.instantsearch.ui.views.Hits;
-import com.algolia.search.saas.AlgoliaException;
-import com.algolia.search.saas.Query;
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,14 +37,6 @@ public class SearchActivity extends AppCompatActivity {
 
     // Algolia instant search
     Searcher searcher;
-
-
-    /*
-    // Agolia
-    APIClient apiClient;
-    Index index;
-    Query query;
-*/
 
     /*
      * OnCreate
@@ -96,7 +69,7 @@ public class SearchActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         search_rv_result.setLayoutManager(llm);
 
-        SearchBookAdapter sbAdapter = new SearchBookAdapter(this.searchResult, this.getContentResolver());
+        SearchBookAdapter sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
         search_rv_result.setAdapter(sbAdapter);
 
 
@@ -161,16 +134,20 @@ public class SearchActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         String language = jsonObject.optString("language");
         String thumbnail = jsonObject.optString("thumbnail");
+        int numPhotos = jsonObject.optInt("numPhotos");
 
-        if (title != null && subtitle != null)
-            return new Book(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
-        return null;
+        return new Book(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail, numPhotos);
     }
 
 
+    /**
+     * Parser for the result of the search that returns an ArrayList of books that matched the query
+     *
+     * @param hits : the book hitted by the query
+     * @return : ArrayList of books
+     */
     public ArrayList<Book> parseResults(JSONArray hits) {
 
         if (hits == null)
@@ -188,7 +165,12 @@ public class SearchActivity extends AppCompatActivity {
             String key = keyList.next();
 
             try {
-                books.add(BookJsonParser(jsonBooks.getJSONObject(key)));
+
+                //save the book into the collection
+                Book b = BookJsonParser(jsonBooks.getJSONObject(key));
+                b.setBookId(key); //save also the FireBase unique ID
+                books.add(b);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -229,22 +211,22 @@ public class SearchActivity extends AppCompatActivity {
 class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBookViewHolder> {
 
     private List<Book> searchResult;
-    private ContentResolver mContentResolver;
+    private Context context;
 
     //constructor
-    SearchBookAdapter(ArrayList<Book> searchResult, ContentResolver contentResolver) {
+    SearchBookAdapter(ArrayList<Book> searchResult, Context context) {
         this.searchResult = searchResult;
-        this.mContentResolver = contentResolver;
+        this.context = context;
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
     class SearchBookViewHolder extends RecyclerView.ViewHolder {
 
-        private RelativeLayout item_search_result;
+        private LinearLayout item_search_result;
 
-        SearchBookViewHolder(RelativeLayout rl) {
-            super(rl);
-            this.item_search_result = rl;
+        SearchBookViewHolder(LinearLayout ll) {
+            super(ll);
+            this.item_search_result = ll;
         }
     }
 
@@ -261,9 +243,9 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
     public SearchBookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater li = LayoutInflater.from(parent.getContext());
-        RelativeLayout rl = (RelativeLayout) li.inflate(R.layout.item_search_result, parent, false);
+        LinearLayout ll = (LinearLayout) li.inflate(R.layout.item_search_result, parent, false);
 
-        return new SearchBookViewHolder(rl);
+        return new SearchBookViewHolder(ll);
     }
 
     /**
@@ -278,13 +260,27 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         //photo
         ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
 
+        int thumbnailOrFirstPhotoPosition = searchResult.get(position).getNumPhotos() - 1;
+        String bookId = searchResult.get(position).getBookId();
+
+        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + bookId + "/" + thumbnailOrFirstPhotoPosition + ".jpg");
+
+        thumbnailOrFirstPhotoRef.getDownloadUrl().addOnSuccessListener((uri) -> {
+            String imageURL = uri.toString();
+            Glide.with(context).load(imageURL).into(photo);
+
+        }).addOnFailureListener((exception) -> {
+                    // handle errors here
+                }
+        );
 
         //title
         TextView title = holder.item_search_result.findViewById(R.id.item_searchresult_title);
         title.setText(this.searchResult.get(position).getTitle());
 
         //subtitle
-
+        TextView subtitle = holder.item_search_result.findViewById(R.id.item_searchresult_subtitle);
+        subtitle.setText(this.searchResult.get(position).getSubtitle());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
