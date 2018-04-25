@@ -355,7 +355,8 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
             String imageURL = uri.toString();
 
             GlideApp.with(context).load(imageURL)
-                    .placeholder(R.drawable.edit)
+                    .placeholder(R.drawable.book_photo_placeholder)
+                    .error(R.drawable.book_photo_placeholder)
                     .transition(DrawableTransitionOptions.withCrossFade(500))
                     .into(photo);
 
