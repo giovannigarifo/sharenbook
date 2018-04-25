@@ -119,7 +119,6 @@ public class EditBookActivity extends Activity {
     private FirebaseUser firebaseUser;
     private DatabaseReference booksDb;
     private DatabaseReference newBookRef; //the unique key obtained by firebase
-    private DatabaseReference wordsDb;
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
 
@@ -249,7 +248,6 @@ public class EditBookActivity extends Activity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
-        wordsDb = firebaseDatabase.getReference(getString(R.string.words_key));
 
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
@@ -572,8 +570,6 @@ public class EditBookActivity extends Activity {
                 // Handle successful uploads
                 Log.d("Debug", "Photo n. " + num + " uploaded!");
                 updateProgressDialogMessage(++photoLoaded, numPhotos);
-                // Delete file in the end
-                // getContentResolver().delete(photos.get(num), null, null);
             })
                     .addOnFailureListener(exception -> {
                         // Handle unsuccessful uploads
