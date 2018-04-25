@@ -1,22 +1,39 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
 
+import com.algolia.search.saas.RequestOptions;
 import com.bumptech.glide.Glide;
+
+import it.polito.mad.sharenbook.Utils.GlideApp;
+import it.polito.mad.sharenbook.Utils.MyAppGlideModule;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.module.AppGlideModule;
+
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -34,8 +51,8 @@ import it.polito.mad.sharenbook.model.Book;
 public class SearchActivity extends AppCompatActivity {
 
 
-    CharSequence searchInputText;
-    ArrayList<Book> searchResult;
+    CharSequence searchInputText; //search query received in bundle
+    ArrayList<Book> searchResult; //list of book that matched the query
 
     // Algolia instant search
     Searcher searcher;
@@ -62,7 +79,6 @@ public class SearchActivity extends AppCompatActivity {
         } else
             searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
 
-
         // RecylerView setup
         searchResult = new ArrayList<>();
 
@@ -74,20 +90,33 @@ public class SearchActivity extends AppCompatActivity {
         SearchBookAdapter sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
         search_rv_result.setAdapter(sbAdapter);
 
+        // Setup toolbar
+        Toolbar sbaToolbar = findViewById(R.id.sba_toolbar);
+        setSupportActionBar(sbaToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(R.string.sa_title);
 
-        //Algolia's InstantSearch
+        //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
         InstantSearch helper = new InstantSearch(searcher);
 
         searcher.registerResultListener((results, isLoadingMore) -> {
 
-            searchResult.clear();
-            searchResult.addAll(parseResults(results.hits));
-            sbAdapter.notifyDataSetChanged();
+            if (results.nbHits > 0) {
+
+                searchResult.clear();
+                searchResult.addAll(parseResults(results.hits));
+                sbAdapter.notifyDataSetChanged();
+
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
+            }
         });
 
         searcher.registerErrorListener((query, error) -> {
 
+            Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
             Log.d("error", "Unable to retrieve search result from Algolia");
         });
 
@@ -96,8 +125,11 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    /*
+    /**
      * JSON Parser: from JSON to Book
+     *
+     * @param jsonObject : json representation of the book stored in algolia's "books" index
+     * @return : the Book object
      */
     public Book BookJsonParser(JSONObject jsonObject) {
 
@@ -110,9 +142,21 @@ public class SearchActivity extends AppCompatActivity {
 
         try {
 
-            JSONArray jsonAuthors = jsonObject.getJSONArray("authors");
-            for (int i = 0; i < jsonAuthors.length(); i++)
-                authors.add(jsonAuthors.optString(i));
+            Object a = jsonObject.get("authors");
+
+            if (a instanceof String) {
+
+                String author = (String) a;
+                author.replace("[", "");
+                author.replace("]", "");
+                authors.add(author);
+
+            } else {
+
+                JSONArray jsonCategories = jsonObject.getJSONArray("authors");
+                for (int i = 0; i < jsonCategories.length(); i++)
+                    authors.add(jsonCategories.optString(i));
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -128,9 +172,21 @@ public class SearchActivity extends AppCompatActivity {
 
         try {
 
-            JSONArray jsonCategories = jsonObject.getJSONArray("categories");
-            for (int i = 0; i < jsonCategories.length(); i++)
-                categories.add(jsonCategories.optString(i));
+            Object c = jsonObject.get("categories");
+
+            if (c instanceof String) {
+
+                String category = (String) c;
+                category.replace("[", "");
+                category.replace("]", "");
+                categories.add(category);
+
+            } else {
+
+                JSONArray jsonCategories = jsonObject.getJSONArray("categories");
+                for (int i = 0; i < jsonCategories.length(); i++)
+                    categories.add(jsonCategories.optString(i));
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -147,36 +203,33 @@ public class SearchActivity extends AppCompatActivity {
     /**
      * Parser for the result of the search that returns an ArrayList of books that matched the query
      *
-     * @param hits : the book hitted by the query
-     * @return : ArrayList of books
+     * @param hits : algolia's search hits
+     * @return : the colleciton of books
      */
     public ArrayList<Book> parseResults(JSONArray hits) {
 
-        if (hits == null)
-            return null;
-
         ArrayList<Book> books = new ArrayList<>();
 
-        JSONObject hit = hits.optJSONObject(0); //retrieve first hit
-        JSONObject jsonBooks = hit.optJSONObject("books"); //retrieve book array
-
-        Iterator<String> keyList = jsonBooks.keys();
-
-        while (keyList.hasNext()) {
-
-            String key = keyList.next();
+        for (int i = 0; i < hits.length(); i++) {
 
             try {
 
-                //save the book into the collection
-                Book b = BookJsonParser(jsonBooks.getJSONObject(key));
-                b.setBookId(key); //save also the FireBase unique ID
+                JSONObject hit = hits.getJSONObject(i);
+
+                Iterator<String> keyList = hit.keys();
+
+                //first key (bookId): book object
+                String bookId = keyList.next();
+                Book b = BookJsonParser(hit.getJSONObject(bookId));
+                b.setBookId(bookId); //save also the FireBase unique ID, is used to retrieve the photos from firebase storage
                 books.add(b);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                //second key: objectId
+                //third key: _highlightResult
 
+            } catch (JSONException e) {
+                Log.d("debug", "unable to retrieve search result from json hits");
+            }
         }
 
         return books;
@@ -197,10 +250,23 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Release resources when onDestroy event is catched
+     */
     @Override
     protected void onDestroy() {
         searcher.destroy();
         super.onDestroy();
+    }
+
+    /**
+     * Terminate activity if actionbar left arrow pressed
+     */
+    @Override
+    public boolean onSupportNavigateUp() {
+
+        finish();
+        return true;
     }
 
 }
@@ -259,20 +325,30 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
     @Override
     public void onBindViewHolder(@NonNull SearchBookViewHolder holder, int position) {
 
+        //hide card
+        holder.item_search_result.setVisibility(View.INVISIBLE);
+
         //photo
         ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
+        photo.setImageResource(R.drawable.book_photo_placeholder);
 
         int thumbnailOrFirstPhotoPosition = searchResult.get(position).getNumPhotos() - 1;
         String bookId = searchResult.get(position).getBookId();
 
         StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + bookId + "/" + thumbnailOrFirstPhotoPosition + ".jpg");
 
-        thumbnailOrFirstPhotoRef.getDownloadUrl().addOnSuccessListener((uri) -> {
+        thumbnailOrFirstPhotoRef.getDownloadUrl().addOnSuccessListener((Uri uri) -> {
+
             String imageURL = uri.toString();
-            Glide.with(context).load(imageURL).into(photo);
+
+            GlideApp.with(context).load(imageURL)
+                    .placeholder(R.drawable.edit)
+                    .transition(DrawableTransitionOptions.withCrossFade(500))
+                    .into(photo);
 
         }).addOnFailureListener((exception) -> {
                     // handle errors here
+                    Log.e("error", "Error while retrieving book photo/thumbnail from firebase storage.");
                 }
         );
 
@@ -283,6 +359,8 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         //subtitle
         TextView subtitle = holder.item_search_result.findViewById(R.id.item_searchresult_subtitle);
         subtitle.setText(this.searchResult.get(position).getSubtitle());
+
+        holder.item_search_result.setVisibility(View.VISIBLE);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

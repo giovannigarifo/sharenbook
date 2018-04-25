@@ -141,6 +141,13 @@
     <string name="edit_book">MODIFICA</string>
 
 
+    <!-- ============================== -->
+
+    <!-- search activity strings -->
+    <string name="sa_title">Risultati ricerca</string>
+    <string name="sa_no_results">Non siamo riusciti a trovare alcun risultato!</string>
+
+
     <!-- ======================== -->
 
     <!-- Search Bar  -->

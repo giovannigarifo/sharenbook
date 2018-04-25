@@ -73,6 +73,13 @@
 
     <string name="edit_book">EDIT</string>
 
+    <!-- ============================== -->
+
+    <!-- search activity strings -->
+    <string name="sa_title">Search results</string>
+    <string name="sa_no_results">We cannot find any results!</string>
+
+
     <!-- ======================== -->
 
     <!-- Search Bar  -->

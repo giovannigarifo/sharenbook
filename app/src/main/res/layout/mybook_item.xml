@@ -38,7 +38,7 @@ android:padding="5dp">
             android:layout_alignParentTop="true"
 
             android:textStyle="bold"
-            android:textSize="@dimen/book_title_font_dim"
+            android:textSize="@dimen/title"
             android:ellipsize="end"
             android:maxLines="2"
             />

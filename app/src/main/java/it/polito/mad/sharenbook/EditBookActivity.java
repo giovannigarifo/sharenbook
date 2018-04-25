@@ -33,6 +33,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
+import com.algolia.search.saas.Index;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -44,6 +48,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,9 +118,14 @@ public class EditBookActivity extends Activity {
     // FireBase objects
     private FirebaseUser firebaseUser;
     private DatabaseReference booksDb;
+    private DatabaseReference newBookRef; //the unique key obtained by firebase
     private DatabaseReference wordsDb;
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
+
+    // Algolia objects
+    Client algoliaClient;
+    Index algoliaIndex;
 
     // ProgressDialog
     private ProgressDialog progressDialog;
@@ -171,7 +183,7 @@ public class EditBookActivity extends Activity {
 
                 updateBookWithUserInfo();
                 firebaseSaveBook();
-                firebaseSaveOrUpdateWords();
+                algoliaIndexBook();
             }
         });
 
@@ -242,6 +254,9 @@ public class EditBookActivity extends Activity {
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
+        // Setup Algolia
+        algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
+        algoliaIndex = algoliaClient.getIndex("books");
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
@@ -513,7 +528,7 @@ public class EditBookActivity extends Activity {
         progressDialog.show();
 
         // Write on DB
-        DatabaseReference newBookRef = booksDb.push();
+        newBookRef = booksDb.push();
 
         // Push newBook on "books" section
         newBookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
@@ -560,10 +575,10 @@ public class EditBookActivity extends Activity {
                 // Delete file in the end
                 // getContentResolver().delete(photos.get(num), null, null);
             })
-            .addOnFailureListener(exception -> {
-                // Handle unsuccessful uploads
-                Log.d("Debug", "Error during upload of photo n. " + num);
-            });
+                    .addOnFailureListener(exception -> {
+                        // Handle unsuccessful uploads
+                        Log.d("Debug", "Error during upload of photo n. " + num);
+                    });
 
             taskList.add(newTask);
         }
@@ -580,10 +595,48 @@ public class EditBookActivity extends Activity {
 
 
     /*
-     * Save all the book words in firebase, or update the word if already present in the backend
+     * Add the book to the Algolia Index so that it can be searched
      */
-    private void firebaseSaveOrUpdateWords() {
+    private void algoliaIndexBook() {
 
+        try {
+
+            Index index = algoliaClient.getIndex("books");
+
+            JSONObject bookData = new JSONObject()
+                    .put("owner_uid", firebaseUser.getUid())
+                    .put("isbn", book.getIsbn())
+                    .put("title", book.getTitle())
+                    .put("subtitle", book.getSubtitle())
+                    .put("authors", book.getAuthors())
+                    .put("publisher", book.getPublisher())
+                    .put("publishedDate", book.getPublishedDate())
+                    .put("description", book.getDescription())
+                    .put("pageCount", book.getPageCount())
+                    .put("categories", book.getCategories())
+                    .put("language", book.getLanguage())
+                    .put("bookConditions", book.getBookConditions())
+                    .put("tags", book.getTags())
+                    .put("thumbnail", book.getThumbnail())
+                    .put("numPhotos", book.getBookPhotosUri().size());
+
+
+            JSONObject ob = new JSONObject();
+            ob.put(newBookRef.getKey(), bookData);
+
+            index.addObjectAsync( ob ,
+                    new CompletionHandler() {
+                        @Override
+                        public void requestCompleted(JSONObject jsonObject, AlgoliaException e) {
+
+                            Log.d("debug", "Algolia request completed.");
+                        }
+                    }
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("error", "Unable to update Algolia index.");
+        }
     }
 
     /**
