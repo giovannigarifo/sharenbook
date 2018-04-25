@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +28,7 @@ import com.bumptech.glide.Glide;
 
 import it.polito.mad.sharenbook.Utils.GlideApp;
 import it.polito.mad.sharenbook.Utils.MyAppGlideModule;
+
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.module.AppGlideModule;
@@ -268,6 +270,17 @@ public class SearchActivity extends AppCompatActivity {
         finish();
         return true;
     }
+
+
+    /**
+     * onBackPressed method
+     */
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
 
 }
 
