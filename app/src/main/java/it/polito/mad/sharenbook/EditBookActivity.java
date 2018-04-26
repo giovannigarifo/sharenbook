@@ -208,7 +208,7 @@ public class EditBookActivity extends Activity {
          */
 
         //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.navigation_shareBook);
+        navBar.setSelectedItemId(R.id.navigation_myBook);
 
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
@@ -220,7 +220,7 @@ public class EditBookActivity extends Activity {
                     finish();
                     break;
 
-                case R.id.navigation_shareBook:
+                case R.id.navigation_search:
                     break;
                 case R.id.navigation_myBook:
                     Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
@@ -303,7 +303,7 @@ public class EditBookActivity extends Activity {
         super.onResume();
 
         //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.navigation_shareBook);
+        navBar.setSelectedItemId(R.id.drawer_navigation_myBook);
     }
 
 

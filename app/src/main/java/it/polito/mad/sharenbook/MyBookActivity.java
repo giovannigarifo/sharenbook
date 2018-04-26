@@ -193,9 +193,9 @@ public class MyBookActivity extends AppCompatActivity {
                     finish();
                     break;
 
-                case R.id.navigation_shareBook:
-                    Intent shareBook = new Intent(getApplicationContext(), ShareBookActivity.class);
-                    startActivity(shareBook);
+                case R.id.navigation_search:
+                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
+                    startActivity(searchBooks);
                     finish();
                     break;
 

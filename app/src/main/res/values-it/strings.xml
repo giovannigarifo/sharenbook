@@ -36,6 +36,8 @@
     <string name="title_profile">Profilo</string>
     <string name="title_showcase">Bacheca</string>
     <string name="title_shareBook">Nuovo annuncio</string>
+    <string name="title_search">Cerca</string>
+    <string name="title_mybooks">Miei annunci</string>
     <string name="title_logout">Esci</string>
 
 
