@@ -5,10 +5,6 @@
         android:id="@+id/navigation_showcase"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_showcase" /> -->
-    <item
-        android:id="@+id/navigation_logout"
-        android:icon="@drawable/ic_exit_to_app_black_24dp"
-        android:title="@string/title_logout" />
 
     <item
         android:id="@+id/navigation_profile"

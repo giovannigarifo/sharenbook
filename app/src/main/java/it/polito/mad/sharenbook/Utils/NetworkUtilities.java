@@ -1,7 +1,5 @@
 package it.polito.mad.sharenbook.Utils;
 
-import android.util.Log;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -13,17 +11,15 @@ import java.util.List;
 
 public class NetworkUtilities {
 
-    private static boolean isConnected = true;
+    private static boolean isConnected = false;
     private static List<ConnectionChangedListener> listeners = new ArrayList<>();
-    private static boolean justConnected = true;
 
     public static boolean isConnected() { return isConnected; }
 
-    public static void setConnectionState(boolean connState) {
+    private static void setConnectionState(boolean connState) {
         isConnected = connState;
 
-        if(!isConnected && !justConnected) {
-            justConnected = false;
+        if(!isConnected) {
             for (ConnectionChangedListener l : listeners) {
                 l.OnConnectionStateChanged();
             }
@@ -37,7 +33,10 @@ public class NetworkUtilities {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                    setConnectionState(snapshot.getValue(Boolean.class));
+                    boolean result = snapshot.getValue(Boolean.class);
+
+                    if(result != isConnected)
+                        setConnectionState(result);
 
                     if (isConnected) {
                         System.out.println("Internet: Connected");

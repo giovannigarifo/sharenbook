@@ -13,7 +13,6 @@
         android:required="true" />
 
     <application
-        android:name=".App"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,9 +25,9 @@
             android:value="GlideApp" />
 
         <activity android:name=".ShowProfileActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask" />
         <activity android:name=".EditProfileActivity"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleTask"/>
 
         <activity
             android:name=".ShowPictureActivity"
