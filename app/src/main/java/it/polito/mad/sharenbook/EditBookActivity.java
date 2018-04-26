@@ -37,13 +37,13 @@ import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -64,9 +64,7 @@ import it.polito.mad.sharenbook.model.Book;
 
 public class EditBookActivity extends Activity {
 
-    // request codes to edit user photo
-    private static final int REQUEST_CAMERA = ImageUtils.REQUEST_CAMERA;
-    private static final int REQUEST_GALLERY = ImageUtils.REQUEST_GALLERY;
+    // request code for permissions grant
     private static final int MULTIPLE_PERMISSIONS = 3;
 
     final static int MAX_ALLOWED_BOOK_PHOTO = 5;
@@ -118,7 +116,7 @@ public class EditBookActivity extends Activity {
     // FireBase objects
     private FirebaseUser firebaseUser;
     private DatabaseReference booksDb;
-    private DatabaseReference newBookRef; //the unique key obtained by firebase
+    private DatabaseReference bookRef; //the unique key obtained by firebase
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
 
@@ -385,6 +383,30 @@ public class EditBookActivity extends Activity {
 
             editbook_et_categories.setText(sb.toString());
         }
+
+        editbook_et_bookConditions.setText(book.getBookConditions());
+
+        //categories to comma separated string
+        List<String> t_arr = book.getTags();
+
+        if (t_arr.size() == 1) {
+
+            editbook_et_categories.setText(book.getTags().get(0));
+
+        } else if (t_arr.size() > 1) {
+
+            StringBuilder sb = new StringBuilder();
+
+            String prefix = "";
+            for (String s : t_arr) {
+                sb.append(prefix);
+                prefix = ", ";
+                sb.append(s);
+            }
+
+            editbook_et_tags.setText(sb.toString());
+        }
+
     }
 
 
@@ -439,12 +461,12 @@ public class EditBookActivity extends Activity {
 
         if (resultCode == RESULT_OK) {
 
-            if (requestCode == REQUEST_CAMERA) {
+            if (requestCode == ImageUtils.REQUEST_CAMERA) {
 
                 imageUtils.dispatchCropCurrentPhotoIntent(ImageUtils.ASPECT_RATIO_PHOTO_PORT);
                 imageUtils.revokeCurrentPhotoUriPermission();
 
-            } else if (requestCode == REQUEST_GALLERY) {
+            } else if (requestCode == ImageUtils.REQUEST_GALLERY) {
 
                 imageUtils.dispatchCropPhotoIntent(data.getData(), ImageUtils.ASPECT_RATIO_PHOTO_PORT);
 
@@ -507,6 +529,10 @@ public class EditBookActivity extends Activity {
         bookData.put("tags", book.getTags());
         bookData.put("thumbnail", book.getThumbnail());
         bookData.put("numPhotos", book.getBookPhotosUri().size());
+        if (book.getCreationTime() == 0)
+            bookData.put("creationTime", ServerValue.TIMESTAMP);
+        else
+            bookData.put("creationTime", book.getCreationTime());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -514,17 +540,20 @@ public class EditBookActivity extends Activity {
         progressDialog.show();
 
         // Write on DB
-        newBookRef = booksDb.push();
+        if (book.getBookId().equals(""))
+            bookRef = booksDb.push();
+        else
+            booksDb.child(book.getBookId());
 
         // Push newBook on "books" section
-        newBookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
+        bookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
 
             if (databaseError == null) {
                 // Push newBook reference on "user_books" section
-                userBooksDb.push().setValue(newBookRef.getKey(), (databaseError1, databaseReference1) -> {
+                userBooksDb.push().setValue(bookRef.getKey(), (databaseError1, databaseReference1) -> {
 
                     if (databaseError1 == null) {
-                        firebaseSavePhotos(newBookRef.getKey());
+                        firebaseSavePhotos(bookRef.getKey());
                     } else {
                         Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
                     }
@@ -606,7 +635,7 @@ public class EditBookActivity extends Activity {
 
 
             JSONObject ob = new JSONObject();
-            ob.put(newBookRef.getKey(), bookData);
+            ob.put(bookRef.getKey(), bookData);
 
             index.addObjectAsync( ob ,
                     new CompletionHandler() {

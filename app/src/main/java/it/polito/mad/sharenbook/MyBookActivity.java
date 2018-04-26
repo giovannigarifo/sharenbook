@@ -106,6 +106,7 @@ public class MyBookActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         Book book = dataSnapshot.getValue(Book.class);
+                                        book.setBookId((String)announce.getValue());
                                         book.setThumbnail(uri.toString());
                                         books.add(book);
 
