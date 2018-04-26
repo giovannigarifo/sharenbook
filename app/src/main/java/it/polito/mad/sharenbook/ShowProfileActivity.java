@@ -162,7 +162,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         /*
          * SearchBar
          */
-        setupSearchBar(findViewById(R.id.searchBar));
+        //setupSearchBar(findViewById(R.id.searchBar));
 
     }
 
@@ -197,7 +197,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     /*
      * Setup the material search bar
      */
-    private void setupSearchBar(MaterialSearchBar msb) {
+    /*private void setupSearchBar(MaterialSearchBar msb) {
 
         msb.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
 
@@ -231,7 +231,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                 }
             }
         });
-    }
+    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
