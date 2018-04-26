@@ -60,6 +60,8 @@ public class SplashScreenActivity extends Activity {
 
     private static ConnectionChangedListener connListener;
 
+    private AlertDialog.Builder internetRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,30 +76,23 @@ public class SplashScreenActivity extends Activity {
 
         initFirebase();
 
+        buildInternetRequestDialog();
+
         /*
          * Set a listener for network connection loss during authentication operations
          */
         checkNetworkConnection();
 
-        /*connListener = () -> {
-            if(!NetworkUtilities.isConnected()){
-                Log.d("we", "ci sono");
-                AlertDialog.Builder internetRequest = new AlertDialog.Builder(SplashScreenActivity.this);
-                internetRequest.setTitle(R.string.no_internet_connection);
-                internetRequest.setMessage(R.string.network_alert);
-                internetRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
-                            startActivityForResult(settingsIntent, 9003);
-                        }
-                ).setNegativeButton(android.R.string.cancel,
-                        (dialog, which) -> dialog.dismiss()
-                );
-
-                internetRequest.show();
+       /* connListener = new ConnectionChangedListener() {
+            @Override
+            public void OnConnectionStateChanged() {
+                if(!NetworkUtilities.isConnected()){
+                    internetRequest.show();
+                }
             }
         };
-        NetworkUtilities.addConnectionStateListener(connListener);*/
-
+        NetworkUtilities.addConnectionStateListener(connListener);
+*/
 
         /*
          * Execute User authentication
@@ -356,6 +351,20 @@ public class SplashScreenActivity extends Activity {
                 firebaseUser.getDisplayName(), default_username, firebaseUser.getEmail(),
                 default_city, default_bio,
                 default_picture_signature
+        );
+    }
+
+
+    private void buildInternetRequestDialog(){
+        AlertDialog.Builder internetRequest = new AlertDialog.Builder(SplashScreenActivity.this);
+        internetRequest.setTitle(R.string.no_internet_connection);
+        internetRequest.setMessage(R.string.network_alert);
+        internetRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+                    startActivityForResult(settingsIntent, 9003);
+                }
+        ).setNegativeButton(android.R.string.cancel,
+                (dialog, which) -> dialog.dismiss()
         );
     }
 

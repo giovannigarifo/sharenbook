@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,8 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,8 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -37,7 +32,6 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * views
      **/
-
     private TextView tv_userFullName, tv_userNickName, tv_userRatingInfo,
             tv_userCityHeading, tv_userBioHeading, tv_userEmailHeading,
             tv_userCityContent, tv_userBioContent, tv_userEmailContent;
@@ -63,8 +57,6 @@ public class ShowProfileActivity  extends AppCompatActivity
      **/
     private static final int EDIT_RETURN_VALUE = 1;
 
-    private int widthT = 700;
-
     private UserProfile user;
 
     private String profile_picture_signature;
@@ -82,7 +74,6 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * onCreate callback
      *
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +83,6 @@ public class ShowProfileActivity  extends AppCompatActivity
         this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
         setContentView(R.layout.activity_show_profile); //load view
         Context context = this.getApplicationContext(); //retrieve context
-
-
-
 
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
@@ -144,20 +132,12 @@ public class ShowProfileActivity  extends AppCompatActivity
         /**
          * set texts
          */
-        fullNameResize(user);
+        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
         tv_userFullName.setText(user.getFullname());
         tv_userNickName.setText(user.getUsername());
         tv_userCityContent.setText(user.getCity());
         tv_userBioContent.setText(user.getBio());
         tv_userEmailContent.setText(user.getEmail());
-
-
-        /**
-         * userPicture
-         */
-
-        //set user picture
-        final String choosenPicture;
 
         /**
          * goEdit_Button
@@ -170,7 +150,6 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         });
 
-
         setupNavbar();
 
 
@@ -179,13 +158,10 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * navBar
      */
-
     private void setupNavbar() {
-
 
         //set navigation_profile as selected item
         navBar.setSelectedItemId(R.id.navigation_profile);
-
 
         //set the listener for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
@@ -217,9 +193,6 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * onActivityResult callback
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -235,9 +208,8 @@ public class ShowProfileActivity  extends AppCompatActivity
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-
                 /** update user info in nav drawer **/
-                //fullNameResize(user); //TODO EXTEND AS TEXTRESIZE PASSING ALSO THE TEXTVIEW TO RESIZE
+                UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
                 if(drawer_fullname != null )
                     drawer_fullname.setText(user.getFullname());
                 if(drawer_email != null)
@@ -266,7 +238,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                 /**
                  * set texts
                  */
-                fullNameResize(user);
+                UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
                 tv_userFullName.setText(user.getFullname());
                 tv_userNickName.setText(user.getUsername());
                 tv_userCityContent.setText(user.getCity());
@@ -284,32 +256,6 @@ public class ShowProfileActivity  extends AppCompatActivity
         navBar.setSelectedItemId(R.id.navigation_profile);
     }
 
-    /**
-     * fullNameResize method
-     */
-    private void fullNameResize(UserProfile user) {
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        Log.d("Metrics:", "width:" + metrics.widthPixels);
-
-        if (metrics.densityDpi != metrics.DENSITY_HIGH || metrics.widthPixels < widthT) {
-
-            int fullname_lenght = user.getFullname().length();
-
-            if (fullname_lenght <= 16) {
-                tv_userFullName.setTextSize(2, 24);
-            } else if (fullname_lenght > 16 && fullname_lenght <= 22) {
-                tv_userFullName.setTextSize(2, 18);
-            } else {
-                tv_userFullName.setTextSize(2, 14);
-            }
-        }
-
-    }
-
-
 
     private void setDrawer(){
 
@@ -317,19 +263,18 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         drawer =  findViewById(R.id.show_profile_drawer_layout);
         navigationView =  findViewById(R.id.show_profile_nav_view);
+        searchBar =  findViewById(R.id.searchBar);
+
         navigationView.setCheckedItem(R.id.drawer_navigation_profile);
         navigationView.setNavigationItemSelectedListener(ShowProfileActivity.this);
-        searchBar =  findViewById(R.id.searchBar);
         searchBar.setOnSearchActionListener(ShowProfileActivity.this);
-        //searchBar.inflateMenu(R.menu.main); //to have the popup menu on the right
 
         nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
-
         drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        //fullNameResize(user);
+        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
         if(drawer_fullname != null )
             drawer_fullname.setText(user.getFullname());
         if(drawer_email != null)
@@ -342,23 +287,23 @@ public class ShowProfileActivity  extends AppCompatActivity
             UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture,  Long.valueOf(profile_picture_signature));
         }
 
-
-
     }
+
+
     private void getViewsAndSetTypography() {
 
 
         //get views
-        tv_userFullName = (TextView) findViewById(R.id.tv_userFullName);
-        tv_userNickName = (TextView) findViewById(R.id.tv_userNickName);
-        tv_userRatingInfo = (TextView) findViewById(R.id.tv_userRatingInfo);
+        tv_userFullName = findViewById(R.id.tv_userFullName);
+        tv_userNickName = findViewById(R.id.tv_userNickName);
+        tv_userRatingInfo = findViewById(R.id.tv_userRatingInfo);
 
-        tv_userCityHeading = (TextView) findViewById(R.id.tv_userCityHeading);
-        tv_userBioHeading = (TextView) findViewById(R.id.tv_userBioHeading);
-        tv_userEmailHeading = (TextView) findViewById(R.id.tv_userEmailHeading);
-        tv_userCityContent = (TextView) findViewById(R.id.tv_userCityContent);
-        tv_userBioContent = (TextView) findViewById(R.id.tv_userBioContent);
-        tv_userEmailContent = (TextView) findViewById(R.id.tv_userEmailContent);
+        tv_userCityHeading = findViewById(R.id.tv_userCityHeading);
+        tv_userBioHeading = findViewById(R.id.tv_userBioHeading);
+        tv_userEmailHeading = findViewById(R.id.tv_userEmailHeading);
+        tv_userCityContent = findViewById(R.id.tv_userCityContent);
+        tv_userBioContent = findViewById(R.id.tv_userBioContent);
+        tv_userEmailContent = findViewById(R.id.tv_userEmailContent);
 
         //retrieve fonts
         Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
@@ -367,9 +312,8 @@ public class ShowProfileActivity  extends AppCompatActivity
         /**
          * set views font and view text
          */
-
         tv_userFullName.setTypeface(robotoBold);
-        fullNameResize(user);
+        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
         tv_userFullName.setText(user.getFullname());
 
         tv_userNickName.setTypeface(robotoLight);
@@ -394,7 +338,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.show_profile_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -403,14 +347,16 @@ public class ShowProfileActivity  extends AppCompatActivity
         navigationView.setCheckedItem(R.id.drawer_navigation_profile);
     }
 
+
+    /**
+     * Navigation Drawer Listeners
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.drawer_navigation_profile) {
-            // Handle the camera action
-        } else if (id == R.id.drawer_navigation_shareBook) {
+        if (id == R.id.drawer_navigation_shareBook) {
             Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
             startActivity(i);
         } else if (id == R.id.drawer_navigation_myBook) {
@@ -427,7 +373,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                     });
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.show_profile_drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.show_profile_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -446,7 +392,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     public void onButtonClicked(int buttonCode) {
         switch (buttonCode){
             case MaterialSearchBar.BUTTON_NAVIGATION:
-                drawer.openDrawer(Gravity.LEFT);
+                drawer.openDrawer(Gravity.START);
                 break;
             case MaterialSearchBar.BUTTON_SPEECH:
                 break;
