@@ -543,7 +543,7 @@ public class EditBookActivity extends Activity {
         if (book.getBookId().equals(""))
             bookRef = booksDb.push();
         else
-            booksDb.child(book.getBookId());
+            bookRef = booksDb.child(book.getBookId());
 
         // Push newBook on "books" section
         bookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
