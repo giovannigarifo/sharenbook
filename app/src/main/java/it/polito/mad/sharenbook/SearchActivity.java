@@ -1,9 +1,12 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +15,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +44,8 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,17 +55,39 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.model.UserProfile;
 
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
 
     CharSequence searchInputText; //search query received in bundle
     ArrayList<Book> searchResult; //list of book that matched the query
 
+    //user
+    private UserProfile user;
+
+
+    /**
+     * DRAWER AND SEARCHBAR
+     **/
+    private MaterialSearchBar sba_searchbar;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+    private View nav;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+    private CircularImageView drawer_userPicture;
+
+    // Recyler View
+    SearchBookAdapter sbAdapter;
+
     // Algolia instant search
     Searcher searcher;
+    InstantSearch helper;
 
     /*
      * OnCreate
@@ -75,11 +105,19 @@ public class SearchActivity extends AppCompatActivity {
 
             if (bundle == null)
                 Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
-            else
+            else {
                 searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
+                user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+            }
 
-        } else
+        } else {
             searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
+            user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+        }
+
+
+        // setup Drawer and Search Bar
+        setDrawerAndSearchBar();
 
         // RecylerView setup
         searchResult = new ArrayList<>();
@@ -89,15 +127,12 @@ public class SearchActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         search_rv_result.setLayoutManager(llm);
 
-        SearchBookAdapter sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
+        sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
         search_rv_result.setAdapter(sbAdapter);
-
-        // Setup Searchbar
-
 
         //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
-        InstantSearch helper = new InstantSearch(searcher);
+        helper = new InstantSearch(searcher);
 
         searcher.registerResultListener((results, isLoadingMore) -> {
 
@@ -106,6 +141,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchResult.clear();
                 searchResult.addAll(parseResults(results.hits));
                 sbAdapter.notifyDataSetChanged();
+                sba_searchbar.disableSearch();
 
             } else {
                 Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
@@ -118,8 +154,10 @@ public class SearchActivity extends AppCompatActivity {
             Log.d("error", "Unable to retrieve search result from Algolia");
         });
 
-        // Fire the search (async)
-        helper.search(searchInputText == null ? "": searchInputText.toString());
+        // Fire the search (async) if user launched from searchbar in another activity
+        if(searchInputText != null){
+            helper.search(searchInputText.toString());
+        }
 
     }
 
@@ -245,6 +283,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putCharSequence("searchInputText", searchInputText);
+        outState.putParcelable(getString(R.string.user_profile_data_key), user);
     }
 
 
@@ -278,6 +317,87 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * setDrawerAndSearchBar
+     */
+    private void setDrawerAndSearchBar() {
+
+        /** DRAWER AND SEARCHBAR **/
+
+        drawer = findViewById(R.id.search_drawer_layout);
+        navigationView = findViewById(R.id.search_nav_view);
+        sba_searchbar = findViewById(R.id.sba_searchbar);
+
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+        navigationView.setNavigationItemSelectedListener(SearchActivity.this);
+
+        sba_searchbar.setOnSearchActionListener(SearchActivity.this);
+        sba_searchbar.enableSearch();
+
+        nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
+
+        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
+        if (drawer_fullname != null)
+            drawer_fullname.setText(user.getFullname());
+        if (drawer_email != null)
+            drawer_email.setText(user.getEmail());
+
+        /** set drawer user picture **/
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + user.getUserID() + ".jpg");
+        UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture, 0);
+
+    }
+
+    /**
+     * Material Search Bar onSearchStateChanged
+     */
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+        String s = enabled ? "enabled" : "disabled";
+        Log.d("debug", "search " + s);
+    }
+
+    /**
+     * Material Search Bar onSearchConfirmed
+     */
+    @Override
+    public void onSearchConfirmed(CharSequence searchInputText) {
+
+        if(searchInputText != null){
+            helper.search(searchInputText.toString());
+        }
+    }
+
+    /**
+     * Material Search Bar onButtonClicked
+     */
+    @Override
+    public void onButtonClicked(int buttonCode) {
+
+        switch (buttonCode){
+
+            case MaterialSearchBar.BUTTON_NAVIGATION:
+                drawer.openDrawer(Gravity.START); //open the drawer
+                break;
+
+            case MaterialSearchBar.BUTTON_SPEECH:
+                break;
+
+            case MaterialSearchBar.BUTTON_BACK:
+                sba_searchbar.disableSearch();
+                sbAdapter.notifyDataSetChanged();
+                break;
+        }
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
 }
 
 

@@ -177,6 +177,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
                 case R.id.navigation_search:
                     Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+                    i.putExtra(getString(R.string.user_profile_data_key),user);
                     startActivity(i);
                     break;
                 case R.id.navigation_myBook:
