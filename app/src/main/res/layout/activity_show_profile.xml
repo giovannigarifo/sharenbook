@@ -42,7 +42,7 @@
                     app:mt_hint="@string/search_hint"
                     app:mt_maxSuggestionsCount="5"
                     app:mt_navIconEnabled="false"
-                    app:mt_placeholder="Search a book..."
+                    app:mt_placeholder="@string/"
                     app:mt_roundedSearchBarEnabled="false"
                     app:mt_searchBarColor="@color/colorPrimaryLight"
                     app:mt_searchIconTint="@color/darkGrey"
