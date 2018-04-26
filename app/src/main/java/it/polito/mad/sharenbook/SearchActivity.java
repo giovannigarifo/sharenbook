@@ -194,6 +194,7 @@ public class SearchActivity extends AppCompatActivity
                     break;
 
                 case R.id.navigation_search:
+                    sba_searchbar.enableSearch();
                     break;
 
                 case R.id.navigation_myBook:
