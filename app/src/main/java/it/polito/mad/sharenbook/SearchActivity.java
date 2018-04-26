@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -82,6 +84,12 @@ public class SearchActivity extends AppCompatActivity
     private TextView drawer_email;
     private CircularImageView drawer_userPicture;
 
+    //fab to display map
+    FloatingActionButton search_fab_map;
+
+    //bottom navigation bar
+    BottomNavigationView search_bottom_nav_bar;
+
     // Recyler View
     SearchBookAdapter sbAdapter;
 
@@ -119,6 +127,12 @@ public class SearchActivity extends AppCompatActivity
         // setup Drawer and Search Bar
         setDrawerAndSearchBar();
 
+        //setup map floating action button
+        setMapButton();
+
+        //setup bottom navigation bar
+        setBottomNavigationBar();
+
         // RecylerView setup
         searchResult = new ArrayList<>();
 
@@ -155,10 +169,53 @@ public class SearchActivity extends AppCompatActivity
         });
 
         // Fire the search (async) if user launched from searchbar in another activity
-        if(searchInputText != null){
+        if (searchInputText != null) {
             helper.search(searchInputText.toString());
         }
 
+    }
+
+    /**
+     *
+     */
+    private void setBottomNavigationBar() {
+
+        search_bottom_nav_bar = findViewById(R.id.search_bottom_nav_bar);
+
+        //set navigation_profile as selected item
+        search_bottom_nav_bar.setSelectedItemId(R.id.navigation_search);
+
+        //set the listener for the navigation bar items
+        search_bottom_nav_bar.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_profile:
+                    Intent i_show_profile = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                    startActivity(i_show_profile);
+                    break;
+
+                case R.id.navigation_search:
+                    break;
+
+                case R.id.navigation_myBook:
+                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+                    startActivity(my_books);
+                    break;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * Fire the map fragment
+     */
+    private void setMapButton() {
+
+        search_fab_map = findViewById(R.id.search_fab_map);
+
+        search_fab_map.setOnClickListener((v) -> {
+
+
+        });
     }
 
     /**
@@ -183,8 +240,8 @@ public class SearchActivity extends AppCompatActivity
             if (a instanceof String) {
 
                 String author = (String) a;
-                author.replace("[", "");
-                author.replace("]", "");
+                author = author.replace("[", "");
+                author = author.replace("]", "");
                 authors.add(author);
 
             } else {
@@ -366,7 +423,7 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onSearchConfirmed(CharSequence searchInputText) {
 
-        if(searchInputText != null){
+        if (searchInputText != null) {
             helper.search(searchInputText.toString());
         }
     }
@@ -377,7 +434,7 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onButtonClicked(int buttonCode) {
 
-        switch (buttonCode){
+        switch (buttonCode) {
 
             case MaterialSearchBar.BUTTON_NAVIGATION:
                 drawer.openDrawer(Gravity.START); //open the drawer

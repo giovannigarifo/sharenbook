@@ -176,9 +176,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                     break;
 
                 case R.id.navigation_search:
-                    Intent i = new Intent(getApplicationContext(), SearchActivity.class);
-                    i.putExtra(getString(R.string.user_profile_data_key),user);
-                    startActivity(i);
+                    startSearchActivity();
                     break;
                 case R.id.navigation_myBook:
                     Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
@@ -260,6 +258,15 @@ public class ShowProfileActivity  extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         navBar.setSelectedItemId(R.id.navigation_profile);
+    }
+
+    /**
+     * Starts the search activity with the appropriate bundle
+     */
+    private void startSearchActivity(){
+        Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+        i.putExtra(getString(R.string.user_profile_data_key),user);
+        startActivity(i);
     }
 
 
@@ -397,10 +404,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     @Override
     public void onSearchConfirmed(CharSequence searchInputText) {
 
-        Intent i = new Intent(getApplicationContext(), SearchActivity.class);
-
-        i.putExtra("searchInputText", searchInputText);
-        startActivity(i);
+        startSearchActivity();
     }
 
     @Override
