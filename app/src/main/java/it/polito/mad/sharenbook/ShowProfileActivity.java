@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -25,11 +24,7 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.Utils.UserInterface;
-import com.mancj.materialsearchbar.MaterialSearchBar;
-import com.mikhaellopez.circularimageview.CircularImageView;
-
 import it.polito.mad.sharenbook.model.UserProfile;
-import it.polito.mad.sharenbook.Utils.UserInterface;
 
 
 public class ShowProfileActivity  extends AppCompatActivity
@@ -180,8 +175,8 @@ public class ShowProfileActivity  extends AppCompatActivity
                 case R.id.navigation_profile:
                     break;
 
-                case R.id.navigation_shareBook:
-                    Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+                case R.id.navigation_search:
+                    Intent i = new Intent(getApplicationContext(), SearchActivity.class);
                     startActivity(i);
                     break;
                 case R.id.navigation_myBook:
@@ -193,45 +188,6 @@ public class ShowProfileActivity  extends AppCompatActivity
         });
     }
 
-
-    /*
-     * Setup the material search bar
-     */
-    /*private void setupSearchBar(MaterialSearchBar msb) {
-
-        msb.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-                String s = enabled ? "enabled" : "disabled";
-                Toast.makeText(ShowProfileActivity.this, "Search " + s, Toast.LENGTH_SHORT).show();
-            }
-
-            //send intent to SearchActivity
-            @Override
-            public void onSearchConfirmed(CharSequence searchInputText) {
-
-                Intent i = new Intent(getApplicationContext(), SearchActivity.class);
-
-                i.putExtra("searchInputText", searchInputText);
-                startActivity(i);
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-                switch (buttonCode) {
-                    case MaterialSearchBar.BUTTON_NAVIGATION:
-                        drawer.openDrawer(Gravity.START);
-                        break;
-                    case MaterialSearchBar.BUTTON_SPEECH:
-                        break;
-                    case MaterialSearchBar.BUTTON_BACK:
-                        searchBar.disableSearch();
-                        break;
-                }
-            }
-        });
-    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

@@ -67,7 +67,6 @@
     <string name="of_preposition">\u0020of\u0020</string>
     <string name="default_ongoing">\u0020ongoing…</string>
 
-
     <string name="max_allowed_book_photo">The maximum number of allowed photo is 5!</string>
     <string name="min_photo_required">There must be at least one photo!</string>
 
@@ -92,7 +91,9 @@
     <string name="title_profile">Profile</string>
     <string name="title_showcase">Showcase</string>
     <string name="title_shareBook">Share a book</string>
+    <string name="title_search">Search</string>
     <string name="title_logout">Logout</string>
+    <string name="title_mybooks">My books</string>
 
     <!-- persistence keys -->
     <string name="fullname_key">fullname</string>
@@ -188,7 +189,6 @@
     <string name="words_key" translatable="false">words</string>
 
     <string name="mba_title" translatable="false">My books</string>
-    <string name="nav_my_books" translatable="false">My books</string>
 
     <string name="no_books_alert_title">No books yet!</string>
     <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>

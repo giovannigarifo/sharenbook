@@ -135,7 +135,7 @@ public class ShareBookActivity extends AppCompatActivity {
         navBar = findViewById(R.id.navigation);
 
         // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_shareBook);
+        navBar.setSelectedItemId(R.id.navigation_myBook);
 
         // Set the listeners for the navigation bar items
         navBar.setOnNavigationItemSelectedListener(item -> {
@@ -148,13 +148,16 @@ public class ShareBookActivity extends AppCompatActivity {
                     finish();
                     break;
 
-                case R.id.navigation_shareBook:
+                case R.id.navigation_search:
+                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
+                    startActivity(searchBooks);
+                    finish();
                     break;
 
                 case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+                    /*Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
                     startActivity(my_books);
-                    finish();
+                    finish();*/
                     break;
             }
 

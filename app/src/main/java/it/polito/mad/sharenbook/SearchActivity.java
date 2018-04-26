@@ -119,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         // Fire the search (async)
-        helper.search(searchInputText.toString());
+        helper.search(searchInputText == null ? "": searchInputText.toString());
 
     }
 
