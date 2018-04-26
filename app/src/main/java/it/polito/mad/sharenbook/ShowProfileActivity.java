@@ -221,8 +221,12 @@ public class ShowProfileActivity  extends AppCompatActivity
             public void onButtonClicked(int buttonCode) {
                 switch (buttonCode) {
                     case MaterialSearchBar.BUTTON_NAVIGATION:
+                        drawer.openDrawer(Gravity.START);
                         break;
                     case MaterialSearchBar.BUTTON_SPEECH:
+                        break;
+                    case MaterialSearchBar.BUTTON_BACK:
+                        searchBar.disableSearch();
                         break;
                 }
             }
@@ -428,12 +432,18 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     @Override
     public void onSearchStateChanged(boolean enabled) {
-
+        String s = enabled ? "enabled" : "disabled";
+        Toast.makeText(ShowProfileActivity.this, "Search " + s, Toast.LENGTH_SHORT).show();
     }
 
+    //send intent to SearchActivity
     @Override
-    public void onSearchConfirmed(CharSequence text) {
+    public void onSearchConfirmed(CharSequence searchInputText) {
 
+        Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+
+        i.putExtra("searchInputText", searchInputText);
+        startActivity(i);
     }
 
     @Override
