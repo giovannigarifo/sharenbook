@@ -1,79 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent" android:layout_height="wrap_content"
-android:padding="5dp">
-
-<android.support.v7.widget.CardView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:id="@+id/mybook_item"
-    style="CardViewStyle">
+    android:layout_height="168dp">
 
-    <RelativeLayout
-        android:id="@+id/wrapper"
+    <android.support.v7.widget.CardView
+        android:id="@+id/mybook_item"
+        style="CardViewStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/cardview_book_info_margin"
-        >
+        android:layout_height="150dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="@dimen/card_corner_radius">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:id="@+id/book_photo"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            />
 
-        <TextView
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/wrapper"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/book_title"
+            android:layout_height="match_parent">
 
-            android:layout_marginLeft="@dimen/cardview_book_info_margin"
-            android:layout_marginStart="@dimen/cardview_book_info_margin"
-            android:layout_toRightOf="@+id/book_photo"
-            android:layout_toEndOf="@+id/book_photo"
-            android:layout_alignParentTop="true"
-
-            android:textStyle="bold"
-            android:textSize="@dimen/title"
-            android:ellipsize="end"
-            android:maxLines="2"
-            />
-
-        <TextView
-            android:id="@+id/book_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-
-            android:layout_marginLeft="@dimen/cardview_book_info_margin"
-            android:layout_marginStart="@dimen/cardview_book_info_margin"
-            android:layout_marginTop="@dimen/cardview_book_info_margin"
-            android:layout_toRightOf="@+id/book_photo"
-            android:layout_toEndOf="@+id/book_photo"
-            android:layout_below="@+id/book_title"
-
-            android:textSize="@dimen/book_subtitle_font_dim"
-            />
-
-        <Button
-            style="?android:attr/borderlessButtonStyle"
-            android:id="@+id/edit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_toEndOf="@+id/book_photo"
-            android:layout_toRightOf="@+id/book_photo"
-            android:gravity="start"
-            android:text="@string/edit_book"
-            android:textColor="@color/secondaryText"
-            android:textSize="16sp" />
+            <ImageView
+                android:id="@+id/book_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/book_title"
+                style="@style/item_searchresult_title"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="19dp"
+                android:layout_marginStart="19dp"
+                app:layout_constraintLeft_toRightOf="@id/book_photo"
+                app:layout_constraintStart_toEndOf="@id/book_photo"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textStyle="bold"/>
 
-</android.support.v7.widget.CardView>
+            <TextView
+                android:id="@+id/book_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="19dp"
+                android:layout_marginLeft="19dp"
+                android:layout_marginTop="8dp"
+                android:textSize="@dimen/paragraph"
+                app:layout_constraintStart_toEndOf="@id/book_photo"
+                app:layout_constraintTop_toBottomOf="@id/book_title" />
+
+            <Button
+                android:id="@+id/edit_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:gravity="start"
+                android:text="@string/edit_book"
+                android:textColor="@color/secondaryText"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/book_photo" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>
