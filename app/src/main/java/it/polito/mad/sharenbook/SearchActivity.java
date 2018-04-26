@@ -92,12 +92,8 @@ public class SearchActivity extends AppCompatActivity {
         SearchBookAdapter sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
         search_rv_result.setAdapter(sbAdapter);
 
-        // Setup toolbar
-        Toolbar sbaToolbar = findViewById(R.id.sba_toolbar);
-        setSupportActionBar(sbaToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.sa_title);
+        // Setup Searchbar
+
 
         //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");

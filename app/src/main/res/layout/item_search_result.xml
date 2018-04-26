@@ -4,17 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_searchresult_rl"
     android:layout_width="match_parent"
-    android:layout_height="170dp">
+    android:layout_height="168dp">
 
     <android.support.v7.widget.CardView
         android:id="@+id/item_searchresult_cv"
         style="CardViewStyle"
         android:layout_width="match_parent"
-        app:cardCornerRadius="@dimen/card_corner_radius"
         android:layout_height="150dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="@dimen/card_corner_radius">
 
         <RelativeLayout
             android:id="@+id/wrapper"
