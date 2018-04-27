@@ -219,24 +219,20 @@ public class ShowProfileActivity  extends AppCompatActivity
                 NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
 
                 /** update user info in nav drawer **/
-                UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
-                if(drawer_fullname != null )
-                    drawer_fullname.setText(user.getFullname());
-                if(drawer_email != null)
-                    drawer_email.setText(user.getEmail());
+                NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                        getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
+
+                navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+
 
                 profile_picture_signature = user.getPicture_timestamp();
-                if(profile_picture_signature == null)
-                    Log.d("SIGNATURE","NULL");
-                else
-                    Log.d("SIGNATURE",profile_picture_signature);
+
 
                 if (!profile_picture_signature.equals(default_picture_path)) {
 
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
 
                         UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
-                        UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture,  Long.valueOf(profile_picture_signature));
 
                         userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
@@ -247,7 +243,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
                 }
 
-                navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+
 
                 /**
                  * set texts
@@ -297,24 +293,8 @@ public class ShowProfileActivity  extends AppCompatActivity
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
-        if(drawer_fullname != null )
-            drawer_fullname.setText(user.getFullname());
-        if(drawer_email != null)
-            drawer_email.setText(user.getEmail());
-
-        if(profile_picture_signature == null)
-            Log.d("SIGNATURE","NULL");
-        else
-            Log.d("SIGNATURE",profile_picture_signature);
-
-        /** set drawer user picture **/
-
-        if (!profile_picture_signature.equals(default_picture_timestamp)) {
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
-            UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture,  Long.valueOf(profile_picture_signature));
-        }
-
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
     }
 
 

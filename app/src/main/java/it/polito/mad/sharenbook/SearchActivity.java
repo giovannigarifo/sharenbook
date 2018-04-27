@@ -381,7 +381,7 @@ public class SearchActivity extends AppCompatActivity
         navigationView = findViewById(R.id.search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
 
-        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+        navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
         navigationView.setNavigationItemSelectedListener(SearchActivity.this);
 
         sba_searchbar.setOnSearchActionListener(SearchActivity.this);
@@ -392,25 +392,10 @@ public class SearchActivity extends AppCompatActivity
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        NavigationDrawerProfile navigationDrawerProfile = NavigationDrawerManager.getNavigationDrawerProfile();
-        UserInterface.TextViewFontResize(navigationDrawerProfile.getUser_fullname().length(), getWindowManager(), drawer_fullname);
-        if (drawer_fullname != null)
-            drawer_fullname.setText(navigationDrawerProfile.getUser_fullname());
-        if (drawer_email != null)
-            drawer_email.setText(navigationDrawerProfile.getUser_email());
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
 
-        String profile_picture_signature = navigationDrawerProfile.getPictureSignature();
-        Log.d("SIGNATURE:",profile_picture_signature);
-        if(profile_picture_signature == null)
-            Log.d("SIGNATURE:","null");
-        Log.d("SIGNATURE:",navigationDrawerProfile.getUser_picturePath());
 
-        if (!profile_picture_signature.equals(getString(R.string.default_picture_path))) {
-
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(navigationDrawerProfile.getUser_picturePath());
-
-            UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture, Long.valueOf(profile_picture_signature));
-        }
 
     }
 
