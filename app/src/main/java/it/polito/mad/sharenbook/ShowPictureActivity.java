@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -10,12 +11,14 @@ import com.google.firebase.storage.StorageReference;
 
 import it.polito.mad.sharenbook.Utils.UserInterface;
 
-public class ShowPictureActivity extends Activity {
+public class ShowPictureActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
         setContentView(R.layout.activity_show_picture);
+
 
         ImageView fullSizePicture = findViewById(R.id.fullSize_Picture);
 

@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -39,11 +40,12 @@ import java.util.regex.Pattern;
 
 import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.InputValidator;
+import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 
-public class EditProfileActivity extends Activity {
+public class EditProfileActivity extends AppCompatActivity {
 
     // ProgressDialog used to show loading messages
     ProgressDialog progressDialog = null;
@@ -501,6 +503,7 @@ public class EditProfileActivity extends Activity {
                         startActivity(i);
                     }
                     writeProfile_copy.clear().commit();
+
                     finish();
 
                 }
@@ -732,6 +735,10 @@ public class EditProfileActivity extends Activity {
                         } else {
                             startActivity(i);
                         }
+                        /** save the new Data for NavigationDrawerProfile */
+
+                        NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
                         finish();
 
                     })

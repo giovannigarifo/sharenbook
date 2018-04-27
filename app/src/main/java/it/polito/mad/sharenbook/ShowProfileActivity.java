@@ -214,9 +214,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
-                /** save the new Data for NavigationDrawerProfile */
 
-                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
 
                 /** update user info in nav drawer **/
                 NavigationDrawerManager.setDrawerViews(getApplicationContext(),

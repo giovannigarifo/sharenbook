@@ -32,6 +32,7 @@
         <activity
             android:name=".ShowPictureActivity"
             android:theme="@style/myShowPictureWindow" />
+
         <activity android:name=".ShareBookActivity" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

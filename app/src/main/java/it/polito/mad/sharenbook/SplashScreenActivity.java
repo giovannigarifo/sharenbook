@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ import it.polito.mad.sharenbook.model.UserProfile;
 import static android.content.ContentValues.TAG;
 import static it.polito.mad.sharenbook.Utils.NetworkUtilities.checkNetworkConnection;
 
-public class SplashScreenActivity extends Activity {
+public class SplashScreenActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
 
