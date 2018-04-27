@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.Utils.ConnectionChangedListener;
-import it.polito.mad.sharenbook.Utils.NetworkUtilities;
+import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
@@ -156,6 +156,7 @@ public class SplashScreenActivity extends Activity {
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
                         user.setUserID(firebaseUser.getUid());
 
+
                         goShowProfile();
 
                     }
@@ -236,6 +237,8 @@ public class SplashScreenActivity extends Activity {
                                     user = dataSnapshot.getValue(UserProfile.class);
                                     user.setUserID(firebaseUser.getUid());
 
+
+
                                     goShowProfile();
 
                                 }
@@ -311,6 +314,7 @@ public class SplashScreenActivity extends Activity {
             public void onSuccess(Object result) {
                 StorageMetadata metadata = (StorageMetadata) result;
                 user.setPicture_timestamp(String.valueOf(metadata.getCreationTimeMillis()));
+                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                 i.putExtra(getString(R.string.user_profile_data_key), user);
                 startActivity(i);
@@ -322,6 +326,7 @@ public class SplashScreenActivity extends Activity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 user.setPicture_timestamp(default_picture_signature);
+                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
                 Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                 i.putExtra(getString(R.string.user_profile_data_key), user);
                 startActivity(i);
@@ -329,6 +334,13 @@ public class SplashScreenActivity extends Activity {
 
             }
         });
+
+    }
+
+    private void initNavigationDrawerProfile(UserProfile user){
+
+        NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
 
     }
 

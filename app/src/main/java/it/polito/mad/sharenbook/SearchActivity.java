@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,20 +9,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,19 +27,10 @@ import android.widget.Toast;
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
 
-import com.algolia.search.saas.RequestOptions;
-import com.bumptech.glide.Glide;
-
 import it.polito.mad.sharenbook.Utils.GlideApp;
-import it.polito.mad.sharenbook.Utils.MyAppGlideModule;
 
-import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.module.AppGlideModule;
 
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -58,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import it.polito.mad.sharenbook.Utils.NavigationDrawerProfile;
+import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
@@ -116,12 +104,12 @@ public class SearchActivity extends AppCompatActivity
                 Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
             else {
                 searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
-                user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+               // user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
             }
 
         } else {
             searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
-            user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+           // user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
         }
 
 
@@ -342,7 +330,7 @@ public class SearchActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
 
         outState.putCharSequence("searchInputText", searchInputText);
-        outState.putParcelable(getString(R.string.user_profile_data_key), user);
+       // outState.putParcelable(getString(R.string.user_profile_data_key), user);
     }
 
 
@@ -404,15 +392,25 @@ public class SearchActivity extends AppCompatActivity
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
+        NavigationDrawerProfile navigationDrawerProfile = NavigationDrawerManager.getNavigationDrawerProfile();
+        UserInterface.TextViewFontResize(navigationDrawerProfile.getUser_fullname().length(), getWindowManager(), drawer_fullname);
         if (drawer_fullname != null)
-            drawer_fullname.setText(user.getFullname());
+            drawer_fullname.setText(navigationDrawerProfile.getUser_fullname());
         if (drawer_email != null)
-            drawer_email.setText(user.getEmail());
+            drawer_email.setText(navigationDrawerProfile.getUser_email());
 
-        /** set drawer user picture **/
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + user.getUserID() + ".jpg");
-        UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture, 0);
+        String profile_picture_signature = navigationDrawerProfile.getPictureSignature();
+        Log.d("SIGNATURE:",profile_picture_signature);
+        if(profile_picture_signature == null)
+            Log.d("SIGNATURE:","null");
+        Log.d("SIGNATURE:",navigationDrawerProfile.getUser_picturePath());
+
+        if (!profile_picture_signature.equals(getString(R.string.default_picture_path))) {
+
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(navigationDrawerProfile.getUser_picturePath());
+
+            UserInterface.showGlideImage(getApplicationContext(), storageRef, drawer_userPicture, Long.valueOf(profile_picture_signature));
+        }
 
     }
 

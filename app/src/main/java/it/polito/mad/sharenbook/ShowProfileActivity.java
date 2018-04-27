@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -212,6 +214,10 @@ public class ShowProfileActivity  extends AppCompatActivity
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
+                /** save the new Data for NavigationDrawerProfile */
+
+                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
                 /** update user info in nav drawer **/
                 UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), drawer_fullname);
                 if(drawer_fullname != null )
@@ -220,6 +226,10 @@ public class ShowProfileActivity  extends AppCompatActivity
                     drawer_email.setText(user.getEmail());
 
                 profile_picture_signature = user.getPicture_timestamp();
+                if(profile_picture_signature == null)
+                    Log.d("SIGNATURE","NULL");
+                else
+                    Log.d("SIGNATURE",profile_picture_signature);
 
                 if (!profile_picture_signature.equals(default_picture_path)) {
 
@@ -292,6 +302,11 @@ public class ShowProfileActivity  extends AppCompatActivity
             drawer_fullname.setText(user.getFullname());
         if(drawer_email != null)
             drawer_email.setText(user.getEmail());
+
+        if(profile_picture_signature == null)
+            Log.d("SIGNATURE","NULL");
+        else
+            Log.d("SIGNATURE",profile_picture_signature);
 
         /** set drawer user picture **/
 
