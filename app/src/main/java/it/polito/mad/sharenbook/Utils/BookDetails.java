@@ -88,8 +88,13 @@ public class BookDetails {
 
             // Download thumbnail if present
             if (!thumbnail.equals("")) {
-                Uri tnUri = ImageUtils.downloadImageToStorage(mActivity, thumbnail, ImageUtils.EXTERNAL_PICTURES);
-                if (tnUri != null) newBook.addBookPhotoUri(tnUri);
+                try {
+                    Uri tnUri = ImageUtils.downloadImageToStorage(mActivity, thumbnail, ImageUtils.EXTERNAL_PICTURES);
+                    Uri stretchedTnUri = ImageUtils.stretchJpegPhoto(mActivity, ImageUtils.EXTERNAL_CACHE, tnUri, ImageUtils.ASPECT_RATIO_PHOTO_PORT);
+                    newBook.addBookPhotoUri(stretchedTnUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // Add newbook to book list

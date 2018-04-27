@@ -76,12 +76,12 @@ public class Book implements Parcelable {
     /**
      * Constructor for the Book Class called Algolia
      */
-    public Book(String isbn, String title, String subtitle, List<String> authors, String publisher,
+    public Book(String bookId, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories,
                 String language, String thumbnail, int numPhotos) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
-        this.bookId = "";
+        this.bookId = bookId;
         this.numPhotos = numPhotos;
         this.creationTime = 0;
     }

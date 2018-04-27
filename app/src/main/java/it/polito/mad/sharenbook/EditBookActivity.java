@@ -1,8 +1,6 @@
 package it.polito.mad.sharenbook;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -18,6 +16,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,6 +37,8 @@ import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +46,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -52,6 +55,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +66,7 @@ import it.polito.mad.sharenbook.Utils.InputValidator;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.Book;
 
-public class EditBookActivity extends Activity {
+public class EditBookActivity extends AppCompatActivity {
 
     // request code for permissions grant
     private static final int MULTIPLE_PERMISSIONS = 3;
@@ -128,6 +132,9 @@ public class EditBookActivity extends Activity {
     private ProgressDialog progressDialog;
     int photoLoaded;
 
+    // Boolean value to check if a new book should be added
+    private boolean isNewBook;
+
 
     /**
      * onCreate callback
@@ -140,6 +147,21 @@ public class EditBookActivity extends Activity {
         setContentView(R.layout.activity_edit_book);
         context = this.getApplicationContext();
         getViewsAndSetTypography(); //retrieve references to views objects and change default fonts
+
+        // Setup FireBase
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
+        userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
+        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
+
+        // Setup Algolia
+        algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
+        algoliaIndex = algoliaClient.getIndex("books");
+
+        // Setup progress dialog
+        progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
 
         // Setup image utils class
         imageUtils = new ImageUtils(this);
@@ -167,8 +189,24 @@ public class EditBookActivity extends Activity {
             imageUtils.setCurrentPhotoUri(currentPhotoUri);
         }
 
+        /*
+         * Recycle View
+         */
+        editbook_rv_bookPhotos.setHasFixedSize(true); //improves performance
+
+        // attach a Layout Manager to the RecyclerView, it's in charge of injecting views into the Recycler
+        rvLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
+
+        // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
+        rvAdapter = new BookPhotoAdapter(book.getBookPhotosUri(), this.getContentResolver());
+        editbook_rv_bookPhotos.setAdapter(rvAdapter);
+
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData();
+        // Download firebase photos if book already exists an it has been modifying
+        if (!isNewBook && savedInstanceState == null)
+            firebaseDownloadPhotos();
 
         /*
          * register callbacks for buttons
@@ -186,19 +224,6 @@ public class EditBookActivity extends Activity {
 
         editbook_ib_addBookPhoto.setOnClickListener(this::addBookPhoto);
         editbook_btn_addBookPhoto.setOnClickListener(this::addBookPhoto);
-
-        /*
-         * Recycle View
-         */
-        editbook_rv_bookPhotos.setHasFixedSize(true); //improves performance
-
-        // attach a Layout Manager to the RecyclerView, it's in charge of injecting views into the Recycler
-        rvLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-        editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
-
-        // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
-        rvAdapter = new BookPhotoAdapter(book.getBookPhotosUri(), this.getContentResolver());
-        editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
 
         /*
@@ -228,22 +253,6 @@ public class EditBookActivity extends Activity {
             }
             return true;
         });
-
-        // Setup FireBase
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
-
-        userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
-        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-
-        // Setup Algolia
-        algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
-        algoliaIndex = algoliaClient.getIndex("books");
-
-        // Setup progress dialog
-        progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
     }
 
 
@@ -332,6 +341,8 @@ public class EditBookActivity extends Activity {
      */
     private void loadViewWithBookData() {
 
+        isNewBook = book.getBookId().equals("");
+
         editbook_et_isbn.setText(book.getIsbn());
         editbook_et_title.setText(book.getTitle());
         editbook_et_subtitle.setText(book.getSubtitle());
@@ -406,7 +417,6 @@ public class EditBookActivity extends Activity {
 
             editbook_et_tags.setText(sb.toString());
         }
-
     }
 
 
@@ -512,6 +522,7 @@ public class EditBookActivity extends Activity {
      * Save all data on FireBase
      */
     private void firebaseSaveBook() {
+
         // Retrieve all data
         HashMap<String, Object> bookData = new HashMap<>();
         bookData.put("owner_uid", firebaseUser.getUid());
@@ -540,7 +551,7 @@ public class EditBookActivity extends Activity {
         progressDialog.show();
 
         // Write on DB
-        if (book.getBookId().equals(""))
+        if (isNewBook)
             bookRef = booksDb.push();
         else
             bookRef = booksDb.child(book.getBookId());
@@ -549,15 +560,21 @@ public class EditBookActivity extends Activity {
         bookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
 
             if (databaseError == null) {
-                // Push newBook reference on "user_books" section
-                userBooksDb.push().setValue(bookRef.getKey(), (databaseError1, databaseReference1) -> {
 
-                    if (databaseError1 == null) {
-                        firebaseSavePhotos(bookRef.getKey());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
-                    }
-                });
+                // Push newBook reference on "user_books" section if newBook
+                if (isNewBook) {
+                    userBooksDb.push().setValue(bookRef.getKey(), (databaseError1, databaseReference1) -> {
+
+                        if (databaseError1 == null) {
+                            Log.d("DEBUG", "Book data for id " + bookRef.getKey() + "correctly loaded on firebase");
+                        } else {
+                            Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                firebaseSavePhotos(bookRef.getKey());
+
             } else {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
@@ -607,7 +624,51 @@ public class EditBookActivity extends Activity {
     }
 
 
-    /*
+    /**
+     * Load all photos from firebase storage
+     */
+    private void firebaseDownloadPhotos() {
+
+        for (int i = 0; i < book.getNumPhotos(); i++) {
+
+            File localFile = null;
+            try {
+                localFile = ImageUtils.createImageFile(this, ImageUtils.EXTERNAL_CACHE);
+            } catch (IOException e) {
+                Log.d("DEBUG", "Cannot create new file now, this photo has been skipped");
+                e.printStackTrace();
+            }
+
+            // Continue if is not possible to create a new file
+            if (localFile == null) continue;
+
+            // Get uri for localFile
+            final Uri localFileUri = ImageUtils.getUriForFile(this, localFile);
+
+            StorageReference photoRef = bookImagesStorage.child(book.getBookId() + "/" + i + ".jpg");
+            photoRef.getFile(localFile)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Successfully downloaded data to local file
+                        book.addBookPhotoUri(localFileUri);
+
+                        //notify update of the collection to Recycle View adapter
+                        rvAdapter.notifyItemInserted(0);
+                        rvLayoutManager.scrollToPosition(0);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle failed download
+                        Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
+                    }
+                });
+        }
+    }
+
+
+    /**
      * Add the book to the Algolia Index so that it can be searched
      */
     private void algoliaIndexBook() {
@@ -617,6 +678,7 @@ public class EditBookActivity extends Activity {
             Index index = algoliaClient.getIndex("books");
 
             JSONObject bookData = new JSONObject()
+                    .put("bookId", bookRef.getKey())
                     .put("owner_uid", firebaseUser.getUid())
                     .put("isbn", book.getIsbn())
                     .put("title", book.getTitle())
@@ -633,19 +695,15 @@ public class EditBookActivity extends Activity {
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size());
 
+            JSONObject ob = new JSONObject()
+                    .put("bookData", bookData)
+                    .put("objectID", bookRef.getKey());
 
-            JSONObject ob = new JSONObject();
-            ob.put(bookRef.getKey(), bookData);
-
-            index.addObjectAsync( ob ,
-                    new CompletionHandler() {
-                        @Override
-                        public void requestCompleted(JSONObject jsonObject, AlgoliaException e) {
-
-                            Log.d("debug", "Algolia request completed.");
-                        }
-                    }
-            );
+            if (isNewBook) {
+                index.addObjectAsync(ob, (jsonObject, e) -> Log.d("DEBUG", "Algolia ADD request completed."));
+            } else {
+                index.saveObjectAsync(ob, bookRef.getKey(), (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e("error", "Unable to update Algolia index.");

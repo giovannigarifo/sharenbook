@@ -249,6 +249,45 @@ public class ImageUtils {
     }
 
 
+    public static Uri stretchJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int aspectRatio) throws IOException {
+        Bitmap photo = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoUri);
+
+        int newWidth, newHeight;
+        int pWidth = photo.getWidth();
+        int pHeight = photo.getHeight();
+
+        switch (aspectRatio) {
+            case ImageUtils.ASPECT_RATIO_PHOTO_PORT:
+                if (pWidth >= pHeight) {
+                    newWidth = pWidth;
+                    newHeight = pWidth / 10 * 15;
+                } else {
+                    newWidth = pHeight / 15 * 10;
+                    newHeight = pHeight;
+                }
+                break;
+            default:
+                newWidth = pWidth;
+                newHeight = pHeight;
+                break;
+        }
+
+        Bitmap resizedPhoto = Bitmap.createScaledBitmap(photo, newWidth, newHeight, false);
+
+        // Compress bitmap into jpeg
+        File outputFile = createImageFile(activity, imageFolder);
+        FileOutputStream outputFileStream = new FileOutputStream(outputFile);
+        resizedPhoto.compress(Bitmap.CompressFormat.JPEG, 95, outputFileStream);
+
+        // Clean resources
+        photo.recycle();
+        resizedPhoto.recycle();
+        outputFileStream.close();
+
+        return getUriForFile(activity, outputFile);
+    }
+
+
     /**
      * Resize passed bitmap to given dimension (maintain aspect ratio if one of dimension is 0)
      *
@@ -286,7 +325,7 @@ public class ImageUtils {
      */
     public static File createImageFile(Activity activity, int imageFolder) throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = null;
 
@@ -337,24 +376,19 @@ public class ImageUtils {
      * @param imageFolder : constant representing folder where to save
      * @return : return uri of downloaded image
      */
-    public static Uri downloadImageToStorage(Activity activity, String url, int imageFolder) {
+    public static Uri downloadImageToStorage(Activity activity, String url, int imageFolder) throws IOException {
         InputStream srcStream = null;
         OutputStream dstStream = null;
+        File imageFile;
 
         try {
-            File imageFile = ImageUtils.createImageFile(activity, imageFolder);
+            imageFile = ImageUtils.createImageFile(activity, imageFolder);
             srcStream = new URL(url).openStream();
             dstStream = new FileOutputStream(imageFile);
 
             Bitmap bmp = BitmapFactory.decodeStream(srcStream);
             bmp.compress(Bitmap.CompressFormat.JPEG, 95, dstStream);
             bmp.recycle();
-
-            return getUriForFile(activity, imageFile);
-        } catch (IOException e) {
-            // Error occurred while creating the File
-            Log.d("DEBUG", "Can't download picture now: an error occurred.");
-            e.printStackTrace();
         } finally {
             try {
                 srcStream.close();
@@ -364,7 +398,7 @@ public class ImageUtils {
             }
         }
 
-        return null;
+        return getUriForFile(activity, imageFile);
     }
 
 }

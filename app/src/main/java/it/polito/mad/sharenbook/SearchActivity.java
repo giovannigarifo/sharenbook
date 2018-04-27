@@ -216,6 +216,7 @@ public class SearchActivity extends AppCompatActivity
      */
     public Book BookJsonParser(JSONObject jsonObject) {
 
+        String bookId = jsonObject.optString("bookId");
         String isbn = jsonObject.optString("isbn");
         String title = jsonObject.optString("title");
         String subtitle = jsonObject.optString("subtitle");
@@ -242,6 +243,7 @@ public class SearchActivity extends AppCompatActivity
             }
 
         } catch (JSONException e) {
+            Log.d("debug", "Error during BookJsonParse");
             e.printStackTrace();
         }
 
@@ -272,6 +274,7 @@ public class SearchActivity extends AppCompatActivity
             }
 
         } catch (JSONException e) {
+            Log.d("debug", "Error during BookJsonParse");
             e.printStackTrace();
         }
 
@@ -279,7 +282,7 @@ public class SearchActivity extends AppCompatActivity
         String thumbnail = jsonObject.optString("thumbnail");
         int numPhotos = jsonObject.optInt("numPhotos");
 
-        return new Book(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail, numPhotos);
+        return new Book(bookId, isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail, numPhotos);
     }
 
 
@@ -301,17 +304,18 @@ public class SearchActivity extends AppCompatActivity
 
                 Iterator<String> keyList = hit.keys();
 
-                //first key (bookId): book object
-                String bookId = keyList.next();
-                Book b = BookJsonParser(hit.getJSONObject(bookId));
-                b.setBookId(bookId); //save also the FireBase unique ID, is used to retrieve the photos from firebase storage
+                //first key (bookData): book object
+                String bookData = keyList.next();
+                Book b = BookJsonParser(hit.getJSONObject(bookData));
+                //b.setBookId(bookData); //save also the FireBase unique ID, is used to retrieve the photos from firebase storage
                 books.add(b);
 
-                //second key: objectId
+                //second key: objectId == bookId
                 //third key: _highlightResult
 
             } catch (JSONException e) {
                 Log.d("debug", "unable to retrieve search result from json hits");
+                e.printStackTrace();
             }
         }
 
