@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook.Utils;
+package it.polito.mad.sharenbook.utils;
 
 import android.content.Context;
 import android.view.WindowManager;
@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
 import it.polito.mad.sharenbook.model.UserProfile;
 
 public class NavigationDrawerManager {

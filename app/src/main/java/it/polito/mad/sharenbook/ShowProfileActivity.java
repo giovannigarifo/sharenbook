@@ -22,8 +22,8 @@ import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
-import it.polito.mad.sharenbook.Utils.UserInterface;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 

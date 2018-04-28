@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -31,12 +30,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.polito.mad.sharenbook.Utils.ConnectionChangedListener;
-import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.ConnectionChangedListener;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 import static android.content.ContentValues.TAG;
-import static it.polito.mad.sharenbook.Utils.NetworkUtilities.checkNetworkConnection;
+import static it.polito.mad.sharenbook.utils.NetworkUtilities.checkNetworkConnection;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

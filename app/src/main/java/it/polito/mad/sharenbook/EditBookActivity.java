@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -51,10 +50,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import it.polito.mad.sharenbook.Utils.ImageUtils;
-import it.polito.mad.sharenbook.Utils.InputValidator;
-import it.polito.mad.sharenbook.Utils.PermissionsHandler;
-import it.polito.mad.sharenbook.Utils.UserInterface;
+import it.polito.mad.sharenbook.utils.ImageUtils;
+import it.polito.mad.sharenbook.utils.InputValidator;
+import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.model.Book;
 
 public class EditBookActivity extends AppCompatActivity {

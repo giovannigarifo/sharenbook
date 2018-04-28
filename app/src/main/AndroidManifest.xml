@@ -21,7 +21,7 @@
         android:theme="@style/AppTheme">
 
         <meta-data
-            android:name="it.polito.mad.sharenbook.Utils.MyAppGlideModule"
+            android:name="it.polito.mad.sharenbook.utils.MyAppGlideModule"
             android:value="GlideApp" />
 
         <activity android:name=".ShowProfileActivity"

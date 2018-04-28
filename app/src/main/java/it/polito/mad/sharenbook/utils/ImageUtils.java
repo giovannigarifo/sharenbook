@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook.Utils;
+package it.polito.mad.sharenbook.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook.Utils;
+package it.polito.mad.sharenbook.utils;
 
 import android.Manifest;
 import android.app.Activity;

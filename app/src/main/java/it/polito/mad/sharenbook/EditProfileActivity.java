@@ -29,11 +29,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import it.polito.mad.sharenbook.Utils.ImageUtils;
-import it.polito.mad.sharenbook.Utils.InputValidator;
-import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
-import it.polito.mad.sharenbook.Utils.PermissionsHandler;
-import it.polito.mad.sharenbook.Utils.UserInterface;
+import it.polito.mad.sharenbook.utils.ImageUtils;
+import it.polito.mad.sharenbook.utils.InputValidator;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 

@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook.Utils;
+package it.polito.mad.sharenbook.utils;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.model.Book;
 
 public class BookDetails {

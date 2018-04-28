@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook.Utils;
+package it.polito.mad.sharenbook.utils;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

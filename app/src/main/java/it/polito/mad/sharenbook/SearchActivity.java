@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -10,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,11 +26,7 @@ import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
-
-import it.polito.mad.sharenbook.Utils.GlideApp;
-
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -44,11 +40,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import it.polito.mad.sharenbook.Utils.NavigationDrawerProfile;
-import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
-import it.polito.mad.sharenbook.Utils.UserInterface;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 
 
 public class SearchActivity extends AppCompatActivity
