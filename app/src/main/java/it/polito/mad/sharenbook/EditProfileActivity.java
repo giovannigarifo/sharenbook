@@ -1,19 +1,13 @@
 package it.polito.mad.sharenbook;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
@@ -22,7 +16,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -32,15 +25,14 @@ import com.google.firebase.storage.StorageReference;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.InputValidator;
 import it.polito.mad.sharenbook.Utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.Utils.PermissionsHandler;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -50,11 +42,7 @@ public class EditProfileActivity extends AppCompatActivity {
     // ProgressDialog used to show loading messages
     ProgressDialog progressDialog = null;
 
-    // request codes for permissions grant
-    private static final int MULTIPLE_PERMISSIONS = 3;
-
     //views
-    private TextView tv_userFullNameHeading_edit, tv_userNameHeading_edit, tv_userEmailHeading_edit, tv_userCityHeading_edit, tv_userBioHeading_edit;
     private EditText et_userFullName, et_userNickName, et_userCity, et_userBio, et_userEmail;
     private FloatingActionButton save_button;
     private FloatingActionButton fab_editPhoto;
@@ -80,16 +68,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private String city;
     private String bio;
 
-    //Required Permissions
-    private String[] permissions = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
-    };
-
     //Regex for input validation
     private Pattern fullname_regex = Pattern.compile("([A-Z]([a-z])*[\\s][A-Za-z]([a-z])*[\\s]?)([A-Za-z]([a-z])*[\\s]?)*");
-
     private Pattern city_regex = Pattern.compile("([A-Z][a-z]*)[\\s]?[,]?[\\s]?([A-Z][a-z]*)?[\\s]?");
 
     //User profile data
@@ -105,7 +85,7 @@ public class EditProfileActivity extends AppCompatActivity {
     /**
      * onCreate callback
      *
-     * @param savedInstanceState
+     * @param savedInstanceState :
      */
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -118,16 +98,14 @@ public class EditProfileActivity extends AppCompatActivity {
             completeProfileAlert.setMessage(R.string.complete_profile_rational);
             completeProfileAlert.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                         dialog.dismiss();
-                        hasPermissions();
                     }
             );
 
             completeProfileAlert.show();
-        } else
-            hasPermissions();
+        }
 
         //modify default typography
-        getViewsAndSetTypography();
+        getViews();
 
         //retrieve the default values if the profile is not yet edited
         default_city = getString(R.string.default_city);
@@ -241,8 +219,7 @@ public class EditProfileActivity extends AppCompatActivity {
         fab_editPhoto.setBackgroundDrawable(AppCompatResources.getDrawable(EditProfileActivity.this, R.drawable.ic_check_black_24dp));
 
         fab_editPhoto.setOnClickListener(v -> {
-            hasPermissions();
-            imageUtils.showSelectImageDialog();
+            PermissionsHandler.check(this, () -> imageUtils.showSelectImageDialog());
         });
     }
 
@@ -287,84 +264,17 @@ public class EditProfileActivity extends AppCompatActivity {
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
         fab_editPhoto.setOnClickListener(v -> {
-            hasPermissions();
-            imageUtils.showSelectImageDialog();
+            PermissionsHandler.check(this, () -> imageUtils.showSelectImageDialog());
         });
-    }
-
-
-    /**
-     * hasPermissions method
-     */
-    private void hasPermissions() {
-
-        int result;
-
-        List<String> listPermissionsNeeded = new ArrayList<>();
-
-        for (String permission : permissions) {
-            result = ContextCompat.checkSelfPermission(EditProfileActivity.this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(permission);
-            }
-        }
-
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
-        }
-    }
-
-
-    /**
-     * onRequestPermissionsResult method
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-
-        switch (requestCode) {
-            case MULTIPLE_PERMISSIONS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permissions granted.
-                    Toast.makeText(getApplicationContext(), getString(R.string.permissions_granted), Toast.LENGTH_LONG).show();
-                } else {
-
-                    final List<String> neededPermissions = new ArrayList<>();
-                    for (String permission : permissions) {
-
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(EditProfileActivity.this, permission)) {
-                            neededPermissions.add(permission);
-                        }
-                    }
-
-                    if (!neededPermissions.isEmpty()) {
-
-                        AlertDialog.Builder newPermissionRequest = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
-                        newPermissionRequest.setTitle(R.string.new_permission_request_title);
-                        newPermissionRequest.setMessage(R.string.permissions_rationale);
-                        newPermissionRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> ActivityCompat.requestPermissions(EditProfileActivity.this, neededPermissions.toArray(new String[neededPermissions.size()]), MULTIPLE_PERMISSIONS)
-                        ).setNegativeButton(android.R.string.cancel,
-                                (dialog, which) -> finish()
-                        );
-
-                        newPermissionRequest.show();
-                    }
-
-                }
-            }
-        }
     }
 
 
     /**
      * onActivityResult method
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode :
+     * @param resultCode  :
+     * @param data        :
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -518,7 +428,7 @@ public class EditProfileActivity extends AppCompatActivity {
     /**
      * validateForm method
      *
-     * @return
+     * @return :
      */
     private boolean validateForm() {
         boolean result = true;
@@ -603,9 +513,9 @@ public class EditProfileActivity extends AppCompatActivity {
     /**
      * setEditTextListeners method
      *
-     * @param et
-     * @param key
-     * @param keycopy
+     * @param et      :
+     * @param key     :
+     * @param keycopy :
      */
     private void setEditTextListeners(final EditText et, final int key, final int keycopy) {
 
@@ -662,44 +572,16 @@ public class EditProfileActivity extends AppCompatActivity {
 
 
     /**
-     * getViewsAndSetTypography method
+     * getViews method
      */
-    private void getViewsAndSetTypography() {
+    private void getViews() {
 
         //get views
-        tv_userFullNameHeading_edit = findViewById(R.id.tv_userFullNameHeading_edit);
-        tv_userNameHeading_edit = findViewById(R.id.tv_userNameHeading_edit);
-        tv_userCityHeading_edit = findViewById(R.id.tv_userCityHeading_edit);
-        tv_userBioHeading_edit = findViewById(R.id.tv_userBioHeading_edit);
-        tv_userEmailHeading_edit = findViewById(R.id.tv_userEmailHeading_edit);
-
         et_userFullName = findViewById(R.id.et_fullNameContent_edit);
         et_userNickName = findViewById(R.id.et_userNameContent_edit);
         et_userCity = findViewById(R.id.et_userCityContent_edit);
         et_userBio = findViewById(R.id.et_userBioContent_edit);
         et_userEmail = findViewById(R.id.et_emailContent_edit);
-
-        // Retrieve fonts
-        Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
-        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-
-        /*
-         * set views font and view text
-         */
-
-        //headings
-        tv_userFullNameHeading_edit.setTypeface(robotoBold);
-        tv_userNameHeading_edit.setTypeface(robotoBold);
-        tv_userCityHeading_edit.setTypeface(robotoBold);
-        tv_userBioHeading_edit.setTypeface(robotoBold);
-        tv_userEmailHeading_edit.setTypeface(robotoBold);
-
-        //edit texts
-        et_userFullName.setTypeface(robotoLight);
-        et_userNickName.setTypeface(robotoLight);
-        et_userCity.setTypeface(robotoLight);
-        et_userBio.setTypeface(robotoLight);
-        et_userEmail.setTypeface(robotoLight);
     }
 
 
@@ -735,7 +617,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         } else {
                             startActivity(i);
                         }
-                        /** save the new Data for NavigationDrawerProfile */
+                        /* save the new Data for NavigationDrawerProfile */
 
                         NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
 

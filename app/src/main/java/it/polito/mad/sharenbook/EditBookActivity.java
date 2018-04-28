@@ -5,17 +5,13 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,15 +26,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.algolia.search.saas.AlgoliaException;
 import com.algolia.search.saas.Client;
-import com.algolia.search.saas.CompletionHandler;
 import com.algolia.search.saas.Index;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +37,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,13 +53,11 @@ import java.util.List;
 
 import it.polito.mad.sharenbook.Utils.ImageUtils;
 import it.polito.mad.sharenbook.Utils.InputValidator;
+import it.polito.mad.sharenbook.Utils.PermissionsHandler;
 import it.polito.mad.sharenbook.Utils.UserInterface;
 import it.polito.mad.sharenbook.model.Book;
 
 public class EditBookActivity extends AppCompatActivity {
-
-    // request code for permissions grant
-    private static final int MULTIPLE_PERMISSIONS = 3;
 
     final static int MAX_ALLOWED_BOOK_PHOTO = 5;
     final static int MIN_REQUIRED_BOOK_PHOTO = 1;
@@ -78,11 +66,6 @@ public class EditBookActivity extends AppCompatActivity {
     private Context context;
 
     // views
-    private TextView editbook_tv_isbn, editbook_tv_title, editbook_tv_subtitle, editbook_tv_authors,
-            editbook_tv_publisher, editbook_tv_publishedDate, editbook_tv_description,
-            editbook_tv_pageCount, editbook_tv_categories, editbook_tv_language, editbook_tv_bookConditions,
-            editbook_tv_tags;
-
     private EditText editbook_et_isbn, editbook_et_title, editbook_et_subtitle, editbook_et_authors,
             editbook_et_publisher, editbook_et_publishedDate, editbook_et_description,
             editbook_et_pageCount, editbook_et_categories, editbook_et_language, editbook_et_bookConditions,
@@ -106,13 +89,6 @@ public class EditBookActivity extends AppCompatActivity {
     private RecyclerView editbook_rv_bookPhotos;
     private BookPhotoAdapter rvAdapter;
     private RecyclerView.LayoutManager rvLayoutManager;
-
-    //permissions needed
-    private String[] permissions = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
-    };
 
     //information of the book to be shared
     Book book;
@@ -146,7 +122,7 @@ public class EditBookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_book);
         context = this.getApplicationContext();
-        getViewsAndSetTypography(); //retrieve references to views objects and change default fonts
+        getViews(); //retrieve references to views objects and change default fonts
 
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -295,9 +271,7 @@ public class EditBookActivity extends AppCompatActivity {
             showToast(getString(R.string.max_allowed_book_photo));
 
         } else {
-
-            hasPermissions();//check permissions
-            imageUtils.showSelectImageDialog();
+            PermissionsHandler.check(this, () -> imageUtils.showSelectImageDialog());
         }
     }
 
@@ -436,28 +410,6 @@ public class EditBookActivity extends AppCompatActivity {
 
 
     /**
-     * hasPermissions method
-     */
-    private void hasPermissions() {
-
-        int result;
-
-        List<String> listPermissionsNeeded = new ArrayList<>();
-
-        for (String permission : permissions) {
-            result = ContextCompat.checkSelfPermission(context, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(permission);
-            }
-        }
-
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
-        }
-    }
-
-
-    /**
      * onActivityResult method, callback fired each time an intent returns his result
      *
      * @param requestCode : the kind of intent requested
@@ -587,7 +539,7 @@ public class EditBookActivity extends AppCompatActivity {
     private void firebaseSavePhotos(String bookKey) {
         // Get list of photos
         List<Uri> photos = book.getBookPhotosUri();
-        List<Task<UploadTask>> taskList = new ArrayList<>();
+        List<Task<UploadTask.TaskSnapshot>> taskList = new ArrayList<>();
         photoLoaded = 0;
         int numPhotos = photos.size();
 
@@ -600,11 +552,12 @@ public class EditBookActivity extends AppCompatActivity {
 
             // Generate new file on firebase and write it
             StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
-            Task newTask = newFile.putFile(photos.get(i)).addOnSuccessListener(taskSnapshot -> {
-                // Handle successful uploads
-                Log.d("Debug", "Photo n. " + num + " uploaded!");
-                updateProgressDialogMessage(++photoLoaded, numPhotos);
-            })
+            Task<UploadTask.TaskSnapshot> newTask = newFile.putFile(photos.get(i))
+                    .addOnSuccessListener(taskSnapshot -> {
+                        // Handle successful uploads
+                        Log.d("Debug", "Photo n. " + num + " uploaded!");
+                        updateProgressDialogMessage(++photoLoaded, numPhotos);
+                    })
                     .addOnFailureListener(exception -> {
                         // Handle unsuccessful uploads
                         Log.d("Debug", "Error during upload of photo n. " + num);
@@ -647,23 +600,17 @@ public class EditBookActivity extends AppCompatActivity {
 
             StorageReference photoRef = bookImagesStorage.child(book.getBookId() + "/" + i + ".jpg");
             photoRef.getFile(localFile)
-                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    .addOnSuccessListener(taskSnapshot -> {
                         // Successfully downloaded data to local file
                         book.addBookPhotoUri(localFileUri);
 
                         //notify update of the collection to Recycle View adapter
                         rvAdapter.notifyItemInserted(0);
                         rvLayoutManager.scrollToPosition(0);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle failed download
-                        Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
-                    }
-                });
+                    }).addOnFailureListener(exception -> {
+                // Handle failed download
+                Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
+            });
         }
     }
 
@@ -780,15 +727,15 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
     /**
-     * getViewsAndSetTypography method
+     * getViews method
      */
-    private void getViewsAndSetTypography() {
+    private void getViews() {
 
         //get scrollview
         editbook_scrollview = findViewById(R.id.editbook_scrollview);
 
         //get navbar
-        navBar = (BottomNavigationView) findViewById(R.id.navigation);
+        navBar = findViewById(R.id.navigation);
 
         //get buttons
         editbook_fab_save = findViewById(R.id.editbook_fab_save);
@@ -799,19 +746,6 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_rv_bookPhotos = findViewById(R.id.editbook_rv_bookPhotos);
 
         //get the rest of views
-        editbook_tv_isbn = findViewById(R.id.editbook_tv_isbn);
-        editbook_tv_title = findViewById(R.id.editbook_tv_title);
-        editbook_tv_subtitle = findViewById(R.id.editbook_tv_subtitle);
-        editbook_tv_authors = findViewById(R.id.editbook_tv_authors);
-        editbook_tv_publisher = findViewById(R.id.editbook_tv_publisher);
-        editbook_tv_publishedDate = findViewById(R.id.editbook_tv_publishedDate);
-        editbook_tv_description = findViewById(R.id.editbook_tv_description);
-        editbook_tv_pageCount = findViewById(R.id.editbook_tv_pageCount);
-        editbook_tv_categories = findViewById(R.id.editbook_tv_categories);
-        editbook_tv_language = findViewById(R.id.editbook_tv_language);
-        editbook_tv_bookConditions = findViewById(R.id.editbook_tv_bookConditions);
-        editbook_tv_tags = findViewById(R.id.editbook_tv_tags);
-
         editbook_et_isbn = findViewById(R.id.editbook_et_isbn);
         editbook_et_title = findViewById(R.id.editbook_et_title);
         editbook_et_subtitle = findViewById(R.id.editbook_et_subtitle);
@@ -824,46 +758,6 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_language = findViewById(R.id.editbook_et_language);
         editbook_et_bookConditions = findViewById(R.id.editbook_et_bookConditions);
         editbook_et_tags = findViewById(R.id.editbook_et_tags);
-
-        /*
-         * set typography
-         */
-
-
-        //retrieve fonts
-        Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
-        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-
-        //buttons
-        editbook_btn_addBookPhoto.setTypeface(robotoBold);
-
-        //headings
-        editbook_tv_isbn.setTypeface(robotoBold);
-        editbook_tv_title.setTypeface(robotoBold);
-        editbook_tv_subtitle.setTypeface(robotoBold);
-        editbook_tv_authors.setTypeface(robotoBold);
-        editbook_tv_publisher.setTypeface(robotoBold);
-        editbook_tv_publishedDate.setTypeface(robotoBold);
-        editbook_tv_description.setTypeface(robotoBold);
-        editbook_tv_pageCount.setTypeface(robotoBold);
-        editbook_tv_categories.setTypeface(robotoBold);
-        editbook_tv_language.setTypeface(robotoBold);
-        editbook_tv_bookConditions.setTypeface(robotoBold);
-        editbook_tv_tags.setTypeface(robotoBold);
-
-        //edit texts
-        editbook_et_isbn.setTypeface(robotoLight);
-        editbook_et_title.setTypeface(robotoLight);
-        editbook_et_subtitle.setTypeface(robotoLight);
-        editbook_et_authors.setTypeface(robotoLight);
-        editbook_et_publisher.setTypeface(robotoLight);
-        editbook_et_publishedDate.setTypeface(robotoLight);
-        editbook_et_description.setTypeface(robotoLight);
-        editbook_et_pageCount.setTypeface(robotoLight);
-        editbook_et_categories.setTypeface(robotoLight);
-        editbook_et_language.setTypeface(robotoLight);
-        editbook_et_bookConditions.setTypeface(robotoLight);
-        editbook_et_tags.setTypeface(robotoLight);
     }
 }
 

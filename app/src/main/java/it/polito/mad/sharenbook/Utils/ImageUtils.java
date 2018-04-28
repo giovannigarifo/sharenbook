@@ -238,9 +238,10 @@ public class ImageUtils {
     /**
      * Overload -> Resize passed photo to given width dimension (maintaining aspect ratio)
      *
-     * @param activity : activity object caller
-     * @param photoUri : uri of image to be resized
-     * @param newWidth : width dimension in pixel (can be 0 if newHeight is given)
+     * @param activity    : activity object caller
+     * @param imageFolder : constant representing folder where to save
+     * @param photoUri    : uri of image to be resized
+     * @param newWidth    : width dimension in pixel (can be 0 if newHeight is given)
      * @return : uri of resized photo
      * @throws IOException
      */
@@ -249,6 +250,16 @@ public class ImageUtils {
     }
 
 
+    /**
+     * Stretch passed photo to given aspect ratio
+     *
+     * @param activity    : activity object caller
+     * @param imageFolder : constant representing folder where to save
+     * @param photoUri    : uri of image to be stretched
+     * @param aspectRatio : constant representing aspectRatio
+     * @return : uri of resized photo
+     * @throws IOException
+     */
     public static Uri stretchJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int aspectRatio) throws IOException {
         Bitmap photo = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoUri);
 

@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,7 +10,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +34,6 @@ public class ShowProfileActivity  extends AppCompatActivity
      * views
      **/
     private TextView tv_userFullName, tv_userNickName, tv_userRatingInfo,
-            tv_userCityHeading, tv_userBioHeading, tv_userEmailHeading,
             tv_userCityContent, tv_userBioContent, tv_userEmailContent;
 
     private BottomNavigationView navBar;
@@ -106,7 +103,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
         //modify default typography
-        getViewsAndSetTypography();
+        getViews();
 
         //get references to UI elements
         goEdit_button = findViewById(R.id.fab_edit);
@@ -129,11 +126,11 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         }
 
-        /** set drawer **/
+        /* set drawer **/
 
         setDrawer();
 
-        /**
+        /*
          * set texts
          */
         UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
@@ -143,7 +140,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         tv_userBioContent.setText(user.getBio());
         tv_userEmailContent.setText(user.getEmail());
 
-        /**
+        /*
          * goEdit_Button
          */
         goEdit_button.setOnClickListener(v -> {
@@ -216,7 +213,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
 
 
-                /** update user info in nav drawer **/
+                /* update user info in nav drawer */
                 NavigationDrawerManager.setDrawerViews(getApplicationContext(),
                         getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
 
@@ -243,7 +240,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
 
 
-                /**
+                /*
                  * set texts
                  */
                 UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
@@ -276,7 +273,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     private void setDrawer(){
 
-        /** DRAWER AND SEARCHBAR **/
+        /* DRAWER AND SEARCHBAR */
 
         drawer =  findViewById(R.id.show_profile_drawer_layout);
         navigationView =  findViewById(R.id.show_profile_nav_view);
@@ -297,51 +294,26 @@ public class ShowProfileActivity  extends AppCompatActivity
 
 
     /**
-     * getViewsAndSetTypography method
+     * getViews method
      */
-    private void getViewsAndSetTypography() {
+    private void getViews() {
 
         //get views
         tv_userFullName = findViewById(R.id.tv_userFullName);
         tv_userNickName = findViewById(R.id.tv_userNickName);
         tv_userRatingInfo = findViewById(R.id.tv_userRatingInfo);
 
-        tv_userCityHeading = findViewById(R.id.tv_userCityHeading);
-        tv_userBioHeading = findViewById(R.id.tv_userBioHeading);
-        tv_userEmailHeading = findViewById(R.id.tv_userEmailHeading);
         tv_userCityContent = findViewById(R.id.tv_userCityContent);
         tv_userBioContent = findViewById(R.id.tv_userBioContent);
         tv_userEmailContent = findViewById(R.id.tv_userEmailContent);
 
-        //retrieve fonts
-        Typeface robotoBold = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
-        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-
-        /**
-         * set views font and view text
-         */
-
-        tv_userFullName.setTypeface(robotoBold);
+        // set views text
         UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
         tv_userFullName.setText(user.getFullname());
-
-        tv_userNickName.setTypeface(robotoLight);
         tv_userNickName.setText(user.getUsername());
-        tv_userRatingInfo.setTypeface(robotoLight);
 
-        //headings
-        tv_userCityHeading.setTypeface(robotoBold);
-        tv_userBioHeading.setTypeface(robotoBold);
-        tv_userEmailHeading.setTypeface(robotoBold);
-
-        //contents
-        tv_userCityContent.setTypeface(robotoLight);
         tv_userCityContent.setText(user.getCity());
-
-        tv_userBioContent.setTypeface(robotoLight);
         tv_userBioContent.setText(user.getBio());
-
-        tv_userEmailContent.setTypeface(robotoLight);
         tv_userEmailContent.setText(user.getEmail());
     }
 

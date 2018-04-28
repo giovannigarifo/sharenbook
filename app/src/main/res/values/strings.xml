@@ -29,6 +29,7 @@
 
     <!-- common words -->
     <string name="search">Search</string>
+    <string name="settings">Settings</string>
 
     <!-- ============================== -->
 
@@ -155,6 +156,13 @@
     <string name="camera_permission_denied">Camera permission request was denied.</string>
     <string name="camera_unavailable"><b>Camera could not be opened.</b>\nThis occurs when the camera is not available (for example it is already in use) or if the system has denied access (for example when camera access has been disabled).</string>
 
+    <!-- new permissions -->
+    <string name="permissions_rationale_title">Permissions needed</string>
+    <string name="permissions_rationale_message">We need this permissions to give you a great experience, please give them!</string>
+    <string name="permissions_denied_title">Permissions not acquired</string>
+    <string name="permissions_denied_message">Both camera and media access permissions are needed to take pictures and use your gallery.</string>
+    <string name="permissions_snackbar">Give permissions needed to this app to unlock lovely features.</string>
+
     <!-- FACEBOOK -->
     <string name="facebook_application_id">375832199559673</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb375832199559673</string>
@@ -189,28 +197,11 @@
     <string name="words_key" translatable="false">words</string>
 
     <string name="mba_title" translatable="false">My books</string>
+    <string name="nav_my_books">My books</string>
 
     <string name="no_books_alert_title">No books yet!</string>
     <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
 
     <string name="error_save_camera_photo">There was an error while saving your photo, please retry.</string>
-
-    // Dexter
-    <string name="ask_for_camera_permission_button">Camera</string>
-    <string name="ask_for_contacts_permission_button">Contacts</string>
-    <string name="ask_for_audio_permission_button">Audio</string>
-    <string name="ask_for_all_permissions_button">Request all</string>
-    <string name="permission_granted_feedback">GRANTED</string>
-    <string name="permission_denied_feedback">DENIED</string>
-    <string name="permission_permanently_denied_feedback">PERMANENTLY DENIED</string>
-    <string name="permission_unknown_feedback">UNKNOWN</string>
-    <string name="all_permissions_denied_feedback">All those permissions are needed for doing some magic</string>
-    <string name="camera_permission_denied_feedback">Camera permission is needed for doing some magic</string>
-    <string name="contacts_permission_denied_feedback">Contacts permission is needed for doing some magic</string>
-    <string name="audio_permission_denied_dialog_title">Audio permission request</string>
-    <string name="audio_permission_denied_dialog_feedback">Audio recording will not be available until you accept the permission request</string>
-    <string name="permission_rationale_title">We need this permission</string>
-    <string name="permission_rationale_message">This permission is needed for doing some fancy stuff so please, allow it!</string>
-    <string name="permission_rationale_settings_button_text">SETTINGS</string>
 
 </resources>

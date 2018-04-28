@@ -28,6 +28,7 @@
 
     <!-- common words -->
     <string name="search">Cerca</string>
+    <string name="settings">Impostazioni</string>
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -97,6 +98,13 @@
     <string name="camera_permission_denied">Il permesso per la fotocamera non è stato autorizzato.</string>
     <string name="camera_unavailable"><b>La fotocamera non può essere avviata.</b>\nQuesto può verificarsi quando la fotocamera non è disponibile (e.g. è già in uso) o se il sistema non ha autorizzato l\'accesso (e.g. non è stato autorizzato il permesso per l\'accesso alla fotocamera).</string>
 
+    <!-- new permissions -->
+    <string name="permissions_rationale_title">Permessi necessari</string>
+    <string name="permissions_rationale_message">Abbiamo bisogno del tuo permesso per poterti fornire un\'esperienza d\'uso completa, grazie.</string>
+    <string name="permissions_denied_title">Permesso negato</string>
+    <string name="permissions_denied_message">Entrambi i permessi sono necessari per scattare foto ed accedere alla galleria.</string>
+    <string name="permissions_snackbar">Modifica i permessi concessi a quest\'app per sbloccare le funzionalità multimediali.</string>
+
 
     <!-- ============================== -->
 
@@ -151,7 +159,7 @@
 
     <!-- Search Bar  -->
 
-    <string name="searchbar_placeholder">Cerca un libro...</string>
+    <string name="searchbar_placeholder">Cerca un libro…</string>
 
     <!-- ======================== -->
 
