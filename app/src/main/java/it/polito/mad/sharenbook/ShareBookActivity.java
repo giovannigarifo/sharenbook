@@ -18,9 +18,10 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.BookDetails;
 import it.polito.mad.sharenbook.utils.InputValidator;
-import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.PermissionsHandler;
 
 public class ShareBookActivity extends AppCompatActivity {
 
@@ -87,7 +88,7 @@ public class ShareBookActivity extends AppCompatActivity {
             String insertedIsbn = editIsbn.getText().toString();
             new GetBookDetailsTask().execute(insertedIsbn);
         });
-        btnScan.setOnClickListener(v -> qrScan.initiateScan());
+        btnScan.setOnClickListener(v -> PermissionsHandler.check(mActivity, () -> qrScan.initiateScan()));
         btnManual.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
             i.putExtra("book", new Book());

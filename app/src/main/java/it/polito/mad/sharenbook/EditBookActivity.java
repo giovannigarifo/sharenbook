@@ -179,6 +179,7 @@ public class EditBookActivity extends AppCompatActivity {
 
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData();
+
         // Download firebase photos if book already exists an it has been modifying
         if (!isNewBook && savedInstanceState == null)
             firebaseDownloadPhotos();
@@ -270,6 +271,7 @@ public class EditBookActivity extends AppCompatActivity {
             showToast(getString(R.string.max_allowed_book_photo));
 
         } else {
+            // Check if permissions are granted and if yes open selectImageDialog
             PermissionsHandler.check(this, () -> imageUtils.showSelectImageDialog());
         }
     }
@@ -325,71 +327,19 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_language.setText(book.getLanguage());
         if (book.getPageCount() != -1)
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
-
-        //authors to comma separated string
-        List<String> a_arr = book.getAuthors();
-
-        if (a_arr.size() == 1) {
-
-            editbook_et_authors.setText(book.getAuthors().get(0));
-
-        } else if (a_arr.size() > 1) {
-
-            StringBuilder sb = new StringBuilder();
-
-            String prefix = "";
-            for (String s : a_arr) {
-                sb.append(prefix);
-                prefix = ", ";
-                sb.append(s);
-            }
-
-            editbook_et_authors.setText(sb.toString());
-        }
-
-        //categories to comma separated string
-        List<String> c_arr = book.getCategories();
-
-        if (c_arr.size() == 1) {
-
-            editbook_et_categories.setText(book.getCategories().get(0));
-
-        } else if (c_arr.size() > 1) {
-
-            StringBuilder sb = new StringBuilder();
-
-            String prefix = "";
-            for (String s : c_arr) {
-                sb.append(prefix);
-                prefix = ", ";
-                sb.append(s);
-            }
-
-            editbook_et_categories.setText(sb.toString());
-        }
-
         editbook_et_bookConditions.setText(book.getBookConditions());
 
+        //authors to comma separated string
+        String authors = listToCommaString(book.getAuthors());
+        editbook_et_authors.setText(authors);
+
         //categories to comma separated string
-        List<String> t_arr = book.getTags();
+        String categories = listToCommaString(book.getCategories());
+        editbook_et_categories.setText(categories);
 
-        if (t_arr.size() == 1) {
-
-            editbook_et_categories.setText(book.getTags().get(0));
-
-        } else if (t_arr.size() > 1) {
-
-            StringBuilder sb = new StringBuilder();
-
-            String prefix = "";
-            for (String s : t_arr) {
-                sb.append(prefix);
-                prefix = ", ";
-                sb.append(s);
-            }
-
-            editbook_et_tags.setText(sb.toString());
-        }
+        //tags to comma separated string
+        String tags = listToCommaString(book.getTags());
+        editbook_et_tags.setText(tags);
     }
 
 
@@ -726,6 +676,22 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
     /**
+     * Convert a string list to comma separated multiple words string
+     */
+    private String listToCommaString(List<String> stringList) {
+        StringBuilder sb = new StringBuilder();
+
+        String prefix = "";
+        for (String string : stringList) {
+            sb.append(prefix);
+            prefix = ", ";
+            sb.append(string);
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * getViews method
      */
     private void getViews() {
@@ -849,5 +815,4 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     public int getItemCount() {
         return this.bookPhotosUri.size();
     }
-
 }
