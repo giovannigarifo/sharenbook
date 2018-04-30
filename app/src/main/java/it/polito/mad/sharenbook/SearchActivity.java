@@ -198,8 +198,8 @@ public class SearchActivity extends AppCompatActivity
         search_fab_map = findViewById(R.id.search_fab_map);
 
         search_fab_map.setOnClickListener((v) -> {
-
-
+            Intent mapSearch = new Intent(getApplicationContext(), MapsActivity.class);
+            startActivity(mapSearch);
         });
     }
 
