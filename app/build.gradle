@@ -76,8 +76,8 @@ dependencies {
 
     //
     // Algolia search engine
-    implementation 'com.algolia:algoliasearch-android:3.+@aar'
-    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    //implementation 'com.algolia:algoliasearch-android:3.+@aar'
+    //implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'com.algolia:instantsearch-android:1.+'
 
     //
