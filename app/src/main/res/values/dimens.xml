@@ -6,8 +6,8 @@
     <dimen name="nav_header_height">200dp</dimen>
 
     <!-- app wide typography dimensions -->
-    <dimen name="title">16sp</dimen>
-    <dimen name="paragraph">14sp</dimen>
+    <dimen name="title">22sp</dimen>
+    <dimen name="paragraph">16sp</dimen>
 
 
     <dimen name="book_subtitle_font_dim">12sp</dimen>

@@ -91,24 +91,6 @@ public class SearchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        //retrieve book info
-        if (savedInstanceState == null) {
-
-            Bundle bundle = getIntent().getExtras();
-
-            if (bundle == null)
-                Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
-            else {
-                searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
-               // user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
-            }
-
-        } else {
-            searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
-           // user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
-        }
-
-
         // setup Drawer and Search Bar
         setDrawerAndSearchBar();
 
@@ -153,11 +135,42 @@ public class SearchActivity extends AppCompatActivity
             Log.d("error", "Unable to retrieve search result from Algolia");
         });
 
+
+        //retrieve data form intent or from saved state
+        if (savedInstanceState == null) {
+            startedFromIntent();
+        } else {
+            startedFromSavedState(savedInstanceState);
+        }
+    }
+
+    private void startedFromIntent(){
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle == null)
+            Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
+        else {
+            searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
+            // user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+        }
+
         // Fire the search (async) if user launched from searchbar in another activity
         if (searchInputText != null) {
             helper.search(searchInputText.toString());
         }
+    }
 
+    private void startedFromSavedState(Bundle savedInstanceState){
+
+        searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
+        // user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+
+        ArrayList<Book> previousSearchResults = savedInstanceState.getParcelableArrayList("searchResult"); //from onSaveInstanceState
+
+        searchResult.clear();
+        searchResult.addAll(previousSearchResults);
+        sbAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -362,6 +375,7 @@ public class SearchActivity extends AppCompatActivity
 
         super.onSaveInstanceState(outState);
 
+        outState.putParcelableArrayList("searchResult", searchResult);
         outState.putCharSequence("searchInputText", searchInputText);
        // outState.putParcelable(getString(R.string.user_profile_data_key), user);
     }
@@ -571,19 +585,17 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         //creationTime
         TextView creationTime = holder.item_search_result.findViewById(R.id.item_searchresult_creationTime);
-        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString() + " - Placeholder (TO)" );
+        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString());
 
-        //fab & card listeners
-        FloatingActionButton fab = holder.item_search_result.findViewById(R.id.item_searchresult_fab);
+        //location
+        TextView location = holder.item_search_result.findViewById(R.id.item_searchresult_location);
+        location.setText("Placeholder (TO)");
+
+        //card listeners
         CardView card = holder.item_search_result.findViewById(R.id.item_searchresult_cv);
 
-        fab.setOnClickListener((v -> {
-
-            Toast.makeText(context, "fab listener placeholder", Toast.LENGTH_SHORT).show();
-        }));
-
         card.setOnClickListener((v -> {
-            Toast.makeText(context, "fab listener placeholder", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "card listener placeholder", Toast.LENGTH_SHORT).show();
 
         }));
 

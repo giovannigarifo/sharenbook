@@ -19,6 +19,8 @@
 
     <color name="colorAlert">#FF5722</color>
 
+    <color name="colorBackgroundCardContainer">#FAFAFA</color>
+
     <!--
     <color name="colorAccent">#009688</color>
     -->

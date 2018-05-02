@@ -75,37 +75,49 @@
 
     <style name="item_searchresult_title">
         <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:textColor">@color/darkGrey</item>
         <item name="android:textSize">@dimen/title</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:background">@drawable/textlines</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="item_searchresult_author">
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:textColor">@color/darkGrey</item>
         <item name="android:textSize">@dimen/paragraph</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
     </style>
 
     <style name="item_searchresult_creationTime">
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginLeft">12dp</item>
         <item name="android:textColor">@color/darkGrey</item>
         <item name="android:textSize">@dimen/paragraph</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="item_searchresult_location">
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textColor">@color/darkGrey</item>
+        <item name="android:textSize">@dimen/paragraph</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>

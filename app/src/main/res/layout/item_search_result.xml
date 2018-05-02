@@ -4,81 +4,75 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_searchresult_rl"
     android:layout_width="match_parent"
-    android:layout_height="168dp">
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:id="@+id/item_searchresult_cv"
         style="CardViewStyle"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        app:cardElevation="4dp"
         app:cardCornerRadius="@dimen/card_corner_radius">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/wrapper"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/item_searchresult_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
-
-            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
+                android:layout_height="250dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop" />
 
-                android:layout_toEndOf="@+id/item_searchresult_photo"
-                android:layout_toRightOf="@+id/item_searchresult_photo"
-                android:orientation="vertical">
-
-                <!-- title -->
-                <TextView
-                    android:id="@+id/item_searchresult_title"
-                    style="@style/item_searchresult_title" />
-
-                <!-- author -->
-                <TextView
-                    android:id="@+id/item_searchresult_author"
-                    style="@style/item_searchresult_author"
-                    />
-
-            </LinearLayout>
-
-            <!-- creation time -->
+            <!-- title -->
             <TextView
-                android:id="@+id/item_searchresult_creationTime"
-                style="@style/item_searchresult_creationTime"
+                android:id="@+id/item_searchresult_title"
+                style="@style/item_searchresult_title" />
 
-                android:layout_toEndOf="@+id/item_searchresult_photo"
-                android:layout_toRightOf="@+id/item_searchresult_photo"
-                android:layout_alignParentBottom="true"
-                />
+            <!-- author -->
+            <TextView
+                android:id="@+id/item_searchresult_author"
+                style="@style/item_searchresult_author" />
 
 
-        </RelativeLayout>
+            <!-- creation time and location info -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/item_searchresult_rl_info">
 
-        <!-- Save Floating Action Button-->
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/item_searchresult_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_chevron_right_black_24dp"
-            app:backgroundTint="@color/colorPrimary"
-            app:layout_anchor="@id/item_searchresult_cv"
-            app:fabSize="mini"
-            app:layout_anchorGravity="end"
-            android:layout_gravity="bottom|end"/>
+                <!-- creation time -->
+                <TextView
+                    android:id="@+id/item_searchresult_creationTime"
+                    style="@style/item_searchresult_creationTime"
+                    android:drawableLeft="@drawable/ic_date_range_black_24dp"
+                    android:drawableStart="@drawable/ic_date_range_black_24dp"
+                    android:drawableTint="@color/colorAccent"
+                    android:drawablePadding="2dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"/>
 
+                <!-- location -->
+                <TextView
+                    android:id="@+id/item_searchresult_location"
+                    style="@style/item_searchresult_location"
+                    android:drawableLeft="@drawable/ic_place_black_24dp"
+                    android:drawableStart="@drawable/ic_place_black_24dp"
+                    android:drawableTint="@color/colorAccent"
+                    android:drawablePadding="2dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

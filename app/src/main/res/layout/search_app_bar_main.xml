@@ -6,7 +6,8 @@
     android:id="@+id/search_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    tools:context=".SearchActivity"
+    android:background="@color/colorBackgroundCardContainer">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:algolia="http://schemas.android.com/apk/res-auto"
@@ -71,7 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="75dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="25dp"
         android:src="@drawable/ic_map_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/search_bottom_nav_bar"
