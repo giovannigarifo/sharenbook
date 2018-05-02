@@ -32,6 +32,7 @@ public class Book implements Parcelable {
     private List<String> tags;
     private int numPhotos;
     private long creationTime;
+    private String location;
 
 
     /**
@@ -70,20 +71,25 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
+        this.location = "";
     }
 
 
     /**
      * Constructor for the Book Class called Algolia
      */
-    public Book(String bookId, String isbn, String title, String subtitle, List<String> authors, String publisher,
-                String publishedDate, String description, int pageCount, List<String> categories,
-                String language, String thumbnail, int numPhotos) {
+    public Book(String bookId, String owner_uid, String isbn, String title, String subtitle, List<String> authors, String publisher,
+                String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
+                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
         this.bookId = bookId;
+        this.owner_uid = owner_uid;
         this.numPhotos = numPhotos;
-        this.creationTime = 0;
+        this.bookConditions = bookConditions;
+        this.tags = tags;
+        this.creationTime = creationTime;
+        this.location = location;
     }
 
     /**
@@ -109,6 +115,7 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
+        this.location = "";
     }
 
 
@@ -188,6 +195,10 @@ public class Book implements Parcelable {
         return creationTime;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
     public void setBookId(String bookId) {
         this.bookId = bookId;
     }
@@ -260,6 +271,10 @@ public class Book implements Parcelable {
         this.creationTime = creationTime;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     /*******************************
      * Parcelizable implementation
      *
@@ -296,6 +311,7 @@ public class Book implements Parcelable {
         this.tags = in.readArrayList(String.class.getClassLoader());
         this.numPhotos = in.readInt();
         this.creationTime = in.readLong();
+        this.location = in.readString();
     }
 
     /**
@@ -330,6 +346,7 @@ public class Book implements Parcelable {
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());
         dest.writeLong(getCreationTime());
+        dest.writeString(getLocation());
     }
 
     @Override

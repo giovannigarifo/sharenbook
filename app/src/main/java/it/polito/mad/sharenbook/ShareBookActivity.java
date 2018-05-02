@@ -141,7 +141,7 @@ public class ShareBookActivity extends AppCompatActivity {
         navBar.setOnNavigationItemSelectedListener(item -> {
 
             switch (item.getItemId()) {
-                    case R.id.navigation_profile:
+                case R.id.navigation_profile:
                     Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(i);

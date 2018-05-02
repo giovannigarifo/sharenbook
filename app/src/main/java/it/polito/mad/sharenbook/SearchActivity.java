@@ -212,6 +212,7 @@ public class SearchActivity extends AppCompatActivity
     public Book BookJsonParser(JSONObject jsonObject) {
 
         String bookId = jsonObject.optString("bookId");
+        String owner_uid = jsonObject.optString("owner_uid");
         String isbn = jsonObject.optString("isbn");
         String title = jsonObject.optString("title");
         String subtitle = jsonObject.optString("subtitle");
@@ -276,8 +277,39 @@ public class SearchActivity extends AppCompatActivity
         String language = jsonObject.optString("language");
         String thumbnail = jsonObject.optString("thumbnail");
         int numPhotos = jsonObject.optInt("numPhotos");
+        String bookConditions = jsonObject.optString("bookConditions");
 
-        return new Book(bookId, isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail, numPhotos);
+        //tags
+        ArrayList<String> tags = new ArrayList<>();
+
+        try {
+
+            Object t = jsonObject.get("tags");
+
+            if (t instanceof String) {
+
+                String tag = (String) t;
+                tag = tag.replace("[", "");
+                tag = tag.replace("]", "");
+                tags.add(tag);
+
+            } else {
+
+                JSONArray jsonTags = jsonObject.getJSONArray("tags");
+                for (int i = 0; i < jsonTags.length(); i++)
+                    tags.add(jsonTags.optString(i));
+            }
+
+        } catch (JSONException e) {
+            Log.d("debug", "Error during BookJsonParse");
+            e.printStackTrace();
+        }
+
+        long creationTime = jsonObject.optLong("creationTime");
+        String location = jsonObject.optString("location");
+
+        return new Book(bookId, owner_uid, isbn, title, subtitle, authors, publisher, publishedDate, description,
+                pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, location);
     }
 
 
