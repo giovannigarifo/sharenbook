@@ -1,24 +1,28 @@
 package it.polito.mad.sharenbook;
 
-import android.*;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
+import it.polito.mad.sharenbook.model.Book;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private final int location_request_code = 1122;
+    private ArrayList<Book> searchResults;
+    private boolean showBooks = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         //TODO get Bundle -> announcements of books
+        Bundle extras = getIntent().getExtras();
+        if(!extras.isEmpty()) {
+            searchResults = extras.getParcelableArrayList("SearchResults");
+        }
     }
 
 
@@ -54,7 +62,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         )
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-            setAdvertismentMarkers();
+
+            if(searchResults != null)
+                setAnnouncementMarkers();
 
         } else {
             Toast.makeText(getApplicationContext(), "Niente", Toast.LENGTH_SHORT).show();
@@ -63,10 +73,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void setAdvertismentMarkers(){
-        //TODO from the bundle take the results list and add each book as a marker on the map
-        LatLng test = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(test).title("Test Marker"));
+    public void setAnnouncementMarkers(){
+        for(Book b : searchResults){
+            LatLng loc = new LatLng(Double.parseDouble(b.getLocationLat()), Double.parseDouble(b.getLocationLong()));
+            mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title(b.getTitle()));
+        }
     }
 
 }

@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
@@ -119,6 +120,8 @@ public class EditBookActivity extends AppCompatActivity {
     private boolean isNewBook;
 
     private GeoFire geoFire;
+
+    Random rand  = new Random();
 
     /**
      * onCreate callback
@@ -454,14 +457,22 @@ public class EditBookActivity extends AppCompatActivity {
             bookData.put("creationTime", ServerValue.TIMESTAMP);
         else
             bookData.put("creationTime", book.getCreationTime());
-        /* Save here location
-        if (book.getLocation().equals("")) {
-            // get location
+
+        int LocLat = rand.nextInt(100);
+        int LocLong = rand.nextInt(100);
+
+        book.setLocationLat(Integer.toString(LocLat));
+        book.setLocationLong(Integer.toString(LocLong));
+
+        if(book.getLocationLat().equals("") || book.getLocationLat().equals("")) {
+                bookData.put("location_lat", LocLat);    //change to user chosen position
+                bookData.put("location_long",  LocLong);
         }
         else {
-            bookData.put("location", book.getLocation());
+            bookData.put("location_lat", book.getLocationLat());
+            bookData.put("location_long", book.getLocationLong());
         }
-        */
+
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -505,7 +516,7 @@ public class EditBookActivity extends AppCompatActivity {
                     lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
                     return;
                 }*/
-                geoFire.setLocation(bookRef.getKey(), new GeoLocation(32, -128), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
+                geoFire.setLocation(bookRef.getKey(), new GeoLocation(LocLat, LocLong), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
 
 
             } else {
@@ -627,7 +638,8 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size())
                     .put("creationTime", book.getCreationTime())
-                    .put("location", book.getLocation());
+                    .put("location_lat", book.getLocationLat())
+                    .put("location_long", book.getLocationLong());
 
             if (book.getCreationTime() == 0)
                 bookData.put("creationTime", ServerValue.TIMESTAMP);

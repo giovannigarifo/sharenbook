@@ -33,7 +33,8 @@ public class Book implements Parcelable {
     private List<String> tags;
     private int numPhotos;
     private long creationTime;
-    private String location;
+    private String location_lat;
+    private String location_long;
 
 
     /**
@@ -72,7 +73,8 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
-        this.location = "";
+        this.location_lat = "";
+        this.location_long = "";
     }
 
 
@@ -82,7 +84,7 @@ public class Book implements Parcelable {
 
     public Book(String bookId, String owner_uid, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
-                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location) {
+                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location_lat, String location_long) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
         this.bookId = bookId;
@@ -91,7 +93,8 @@ public class Book implements Parcelable {
         this.bookConditions = bookConditions;
         this.tags = tags;
         this.creationTime = creationTime;
-        this.location = location;
+        this.location_lat = location_lat;
+        this.location_long = location_long;
     }
 
     /**
@@ -117,7 +120,8 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
-        this.location = "";
+        this.location_lat = "";
+        this.location_long = "";
     }
 
 
@@ -218,15 +222,20 @@ public class Book implements Parcelable {
 
     public String getCreationTimeAsString() {
 
-            Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
 
-            c.setTimeInMillis(this.creationTime);
-            String date = DateFormat.format("dd/MM, hh:mm", c).toString();
+        c.setTimeInMillis(this.creationTime);
+        String date = DateFormat.format("dd/MM, hh:mm", c).toString();
 
-            return date;
-        }
-    public String getLocation() {
-        return location;
+        return date;
+    }
+
+    public String getLocationLat() {
+        return location_lat;
+    }
+
+    public String getLocationLong() {
+        return location_long;
     }
 
     public void setBookId(String bookId) {
@@ -301,8 +310,12 @@ public class Book implements Parcelable {
         this.creationTime = creationTime;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocationLat(String location) {
+        this.location_lat = location;
+    }
+
+    public void setLocationLong(String location) {
+        this.location_long = location;
     }
 
     /*******************************
@@ -341,7 +354,8 @@ public class Book implements Parcelable {
         this.tags = in.readArrayList(String.class.getClassLoader());
         this.numPhotos = in.readInt();
         this.creationTime = in.readLong();
-        this.location = in.readString();
+        this.location_lat = in.readString();
+        this.location_long = in.readString();
     }
 
     /**
@@ -376,7 +390,8 @@ public class Book implements Parcelable {
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());
         dest.writeLong(getCreationTime());
-        dest.writeString(getLocation());
+        dest.writeString(getLocationLat());
+        dest.writeString(getLocationLong());
     }
 
     @Override
