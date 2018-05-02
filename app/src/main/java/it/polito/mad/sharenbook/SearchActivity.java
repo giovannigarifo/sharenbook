@@ -257,8 +257,8 @@ public class SearchActivity extends AppCompatActivity
             if (c instanceof String) {
 
                 String category = (String) c;
-                category.replace("[", "");
-                category.replace("]", "");
+                category = category.replace("[", "");
+                category = category.replace("]", "");
                 categories.add(category);
 
             } else {
@@ -392,10 +392,8 @@ public class SearchActivity extends AppCompatActivity
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
         NavigationDrawerManager.setDrawerViews(getApplicationContext(),
-                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
-
-
-
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,
+                NavigationDrawerManager.getNavigationDrawerProfile());
     }
 
     /**
