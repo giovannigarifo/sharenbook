@@ -89,9 +89,7 @@ public class PermissionsHandler {
     private static void showPermissionsDeniedDialog(Activity activity) {
         new AlertDialog.Builder(activity).setTitle(R.string.permissions_denied_title)
                 .setMessage(R.string.permissions_denied_message)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    dialog.dismiss();
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                 .show();
     }
 

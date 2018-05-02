@@ -445,6 +445,14 @@ public class EditBookActivity extends AppCompatActivity {
             bookData.put("creationTime", ServerValue.TIMESTAMP);
         else
             bookData.put("creationTime", book.getCreationTime());
+        /* Save here location
+        if (book.getLocation().equals("")) {
+            // get location
+        }
+        else {
+            bookData.put("location", book.getLocation());
+        }
+        */
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -556,10 +564,11 @@ public class EditBookActivity extends AppCompatActivity {
                         //notify update of the collection to Recycle View adapter
                         rvAdapter.notifyItemInserted(0);
                         rvLayoutManager.scrollToPosition(0);
-                    }).addOnFailureListener(exception -> {
-                // Handle failed download
-                Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
-            });
+                    })
+                    .addOnFailureListener(exception -> {
+                        // Handle failed download
+                        Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
+                    });
         }
     }
 
@@ -589,7 +598,9 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("bookConditions", book.getBookConditions())
                     .put("tags", book.getTags())
                     .put("thumbnail", book.getThumbnail())
-                    .put("numPhotos", book.getBookPhotosUri().size());
+                    .put("numPhotos", book.getBookPhotosUri().size())
+                    .put("creationTime", book.getCreationTime())
+                    .put("location", book.getLocation());
 
             if (book.getCreationTime() == 0)
                 bookData.put("creationTime", ServerValue.TIMESTAMP);
