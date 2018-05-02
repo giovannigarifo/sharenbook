@@ -39,22 +39,46 @@
                 android:layout_toRightOf="@+id/item_searchresult_photo"
                 android:orientation="vertical">
 
+                <!-- title -->
                 <TextView
                     android:id="@+id/item_searchresult_title"
                     style="@style/item_searchresult_title" />
 
+                <!-- author -->
                 <TextView
-                    android:id="@+id/item_searchresult_subtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:layout_margin="8dp"
-                    android:textSize="@dimen/paragraph" />
-
+                    android:id="@+id/item_searchresult_author"
+                    style="@style/item_searchresult_author"
+                    />
 
             </LinearLayout>
 
+            <!-- creation time -->
+            <TextView
+                android:id="@+id/item_searchresult_creationTime"
+                style="@style/item_searchresult_creationTime"
+
+                android:layout_toEndOf="@+id/item_searchresult_photo"
+                android:layout_toRightOf="@+id/item_searchresult_photo"
+                android:layout_alignParentBottom="true"
+                />
+
+
         </RelativeLayout>
+
+        <!-- Save Floating Action Button-->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/item_searchresult_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_chevron_right_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:layout_anchor="@id/item_searchresult_cv"
+            app:fabSize="mini"
+            app:layout_anchorGravity="end"
+            android:layout_gravity="bottom|end"/>
+
 
     </android.support.v7.widget.CardView>
 

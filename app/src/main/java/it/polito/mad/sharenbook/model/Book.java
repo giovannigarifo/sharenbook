@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.text.format.DateFormat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -78,6 +79,7 @@ public class Book implements Parcelable {
     /**
      * Constructor for the Book Class called Algolia
      */
+
     public Book(String bookId, String owner_uid, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
                 int numPhotos, String bookConditions, List<String> tags, long creationTime, String location) {
@@ -139,6 +141,25 @@ public class Book implements Parcelable {
         return authors;
     }
 
+    public String getAuthorsAsString() {
+
+        String authors = "";
+
+        for (int i = 0; i < this.authors.size(); i++) {
+
+            String author = this.authors.get(i);
+
+            if (i == 0) {
+                authors = authors.concat(author);
+            } else {
+                authors = authors.concat(", " + author);
+            }
+        }
+
+        return authors;
+    }
+
+
     public String getPublisher() {
         return publisher;
     }
@@ -195,6 +216,15 @@ public class Book implements Parcelable {
         return creationTime;
     }
 
+    public String getCreationTimeAsString() {
+
+            Calendar c = Calendar.getInstance();
+
+            c.setTimeInMillis(this.creationTime);
+            String date = DateFormat.format("dd/MM, hh:mm", c).toString();
+
+            return date;
+        }
     public String getLocation() {
         return location;
     }

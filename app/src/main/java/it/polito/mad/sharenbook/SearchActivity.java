@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -277,6 +278,7 @@ public class SearchActivity extends AppCompatActivity
         String language = jsonObject.optString("language");
         String thumbnail = jsonObject.optString("thumbnail");
         int numPhotos = jsonObject.optInt("numPhotos");
+
         String bookConditions = jsonObject.optString("bookConditions");
 
         //tags
@@ -563,10 +565,29 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         TextView title = holder.item_search_result.findViewById(R.id.item_searchresult_title);
         title.setText(this.searchResult.get(position).getTitle());
 
-        //subtitle
-        TextView subtitle = holder.item_search_result.findViewById(R.id.item_searchresult_subtitle);
-        subtitle.setText(this.searchResult.get(position).getSubtitle());
+        //author
+        TextView authors = holder.item_search_result.findViewById(R.id.item_searchresult_author);
+        authors.setText(this.searchResult.get(position).getAuthorsAsString());
 
+        //creationTime
+        TextView creationTime = holder.item_search_result.findViewById(R.id.item_searchresult_creationTime);
+        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString() + " - Placeholder (TO)" );
+
+        //fab & card listeners
+        FloatingActionButton fab = holder.item_search_result.findViewById(R.id.item_searchresult_fab);
+        CardView card = holder.item_search_result.findViewById(R.id.item_searchresult_cv);
+
+        fab.setOnClickListener((v -> {
+
+            Toast.makeText(context, "fab listener placeholder", Toast.LENGTH_SHORT).show();
+        }));
+
+        card.setOnClickListener((v -> {
+            Toast.makeText(context, "fab listener placeholder", Toast.LENGTH_SHORT).show();
+
+        }));
+
+        //show card
         holder.item_search_result.setVisibility(View.VISIBLE);
     }
 
