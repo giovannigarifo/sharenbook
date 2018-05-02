@@ -212,8 +212,13 @@ public class SearchActivity extends AppCompatActivity
         search_fab_map = findViewById(R.id.search_fab_map);
 
         search_fab_map.setOnClickListener((v) -> {
-
-
+            Intent mapSearch = new Intent(getApplicationContext(), MapsActivity.class);
+            if(!searchResult.isEmpty()){
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("SearchResults", searchResult);
+                mapSearch.putExtras(bundle);
+            }
+            startActivity(mapSearch);
         });
     }
 
@@ -321,10 +326,11 @@ public class SearchActivity extends AppCompatActivity
         }
 
         long creationTime = jsonObject.optLong("creationTime");
-        String location = jsonObject.optString("location");
+        String locationLat = jsonObject.optString("location_lat");
+        String locationLong = jsonObject.optString("location_long");
 
         return new Book(bookId, owner_uid, isbn, title, subtitle, authors, publisher, publishedDate, description,
-                pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, location);
+                pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong);
     }
 
 

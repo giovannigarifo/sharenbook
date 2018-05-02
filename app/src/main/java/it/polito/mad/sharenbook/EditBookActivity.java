@@ -4,13 +4,17 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,10 +33,13 @@ import android.widget.Toast;
 
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
@@ -49,6 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
@@ -97,6 +105,7 @@ public class EditBookActivity extends AppCompatActivity {
     private DatabaseReference booksDb;
     private DatabaseReference bookRef; //the unique key obtained by firebase
     private DatabaseReference userBooksDb;
+    private DatabaseReference geoLocationRef;
     private StorageReference bookImagesStorage;
 
     // Algolia objects
@@ -110,6 +119,9 @@ public class EditBookActivity extends AppCompatActivity {
     // Boolean value to check if a new book should be added
     private boolean isNewBook;
 
+    private GeoFire geoFire;
+
+    Random rand  = new Random();
 
     /**
      * onCreate callback
@@ -445,14 +457,22 @@ public class EditBookActivity extends AppCompatActivity {
             bookData.put("creationTime", ServerValue.TIMESTAMP);
         else
             bookData.put("creationTime", book.getCreationTime());
-        /* Save here location
-        if (book.getLocation().equals("")) {
-            // get location
+
+        int LocLat = rand.nextInt(100);
+        int LocLong = rand.nextInt(100);
+
+        book.setLocationLat(Integer.toString(LocLat));
+        book.setLocationLong(Integer.toString(LocLong));
+
+        if(book.getLocationLat().equals("") || book.getLocationLat().equals("")) {
+                bookData.put("location_lat", LocLat);    //change to user chosen position
+                bookData.put("location_long",  LocLong);
         }
         else {
-            bookData.put("location", book.getLocation());
+            bookData.put("location_lat", book.getLocationLat());
+            bookData.put("location_long", book.getLocationLong());
         }
-        */
+
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -464,6 +484,7 @@ public class EditBookActivity extends AppCompatActivity {
             bookRef = booksDb.push();
         else
             bookRef = booksDb.child(book.getBookId());
+
 
         // Push newBook on "books" section
         bookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
@@ -482,13 +503,30 @@ public class EditBookActivity extends AppCompatActivity {
                     });
                 }
 
-                firebaseSavePhotos(bookRef.getKey());
+                //geoLocationRef = bookRef.child("location");
+                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                geoLocationRef = firebaseDatabase.getReference(getString(R.string.books_locations));
+                geoFire = new GeoFire(geoLocationRef);
+
+                //TODO work in progress - get the gps position or user inserted location
+                /*String locationProvider = LocationManager.NETWORK_PROVIDER;
+                Location lastKnownLocation = null;
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                    lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                    return;
+                }*/
+                geoFire.setLocation(bookRef.getKey(), new GeoLocation(LocLat, LocLong), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
+
 
             } else {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
         });
+
     }
+
+
 
     /**
      * Save al photos on firebase
@@ -600,7 +638,8 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size())
                     .put("creationTime", book.getCreationTime())
-                    .put("location", book.getLocation());
+                    .put("location_lat", book.getLocationLat())
+                    .put("location_long", book.getLocationLong());
 
             if (book.getCreationTime() == 0)
                 bookData.put("creationTime", ServerValue.TIMESTAMP);
