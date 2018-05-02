@@ -591,6 +591,11 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size());
 
+            if (book.getCreationTime() == 0)
+                bookData.put("creationTime", ServerValue.TIMESTAMP);
+            else
+                bookData.put("creationTime", book.getCreationTime());
+
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)
                     .put("objectID", bookRef.getKey());
@@ -600,6 +605,7 @@ public class EditBookActivity extends AppCompatActivity {
             } else {
                 index.saveObjectAsync(ob, bookRef.getKey(), (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e("error", "Unable to update Algolia index.");
