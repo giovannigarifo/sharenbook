@@ -193,6 +193,7 @@
     <string name="users_books_placeholder" translatable="false">books_empty</string>
     <string name="user_books_key" translatable="false">user_books</string>
     <string name="books_key" translatable="false">books</string>
+    <string name="books_locations" translatable="false">books_locations</string>
     <string name="book_images_key" translatable="false">book_images</string>
     <string name="words_key" translatable="false">words</string>
 
@@ -203,5 +204,6 @@
     <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
 
     <string name="error_save_camera_photo">There was an error while saving your photo, please retry.</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

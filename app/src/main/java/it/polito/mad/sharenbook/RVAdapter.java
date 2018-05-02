@@ -64,7 +64,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.AnnounceViewHolder
 
         holder.bookTitle.setText(announcements.get(position).getTitle());
         holder.bookSubtitle.setText(announcements.get(position).getBookConditions());
-        //holder.bookPhoto.setImageURI(Uri.parse(announcements.get(position).getThumbnail()));
         Glide.with(context).load(announcements.get(position).getThumbnail()).into(holder.bookPhoto);
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
