@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 /**
@@ -52,6 +54,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     public void onBindViewHolder(@NonNull MyAnnounceRVAdapter.AnnounceViewHolder holder, int position) {
 
         if(!announcements.isEmpty()) {
+           // UserInterface.TextViewFontResize(announcements.get(position).getTitle().length(),(WindowManager)context.getSystemService(Context.WINDOW_SERVICE) , holder.bookTitle);
             holder.bookTitle.setText(announcements.get(position).getTitle());
             holder.bookAuthors.setText(announcements.get(position).getAuthorsAsString());
             holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString(context));

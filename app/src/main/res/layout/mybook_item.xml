@@ -14,6 +14,8 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:cardElevation="2dp"
         android:foreground="?android:attr/selectableItemBackground">
@@ -42,6 +44,8 @@
                 app:layout_constraintLeft_toRightOf="@id/book_photo"
                 app:layout_constraintStart_toEndOf="@id/book_photo"
                 app:layout_constraintTop_toTopOf="parent"
+                android:singleLine="true"
+                android:ellipsize="middle"
                 android:textStyle="bold"/>
 
             <TextView
