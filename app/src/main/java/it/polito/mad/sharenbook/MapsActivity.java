@@ -6,6 +6,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,7 +35,7 @@ public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, MaterialSearchBar.OnSearchActionListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
-    private ArrayList<Book> searchResult;
+    private ArrayList<Book> searchResult = null;
 
     private MaterialSearchBar sba_searchbar;
 
@@ -47,8 +49,10 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -57,7 +61,7 @@ public class MapsActivity extends FragmentActivity
         Bundle extras = getIntent().getExtras();
         if(!extras.isEmpty()) {
             searchResult = extras.getParcelableArrayList("SearchResults");
-        }
+        } else searchResult = new ArrayList<>();
 
         //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
@@ -66,10 +70,6 @@ public class MapsActivity extends FragmentActivity
         searcher.registerResultListener((results, isLoadingMore) -> {
 
             if (results.nbHits > 0) {
-
-                if(searchResult == null){
-                    searchResult = new ArrayList<>();
-                }
 
                 searchResult.clear();
                 searchResult.addAll(parseResults(results.hits));
@@ -88,7 +88,30 @@ public class MapsActivity extends FragmentActivity
         });
 
         setListButton();
-        setSeachBar();
+
+        //SearchBar setup
+        sba_searchbar = findViewById(R.id.sba_searchbar);
+        sba_searchbar.setOnSearchActionListener(MapsActivity.this);
+
+        if( searchResult == null)
+            sba_searchbar.enableSearch();
+        else sba_searchbar.disableSearch();
+    }
+
+    /**
+     * onBackPressed method
+     */
+    @Override
+    public void onBackPressed() {
+
+      /*  DrawerLayout drawer = findViewById(R.id.search_drawer_layout);
+
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+        */    startListSearch();
+        //}
+
     }
 
 
@@ -100,23 +123,26 @@ public class MapsActivity extends FragmentActivity
         search_fab_list = findViewById(R.id.search_fab_list);
 
         search_fab_list.setOnClickListener((v) -> {
-            Intent listSearch = new Intent(getApplicationContext(), SearchActivity.class);
-            if(!searchResult.isEmpty()){
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("SearchResults", searchResult);
-                listSearch.putExtras(bundle);
-            }
-            startActivity(listSearch);
-            finish();
+            startListSearch();
         });
     }
 
+    /**
+     * Start the SearchActivity with the classic list view
+     */
+    private void startListSearch(){
 
-    private void setSeachBar(){
-        sba_searchbar = findViewById(R.id.sba_searchbar);
+        Intent listSearch = new Intent(getApplicationContext(), SearchActivity.class);
 
-        sba_searchbar.setOnSearchActionListener(MapsActivity.this);
-        sba_searchbar.enableSearch();
+        if(searchResult != null){
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("SearchResults", searchResult);
+            listSearch.putExtras(bundle);
+        }
+
+        startActivity(listSearch);
+        finish();
     }
 
 
