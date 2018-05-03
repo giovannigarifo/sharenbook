@@ -445,7 +445,7 @@ public class SearchActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+        //navigationView.setCheckedItem(R.id.drawer_navigation_profile);
     }
 
 

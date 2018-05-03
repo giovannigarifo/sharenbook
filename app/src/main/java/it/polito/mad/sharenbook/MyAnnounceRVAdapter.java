@@ -2,6 +2,8 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +18,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -53,12 +58,27 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     @Override
     public void onBindViewHolder(@NonNull MyAnnounceRVAdapter.AnnounceViewHolder holder, int position) {
 
+
+
         if(!announcements.isEmpty()) {
            // UserInterface.TextViewFontResize(announcements.get(position).getTitle().length(),(WindowManager)context.getSystemService(Context.WINDOW_SERVICE) , holder.bookTitle);
             holder.bookTitle.setText(announcements.get(position).getTitle());
             holder.bookAuthors.setText(announcements.get(position).getAuthorsAsString());
             holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString(context));
-            holder.bookLocation.setText("Placeholder (TO)");
+
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> place = new ArrayList<>();
+            try {
+                place.addAll(geocoder.getFromLocation(Double.parseDouble(announcements.get(position).getLocation_lat()), Double.parseDouble(announcements.get(position).getLocation_long()), 1));
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(!place.isEmpty())
+                holder.bookLocation.setText(place.get(0).getLocality() + ", " + place.get(0).getCountryName());
+            else
+                holder.bookLocation.setText(R.string.unknown_place);
+
             Glide.with(context).load(announcements.get(position).getThumbnail()).into(holder.bookPhoto);
 
             holder.editButton.setOnClickListener(new View.OnClickListener() {
