@@ -13,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -645,7 +644,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         //creationTime
         TextView creationTime = holder.item_search_result.findViewById(R.id.item_searchresult_creationTime);
-        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString());
+        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString(context));
 
         //location
         TextView location = holder.item_search_result.findViewById(R.id.item_searchresult_location);

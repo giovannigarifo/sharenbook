@@ -1,13 +1,13 @@
 package it.polito.mad.sharenbook.model;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.format.DateFormat;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import android.text.format.DateUtils;
+
 
 /**
  * Book class
@@ -220,14 +220,21 @@ public class Book implements Parcelable {
         return creationTime;
     }
 
-    public String getCreationTimeAsString() {
+    public String getCreationTimeAsString(Context context) {
 
-        Calendar c = Calendar.getInstance();
+        //Calendar c = Calendar.getInstance();
+        //c.setTimeInMillis(this.creationTime);
+        //String date = DateFormat.format("dd/MM, hh:mm", c).toString();
 
-        c.setTimeInMillis(this.creationTime);
-        String date = DateFormat.format("dd/MM, hh:mm", c).toString();
+        String formattedDate = DateUtils.formatDateTime(context, this.creationTime,
+                DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_NUMERIC_DATE
+                        | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR);
 
-        return date;
+        return formattedDate;
+
+
+
     }
 
     public String getLocationLat() {

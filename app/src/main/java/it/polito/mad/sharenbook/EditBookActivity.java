@@ -448,10 +448,15 @@ public class EditBookActivity extends AppCompatActivity {
         bookData.put("tags", book.getTags());
         bookData.put("thumbnail", book.getThumbnail());
         bookData.put("numPhotos", book.getBookPhotosUri().size());
-        if (book.getCreationTime() == 0)
-            bookData.put("creationTime", ServerValue.TIMESTAMP);
-        else
+        if (book.getCreationTime() == 0) {
+
+            bookData.put("creationTime", ServerValue.TIMESTAMP); //get timestamp from firebase
+            book.setCreationTime(System.currentTimeMillis()); //get timestamp from local device
+
+        } else
             bookData.put("creationTime", book.getCreationTime());
+
+
 
         int LocLat = rand.nextInt(100);
         int LocLong = rand.nextInt(100);
@@ -636,14 +641,9 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("tags", book.getTags())
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size())
-                    .put("creationTime", book.getCreationTime())
+                    .put("creationTime", book.getCreationTime()) //setted in firebaseSaveBook()
                     .put("location_lat", book.getLocationLat())
                     .put("location_long", book.getLocationLong());
-
-            if (book.getCreationTime() == 0)
-                bookData.put("creationTime", ServerValue.TIMESTAMP);
-            else
-                bookData.put("creationTime", book.getCreationTime());
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)

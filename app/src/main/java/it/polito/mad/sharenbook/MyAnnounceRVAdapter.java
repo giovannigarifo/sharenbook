@@ -54,7 +54,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
         if(!announcements.isEmpty()) {
             holder.bookTitle.setText(announcements.get(position).getTitle());
             holder.bookAuthors.setText(announcements.get(position).getAuthorsAsString());
-            holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString());
+            holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString(context));
             holder.bookLocation.setText("Placeholder (TO)");
             Glide.with(context).load(announcements.get(position).getThumbnail()).into(holder.bookPhoto);
 
