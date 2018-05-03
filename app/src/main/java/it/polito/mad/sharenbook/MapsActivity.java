@@ -2,15 +2,24 @@ package it.polito.mad.sharenbook;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -18,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,15 +38,18 @@ import java.util.Iterator;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.CustomInfoWindowAdapter;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 
 public class MapsActivity extends FragmentActivity
-        implements OnMapReadyCallback, MaterialSearchBar.OnSearchActionListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+        implements OnMapReadyCallback, MaterialSearchBar.OnSearchActionListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
+,NavigationView.OnNavigationItemSelectedListener{
 
     private GoogleMap mMap;
     private ArrayList<Book> searchResult;
 
     private MaterialSearchBar sba_searchbar;
 
+    private DrawerLayout drawer;
     //fab to display map
     FloatingActionButton search_fab_list;
 
@@ -88,9 +101,76 @@ public class MapsActivity extends FragmentActivity
         });
 
         setListButton();
-        setSeachBar();
+        setDrawerAndSearchBar();
     }
+    /**
+     * setDrawerAndSearchBar
+     */
+    private void setDrawerAndSearchBar() {
 
+        /** DRAWER AND SEARCHBAR **/
+
+        drawer = findViewById(R.id.map_search_drawer_layout);
+        NavigationView navigationView = findViewById(R.id.map_search_nav_view);
+        sba_searchbar = findViewById(R.id.sba_searchbar);
+
+        navigationView.setNavigationItemSelectedListener(MapsActivity.this);
+
+        sba_searchbar.setOnSearchActionListener(MapsActivity.this);
+        sba_searchbar.enableSearch();
+
+        View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,
+                NavigationDrawerManager.getNavigationDrawerProfile());
+    }
+    @Override
+    public void onBackPressed() {
+
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+    /**
+     * Navigation Drawer Listeners
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if(id ==R.id.drawer_navigation_profile){
+            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(i);
+
+        } else if (id == R.id.drawer_navigation_shareBook) {
+            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+            startActivity(i);
+        } else if (id == R.id.drawer_navigation_myBook) {
+            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(my_books);
+        } else if (id == R.id.drawer_navigation_logout) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     /**
      * Fire the list view mode
@@ -112,12 +192,7 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-    private void setSeachBar(){
-        sba_searchbar = findViewById(R.id.sba_searchbar);
 
-        sba_searchbar.setOnSearchActionListener(MapsActivity.this);
-        sba_searchbar.enableSearch();
-    }
 
 
     /**
@@ -305,7 +380,7 @@ public class MapsActivity extends FragmentActivity
         switch (buttonCode) {
 
             case MaterialSearchBar.BUTTON_NAVIGATION:
-                //drawer.openDrawer(Gravity.START); //open the drawer
+                drawer.openDrawer(Gravity.START); //open the drawer
                 break;
 
             case MaterialSearchBar.BUTTON_SPEECH:
@@ -393,4 +468,6 @@ public class MapsActivity extends FragmentActivity
         }
         startActivity(showBook);
     }
+
+
 }
