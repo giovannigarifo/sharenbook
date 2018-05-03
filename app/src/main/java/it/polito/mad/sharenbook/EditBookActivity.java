@@ -728,7 +728,7 @@ public class EditBookActivity extends AppCompatActivity {
             thumbnailIsPresent = 0;
         else thumbnailIsPresent = 1; //thumbnail is present
 
-        if (book.getBookPhotosUri().size() - thumbnailIsPresent != MIN_REQUIRED_BOOK_PHOTO) {
+        if (book.getBookPhotosUri().size() - thumbnailIsPresent < MIN_REQUIRED_BOOK_PHOTO) {
             isValid = false;
             if (!alreadyFocused) {
                 UserInterface.scrollToViewTop(editbook_scrollview, editbook_rv_bookPhotos);

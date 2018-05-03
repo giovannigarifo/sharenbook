@@ -281,7 +281,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/default_location"
                     android:inputType="text"
-                    android:maxLength="150" />
+                    android:maxLength="250" />
 
                 <!-- book conditions -->
                 <TextView

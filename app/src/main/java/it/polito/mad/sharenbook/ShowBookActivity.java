@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
@@ -41,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.ImageUtils;
@@ -118,8 +121,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         if (id == R.id.drawer_navigation_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             startActivity(i);
-        }
-        else if (id == R.id.drawer_navigation_shareBook) {
+        } else if (id == R.id.drawer_navigation_shareBook) {
             Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
             startActivity(i);
         } else if (id == R.id.drawer_navigation_myBook) {
@@ -159,6 +161,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         TextView pageCountHeader = findViewById(R.id.showbook_tvh_pageCount);
         TextView categoriesHeader = findViewById(R.id.showbook_tvh_categories);
         TextView languageHeader = findViewById(R.id.showbook_tvh_language);
+        TextView locationHeader = findViewById(R.id.showbook_tvh_location);
         TextView bookConditionsHeader = findViewById(R.id.showbook_tvh_bookConditions);
         TextView tagsHeader = findViewById(R.id.showbook_tvh_tags);
 
@@ -172,6 +175,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         TextView pageCount = findViewById(R.id.showbook_tvc_pageCount);
         TextView categories = findViewById(R.id.showbook_tvc_categories);
         TextView language = findViewById(R.id.showbook_tvc_language);
+        TextView location = findViewById(R.id.showbook_tvc_location);
         TextView bookConditions = findViewById(R.id.showbook_tvc_bookConditions);
         TextView tags = findViewById(R.id.showbook_tvc_tags);
 
@@ -229,6 +233,20 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             language.setText(book.getLanguage());
         }
 
+        List<Address> places = new ArrayList<>();
+        try {
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            places.addAll(geocoder.getFromLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long()), 1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (places.isEmpty()) {
+            location.setText(R.string.unknown_place);
+        } else {
+            location.setText(places.get(0).getLocality() + ", " + places.get(0).getCountryName());
+        }
+
         bookConditions.setText(book.getBookConditions());
 
         if (book.getTags().size() == 0) {
@@ -261,7 +279,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("Dettaglio Annuncio");
+            actionBar.setTitle(R.string.showbook_toolbar_title);
         }
 
         // Setup navigation drawer
@@ -383,6 +401,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public ImageView mImageView;
+
         public ViewHolder(ImageView v) {
             super(v);
             mImageView = v;

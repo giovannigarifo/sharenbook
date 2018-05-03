@@ -210,5 +210,7 @@
     <string name="unknown_place">Posizione sconosciuta</string>
     <string name="infoWindow_hint">Premi qui per ulteriori dettagli..</string>
 
+    <!-- ShowBook -->
+    <string name="showbook_toolbar_title">Book Details</string>
 
 </resources>

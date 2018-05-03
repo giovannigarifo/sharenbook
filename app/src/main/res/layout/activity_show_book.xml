@@ -197,6 +197,19 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
 
+                        <!-- location -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_location"
+                            style="@style/TextViewHeading"
+
+                            android:text="@string/default_location_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_location"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
                         <!-- book conditions -->
                         <TextView
                             android:id="@+id/showbook_tvh_bookConditions"
