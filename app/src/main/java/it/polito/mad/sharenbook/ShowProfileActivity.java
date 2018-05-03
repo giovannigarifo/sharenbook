@@ -175,7 +175,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                     break;
 
                 case R.id.navigation_search:
-                    startSearchActivity();
+                    startSearchActivity(null);
                     break;
                 case R.id.navigation_myBook:
                     Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
@@ -264,9 +264,10 @@ public class ShowProfileActivity  extends AppCompatActivity
     /**
      * Starts the search activity with the appropriate bundle
      */
-    private void startSearchActivity(){
+    private void startSearchActivity(CharSequence searchInputText){
         Intent i = new Intent(getApplicationContext(), SearchActivity.class);
-        i.putExtra(getString(R.string.user_profile_data_key),user);
+        if(searchInputText!=null)
+            i.putExtra("searchInputText",searchInputText);
         startActivity(i);
     }
 
@@ -369,7 +370,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     @Override
     public void onSearchConfirmed(CharSequence searchInputText) {
 
-        startSearchActivity();
+        startSearchActivity(searchInputText);
     }
 
     @Override
