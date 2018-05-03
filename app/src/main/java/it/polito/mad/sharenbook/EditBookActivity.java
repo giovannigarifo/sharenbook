@@ -337,6 +337,23 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_publishedDate.setText(book.getPublishedDate());
         editbook_et_description.setText(book.getDescription());
         editbook_et_language.setText(book.getLanguage());
+
+        if (!isNewBook) {
+            List<Address> places = new ArrayList<>();
+            try {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                places.addAll(geocoder.getFromLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long()), 1));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (places.isEmpty()) {
+                editbook_et_location.setText(R.string.unknown_place);
+            } else {
+                editbook_et_location.setText(places.get(0).getLocality() + ", " + places.get(0).getCountryName());
+            }
+        }
+
         if (book.getPageCount() != -1)
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
         editbook_et_bookConditions.setText(book.getBookConditions());
