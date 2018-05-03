@@ -64,9 +64,6 @@ public class MapsActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // RecylerView setup
-        searchResult = new ArrayList<>();
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -75,7 +72,12 @@ public class MapsActivity extends FragmentActivity
         Bundle extras = getIntent().getExtras();
         if(!extras.isEmpty()) {
             searchResult = extras.getParcelableArrayList("SearchResults");
-        } else searchResult = new ArrayList<>();
+            if (searchResult == null) {
+                searchResult = new ArrayList<>();
+            }
+        } else {
+            searchResult = new ArrayList<>();
+        }
 
         //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");

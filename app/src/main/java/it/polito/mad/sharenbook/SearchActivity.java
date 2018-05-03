@@ -52,6 +52,7 @@ import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.PermissionsHandler;
 
 
 public class SearchActivity extends AppCompatActivity
@@ -109,6 +110,9 @@ public class SearchActivity extends AppCompatActivity
 
         // RecylerView setup
         searchResult = new ArrayList<>();
+
+        // Check for permissions
+        PermissionsHandler.check(this);
 
         RecyclerView search_rv_result = (RecyclerView) findViewById(R.id.search_rv_result);
 
