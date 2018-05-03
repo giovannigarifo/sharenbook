@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/show_book_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ShowBookActivity">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/show_book_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <!-- ************************************** -->
+        <!-- ************ CONTENT MAIN ************ -->
+        <!-- ************************************** -->
+
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".ShowBookActivity"
+            tools:showIn="@layout/activity_show_book">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/navigation">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- BOOK PHOTO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="280dp"
+                        android:background="@color/colorPrimary"
+                        android:elevation="4dp">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/showbook_recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical" />
+
+                    </LinearLayout>
+
+                    <!-- BOOK DATA -->
+                    <LinearLayout
+                        android:id="@+id/showbook_content_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+
+                        <!-- isbn-->
+                        <TextView
+                            android:id="@+id/showbook_tvh_isbn"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_isbn_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_isbn"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- title -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_title"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_title_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_title"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- sub title -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_subtitle"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_subtitle_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_subtitle"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- authors -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_authors"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_authors_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_authors"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- publisher -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_publisher"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_publisher_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_publisher"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- published date -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_publishedDate"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_published_date_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_publishedDate"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- description -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_description"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_description_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_description"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- page count -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_pageCount"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_page_count_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_pageCount"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- categories -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_categories"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_categories_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_categories"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- language -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_language"
+                            style="@style/TextViewHeading"
+                            android:text="@string/default_language_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_language"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- book conditions -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_bookConditions"
+                            style="@style/TextViewHeading"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:background="@color/colorPrimary"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/default_book_condition_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_bookConditions"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- additional tags -->
+                        <TextView
+                            android:id="@+id/showbook_tvh_tags"
+                            style="@style/TextViewHeading"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:background="@color/colorPrimary"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:text="@string/default_tags_heading" />
+
+                        <TextView
+                            android:id="@+id/showbook_tvc_tags"
+                            style="@style/TextViewContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+            <android.support.design.widget.BottomNavigationView
+                android:id="@+id/navigation"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/darkGrey"
+                app:itemIconTint="@drawable/nav_bar_selector"
+                app:itemTextColor="@drawable/nav_bar_selector"
+                app:itemBackground="@drawable/nav_bar_bg_selector"
+                app:menu="@menu/navigation"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <!-- ************************************** -->
+        <!-- ********** END CONTENT MAIN ********** -->
+        <!-- ************************************** -->
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/show_book_nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/main_drawer" />
+
+</android.support.v4.widget.DrawerLayout>

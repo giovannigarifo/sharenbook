@@ -14,6 +14,9 @@
     <string name="default_bio">Write here your Bio</string>
     <string name="default_picture_path">void</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <!-- Various Messages -->
     <string name="profile_saved">Your profile has been saved!</string>
     <string name="upload_progress">Upload progress:\u0020</string>
