@@ -37,7 +37,7 @@
                 app:mt_placeholder="@string/searchbar_placeholder"
                 app:mt_searchBarColor="@color/colorPrimary"
                 app:mt_speechMode="false"
-                app:mt_textCursorTint="@color/colorPrimary" />
+                app:mt_textCursorTint="@color/colorAccent"/>
 
         </RelativeLayout>
 
