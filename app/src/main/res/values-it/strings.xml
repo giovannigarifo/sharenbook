@@ -206,5 +206,7 @@
 
     <string name="databaseError">Si è verificato un errore durante la lettura del database</string>
     <string name="unknown_place">Posizione sconosciuta</string>
+    <string name="infoWindow_hint">Premi qui per ulteriori dettagli..</string>
+
 
 </resources>

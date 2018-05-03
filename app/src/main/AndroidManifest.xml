@@ -72,7 +72,9 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".SearchActivity" />
+
+        <activity android:name=".SearchActivity"
+            android:launchMode="singleTask"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -87,7 +89,8 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps"
+            android:launchMode="singleTask"></activity>
 
         <activity android:name=".ShowBookActivity"></activity>
     </application>

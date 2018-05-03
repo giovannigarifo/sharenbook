@@ -211,6 +211,7 @@
 
     <string name="databaseError">Database error</string>
     <string name="unknown_place">Unknown location</string>
+    <string name="infoWindow_hint">Press here for more details..</string>
 
 
 </resources>

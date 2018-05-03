@@ -40,17 +40,17 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         TextView tvTitle =  view.findViewById(R.id.tv_title);
         TextView tvSubTitle = view.findViewById(R.id.tv_subtitle);
+        TextView tvHint = view.findViewById(R.id.tv_hint);
         ImageView thumbnail = view.findViewById(R.id.iv_thumbnail);
 
         tvTitle.setText(marker.getTitle());
         tvSubTitle.setText(book.getAuthorsAsString());
-
+        tvHint.setText(R.string.infoWindow_hint);
 
         int thumbnailOrFirstPhotoPosition = book.getNumPhotos() - 1;
         StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + book.getBookId()  + "/" + thumbnailOrFirstPhotoPosition + ".jpg");
 
         GlideApp.with(context).load(thumbnailOrFirstPhotoRef)
-                .placeholder(R.drawable.book_photo_placeholder)
                 .error(R.drawable.book_photo_placeholder)
                 .transition(DrawableTransitionOptions.withCrossFade(500))
                 .into(thumbnail);

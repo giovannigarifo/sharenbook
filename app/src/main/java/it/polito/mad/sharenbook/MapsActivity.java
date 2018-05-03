@@ -90,7 +90,6 @@ public class MapsActivity extends FragmentActivity
         });
 
         setListButton();
-
         setSeachBar();
     }
 
@@ -357,9 +356,7 @@ public class MapsActivity extends FragmentActivity
             LatLng loc = new LatLng(Double.parseDouble(b.getLocationLat()), Double.parseDouble(b.getLocationLong()));
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(loc)
-                    .snippet(b.getDescription())
-                    .title(b.getTitle())
-                    .snippet("Press here for more details..."));
+                    .title(b.getTitle()));
 
             m.setTag(b); //associate book object to this marker
 
@@ -397,6 +394,5 @@ public class MapsActivity extends FragmentActivity
             showBook.putExtras(bundle);
         }
         startActivity(showBook);
-        finish();
     }
 }
