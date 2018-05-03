@@ -199,7 +199,6 @@ public class ShareBookActivity extends AppCompatActivity {
             } else if (result.getTotalItems() == -1) {
                 Toast.makeText(getApplicationContext(), getString(R.string.sba_no_connection), Toast.LENGTH_LONG).show();
             } else {
-                Book book = result.getBookList().get(0);
                 Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
                 i.putExtra("book", result.getBookList().get(0));
                 startActivity(i);

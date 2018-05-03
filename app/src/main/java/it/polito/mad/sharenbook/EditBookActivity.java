@@ -181,7 +181,7 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
 
         // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
-        rvAdapter = new BookPhotoAdapter(book.getBookPhotosUri(), this.getContentResolver());
+        rvAdapter = new BookPhotoAdapter(book, this.getContentResolver());
         editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
         //Populate the view with all the information retrieved from Google Books API
@@ -698,7 +698,15 @@ public class EditBookActivity extends AppCompatActivity {
                 alreadyFocused = true;
             }
         }
-        if (book.getBookPhotosUri().size() < MIN_REQUIRED_BOOK_PHOTO) {
+
+        //there must be at least one photo (excluding the thumbnail)
+        int thumbnailIsPresent;
+
+        if(book.getThumbnail().equals(""))
+            thumbnailIsPresent = 0;
+        else thumbnailIsPresent = 1; //thumbnail is present
+
+        if (book.getBookPhotosUri().size() - thumbnailIsPresent != MIN_REQUIRED_BOOK_PHOTO) {
             isValid = false;
             if (!alreadyFocused) {
                 UserInterface.scrollToViewTop(editbook_scrollview, editbook_rv_bookPhotos);
@@ -788,12 +796,14 @@ public class EditBookActivity extends AppCompatActivity {
 
 class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
 
+    private Book book;
     private List<Uri> bookPhotosUri;
     private ContentResolver mContentResolver;
 
     //constructor
-    BookPhotoAdapter(List<Uri> bookPhotosUri, ContentResolver contentResolver) {
-        this.bookPhotosUri = bookPhotosUri;
+    BookPhotoAdapter(Book book, ContentResolver contentResolver) {
+        this.book = book;
+        this.bookPhotosUri = book.getBookPhotosUri();
         this.mContentResolver = contentResolver;
     }
 
@@ -854,6 +864,11 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
 
                     Uri uri = (Uri) v.getTag();
                     int ib_position = bookPhotosUri.indexOf(uri);
+
+                    //check if thumbnail must be removed
+                    if(uri.toString().equals(Uri.parse(book.getThumbnail()).toString()))
+                        book.setThumbnail("");
+
                     bookPhotosUri.remove(ib_position);
                     notifyItemRemoved(ib_position);
                 }

@@ -91,6 +91,8 @@ public class BookDetails {
                     Uri tnUri = ImageUtils.downloadImageToStorage(mActivity, thumbnail, ImageUtils.EXTERNAL_PICTURES);
                     Uri stretchedTnUri = ImageUtils.stretchJpegPhoto(mActivity, ImageUtils.EXTERNAL_CACHE, tnUri, ImageUtils.ASPECT_RATIO_PHOTO_PORT);
                     newBook.addBookPhotoUri(stretchedTnUri);
+                    newBook.setThumbnail(stretchedTnUri.toString());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
