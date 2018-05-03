@@ -624,10 +624,9 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
         photo.setImageResource(R.drawable.book_photo_placeholder);
 
-        int thumbnailOrFirstPhotoPosition = searchResult.get(position).getNumPhotos() - 1;
         String bookId = searchResult.get(position).getBookId();
 
-        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + bookId + "/" + thumbnailOrFirstPhotoPosition + ".jpg");
+        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + bookId + "/" + "0.jpg");
 
         thumbnailOrFirstPhotoRef.getDownloadUrl().addOnSuccessListener((Uri uri) -> {
 
