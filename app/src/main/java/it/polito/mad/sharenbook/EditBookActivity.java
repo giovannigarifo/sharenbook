@@ -453,7 +453,7 @@ public class EditBookActivity extends AppCompatActivity {
         else
             bookData.put("creationTime", book.getCreationTime());
 
-        int LocLat = rand.nextInt(100);
+        int LocLat = rand.nextInt(89);
         int LocLong = rand.nextInt(100);
 
         book.setLocationLat(Integer.toString(LocLat));

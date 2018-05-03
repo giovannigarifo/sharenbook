@@ -210,5 +210,7 @@
     <string name="title_activity_maps">Map</string>
 
     <string name="databaseError">Database error</string>
+    <string name="unknown_place">Unknown location</string>
+
 
 </resources>

@@ -2,6 +2,8 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,9 +40,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.model.Book;
@@ -153,7 +157,14 @@ public class SearchActivity extends AppCompatActivity
             Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
         else {
             searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
-            // user = bundle.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+
+            ArrayList<Book> previousSearchResults = bundle.getParcelableArrayList("SearchResults");
+
+            if(previousSearchResults != null){
+                searchResult.clear();
+                searchResult.addAll(previousSearchResults);
+                sbAdapter.notifyDataSetChanged();
+            }
         }
 
         // Fire the search (async) if user launched from searchbar in another activity
@@ -220,6 +231,7 @@ public class SearchActivity extends AppCompatActivity
                 mapSearch.putExtras(bundle);
             }
             startActivity(mapSearch);
+            finish();
         });
     }
 
@@ -367,7 +379,6 @@ public class SearchActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         }
-
         return books;
     }
 
@@ -625,7 +636,19 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         //location
         TextView location = holder.item_search_result.findViewById(R.id.item_searchresult_location);
-        location.setText("Placeholder (TO)");
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> place = new ArrayList<>();
+        try {
+            place.addAll(geocoder.getFromLocation(Double.parseDouble(searchResult.get(position).getLocationLat()), Double.parseDouble(searchResult.get(position).getLocationLong()), 1));
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(!place.isEmpty())
+            location.setText(place.get(0).getLocality() + ", " + place.get(0).getCountryName());
+        else
+            location.setText(R.string.unknown_place);
+
 
         //card listeners
         CardView card = holder.item_search_result.findViewById(R.id.item_searchresult_cv);
