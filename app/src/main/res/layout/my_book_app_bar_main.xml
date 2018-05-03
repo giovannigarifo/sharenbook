@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgGrey"
-    tools:context="it.polito.mad.sharenbook.MyBookActivity">
+    tools:context="it.polito.mad.sharenbook.MyBookActivity"
+    tools:showIn="@layout/activity_my_book">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/sba_header"
