@@ -1,10 +1,12 @@
 package it.polito.mad.sharenbook;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ import java.util.List;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 
 public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,8 +72,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             book = bundle.getParcelable("book");
-            if (savedInstanceState == null)
-                book.addBookPhotoUri(null);
         }
 
         mRecyclerView = findViewById(R.id.showbook_recycler_view);
@@ -78,7 +80,12 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
-        mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        /*
+        View imageItem = getLayoutInflater().inflate(R.layout.item_book_imageview, null);
+        imageItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        Log.d("INFO", "item dimension -> " + imageItem.getMeasuredWidth());
+        */
+        mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Specify an adapter (see also next example)
@@ -358,9 +365,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         }
 
         Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
-            book.addBookPhotoUri(null);
-            mAdapter.notifyItemInserted(0);
-            mLayoutManager.scrollToPosition(0);
+            Log.d("Success:", "photo downloaded correctly");
         });
     }
 }

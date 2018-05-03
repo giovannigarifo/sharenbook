@@ -218,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/default_description"
                     android:inputType="text"
-                    android:maxLength="500" />
+                    android:maxLength="2000" />
 
                 <!-- page count -->
                 <TextView

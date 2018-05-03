@@ -6,24 +6,35 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.BookDetails;
 import it.polito.mad.sharenbook.utils.InputValidator;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 
-public class ShareBookActivity extends AppCompatActivity {
+public class ShareBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Activity mActivity;
 
@@ -48,19 +59,12 @@ public class ShareBookActivity extends AppCompatActivity {
         // Get activity instance
         this.mActivity = this;
 
+        // Setup navigation tools
+        setupNavigationTools();
+
         // Set strict mode
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        // Setup toolbar
-        Toolbar sbaToolbar = findViewById(R.id.sba_toolbar);
-        setSupportActionBar(sbaToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.sba_title);
-
-        // Setup navbar
-        setupNavbar();
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(ShareBookActivity.this, ProgressDialog.STYLE_SPINNER);
@@ -118,9 +122,39 @@ public class ShareBookActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        // Terminate activity (actionbar left arrow pressed)
-        finish();
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.drawer_navigation_profile) {
+            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            startActivity(i);
+        } else if (id == R.id.drawer_navigation_myBook) {
+            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(my_books);
+        } else if (id == R.id.drawer_navigation_logout) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        }
+
+        DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -129,6 +163,39 @@ public class ShareBookActivity extends AppCompatActivity {
         // Save the user's current ISBN value
         savedInstanceState.putString("isbn", editIsbn.getText().toString());
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private void setupNavigationTools() {
+        // Setup toolbar
+        Toolbar toolbar = findViewById(R.id.share_book_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.sba_title);
+        }
+
+        // Setup navigation drawer
+        DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.share_book_nav_view);
+        navigationView.setCheckedItem(R.id.drawer_navigation_shareBook);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Update drawer with user info
+        View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
+                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+
+        // Setup bottom navbar
+        setupNavbar();
     }
 
     private void setupNavbar() {

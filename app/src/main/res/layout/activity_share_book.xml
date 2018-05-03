@@ -1,213 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/share_book_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bgGrey"
-    tools:context=".ShareBookActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/sba_header"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:paddingBottom="4dp"
-        android:paddingEnd="4dp"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        android:paddingStart="4dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        tools:context=".ShareBookActivity">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/sba_toolbar"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:paddingBottom="4dp"
+            android:paddingEnd="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingStart="4dp">
 
-        <ImageView
-            android:id="@+id/sba_bg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/sba_bg_port"
-            app:layout_constraintTop_toBottomOf="@id/sba_toolbar" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/navigation"
-        app:layout_constraintTop_toBottomOf="@id/sba_header">
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginLeft="11dp"
-            android:layout_marginRight="11dp"
-            android:layout_marginTop="13dp"
-            android:layout_weight="1.5">
-
-            <android.support.constraint.ConstraintLayout
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/share_book_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:id="@+id/sba_cv1_header"
+            <ImageView
+                android:id="@+id/sba_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/sba_bg_port" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <!-- ************************************** -->
+        <!-- ************ CONTENT MAIN ************ -->
+        <!-- ************************************** -->
+
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bgGrey"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context=".ShareBookActivity"
+            tools:showIn="@layout/activity_share_book">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/navigation"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginRight="11dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_weight="1.5">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_edit_black_48dp"
-                        android:tint="@color/white"
-                        android:layout_gravity="center"
-                        android:padding="10dp"/>
-
-                    <TextView
+                    <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_gravity="center"
-                        android:text="@string/sba_insert_isbn"
-                        android:textColor="@android:color/white"
-                        android:textSize="22dp" />
+                        android:layout_height="match_parent">
 
-                </LinearLayout>
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:id="@+id/sba_cv1_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/colorAccent"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sba_cv1_header">
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_edit_black_48dp"
+                                android:tint="@color/white"
+                                android:layout_gravity="center"
+                                android:padding="10dp"/>
 
-                    <EditText
-                        android:id="@+id/sba_edit_text_isbn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minWidth="200dp"
-                        android:textAlignment="center"
-                        android:inputType="number"
-                        android:maxLength="13"
-                        android:textSize="22dp"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:layout_gravity="center"
+                                android:text="@string/sba_insert_isbn"
+                                android:textColor="@android:color/white"
+                                android:textSize="22dp" />
 
-                    <Button
-                        android:id="@+id/sba_search_isbn_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/search"
-                        android:textColor="@color/white"/>
+                        </LinearLayout>
 
-                </LinearLayout>
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/sba_cv1_header">
 
-            </android.support.constraint.ConstraintLayout>
+                            <EditText
+                                android:id="@+id/sba_edit_text_isbn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="200dp"
+                                android:textAlignment="center"
+                                android:inputType="number"
+                                android:maxLength="13"
+                                android:textSize="22dp"/>
 
-        </android.support.v7.widget.CardView>
+                            <Button
+                                android:id="@+id/sba_search_isbn_button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/search"
+                                android:textColor="@color/white"/>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/sba_scan_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginLeft="11dp"
-            android:layout_marginRight="11dp"
-            android:layout_marginTop="7dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="@color/colorAccent">
+                        </LinearLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                    </android.support.constraint.ConstraintLayout>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/ic_barcode_64dp"
-                    android:tint="@color/white"/>
+                </android.support.v7.widget.CardView>
 
-                <TextView
+                <android.support.v7.widget.CardView
+                    android:id="@+id/sba_scan_button"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sba_scan_isbn"
-                    android:textSize="22dp"
-                    android:gravity="center"
-                    android:textColor="@color/white"
-                    android:layout_gravity="center"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp" />
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginRight="11dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/colorAccent">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="15dp"
+                            android:src="@drawable/ic_barcode_64dp"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sba_scan_isbn"
+                            android:textSize="22dp"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_gravity="center"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/sba_manual_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="13dp"
+                    android:layout_marginLeft="11dp"
+                    android:layout_marginRight="11dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/colorAccent">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_book_64dp"
+                            android:layout_gravity="center"
+                            android:tint="@color/white"
+                            android:layout_marginLeft="15dp"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="@string/sba_manually_input"
+                            android:textColor="@color/white"
+                            android:textSize="22dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
 
             </LinearLayout>
 
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/sba_manual_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="13dp"
-            android:layout_marginLeft="11dp"
-            android:layout_marginRight="11dp"
-            android:layout_marginTop="7dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="@color/colorAccent">
-
-            <LinearLayout
-                android:orientation="horizontal"
+            <android.support.design.widget.BottomNavigationView
+                android:id="@+id/navigation"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="56dp"
+                android:background="@color/darkGrey"
+                app:itemIconTint="@drawable/nav_bar_selector"
+                app:itemTextColor="@drawable/nav_bar_selector"
+                app:itemBackground="@drawable/nav_bar_bg_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/navigation" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_book_64dp"
-                    android:layout_gravity="center"
-                    android:tint="@color/white"
-                    android:layout_marginLeft="15dp"/>
+        </android.support.constraint.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/sba_manually_input"
-                    android:textColor="@color/white"
-                    android:textSize="22dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp" />
+        <!-- ************************************** -->
+        <!-- ********** END CONTENT MAIN ********** -->
+        <!-- ************************************** -->
 
-            </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
-        </android.support.v7.widget.CardView>
-    </LinearLayout>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/share_book_nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/main_drawer" />
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/darkGrey"
-        app:itemIconTint="@drawable/nav_bar_selector"
-        app:itemTextColor="@drawable/nav_bar_selector"
-        app:itemBackground="@drawable/nav_bar_bg_selector"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/navigation" />
-
-</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.DrawerLayout>
