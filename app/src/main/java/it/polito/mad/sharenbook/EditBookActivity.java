@@ -119,7 +119,7 @@ public class EditBookActivity extends AppCompatActivity {
 
     private GeoFire geoFire;
 
-    Random rand  = new Random();
+    Random rand = new Random();
 
     List<Address> place = new ArrayList<>();
 
@@ -464,11 +464,10 @@ public class EditBookActivity extends AppCompatActivity {
         book.setLocation_lat(Double.toString(place.get(0).getLatitude()));
         book.setLocation_long(Double.toString(place.get(0).getLongitude()));
 
-        if(book.getLocation_lat().equals("") || book.getLocation_lat().equals("")) {
-                bookData.put("location_lat", book.getLocation_lat());    //change to user chosen position
-                bookData.put("location_long",  book.getLocation_long());
-        }
-        else {
+        if (book.getLocation_lat().equals("") || book.getLocation_lat().equals("")) {
+            bookData.put("location_lat", book.getLocation_lat());    //change to user chosen position
+            bookData.put("location_long", book.getLocation_long());
+        } else {
             bookData.put("location_lat", book.getLocation_lat());
             bookData.put("location_long", book.getLocation_long());
         }
@@ -519,7 +518,6 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Save al photos on firebase
      */
@@ -557,10 +555,10 @@ public class EditBookActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-           // Book newAnnounce = book;
-           // newAnnounce.setBookId(bookKey);
-           // i.putExtra("newAnnounce",newAnnounce);
-          //  Log.d("NEWHHHH:",newAnnounce.getBookId());
+            // Book newAnnounce = book;
+            // newAnnounce.setBookId(bookKey);
+            // i.putExtra("newAnnounce",newAnnounce);
+            //  Log.d("NEWHHHH:",newAnnounce.getBookId());
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
             finish();
@@ -682,16 +680,8 @@ public class EditBookActivity extends AppCompatActivity {
                 alreadyFocused = true;
             }
         }
-        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
-                editbook_et_bookConditions.setError(getText(R.string.field_required));
-                isValid = false;
-                if (!alreadyFocused) {
-                    editbook_et_bookConditions.requestFocus();
-                    alreadyFocused = true;
-                }
-        }
 
-        if(editbook_et_location.getText().toString().isEmpty()){
+        if (editbook_et_location.getText().toString().isEmpty()) {
             editbook_et_location.setError(getText(R.string.field_required));
             isValid = false;
             if (!alreadyFocused) {
@@ -699,12 +689,20 @@ public class EditBookActivity extends AppCompatActivity {
                 alreadyFocused = true;
             }
         } else {
+            boolean error = false;
             String location = editbook_et_location.getText().toString();
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             try {
                 place.clear();
                 place.addAll(geocoder.getFromLocationName(location, 1));
-            }catch (IOException e) { //if it was not possible to recognize location
+                if (place.size() == 0) {
+                    error = true;
+                }
+            } catch (IOException e) { //if it was not possible to recognize location
+                error = true;
+            }
+
+            if (error) {
                 editbook_et_location.setError(getText(R.string.unknown_place));
                 isValid = false;
                 if (!alreadyFocused) {
@@ -714,10 +712,19 @@ public class EditBookActivity extends AppCompatActivity {
             }
         }
 
+        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
+            editbook_et_bookConditions.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyFocused) {
+                editbook_et_bookConditions.requestFocus();
+                alreadyFocused = true;
+            }
+        }
+
         //there must be at least one photo (excluding the thumbnail)
         int thumbnailIsPresent;
 
-        if(book.getThumbnail().equals(""))
+        if (book.getThumbnail().equals(""))
             thumbnailIsPresent = 0;
         else thumbnailIsPresent = 1; //thumbnail is present
 
@@ -882,7 +889,7 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
                     int ib_position = bookPhotosUri.indexOf(uri);
 
                     //check if thumbnail must be removed
-                    if(uri.toString().equals(Uri.parse(book.getThumbnail()).toString()))
+                    if (uri.toString().equals(Uri.parse(book.getThumbnail()).toString()))
                         book.setThumbnail("");
 
                     bookPhotosUri.remove(ib_position);
