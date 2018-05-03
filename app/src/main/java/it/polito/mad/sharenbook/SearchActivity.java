@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -434,7 +435,6 @@ public class SearchActivity extends AppCompatActivity
         navigationView = findViewById(R.id.search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
 
-        navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
         navigationView.setNavigationItemSelectedListener(SearchActivity.this);
 
         sba_searchbar.setOnSearchActionListener(SearchActivity.this);
@@ -493,9 +493,39 @@ public class SearchActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Navigation Drawer Listeners
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if(id ==R.id.drawer_navigation_profile){
+            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(i);
+
+        } else if (id == R.id.drawer_navigation_shareBook) {
+            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+            startActivity(i);
+        } else if (id == R.id.drawer_navigation_myBook) {
+            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(my_books);
+        } else if (id == R.id.drawer_navigation_logout) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        }
+
+        DrawerLayout drawer = findViewById(R.id.search_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
 
@@ -601,7 +631,9 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         CardView card = holder.item_search_result.findViewById(R.id.item_searchresult_cv);
 
         card.setOnClickListener((v -> {
-            Toast.makeText(context, "card listener placeholder", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(context, ShowBookActivity.class);
+            i.putExtra("book",searchResult.get(position));
+            context.startActivity(i); // start activity without finishing in order to return back with back pressed
 
         }));
 

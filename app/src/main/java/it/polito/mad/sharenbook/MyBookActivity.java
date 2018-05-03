@@ -4,13 +4,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.MyBooksUtils;
 
 public class MyBookActivity extends AppCompatActivity {
 
@@ -41,7 +47,17 @@ public class MyBookActivity extends AppCompatActivity {
     private DatabaseReference booksDb;
     private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
-    private ArrayList<Book> books;
+    private ArrayList<Book> books = new ArrayList<Book>();
+
+    /** new announcement button */
+    private FloatingActionButton newAnnoucementFab;
+    private MyAnnounceRVAdapter adapter;
+    //private Book newAnnounce; future modifications
+    private LinearLayoutManager llm;
+    //private ValueEventListener valueEventListener;
+    private RecyclerView rv;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +65,16 @@ public class MyBookActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_book);
 
 
-
-
-        /** teeeeest **/
-        books = new ArrayList<Book>();
+        findAndSetNewAnnouncementFab();
+        setRecyclerView(books);
 
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
+
+
 
 
         userBooksDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -89,51 +105,147 @@ public class MyBookActivity extends AppCompatActivity {
                     bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
                     booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
 
-                    Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
+                    if(books.isEmpty()){
+                        Log.d("debug", "I am in the listener READ FROM DB");
+                        Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
 
-                    final long numberOfannounces = dataSnapshot.getChildrenCount();
+                        final long numberOfannounces = dataSnapshot.getChildrenCount();
 
-                    for(DataSnapshot announce :announces){
+                        Log.d("debug","->"+numberOfannounces);
 
-                        booksDb.child((String)announce.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                //books.add(dataSnapshot.getValue(Book.class));
+                        for(DataSnapshot announce :announces){
 
-                                bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        Book book = dataSnapshot.getValue(Book.class);
-                                        book.setBookId((String)announce.getValue());
-                                        book.setThumbnail(uri.toString());
-                                        books.add(book);
+                            booksDb.child((String)announce.getValue()).orderByChild("creationTime").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    //books.add(dataSnapshot.getValue(Book.class));
 
-                                        if(books.size() == numberOfannounces){
+                                    bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            Book book = dataSnapshot.getValue(Book.class);
+                                            book.setBookId((String)announce.getValue());
+                                            book.setThumbnail(uri.toString());
+                                            books.add(book);
 
-                                            setRecycle(books);
 
+                                            if(books.size() == numberOfannounces){
+                                                Log.d("debug",books.size()+"->"+numberOfannounces);
+                                                MyBooksUtils.setMyBooks(books);
+
+                                                adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
+                                                rv.setAdapter(adapter);
+
+                                                Log.d("debug", "I am in the listener READ FROM DB: read");
+
+                                            }
                                         }
-                                    }
-                                });
+                                    });
 
 
-    /*
-                                if(books.size() == numberOfannounces){
 
-                                    setRecycle(books);
 
                                 }
 
-*/
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            }
+                                    Toast.makeText(MyBookActivity.this,getString(R.string.databaseError),Toast.LENGTH_SHORT);
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
+                        }
 
-                            }
-                        });
                     }
+
+                    /* future implementation
+                    Intent i = getIntent();
+
+                    if (i != null && adapter != null) {
+                        Log.d("NEWHHHHHHHH", "I am in the listener");
+                        newAnnounce = i.getExtras().getParcelable("newAnnounce");
+
+                        if (newAnnounce != null && books.isEmpty()) {//returning from a single addition
+                            Log.d("NEWHHHHHHHH", "I am in listener after new announce");
+                            Log.d("NEWHHHHHHHH", "I am in listener after new announce : "+books.size());
+                            bookImagesStorage.child("/" + newAnnounce.getBookId() + "/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+
+                                    books = MyBooksUtils.getMyBooks(); // take user's books
+                                    Book modifiedAnnounce = MyAnnounceRVAdapter.getUnderModification();
+                                    if(modifiedAnnounce != null) {
+                                        books.remove(MyAnnounceRVAdapter.getPositionUnderModificaiton());
+                                        Log.d("NEWHHHHHHHH", "I am in listener after announce modified");
+                                    }
+                                    adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
+                                    newAnnounce.setThumbnail(uri.toString());
+                                    rv.setAdapter(adapter);
+                                    adapter.addItem(0,newAnnounce);
+                                    MyBooksUtils.setMyBooks((ArrayList<Book>)MyAnnounceRVAdapter.getAnnouncementsModel());
+
+
+                                    Log.d("NEWHHHHHHHH", "added");
+                                    Log.d("NEWHHHH","model"+MyAnnounceRVAdapter.getAnnouncementsModel().size());
+
+                                }
+                            });
+
+
+                        }else
+                            if(books.isEmpty()){ //activity called by other activities
+                            Log.d("NEWHHHHHHHH", "I am in the listener READ FROM DB");
+                            Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
+
+                            final long numberOfannounces = dataSnapshot.getChildrenCount();
+
+                            Log.d("NEWHHH","->"+numberOfannounces);
+
+                            for(DataSnapshot announce :announces){
+
+                                booksDb.child((String)announce.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        //books.add(dataSnapshot.getValue(Book.class));
+
+                                        bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                Book book = dataSnapshot.getValue(Book.class);
+                                                book.setBookId((String)announce.getValue());
+                                                book.setThumbnail(uri.toString());
+                                                books.add(book);
+
+
+                                                if(books.size() == numberOfannounces){
+                                                    Log.d("NEWHHH",books.size()+"->"+numberOfannounces);
+                                                    MyBooksUtils.setMyBooks(books);
+
+                                                    adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
+                                                    rv.setAdapter(adapter);
+
+                                                    Log.d("NEWHHHHHHHH", "I am in the listener READ FROM DB: read");
+
+                                                }
+                                            }
+                                        });
+
+
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                        }
+                    }
+                */
+
 
 
                 }
@@ -143,6 +255,7 @@ public class MyBookActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(MyBookActivity.this,getString(R.string.databaseError),Toast.LENGTH_SHORT);
 
             }
         });
@@ -162,13 +275,53 @@ public class MyBookActivity extends AppCompatActivity {
         setupNavbar();
     }
 
-    private void setRecycle(List<Book> announcments){
-        RecyclerView rv = (RecyclerView)findViewById(R.id.expanded_books);
-        LinearLayoutManager llm = new LinearLayoutManager(MyBookActivity.this);
-        rv.setLayoutManager(llm);
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
 
-        RVAdapter adapter = new RVAdapter(announcments,getApplicationContext());
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("books",books);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d("debug","I am in onRestoreInstanceState");
+        books = savedInstanceState.getParcelableArrayList("books");
+        setRecyclerView(books);
+    }
+
+    private void findAndSetNewAnnouncementFab(){
+        newAnnoucementFab = findViewById(R.id.fab_addBook);
+
+        newAnnoucementFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(),ShareBookActivity.class);
+                startActivity(i);
+                finish();
+
+            }
+        });
+    }
+
+    private void setRecyclerView(List<Book> announcments){
+        rv = (RecyclerView)findViewById(R.id.expanded_books);
+        llm = new LinearLayoutManager(MyBookActivity.this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        rv.setLayoutManager(llm);
+        rv.setItemAnimator(new DefaultItemAnimator());
+
+
+        adapter = new MyAnnounceRVAdapter(announcments,MyBookActivity.this,llm);
         rv.setAdapter(adapter);
+
 
     }
 

@@ -65,7 +65,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MyBookActivity" />
+        <activity android:name=".MyBookActivity"
+            android:launchMode="singleTask"/>
 
         <!-- crop image activity -->
         <activity

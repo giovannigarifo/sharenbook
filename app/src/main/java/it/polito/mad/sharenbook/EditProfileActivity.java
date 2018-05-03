@@ -413,6 +413,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         startActivity(i);
                     }
                     writeProfile_copy.clear().commit();
+                    /* save the new Data for NavigationDrawerProfile */
+
+                    NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
 
                     finish();
 

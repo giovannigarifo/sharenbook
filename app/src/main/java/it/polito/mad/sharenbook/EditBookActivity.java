@@ -560,6 +560,10 @@ public class EditBookActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+           // Book newAnnounce = book;
+           // newAnnounce.setBookId(bookKey);
+           // i.putExtra("newAnnounce",newAnnounce);
+          //  Log.d("NEWHHHH:",newAnnounce.getBookId());
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
             finish();

@@ -209,4 +209,6 @@
     <string name="error_save_camera_photo">There was an error while saving your photo, please retry.</string>
     <string name="title_activity_maps">Map</string>
 
+    <string name="databaseError">Database error</string>
+
 </resources>

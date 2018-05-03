@@ -204,4 +204,5 @@
 
     <string name="error_save_camera_photo">Si è verificato un errore durante il salvataggio della foto, riprova.</string>
 
+    <string name="databaseError">Si è verificato un errore durante la lettura del database</string>
 </resources>
