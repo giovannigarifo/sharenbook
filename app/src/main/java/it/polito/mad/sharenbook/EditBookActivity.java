@@ -5,6 +5,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -51,6 +53,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import it.polito.mad.sharenbook.model.Book;
@@ -117,6 +120,8 @@ public class EditBookActivity extends AppCompatActivity {
     private GeoFire geoFire;
 
     Random rand  = new Random();
+
+    List<Address> place = new ArrayList<>();
 
     /**
      * onCreate callback
@@ -456,15 +461,12 @@ public class EditBookActivity extends AppCompatActivity {
         } else
             bookData.put("creationTime", book.getCreationTime());
 
-        int LocLat = rand.nextInt(100);
-        int LocLong = rand.nextInt(100);
-
-        book.setLocation_lat(Integer.toString(LocLat));
-        book.setLocation_long(Integer.toString(LocLong));
+        book.setLocation_lat(Double.toString(place.get(0).getLatitude()));
+        book.setLocation_long(Double.toString(place.get(0).getLongitude()));
 
         if(book.getLocation_lat().equals("") || book.getLocation_lat().equals("")) {
-                bookData.put("location_lat", LocLat);    //change to user chosen position
-                bookData.put("location_long",  LocLong);
+                bookData.put("location_lat", book.getLocation_lat());    //change to user chosen position
+                bookData.put("location_long",  book.getLocation_long());
         }
         else {
             bookData.put("location_lat", book.getLocation_lat());
@@ -506,15 +508,7 @@ public class EditBookActivity extends AppCompatActivity {
                 geoLocationRef = firebaseDatabase.getReference(getString(R.string.books_locations));
                 geoFire = new GeoFire(geoLocationRef);
 
-                //TODO work in progress - get the gps position or user inserted location
-                /*String locationProvider = LocationManager.NETWORK_PROVIDER;
-                Location lastKnownLocation = null;
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                    lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-                    return;
-                }*/
-                geoFire.setLocation(bookRef.getKey(), new GeoLocation(LocLat, LocLong), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
+                geoFire.setLocation(bookRef.getKey(), new GeoLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long())), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
 
 
             } else {
@@ -689,11 +683,34 @@ public class EditBookActivity extends AppCompatActivity {
             }
         }
         if (editbook_et_bookConditions.getText().toString().isEmpty()) {
-            editbook_et_bookConditions.setError(getText(R.string.field_required));
+                editbook_et_bookConditions.setError(getText(R.string.field_required));
+                isValid = false;
+                if (!alreadyFocused) {
+                    editbook_et_bookConditions.requestFocus();
+                    alreadyFocused = true;
+                }
+        }
+
+        if(editbook_et_location.getText().toString().isEmpty()){
+            editbook_et_location.setError(getText(R.string.field_required));
             isValid = false;
             if (!alreadyFocused) {
-                editbook_et_bookConditions.requestFocus();
+                editbook_et_location.requestFocus();
                 alreadyFocused = true;
+            }
+        } else {
+            String location = editbook_et_location.getText().toString();
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            try {
+                place.clear();
+                place.addAll(geocoder.getFromLocationName(location, 1));
+            }catch (IOException e) { //if it was not possible to recognize location
+                editbook_et_location.setError(getText(R.string.unknown_place));
+                isValid = false;
+                if (!alreadyFocused) {
+                    editbook_et_location.requestFocus();
+                    alreadyFocused = true;
+                }
             }
         }
 
