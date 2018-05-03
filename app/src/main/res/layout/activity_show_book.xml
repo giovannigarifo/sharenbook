@@ -64,7 +64,7 @@
                             android:id="@+id/showbook_recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical" />
+                            android:layout_gravity="center" />
 
                     </LinearLayout>
 
@@ -213,7 +213,8 @@
                             android:id="@+id/showbook_tvc_bookConditions"
                             style="@style/TextViewContent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" />
 
                         <!-- additional tags -->
                         <TextView
@@ -230,7 +231,8 @@
                             android:id="@+id/showbook_tvc_tags"
                             style="@style/TextViewContent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp" />
 
                     </LinearLayout>
 

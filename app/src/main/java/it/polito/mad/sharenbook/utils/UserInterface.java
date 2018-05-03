@@ -1,6 +1,7 @@
 package it.polito.mad.sharenbook.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
@@ -63,4 +64,12 @@ public class UserInterface {
 
     }
 
+    /**
+     * Convert dp to pixel
+     */
+    public static int convertDpToPixel(float dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
+    }
 }

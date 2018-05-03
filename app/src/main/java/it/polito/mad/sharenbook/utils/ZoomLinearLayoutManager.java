@@ -10,12 +10,16 @@ public class ZoomLinearLayoutManager extends LinearLayoutManager {
     private final float mShrinkAmount = 0.25f; //0.15f;
     private final float mShrinkDistance = 0.9f; //0.9f;
 
-    public ZoomLinearLayoutManager(Context context) {
+    private int mItemWidth;
+
+    public ZoomLinearLayoutManager(Context context, int itemWidth) {
         super(context);
+        mItemWidth = itemWidth;
     }
 
-    public ZoomLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+    public ZoomLinearLayoutManager(Context context, int orientation, boolean reverseLayout, int itemWidth) {
         super(context, orientation, reverseLayout);
+        mItemWidth = itemWidth;
     }
 
 
@@ -76,5 +80,15 @@ public class ZoomLinearLayoutManager extends LinearLayoutManager {
         super.onLayoutChildren(recycler, state);
         scrollHorizontallyBy(0, recycler, state);
         scrollVerticallyBy(0, recycler, state);
+    }
+
+    @Override
+    public int getPaddingLeft() {
+        return Math.round(getWidth() / 2f - mItemWidth / 2f);
+    }
+
+    @Override
+    public int getPaddingRight() {
+        return getPaddingLeft();
     }
 }
