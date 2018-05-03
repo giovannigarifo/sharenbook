@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,8 +13,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -105,9 +108,21 @@ public class SearchActivity extends AppCompatActivity
         searchResult = new ArrayList<>();
 
         RecyclerView search_rv_result = (RecyclerView) findViewById(R.id.search_rv_result);
-        LinearLayoutManager llm = new LinearLayoutManager(SearchActivity.this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        search_rv_result.setLayoutManager(llm);
+
+        StaggeredGridLayoutManager sglm;
+        LinearLayoutManager llm;
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
+            sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            search_rv_result.setLayoutManager(sglm);
+
+        } else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+
+            llm = new LinearLayoutManager(SearchActivity.this);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            search_rv_result.setLayoutManager(llm);
+        }
 
         sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
         search_rv_result.setAdapter(sbAdapter);
@@ -569,7 +584,16 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
     public SearchBookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater li = LayoutInflater.from(parent.getContext());
-        LinearLayout ll = (LinearLayout) li.inflate(R.layout.item_search_result, parent, false);
+        LinearLayout ll = null;
+
+        if(parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
+            ll = (LinearLayout) li.inflate(R.layout.item_search_result_land, parent, false);
+
+        } else if(parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+
+            ll = (LinearLayout) li.inflate(R.layout.item_search_result, parent, false);
+        }
 
         return new SearchBookViewHolder(ll);
     }

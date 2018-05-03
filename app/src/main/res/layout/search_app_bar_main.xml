@@ -60,8 +60,7 @@
             app:itemIconTint="@drawable/nav_bar_selector"
             app:itemTextColor="@drawable/nav_bar_selector"
             app:menu="@menu/navigation"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 
