@@ -661,7 +661,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> place = new ArrayList<>();
         try {
-            place.addAll(geocoder.getFromLocation(Double.parseDouble(searchResult.get(position).getLocationLat()), Double.parseDouble(searchResult.get(position).getLocationLong()), 1));
+            place.addAll(geocoder.getFromLocation(Double.parseDouble(searchResult.get(position).getLocation_lat()), Double.parseDouble(searchResult.get(position).getLocation_long()), 1));
         }catch (IOException e) {
             e.printStackTrace();
         }

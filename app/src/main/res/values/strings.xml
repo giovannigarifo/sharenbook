@@ -47,6 +47,7 @@
     <string name="default_page_count_heading">Page Count</string>
     <string name="default_categories_heading">Categories</string>
     <string name="default_language_heading">Language</string>
+    <string name="default_location_heading">Delivery Location</string>
     <string name="default_rating_heading">Rating</string>
     <string name="default_book_condition_heading">Book conditions</string>
     <string name="default_tags_heading">Tags</string>
@@ -63,6 +64,7 @@
     <string name="default_page_count">How many pages has this book?</string>
     <string name="default_categories">Which genres it belongs to?</string>
     <string name="default_language">In which language is it written?</string>
+    <string name="default_location">Where to deliver it.</string>
     <string name="default_saving_on_firebase">Saving book on cloud…</string>
     <string name="default_book_condition">Striped cover, torn pages…</string>
     <string name="default_tags">Bestseller, recommended for children…</string>

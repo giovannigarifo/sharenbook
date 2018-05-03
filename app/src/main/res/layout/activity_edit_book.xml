@@ -267,6 +267,22 @@
                     android:inputType="text"
                     android:maxLength="150" />
 
+                <!-- location -->
+                <TextView
+                    android:id="@+id/editbook_tv_location"
+                    style="@style/TextViewHeading"
+
+                    android:text="@string/default_location_heading" />
+
+                <EditText
+                    android:id="@+id/editbook_et_location"
+                    style="@style/TextViewContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/default_location"
+                    android:inputType="text"
+                    android:maxLength="150" />
+
                 <!-- book conditions -->
                 <TextView
                     android:id="@+id/editbook_tv_bookConditions"

@@ -69,8 +69,8 @@ public class EditBookActivity extends AppCompatActivity {
 
     // views
     private EditText editbook_et_isbn, editbook_et_title, editbook_et_subtitle, editbook_et_authors,
-            editbook_et_publisher, editbook_et_publishedDate, editbook_et_description,
-            editbook_et_pageCount, editbook_et_categories, editbook_et_language, editbook_et_bookConditions,
+            editbook_et_publisher, editbook_et_publishedDate, editbook_et_description, editbook_et_pageCount,
+            editbook_et_categories, editbook_et_language, editbook_et_location, editbook_et_bookConditions,
             editbook_et_tags;
 
     private ScrollView editbook_scrollview;
@@ -459,16 +459,16 @@ public class EditBookActivity extends AppCompatActivity {
         int LocLat = rand.nextInt(100);
         int LocLong = rand.nextInt(100);
 
-        book.setLocationLat(Integer.toString(LocLat));
-        book.setLocationLong(Integer.toString(LocLong));
+        book.setLocation_lat(Integer.toString(LocLat));
+        book.setLocation_long(Integer.toString(LocLong));
 
-        if(book.getLocationLat().equals("") || book.getLocationLat().equals("")) {
+        if(book.getLocation_lat().equals("") || book.getLocation_lat().equals("")) {
                 bookData.put("location_lat", LocLat);    //change to user chosen position
                 bookData.put("location_long",  LocLong);
         }
         else {
-            bookData.put("location_lat", book.getLocationLat());
-            bookData.put("location_long", book.getLocationLong());
+            bookData.put("location_lat", book.getLocation_lat());
+            bookData.put("location_long", book.getLocation_long());
         }
 
 
@@ -640,8 +640,8 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size())
                     .put("creationTime", book.getCreationTime()) //setted in firebaseSaveBook()
-                    .put("location_lat", book.getLocationLat())
-                    .put("location_long", book.getLocationLong());
+                    .put("location_lat", book.getLocation_lat())
+                    .put("location_long", book.getLocation_long());
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)
@@ -782,6 +782,7 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_pageCount = findViewById(R.id.editbook_et_pageCount);
         editbook_et_categories = findViewById(R.id.editbook_et_categories);
         editbook_et_language = findViewById(R.id.editbook_et_language);
+        editbook_et_location = findViewById(R.id.editbook_et_location);
         editbook_et_bookConditions = findViewById(R.id.editbook_et_bookConditions);
         editbook_et_tags = findViewById(R.id.editbook_et_tags);
     }

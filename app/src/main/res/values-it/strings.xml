@@ -118,6 +118,7 @@
     <string name="default_page_count_heading">Numero pagine</string>
     <string name="default_categories_heading">Categoria</string>
     <string name="default_language_heading">Lingua</string>
+    <string name="default_location_heading">Luogo di Consegna</string>
     <string name="default_average_rating_heading">Media recensioni</string>
     <string name="default_rating_count_heading">Numero recensioni</string>
     <string name="default_book_condition_heading">Condizioni del libro</string>
@@ -134,6 +135,7 @@
     <string name="default_page_count">Quante pagine ha?</string>
     <string name="default_categories">In quali categorie rientra?</string>
     <string name="default_language">In che lingua è scritto?</string>
+    <string name="default_location">Dove intendi consegnarlo.</string>
     <string name="default_saving_on_firebase">Salvataggio dati in corso…</string>
     <string name="default_book_condition">Copertina rigata, pagine strappate…</string>
     <string name="default_tags">Bestseller, consigliato per bambini…</string>

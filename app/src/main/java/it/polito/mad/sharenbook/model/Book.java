@@ -237,11 +237,11 @@ public class Book implements Parcelable {
 
     }
 
-    public String getLocationLat() {
+    public String getLocation_lat() {
         return location_lat;
     }
 
-    public String getLocationLong() {
+    public String getLocation_long() {
         return location_long;
     }
 
@@ -317,11 +317,11 @@ public class Book implements Parcelable {
         this.creationTime = creationTime;
     }
 
-    public void setLocationLat(String location) {
+    public void setLocation_lat(String location) {
         this.location_lat = location;
     }
 
-    public void setLocationLong(String location) {
+    public void setLocation_long(String location) {
         this.location_long = location;
     }
 
@@ -397,8 +397,8 @@ public class Book implements Parcelable {
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());
         dest.writeLong(getCreationTime());
-        dest.writeString(getLocationLat());
-        dest.writeString(getLocationLong());
+        dest.writeString(getLocation_lat());
+        dest.writeString(getLocation_long());
     }
 
     @Override

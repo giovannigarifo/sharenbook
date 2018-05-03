@@ -7,12 +7,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
-import com.algolia.instantsearch.model.SearchResults;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -353,7 +351,7 @@ public class MapsActivity extends FragmentActivity
 
     public void setAnnouncementMarkers(){
         for(Book b : searchResult){
-            LatLng loc = new LatLng(Double.parseDouble(b.getLocationLat()), Double.parseDouble(b.getLocationLong()));
+            LatLng loc = new LatLng(Double.parseDouble(b.getLocation_lat()), Double.parseDouble(b.getLocation_long()));
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(loc)
                     .title(b.getTitle()));
