@@ -211,6 +211,6 @@
     <string name="infoWindow_hint">Premi qui per ulteriori dettagli..</string>
 
     <!-- ShowBook -->
-    <string name="showbook_toolbar_title">Book Details</string>
+    <string name="showbook_toolbar_title">Dettagli libro</string>
 
 </resources>
