@@ -76,6 +76,7 @@ public class SearchActivity extends AppCompatActivity
     private TextView drawer_fullname;
     private TextView drawer_email;
     private CircularImageView drawer_userPicture;
+    private String searchState;
 
     //fab to display map
     FloatingActionButton search_fab_map;
@@ -99,14 +100,18 @@ public class SearchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // setup Drawer and Search Bar
-        setDrawerAndSearchBar();
+        //setup bottom navigation bar
+        setBottomNavigationBar();
 
         //setup map floating action button
         setMapButton();
 
-        //setup bottom navigation bar
-        setBottomNavigationBar();
+        // setup Drawer and Search Bar
+        setDrawerAndSearchBar();
+
+
+
+
 
         // RecylerView setup
         searchResult = new ArrayList<>();
@@ -167,6 +172,19 @@ public class SearchActivity extends AppCompatActivity
         }
     }
 
+    private void searchStatusCheck(Bundle data){
+        if(data.getString("searchState")!=null) {
+            searchState = data.getString("searchState");
+            if (searchState.equals("enabled")) {
+                search_bottom_nav_bar.setVisibility(View.GONE);
+                search_fab_map.setVisibility(View.GONE);
+            } else {
+                search_bottom_nav_bar.setVisibility(View.VISIBLE);
+                search_fab_map.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
     private void startedFromIntent(){
 
         Bundle bundle = getIntent().getExtras();
@@ -183,6 +201,8 @@ public class SearchActivity extends AppCompatActivity
                 searchResult.addAll(previousSearchResults);
                 sbAdapter.notifyDataSetChanged();
             }
+
+            searchStatusCheck(bundle);
         }
 
         // Fire the search (async) if user launched from searchbar in another activity
@@ -201,6 +221,8 @@ public class SearchActivity extends AppCompatActivity
         searchResult.clear();
         searchResult.addAll(previousSearchResults);
         sbAdapter.notifyDataSetChanged();
+
+        searchStatusCheck(savedInstanceState);
     }
 
     /**
@@ -209,6 +231,8 @@ public class SearchActivity extends AppCompatActivity
     private void setBottomNavigationBar() {
 
         search_bottom_nav_bar = findViewById(R.id.search_bottom_nav_bar);
+
+        search_bottom_nav_bar.setVisibility(View.VISIBLE);
 
         //set navigation_profile as selected item
         search_bottom_nav_bar.setSelectedItemId(R.id.navigation_search);
@@ -240,6 +264,8 @@ public class SearchActivity extends AppCompatActivity
     private void setMapButton() {
 
         search_fab_map = findViewById(R.id.search_fab_map);
+
+        search_fab_map.setVisibility(View.VISIBLE);
 
         search_fab_map.setOnClickListener((v) -> {
             Intent mapSearch = new Intent(getApplicationContext(), MapsActivity.class);
@@ -413,6 +439,7 @@ public class SearchActivity extends AppCompatActivity
 
         outState.putParcelableArrayList("searchResult", searchResult);
         outState.putCharSequence("searchInputText", searchInputText);
+        outState.putString("searchState",searchState);
        // outState.putParcelable(getString(R.string.user_profile_data_key), user);
     }
 
@@ -484,8 +511,17 @@ public class SearchActivity extends AppCompatActivity
      */
     @Override
     public void onSearchStateChanged(boolean enabled) {
-        String s = enabled ? "enabled" : "disabled";
-        Log.d("debug", "search " + s);
+        searchState = enabled ? "enabled" : "disabled";
+        Log.d("debug", "search " + searchState);
+
+        if (sba_searchbar.isSearchEnabled()){search_bottom_nav_bar.setVisibility(View.GONE);
+            search_fab_map.setVisibility(View.GONE);}
+
+        else {
+            search_bottom_nav_bar.setVisibility(View.VISIBLE);
+            search_fab_map.setVisibility(View.VISIBLE);
+        }
+
     }
 
     /**

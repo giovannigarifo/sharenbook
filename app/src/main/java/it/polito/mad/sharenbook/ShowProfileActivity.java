@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +42,8 @@ public class ShowProfileActivity  extends AppCompatActivity
     private FloatingActionButton goEdit_button;
 
     private CircularImageView userPicture;
+
+    private String searchState;
 
     /**
      * default profile values
@@ -102,6 +105,8 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
+
+
         //modify default typography
         getViews();
 
@@ -158,6 +163,22 @@ public class ShowProfileActivity  extends AppCompatActivity
          */
         //setupSearchBar(findViewById(R.id.searchBar));
 
+        searchStatusCheck(data);
+
+
+    }
+
+    private void searchStatusCheck(Bundle data){
+        if(data.getString("searchState")!=null) {
+            searchState = data.getString("searchState");
+            if (searchState.equals("enabled")) {
+                navBar.setVisibility(View.GONE);
+                goEdit_button.setVisibility(View.GONE);
+            } else {
+                navBar.setVisibility(View.VISIBLE);
+                goEdit_button.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     /**
@@ -191,6 +212,13 @@ public class ShowProfileActivity  extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState); //the activity is going to be destroyed I need to save user
         outState.putParcelable(getString(R.string.user_profile_data_key), user);
+        outState.putString("searchState",searchState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        searchState = savedInstanceState.getString("searchState");
     }
 
     /**
@@ -323,10 +351,13 @@ public class ShowProfileActivity  extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.show_profile_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
             super.onBackPressed();
+
         }
         navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+
     }
 
 
@@ -362,8 +393,17 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     @Override
     public void onSearchStateChanged(boolean enabled) {
-        String s = enabled ? "enabled" : "disabled";
-        Toast.makeText(ShowProfileActivity.this, "Search " + s, Toast.LENGTH_SHORT).show();
+        searchState = enabled ? "enabled" : "disabled";
+        Log.d("debug", "Search " + searchState);
+        if( searchState.equals("enabled")) {
+            navBar.setVisibility(View.GONE);
+            goEdit_button.setVisibility(View.GONE);
+        }
+        else {
+            navBar.setVisibility(View.VISIBLE);
+            goEdit_button.setVisibility(View.VISIBLE);
+        }
+
     }
 
     //send intent to SearchActivity
