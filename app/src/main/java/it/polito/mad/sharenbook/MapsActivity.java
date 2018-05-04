@@ -72,7 +72,12 @@ public class MapsActivity extends FragmentActivity
         Bundle extras = getIntent().getExtras();
         if(!extras.isEmpty()) {
             searchResult = extras.getParcelableArrayList("SearchResults");
-        } else searchResult = new ArrayList<>();
+            if (searchResult == null) {
+                searchResult = new ArrayList<>();
+            }
+        } else {
+            searchResult = new ArrayList<>();
+        }
 
         //Algolia's InstantSearch setup
         searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
@@ -421,19 +426,15 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMapToolbarEnabled(false);
 
             if(searchResult != null)
                 setAnnouncementMarkers();
 
         } else {
-            Toast.makeText(getApplicationContext(), "Niente", Toast.LENGTH_SHORT).show();
-            //TODO add ask for permissions here or something similar
+            Toast.makeText(getApplicationContext(), "No permissions", Toast.LENGTH_SHORT).show();
         }
 
     }
