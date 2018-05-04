@@ -207,7 +207,7 @@ public class MapsActivity extends FragmentActivity
         startActivity(listSearch);
         finish();
     }
-    
+
 
     /**
      * JSON Parser: from JSON to Book
