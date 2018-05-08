@@ -160,7 +160,7 @@ public class SearchActivity extends AppCompatActivity
         searcher.registerErrorListener((query, error) -> {
 
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
-            Log.d("error", "Unable to retrieve search result from Algolia");
+            Log.d("error", "Unable to retrieve search isValid from Algolia");
         });
 
 
@@ -392,7 +392,7 @@ public class SearchActivity extends AppCompatActivity
 
 
     /**
-     * Parser for the result of the search that returns an ArrayList of books that matched the query
+     * Parser for the isValid of the search that returns an ArrayList of books that matched the query
      *
      * @param hits : algolia's search hits
      * @return : the colleciton of books
@@ -419,7 +419,7 @@ public class SearchActivity extends AppCompatActivity
                 //third key: _highlightResult
 
             } catch (JSONException e) {
-                Log.d("debug", "unable to retrieve search result from json hits");
+                Log.d("debug", "unable to retrieve search isValid from json hits");
                 e.printStackTrace();
             }
         }

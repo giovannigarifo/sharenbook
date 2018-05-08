@@ -388,10 +388,10 @@ public class EditBookActivity extends AppCompatActivity {
 
 
     /**
-     * onActivityResult method, callback fired each time an intent returns his result
+     * onActivityResult method, callback fired each time an intent returns his isValid
      *
      * @param requestCode : the kind of intent requested
-     * @param resultCode  : result code of the intet
+     * @param resultCode  : isValid code of the intet
      * @param data        : data returned by the intnet
      */
     @Override

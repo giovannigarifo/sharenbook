@@ -76,8 +76,8 @@
     <string name="name_length_format_rationale">Il tuo nome completo deve avere almeno 5 caratteri.</string>
     <string name="bad_email"> Email non valida!</string>
     <string name="email_bad_format_rationale">Se modifichi la mail, non lasciarla vuota per favore!</string>
-    <string name="username_bad_start_rationale">Per favore, il tuo username deve iniziare con @</string>
-    <string name="username_bad_lenght_rationale">Per favore, il tuo username deve avere almeno 2 caratteri</string>
+    <string name="username_bad_lenght_rationale">Per favore, il tuo username deve avere almeno 3 caratteri</string>
+    <string name="username_already_exists">This username is already taken! Please use a different one</string>
     <string name="city_bad_lenght_rationale">Per favore, la tua città deve contenere almeno 2 caratteri</string>
     <string name="city_bad_format_rationale">Per favore, la tua città deve contenere solo caratteri. Iniziali maiuscole</string>
     <string name="bio_bad_format_rationale">Per favore, non usare caratteri speciali nella tua biografia</string>

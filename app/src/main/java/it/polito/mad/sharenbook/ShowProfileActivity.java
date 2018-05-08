@@ -57,7 +57,7 @@ public class ShowProfileActivity  extends AppCompatActivity
     private String default_picture_timestamp;
 
     /**
-     * result values returned by called activities
+     * isValid values returned by called activities
      **/
     private static final int EDIT_RETURN_VALUE = 1;
 
@@ -240,7 +240,6 @@ public class ShowProfileActivity  extends AppCompatActivity
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
 
-
                 /* update user info in nav drawer */
                 NavigationDrawerManager.setDrawerViews(getApplicationContext(),
                         getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
@@ -273,7 +272,8 @@ public class ShowProfileActivity  extends AppCompatActivity
                  */
                 UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
                 tv_userFullName.setText(user.getFullname());
-                tv_userNickName.setText(user.getUsername());
+                String username = "@" + user.getUsername();
+                tv_userNickName.setText(username);
                 tv_userCityContent.setText(user.getCity());
                 tv_userBioContent.setText(user.getBio());
                 tv_userEmailContent.setText(user.getEmail());

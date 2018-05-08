@@ -18,8 +18,11 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -76,11 +79,14 @@ public class EditProfileActivity extends AppCompatActivity {
     private UserProfile user;
 
     //Firebase References
-    private DatabaseReference dbReference;
+    private DatabaseReference usersReference;
+    private DatabaseReference usernamesReference;
     private StorageReference storageReference;
 
     // ImageUtils for image handling
     private ImageUtils imageUtils;
+
+    boolean isValid;
 
     /**
      * onCreate callback
@@ -124,7 +130,8 @@ public class EditProfileActivity extends AppCompatActivity {
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
         // Get the database reference to this User Data
-        dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+        usersReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user.getUserID());
+        usernamesReference = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
 
         // Initialize image class
         imageUtils = new ImageUtils(this);
@@ -163,7 +170,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         writeProfile_copy.putString(getString(R.string.fullname_copy_key), fullname).commit();
 
-
         /* String username */
         if (user.getUsername() != null && !user.getUsername().equals(default_username)) {
             username = user.getUsername();
@@ -173,7 +179,6 @@ public class EditProfileActivity extends AppCompatActivity {
             et_userNickName.setHint(username);
         }
         writeProfile_copy.putString(getString(R.string.username_copy_key), username).commit();
-
 
         /* String city */
         if (user.getCity() != null && !user.getCity().equals(default_city)) {
@@ -333,28 +338,26 @@ public class EditProfileActivity extends AppCompatActivity {
             if (!validateForm())
                 return;
 
-            firebaseSaveProfile();
+            /*check username uniqueness*/
+            ValueEventListener eventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-            /*if(NetworkUtilities.isConnected()) {
+                    if(dataSnapshot.hasChild(et_userNickName.getText().toString())){
+                        et_userNickName.setError(getString(R.string.username_already_exists));
+                    } else {
+                        firebaseSaveProfile();
+                    }
 
-                if (!validateForm())
-                    return;
+                }
 
-                firebaseSaveProfile();
-            } else {
-                AlertDialog.Builder internetRequest = new AlertDialog.Builder(EditProfileActivity.this);
-                internetRequest.setTitle(R.string.no_internet_connection);
-                internetRequest.setMessage(R.string.network_alert);
-                internetRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
-                        startActivityForResult(settingsIntent, 9003);
-                        }
-                ).setNegativeButton(android.R.string.cancel,
-                        (dialog, which) -> dialog.dismiss()
-                );
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                internetRequest.show();
-            }*/
+                }
+            };
+            usernamesReference.addListenerForSingleValueEvent(eventListener);
+
         });
 
     }
@@ -385,7 +388,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
 
-        dbReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError, databaseReference) -> {
+        usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError, databaseReference) -> {
 
             if (databaseError == null) {
 
@@ -434,41 +437,23 @@ public class EditProfileActivity extends AppCompatActivity {
      * @return :
      */
     private boolean validateForm() {
-        boolean result = true;
-
+        isValid = true;
 
         if (!(et_userFullName.getText().toString().equals(fullname)) && !(et_userFullName.getText().toString().isEmpty())) {
             if ((et_userFullName.getText().toString().length()) < 5) {
                 et_userFullName.setError(getString(R.string.name_length_format_rationale));
-                result = false;
+                isValid = false;
 
             } else if (!fullname_regex.matcher(et_userFullName.getText().toString()).matches()) {
                 et_userFullName.setError(getString(R.string.name_bad_format_rationale));
-                result = false;
+                isValid = false;
             } else {
                 et_userFullName.setError(null);
             }
 
         } else if (et_userFullName.getText().toString().isEmpty()) {
             et_userFullName.setError(getString(R.string.required_field));
-            result = false;
-        }
-
-        if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
-
-            if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 2) {
-                et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
-                result = false;
-            } else if (!(et_userNickName.getText().toString().startsWith("@"))) {
-                et_userNickName.setError(getString(R.string.username_bad_start_rationale));
-                result = false;
-            } else {
-                et_userNickName.setError(null);
-            }
-
-        } else if (et_userNickName.getText().toString().isEmpty()) {
-            et_userNickName.setError(getString(R.string.required_field));
-            result = false;
+            isValid = false;
         }
 
         if (!(et_userEmail.getText().toString().equals(email)) && !(et_userEmail.getText().toString().isEmpty())) { //the mail has been changed
@@ -476,24 +461,24 @@ public class EditProfileActivity extends AppCompatActivity {
 
             if (InputValidator.isWrongEmailAddress(et_userEmail)) {
                 et_userEmail.setError(getString(R.string.bad_email));
-                result = false;
+                isValid = false;
 
             } else {
                 et_userEmail.setError(null);
             }
         } else if (TextUtils.isEmpty(et_userEmail.getText().toString())) {
             et_userEmail.setError(getString(R.string.required_field));
-            result = false;
+            isValid = false;
         }
 
         if (!(et_userCity.getText().toString().equals(city)) && !(et_userCity.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userCity.getText().toString())) < 2) {
                 et_userCity.setError(getString(R.string.city_bad_lenght_rationale));
-                result = false;
+                isValid = false;
             } else if (!(city_regex.matcher(et_userCity.getText().toString()).matches())) {
                 et_userCity.setError(getString(R.string.city_bad_format_rationale));
-                result = false;
+                isValid = false;
             } else {
                 et_userCity.setError(null);
             }
@@ -501,15 +486,29 @@ public class EditProfileActivity extends AppCompatActivity {
 
         } else if (TextUtils.isEmpty(et_userCity.getText().toString())) {
             et_userCity.setError(getString(R.string.required_field));
-            result = false;
+            isValid = false;
         }
 
         if (TextUtils.isEmpty(et_userBio.getText().toString())) {
             et_userBio.setError(getString(R.string.required_field));
-            result = false;
+            isValid = false;
         }
 
-        return result;
+        if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
+
+            if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 3) {
+                et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
+                isValid = false;
+            } else {
+                //et_userNickName.setError(null);
+            }
+
+        } else if (et_userNickName.getText().toString().isEmpty()) {
+            et_userNickName.setError(getString(R.string.required_field));
+            isValid = false;
+        }
+
+        return isValid;
     }
 
 
