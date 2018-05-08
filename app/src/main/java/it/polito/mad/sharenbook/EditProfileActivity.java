@@ -87,6 +87,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ImageUtils imageUtils;
 
     boolean isValid;
+    boolean resultFlag = false;
 
     /**
      * onCreate callback
@@ -387,46 +388,56 @@ public class EditProfileActivity extends AppCompatActivity {
             user.setBio(et_userBio.getText().toString());
         }
 
+        HashMap<String, Object> unameEntry = new HashMap<>();
+        unameEntry.put("messages", "placeholder");
 
-        usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError, databaseReference) -> {
+        usernamesReference.child(user.getUsername()).updateChildren(unameEntry, ((databaseError, databaseReference) -> {
 
             if (databaseError == null) {
+
+                usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError2, databaseReference2) -> {
+
+                    if (databaseError2 == null) {
 
                 /*
                  * Check if profile picture has been changed or not
                  */
-                if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
+                        if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
 
-                    Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
-                    uploadFile(picturePath);
+                            Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
+                            uploadFile(picturePath);
 
-                } else {
-                    /*
-                     * The user has not changed the profile picture
-                     */
+                        } else {
+                /*
+                 * The user has not changed the profile picture
+                 */
 
-                    Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
 
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.putExtra(getString(R.string.user_profile_data_key), user);
+                            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                            i.putExtra(getString(R.string.user_profile_data_key), user);
 
-                    if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
-                        setResult(RESULT_OK, i);
-                    } else {
-                        startActivity(i);
+                            if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
+                                setResult(RESULT_OK, i);
+                            } else {
+                                startActivity(i);
+                            }
+                            writeProfile_copy.clear().commit();
+                        /* save the new Data for NavigationDrawerProfile */
+
+                            NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
+                            finish();
+
+                        }
+
                     }
-                    writeProfile_copy.clear().commit();
-                    /* save the new Data for NavigationDrawerProfile */
 
-                    NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
-
-                    finish();
-
-                }
+                });
 
             }
 
-        });
+        }));
 
     }
 

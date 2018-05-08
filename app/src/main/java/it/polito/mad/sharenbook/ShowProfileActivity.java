@@ -272,8 +272,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                  */
                 UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
                 tv_userFullName.setText(user.getFullname());
-                String username = "@" + user.getUsername();
-                tv_userNickName.setText(username);
+                tv_userNickName.append(user.getUsername());
                 tv_userCityContent.setText(user.getCity());
                 tv_userBioContent.setText(user.getBio());
                 tv_userEmailContent.setText(user.getEmail());
