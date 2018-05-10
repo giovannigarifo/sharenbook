@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -136,7 +137,7 @@ public class SearchActivity extends AppCompatActivity
             search_rv_result.setLayoutManager(llm);
         }
 
-        sbAdapter = new SearchBookAdapter(this.searchResult, getApplicationContext());
+        sbAdapter = new SearchBookAdapter(this.searchResult, this);
         search_rv_result.setAdapter(sbAdapter);
 
         //Algolia's InstantSearch setup
@@ -603,11 +604,13 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
     private List<Book> searchResult;
     private Context context;
+    private Activity activity;
 
     //constructor
-    SearchBookAdapter(ArrayList<Book> searchResult, Context context) {
+    SearchBookAdapter(ArrayList<Book> searchResult, Activity activity) {
         this.searchResult = searchResult;
-        this.context = context;
+        this.context = activity.getApplicationContext();
+        this.activity = activity;
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
@@ -718,7 +721,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         card.setOnClickListener((v -> {
             Intent i = new Intent(context, ShowBookActivity.class);
             i.putExtra("book",searchResult.get(position));
-            context.startActivity(i); // start activity without finishing in order to return back with back pressed
+            activity.startActivity(i); // start activity without finishing in order to return back with back pressed
 
         }));
 
