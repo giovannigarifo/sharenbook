@@ -23,6 +23,9 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+    lintOptions {
+        checkReleaseBuilds false
+    }
 
     //
     // Algolia data binding for Hits
@@ -50,7 +53,7 @@ dependencies {
     implementation 'com.firebase:geofire-android:2.3.1'
 
     implementation 'com.facebook.android:facebook-android-sdk:4.32.0'
-    implementation("com.twitter.sdk.android:twitter-core:3.0.0@aar") { transitive = true }
+    implementation('com.twitter.sdk.android:twitter-core:3.0.0@aar') { transitive = true }
 
     implementation 'com.google.android.gms:play-services-maps:12.0.1'
     testImplementation 'junit:junit:4.12'
@@ -60,6 +63,7 @@ dependencies {
     //
     //circle layout for imageviews from https://github.com/lopspower/CircularImageView
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
+
     //
     // Zxing barcode reader library
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
