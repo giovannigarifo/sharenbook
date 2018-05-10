@@ -15,7 +15,9 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +49,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     //views
     private EditText et_userFullName, et_userNickName, et_userCity, et_userBio, et_userEmail;
+    private TextView tv_userNickName;
     private FloatingActionButton save_button;
     private FloatingActionButton fab_editPhoto;
 
@@ -88,6 +91,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     boolean isValid;
     boolean resultFlag = false;
+    private boolean creatingProfile = false;
 
     /**
      * onCreate callback
@@ -99,7 +103,10 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        if (getCallingActivity() == null && savedInstanceState == null) {
+        //modify default typography
+        getViews();
+
+        if (getCallingActivity() == null && savedInstanceState == null) {   //Profile creation
             AlertDialog.Builder completeProfileAlert = new AlertDialog.Builder(EditProfileActivity.this); //give a context to Dialog
             completeProfileAlert.setTitle(R.string.complete_profile_title);
             completeProfileAlert.setMessage(R.string.complete_profile_rational);
@@ -108,11 +115,14 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
             );
 
+            creatingProfile = true;
             completeProfileAlert.show();
+        } else {    //User already created the profile
+            et_userNickName.setVisibility(View.GONE);
+            tv_userNickName.setVisibility(View.GONE);
         }
 
-        //modify default typography
-        getViews();
+
 
         //retrieve the default values if the profile is not yet edited
         default_city = getString(R.string.default_city);
@@ -244,7 +254,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         //set hints for views
         et_userFullName.setHint(editedProfile_copy.getString(getString(R.string.fullname_copy_key), default_fullname));
-        et_userNickName.setHint(editedProfile_copy.getString(getString(R.string.username_copy_key), default_username));
+        if(creatingProfile)
+            et_userNickName.setHint(editedProfile_copy.getString(getString(R.string.username_copy_key), default_username));
+
         et_userCity.setHint(editedProfile_copy.getString(getString(R.string.city_copy_key), default_city));
         String actualBio = editedProfile_copy.getString(getString(R.string.bio_copy_key), default_bio);
 
@@ -339,25 +351,31 @@ public class EditProfileActivity extends AppCompatActivity {
             if (!validateForm())
                 return;
 
-            /*check username uniqueness*/
-            ValueEventListener eventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+            if(creatingProfile){
 
-                    if(dataSnapshot.hasChild(et_userNickName.getText().toString())){
-                        et_userNickName.setError(getString(R.string.username_already_exists));
-                    } else {
-                        firebaseSaveProfile();
+            /*check username uniqueness*/
+                ValueEventListener eventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild(et_userNickName.getText().toString())){
+                            et_userNickName.setError(getString(R.string.username_already_exists));
+                        } else {
+                            firebaseSaveProfile();
+                        }
+
                     }
 
-                }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    }
+                };
+                usernamesReference.addListenerForSingleValueEvent(eventListener);
 
-                }
-            };
-            usernamesReference.addListenerForSingleValueEvent(eventListener);
+            } else {
+                firebaseSaveProfile();
+            }
 
         });
 
@@ -371,7 +389,7 @@ public class EditProfileActivity extends AppCompatActivity {
             userData.put(getString(R.string.fullname_key), et_userFullName.getText().toString());
             user.setFullname(et_userFullName.getText().toString());
         }
-        if (et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
+        if (creatingProfile && et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
             userData.put(getString(R.string.username_key), et_userNickName.getText().toString());
             user.setUsername(et_userNickName.getText().toString());
         }
@@ -388,56 +406,36 @@ public class EditProfileActivity extends AppCompatActivity {
             user.setBio(et_userBio.getText().toString());
         }
 
-        HashMap<String, Object> unameEntry = new HashMap<>();
-        unameEntry.put("messages", "placeholder");
+        if(creatingProfile) {
 
-        usernamesReference.child(user.getUsername()).updateChildren(unameEntry, ((databaseError, databaseReference) -> {
+            HashMap<String, Object> unameEntry = new HashMap<>();
+            unameEntry.put("messages", "placeholder");
 
-            if (databaseError == null) {
+            usernamesReference.child(user.getUsername()).updateChildren(unameEntry, ((databaseError, databaseReference) -> {
 
-                usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError2, databaseReference2) -> {
+                if (databaseError == null) {
 
-                    if (databaseError2 == null) {
+                    usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError2, databaseReference2) -> {
 
-                /*
-                 * Check if profile picture has been changed or not
-                 */
-                        if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
-
-                            Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
-                            uploadFile(picturePath);
-
-                        } else {
-                /*
-                 * The user has not changed the profile picture
-                 */
-
-                            Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
-
-                            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                            i.putExtra(getString(R.string.user_profile_data_key), user);
-
-                            if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
-                                setResult(RESULT_OK, i);
-                            } else {
-                                startActivity(i);
-                            }
-                            writeProfile_copy.clear().commit();
-                        /* save the new Data for NavigationDrawerProfile */
-
-                            NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
-
-                            finish();
-
+                        if (databaseError2 == null) {
+                            checkProfileImageUpdate();
                         }
 
-                    }
+                    });
 
-                });
+                }
 
-            }
+            }));
 
-        }));
+        } else {
+            usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError, databaseReference2) -> {
+
+                if (databaseError == null) {
+                    checkProfileImageUpdate();
+                }
+
+            });
+        }
 
     }
 
@@ -505,21 +503,54 @@ public class EditProfileActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        if (!(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
+        if (creatingProfile && !(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
 
             if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 3) {
                 et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
                 isValid = false;
-            } else {
-                //et_userNickName.setError(null);
             }
 
-        } else if (et_userNickName.getText().toString().isEmpty()) {
+        } else if (creatingProfile && et_userNickName.getText().toString().isEmpty()) {
             et_userNickName.setError(getString(R.string.required_field));
             isValid = false;
         }
 
         return isValid;
+    }
+
+
+    private void checkProfileImageUpdate(){
+        /*
+         * Check if profile picture has been changed or not
+         */
+        if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
+
+            Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));
+            uploadFile(picturePath);
+
+        } else {
+        /*
+         * The user has not changed the profile picture
+         */
+
+            Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
+
+            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), user);
+
+            if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
+                setResult(RESULT_OK, i);
+            } else {
+                startActivity(i);
+            }
+            writeProfile_copy.clear().commit();
+
+            /* save the new Data for NavigationDrawerProfile */
+            NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
+            finish();
+        }
+
     }
 
 
@@ -595,6 +626,8 @@ public class EditProfileActivity extends AppCompatActivity {
         et_userCity = findViewById(R.id.et_userCityContent_edit);
         et_userBio = findViewById(R.id.et_userBioContent_edit);
         et_userEmail = findViewById(R.id.et_emailContent_edit);
+        tv_userNickName = findViewById(R.id.tv_userNameHeading_edit);
+
     }
 
 
