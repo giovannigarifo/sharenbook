@@ -224,6 +224,7 @@ public class MapsActivity extends FragmentActivity
 
         String bookId = jsonObject.optString("bookId");
         String owner_uid = jsonObject.optString("owner_uid");
+        String owner_username = jsonObject.optString("owner_username");
         String isbn = jsonObject.optString("isbn");
         String title = jsonObject.optString("title");
         String subtitle = jsonObject.optString("subtitle");
@@ -321,7 +322,7 @@ public class MapsActivity extends FragmentActivity
         String locationLat = jsonObject.optString("location_lat");
         String locationLong = jsonObject.optString("location_long");
 
-        return new Book(bookId, owner_uid, isbn, title, subtitle, authors, publisher, publishedDate, description,
+        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description,
                 pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong);
     }
 

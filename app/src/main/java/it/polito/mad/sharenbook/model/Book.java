@@ -29,6 +29,7 @@ public class Book implements Parcelable {
     private List<Uri> bookPhotosUri;
 
     private String owner_uid;
+    private String owner_username;
     private String bookConditions;
     private List<String> tags;
     private int numPhotos;
@@ -69,6 +70,7 @@ public class Book implements Parcelable {
         this.bookPhotosUri = new ArrayList<>();
 
         this.owner_uid = "";
+        this.owner_username = "";
         this.bookConditions = "";
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
@@ -82,13 +84,14 @@ public class Book implements Parcelable {
      * Constructor for the Book Class called Algolia
      */
 
-    public Book(String bookId, String owner_uid, String isbn, String title, String subtitle, List<String> authors, String publisher,
+    public Book(String bookId, String owner_uid, String owner_username, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
                 int numPhotos, String bookConditions, List<String> tags, long creationTime, String location_lat, String location_long) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
         this.bookId = bookId;
         this.owner_uid = owner_uid;
+        this.owner_username = owner_username;
         this.numPhotos = numPhotos;
         this.bookConditions = bookConditions;
         this.tags = tags;
@@ -116,6 +119,7 @@ public class Book implements Parcelable {
         this.bookPhotosUri = new ArrayList<>();
 
         this.owner_uid = "";
+        this.owner_username = "";
         this.bookConditions = "";
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
@@ -202,6 +206,10 @@ public class Book implements Parcelable {
 
     public String getOwner_uid() {
         return owner_uid;
+    }
+
+    public String getOwner_username() {
+        return owner_username;
     }
 
     public String getBookConditions() {
@@ -301,6 +309,10 @@ public class Book implements Parcelable {
         this.owner_uid = owner_uid;
     }
 
+    public void setOwner_username(String owner_username) {
+        this.owner_username = owner_username;
+    }
+
     public void setBookConditions(String bookConditions) {
         this.bookConditions = bookConditions;
     }
@@ -357,6 +369,7 @@ public class Book implements Parcelable {
         this.bookPhotosUri = in.readArrayList(Uri.class.getClassLoader());
 
         this.owner_uid = in.readString();
+        this.owner_username = in.readString();
         this.bookConditions = in.readString();
         this.tags = in.readArrayList(String.class.getClassLoader());
         this.numPhotos = in.readInt();
@@ -393,6 +406,7 @@ public class Book implements Parcelable {
         dest.writeList(getBookPhotosUri());
 
         dest.writeString(getOwner_uid());
+        dest.writeString(getOwner_username());
         dest.writeString(getBookConditions());
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());

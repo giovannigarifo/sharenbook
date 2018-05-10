@@ -123,7 +123,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
 
-
         //retrieve the default values if the profile is not yet edited
         default_city = getString(R.string.default_city);
         default_bio = getString(R.string.default_bio);
@@ -418,6 +417,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError2, databaseReference2) -> {
 
                         if (databaseError2 == null) {
+                            App.username = user.getUsername();
                             checkProfileImageUpdate();
                         }
 

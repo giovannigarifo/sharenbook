@@ -456,6 +456,7 @@ public class EditBookActivity extends AppCompatActivity {
         // Retrieve all data
         HashMap<String, Object> bookData = new HashMap<>();
         bookData.put("owner_uid", firebaseUser.getUid());
+        bookData.put("owner_username", App.username);
         bookData.put("isbn", book.getIsbn());
         bookData.put("title", book.getTitle());
         bookData.put("subtitle", book.getSubtitle());
@@ -634,6 +635,7 @@ public class EditBookActivity extends AppCompatActivity {
             JSONObject bookData = new JSONObject()
                     .put("bookId", bookRef.getKey())
                     .put("owner_uid", firebaseUser.getUid())
+                    .put("owner_username", App.username)
                     .put("isbn", book.getIsbn())
                     .put("title", book.getTitle())
                     .put("subtitle", book.getSubtitle())

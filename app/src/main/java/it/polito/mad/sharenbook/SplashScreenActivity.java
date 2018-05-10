@@ -155,7 +155,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         /* Profile is completed -> start ShowProfile */
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
                         user.setUserID(firebaseUser.getUid());
-
+                        App.username = user.getUsername();
 
                         goShowProfile();
 

@@ -64,6 +64,9 @@ dependencies {
     //circle layout for imageviews from https://github.com/lopspower/CircularImageView
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
 
+    //Chips Library
+    implementation 'com.robertlevonyan.view:MaterialChipView:1.2.1'
+
     //
     // Zxing barcode reader library
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }

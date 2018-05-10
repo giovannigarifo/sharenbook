@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.robertlevonyan.views.chip.Chip;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +55,7 @@ import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class SearchActivity extends AppCompatActivity
@@ -290,6 +292,7 @@ public class SearchActivity extends AppCompatActivity
 
         String bookId = jsonObject.optString("bookId");
         String owner_uid = jsonObject.optString("owner_uid");
+        String owner_username = jsonObject.optString("owner_username");
         String isbn = jsonObject.optString("isbn");
         String title = jsonObject.optString("title");
         String subtitle = jsonObject.optString("subtitle");
@@ -387,7 +390,7 @@ public class SearchActivity extends AppCompatActivity
         String locationLat = jsonObject.optString("location_lat");
         String locationLong = jsonObject.optString("location_long");
 
-        return new Book(bookId, owner_uid, isbn, title, subtitle, authors, publisher, publishedDate, description,
+        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description,
                 pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong);
     }
 
@@ -724,6 +727,13 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
             activity.startActivity(i); // start activity without finishing in order to return back with back pressed
 
         }));
+
+        //Chip set
+        Chip chip = (Chip) holder.item_search_result.findViewById(R.id.chip);
+        chip.setChipText(searchResult.get(position).getOwner_username());
+        //ImageView im_icon = chip.
+        //UserInterface.showGlideImage(this.context, FirebaseStorage.getInstance().getReference().child("/images").child("/"+searchResult.get(position).getOwner_uid()+".jpg"), im_icon, 0);
+
 
         //show card
         holder.item_search_result.setVisibility(View.VISIBLE);

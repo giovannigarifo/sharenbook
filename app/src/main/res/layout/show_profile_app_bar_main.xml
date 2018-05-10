@@ -45,7 +45,6 @@
                     app:mt_textCursorTint="@color/colorPrimary" />
 
 
-
             </RelativeLayout>
 
 
