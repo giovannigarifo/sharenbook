@@ -11,9 +11,7 @@
         android:id="@+id/sba_searchbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@color/colorPrimary">
 
         <com.mancj.materialsearchbar.MaterialSearchBar
             android:id="@+id/sba_searchbar"
@@ -28,7 +26,29 @@
             app:mt_speechMode="false"
             app:mt_textCursorTint="@color/colorAccent" />
 
+        <com.robertlevonyan.views.chip.Chip
+            android:id="@+id/distanceChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/tv_filters"
+            android:layout_alignBottom="@id/tv_filters"
+            android:layout_margin="16dp"
+            android:elevation="5dp"
+            app:mcv_chipText="@string/filter_distance"
+            app:mcv_backgroundColor="@android:color/white"
+            />
+
+        <TextView
+            android:id="@+id/tv_filters"
+            android:layout_below="@id/sba_searchbar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:elevation="4dp" />
+
+
+
     </RelativeLayout>
+
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"

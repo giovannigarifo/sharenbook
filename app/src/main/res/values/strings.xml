@@ -187,6 +187,9 @@
     <string name="sba_no_connection">Check your internet connection</string>
     <string name="sba_scan_your_barcode">Scan your Book Barcode</string>
 
+    <!--Search filters and other -->
+    <string name="filter_distance">Filter by distance</string>
+
     <!-- Firebase keys -->
     <string name="uid_key" translatable="false">uid_key</string>
     <string name="user_profile_data_key" translatable="false">user_data</string>

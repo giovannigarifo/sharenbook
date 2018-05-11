@@ -417,7 +417,6 @@ public class EditProfileActivity extends AppCompatActivity {
                     usersReference.child(getString(R.string.profile_key)).updateChildren(userData, (databaseError2, databaseReference2) -> {
 
                         if (databaseError2 == null) {
-                            App.username = user.getUsername();
                             checkProfileImageUpdate();
                         }
 
@@ -523,6 +522,8 @@ public class EditProfileActivity extends AppCompatActivity {
         /*
          * Check if profile picture has been changed or not
          */
+        App.username = user.getUsername();
+
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
 
             Uri picturePath = Uri.parse(editedProfile_copy.getString(getString(R.string.userPicture_copy_key), default_picture_path));

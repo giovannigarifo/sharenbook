@@ -28,6 +28,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.robertlevonyan.views.chip.Chip;
+import com.robertlevonyan.views.chip.OnChipClickListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +54,8 @@ public class MapsActivity extends FragmentActivity
     private DrawerLayout drawer;
     //fab to display map
     FloatingActionButton search_fab_list;
+
+    Chip filterDistanceChip;
 
     // Algolia instant search
     Searcher searcher;
@@ -107,6 +111,8 @@ public class MapsActivity extends FragmentActivity
         setListButton();
 
         setDrawerAndSearchBar();
+
+        setChipFilters();
 
     }
 
@@ -195,6 +201,21 @@ public class MapsActivity extends FragmentActivity
             startListSearch();
         });
     }
+
+
+    private void setChipFilters() {
+
+        filterDistanceChip = findViewById(R.id.distanceChip);
+        OnChipClickListener chipClickListener = v -> {
+
+            //TODO: open dialog fragment
+
+        };
+        filterDistanceChip.setOnChipClickListener(chipClickListener);
+
+    }
+
+
 
     /**
      * Start the SearchActivity with the classic list view
