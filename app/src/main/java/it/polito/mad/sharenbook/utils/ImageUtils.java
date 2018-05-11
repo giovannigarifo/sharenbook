@@ -201,10 +201,11 @@ public class ImageUtils {
      * @param photoUri  : uri of image to be resized
      * @param newWidth  : width dimension in pixel (can be 0 if newHeight is given)
      * @param newHeight : height dimension in pixel (can be 0 if newWidth is given)
+     * @param forceCopy : force photo copy even if original dimension is lower than requested
      * @return : uri of resized photo
      * @throws IOException
      */
-    public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth, int newHeight) throws IOException {
+    public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth, int newHeight, boolean forceCopy) throws IOException {
         Bitmap photo = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), photoUri);
 
         if (newWidth == 0 && newHeight == 0) {
@@ -212,10 +213,14 @@ public class ImageUtils {
         } else if (newHeight == 0) {
             if (photo.getWidth() > newWidth)
                 newHeight = (newWidth * photo.getHeight()) / photo.getWidth();
+            else if (forceCopy)
+                newHeight = photo.getHeight();
             else return photoUri;
         } else if (newWidth == 0) {
             if (photo.getHeight() > newHeight)
                 newWidth = (newHeight * photo.getWidth()) / photo.getHeight();
+            else if (forceCopy)
+                newWidth = photo.getWidth();
             else return photoUri;
         }
 
@@ -241,12 +246,27 @@ public class ImageUtils {
      * @param activity    : activity object caller
      * @param imageFolder : constant representing folder where to save
      * @param photoUri    : uri of image to be resized
-     * @param newWidth    : width dimension in pixel (can be 0 if newHeight is given)
+     * @param newWidth    : width dimension in pixel
+     * @param forceCopy : force photo copy even if original dimension is lower than requested
+     * @return : uri of resized photo
+     * @throws IOException
+     */
+    public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth, boolean forceCopy) throws IOException {
+        return resizeJpegPhoto(activity, imageFolder, photoUri, newWidth, 0, forceCopy);
+    }
+
+    /**
+     * Overload -> Resize passed photo to given width dimension (maintaining aspect ratio) without forcing copy
+     *
+     * @param activity    : activity object caller
+     * @param imageFolder : constant representing folder where to save
+     * @param photoUri    : uri of image to be resized
+     * @param newWidth    : width dimension in pixel
      * @return : uri of resized photo
      * @throws IOException
      */
     public static Uri resizeJpegPhoto(Activity activity, int imageFolder, Uri photoUri, int newWidth) throws IOException {
-        return resizeJpegPhoto(activity, imageFolder, photoUri, newWidth, 0);
+        return resizeJpegPhoto(activity, imageFolder, photoUri, newWidth, 0, false);
     }
 
 
@@ -269,12 +289,16 @@ public class ImageUtils {
 
         switch (aspectRatio) {
             case ImageUtils.ASPECT_RATIO_PHOTO_PORT:
-                if (pWidth >= pHeight) {
+                if (pHeight / pWidth == 1.5) {
                     newWidth = pWidth;
-                    newHeight = pWidth / 10 * 15;
-                } else {
-                    newWidth = pHeight / 15 * 10;
                     newHeight = pHeight;
+                }
+                else if (pHeight / pWidth < 1.5) {
+                    newWidth = Math.round((float) pHeight / 15 * 10);
+                    newHeight = pHeight;
+                } else {
+                    newWidth = pWidth;
+                    newHeight = Math.round((float) pWidth / 10 * 15);
                 }
                 break;
             default:
@@ -336,8 +360,7 @@ public class ImageUtils {
      */
     public static File createImageFile(Activity activity, int imageFolder) throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
         File storageDir = null;
 
         // Select chosen folder

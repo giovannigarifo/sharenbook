@@ -36,6 +36,7 @@ public class Book implements Parcelable {
     private long creationTime;
     private String location_lat;
     private String location_long;
+    private List<String> photosName;
 
 
     /**
@@ -77,6 +78,7 @@ public class Book implements Parcelable {
         this.creationTime = 0;
         this.location_lat = "";
         this.location_long = "";
+        this.photosName = new ArrayList<>();
     }
 
 
@@ -86,7 +88,7 @@ public class Book implements Parcelable {
 
     public Book(String bookId, String owner_uid, String owner_username, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
-                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location_lat, String location_long) {
+                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location_lat, String location_long, List<String> photosName) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
         this.bookId = bookId;
@@ -98,6 +100,7 @@ public class Book implements Parcelable {
         this.creationTime = creationTime;
         this.location_lat = location_lat;
         this.location_long = location_long;
+        this.photosName = photosName;
     }
 
     /**
@@ -126,6 +129,7 @@ public class Book implements Parcelable {
         this.creationTime = 0;
         this.location_lat = "";
         this.location_long = "";
+        this.photosName = new ArrayList<>();
     }
 
 
@@ -253,6 +257,10 @@ public class Book implements Parcelable {
         return location_long;
     }
 
+    public List<String> getPhotosName() {
+        return photosName;
+    }
+
     public void setBookId(String bookId) {
         this.bookId = bookId;
     }
@@ -337,6 +345,10 @@ public class Book implements Parcelable {
         this.location_long = location;
     }
 
+    public void setPhotosName(List<String> photosName) {
+        this.photosName = photosName;
+    }
+
     /*******************************
      * Parcelizable implementation
      *
@@ -376,6 +388,7 @@ public class Book implements Parcelable {
         this.creationTime = in.readLong();
         this.location_lat = in.readString();
         this.location_long = in.readString();
+        this.photosName = in.readArrayList(String.class.getClassLoader());
     }
 
     /**
@@ -413,6 +426,7 @@ public class Book implements Parcelable {
         dest.writeLong(getCreationTime());
         dest.writeString(getLocation_lat());
         dest.writeString(getLocation_long());
+        dest.writeList(getPhotosName());
     }
 
     @Override

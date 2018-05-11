@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -54,6 +56,7 @@ import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private StorageReference bookImagesStorage;
+    private List<StorageReference> bookPhotos;
     private Book book;
 
     private RecyclerView mRecyclerView;
@@ -83,21 +86,12 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
-        /*
-        View imageItem = getLayoutInflater().inflate(R.layout.item_book_imageview, null);
-        imageItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        Log.d("INFO", "item dimension -> " + imageItem.getMeasuredWidth());
-        */
         mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // Specify an adapter (see also next example)
-        mAdapter = new MyAdapter(book.getBookPhotosUri(), this.getContentResolver());
+        // Specify an adapter
+        mAdapter = new MyAdapter(book, this, bookImagesStorage);
         mRecyclerView.setAdapter(mAdapter);
-
-        // Download book photos from firebase
-        if (savedInstanceState == null)
-            firebaseDownloadPhotos();
 
         // Load book data into view
         loadViewWithBookData();
@@ -338,62 +332,16 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             return true;
         });
     }
-
-
-    /**
-     * Load all photos from firebase storage
-     */
-    private void firebaseDownloadPhotos() {
-
-        List<Task<FileDownloadTask.TaskSnapshot>> taskList = new ArrayList<>();
-
-        for (int i = 0; i < book.getNumPhotos(); i++) {
-
-            File localFile = null;
-            try {
-                localFile = ImageUtils.createImageFile(this, ImageUtils.EXTERNAL_CACHE);
-            } catch (IOException e) {
-                Log.d("DEBUG", "Cannot create new file now, this photo has been skipped");
-                e.printStackTrace();
-            }
-
-            // Continue if is not possible to create a new file
-            if (localFile == null) continue;
-
-            // Get uri for localFile
-            final Uri localFileUri = ImageUtils.getUriForFile(this, localFile);
-
-            StorageReference photoRef = bookImagesStorage.child(book.getBookId() + "/" + i + ".jpg");
-            Task<FileDownloadTask.TaskSnapshot> newTask = photoRef
-                    .getFile(localFile)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Successfully downloaded data to local file
-                        book.addBookPhotoUri(localFileUri);
-
-                        //notify update of the collection to Recycle View adapter
-                        mAdapter.notifyItemInserted(0);
-                        mLayoutManager.scrollToPosition(0);
-                    })
-                    .addOnFailureListener(exception -> {
-                        // Handle failed download
-                        Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
-                    });
-
-            taskList.add(newTask);
-        }
-
-        Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
-            Log.d("Success:", "photo downloaded correctly");
-        });
-    }
 }
 
 /**
  * Recycler View Adapter Class
  */
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private List<Uri> mBookPhotosUri;
-    private ContentResolver mContentResolver;
+    private Activity mActivity;
+    private Book mBook;
+    private List<String> mPhotosName;
+    private StorageReference mBookImagesStorage;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -409,9 +357,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(List<Uri> bookPhotosUri, ContentResolver contentResolver) {
-        mBookPhotosUri = bookPhotosUri;
-        mContentResolver = contentResolver;
+    public MyAdapter(Book book, Activity activity, StorageReference bookImagesStorage) {
+        mActivity = activity;
+        mBook = book;
+        mPhotosName = book.getPhotosName();
+        mBookImagesStorage = bookImagesStorage;
     }
 
     // Create new views (invoked by the layout manager)
@@ -430,25 +380,17 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        Uri photoUri = mBookPhotosUri.get(position);
-        Bitmap bmPhoto;
+        String fileName = mPhotosName.get(position);
+        StorageReference photoRef = mBookImagesStorage.child(mBook.getBookId() + "/" + fileName);
 
-        if (photoUri != null) {
-            try {
-                bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
-                holder.mImageView.setImageBitmap(bmPhoto);
-
-
-            } catch (IOException e) {
-                Log.d("Error", "IOException when retrieving image Bitmap");
-                e.printStackTrace();
-            }
-        }
+        GlideApp.with(mActivity)
+                .load(photoRef)
+                .into(holder.mImageView);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mBookPhotosUri.size();
+        return mPhotosName.size();
     }
 }

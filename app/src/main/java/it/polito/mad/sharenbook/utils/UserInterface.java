@@ -33,12 +33,12 @@ public class UserInterface {
     }
 
 
-    public static void showGlideImage(Context context, StorageReference ref, ImageView iv, long creationTime){
+    public static void showGlideImage(Context context, StorageReference ref, ImageView iv, long signature){
 
         GlideApp.with(context)
                 .load(ref)
                 .apply(RequestOptions.circleCropTransform()
-                    .signature(new ObjectKey(creationTime))
+                    .signature(new ObjectKey(signature))
                     .diskCacheStrategy(DiskCacheStrategy.ALL))
                 .into(iv);
     }

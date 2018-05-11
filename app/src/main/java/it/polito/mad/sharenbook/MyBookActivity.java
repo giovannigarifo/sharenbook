@@ -83,7 +83,8 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
+        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
 
 
@@ -113,10 +114,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     no_books.show();
                 }else{ /** there are announcements */
 
-
-                    bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-                    booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
-
                     if(books.isEmpty()){
                         Log.d("debug", "I am in the listener READ FROM DB");
                         Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
@@ -130,33 +127,21 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                             booksDb.child((String)announce.getValue()).orderByChild("creationTime").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    //books.add(dataSnapshot.getValue(Book.class));
 
-                                    bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            Book book = dataSnapshot.getValue(Book.class);
-                                            book.setBookId((String)announce.getValue());
-                                            book.setThumbnail(uri.toString());
-                                            books.add(book);
+                                    Book book = dataSnapshot.getValue(Book.class);
+                                    book.setBookId((String)announce.getValue());
+                                    books.add(book);
 
+                                    if(books.size() == numberOfannounces){
+                                        Log.d("debug",books.size()+"->"+numberOfannounces);
+                                        MyBooksUtils.setMyBooks(books);
 
-                                            if(books.size() == numberOfannounces){
-                                                Log.d("debug",books.size()+"->"+numberOfannounces);
-                                                MyBooksUtils.setMyBooks(books);
+                                        adapter = new MyAnnounceRVAdapter(books, MyBookActivity.this, llm, bookImagesStorage);
+                                        rv.setAdapter(adapter);
 
-                                                adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
-                                                rv.setAdapter(adapter);
+                                        Log.d("debug", "I am in the listener READ FROM DB: read");
 
-                                                Log.d("debug", "I am in the listener READ FROM DB: read");
-
-                                            }
-                                        }
-                                    });
-
-
-
-
+                                    }
                                 }
 
                                 @Override
@@ -358,18 +343,16 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         });
     }
 
-    private void setRecyclerView(List<Book> announcments){
+    private void setRecyclerView(List<Book> announcements){
         rv = (RecyclerView)findViewById(R.id.expanded_books);
-        llm = new LinearLayoutManager(MyBookActivity.this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        llm = new LinearLayoutManager(MyBookActivity.this, LinearLayoutManager.VERTICAL, false);
         rv.setLayoutManager(llm);
         rv.setItemAnimator(new DefaultItemAnimator());
 
-
-        adapter = new MyAnnounceRVAdapter(announcments,MyBookActivity.this,llm);
-        rv.setAdapter(adapter);
-
-
+        if (!announcements.isEmpty()) {
+            adapter = new MyAnnounceRVAdapter(announcements, MyBookActivity.this, llm, bookImagesStorage);
+            rv.setAdapter(adapter);
+        }
     }
 
 

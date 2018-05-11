@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -33,6 +35,8 @@ import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +49,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,6 +62,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
@@ -96,7 +102,8 @@ public class EditBookActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager rvLayoutManager;
 
     //information of the book to be shared
-    Book book;
+    private Book book;
+    private ArrayList<String> removedPhotos;
 
     // FireBase objects
     private FirebaseUser firebaseUser;
@@ -107,21 +114,18 @@ public class EditBookActivity extends AppCompatActivity {
     private StorageReference bookImagesStorage;
 
     // Algolia objects
-    Client algoliaClient;
-    Index algoliaIndex;
+    private Client algoliaClient;
 
     // ProgressDialog
     private ProgressDialog progressDialog;
-    int photoLoaded;
+    private int photoLoaded;
 
     // Boolean value to check if a new book should be added
     private boolean isNewBook;
 
+    // Geofire variable
     private GeoFire geoFire;
-
-    Random rand = new Random();
-
-    List<Address> place = new ArrayList<>();
+    private List<Address> place = new ArrayList<>();
 
     /**
      * onCreate callback
@@ -143,9 +147,11 @@ public class EditBookActivity extends AppCompatActivity {
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
-        // Setup Algolia
-        algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
-        algoliaIndex = algoliaClient.getIndex("books");
+        // Setup Algolia - Release config
+        // algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
+
+        // Setup Algolia - Debug config
+        algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
@@ -156,6 +162,7 @@ public class EditBookActivity extends AppCompatActivity {
         //retrieve book info
         if (savedInstanceState == null) {
 
+            removedPhotos = new ArrayList<>();
             Bundle bundle = getIntent().getExtras();
 
             if (bundle == null) {
@@ -174,6 +181,9 @@ public class EditBookActivity extends AppCompatActivity {
             // retrieve currentPhotoUri for imageUtils class
             Uri currentPhotoUri = Uri.parse(savedInstanceState.getString("currentPhotoUri"));
             imageUtils.setCurrentPhotoUri(currentPhotoUri);
+
+            // retirve removedPhotos list
+            removedPhotos = savedInstanceState.getStringArrayList("removedPhotos");
         }
 
         /*
@@ -186,15 +196,11 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_rv_bookPhotos.setLayoutManager(rvLayoutManager);
 
         // set an adapter for the RecyclerView, it's in charge of managing the ViewHolder objects
-        rvAdapter = new BookPhotoAdapter(book, this.getContentResolver());
+        rvAdapter = new BookPhotoAdapter(book, this, removedPhotos);
         editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData();
-
-        // Download firebase photos if book already exists an it has been modifying
-        if (!isNewBook && savedInstanceState == null)
-            firebaseDownloadPhotos();
 
         /*
          * register callbacks for buttons
@@ -312,6 +318,7 @@ public class EditBookActivity extends AppCompatActivity {
 
         outState.putParcelable("book", book);
         outState.putString("currentPhotoUri", imageUtils.getCurrentPhotoUri().toString());
+        outState.putStringArrayList("removedPhotos", removedPhotos);
     }
 
     @Override
@@ -415,12 +422,13 @@ public class EditBookActivity extends AppCompatActivity {
                 Uri resultUri = CropImage.getActivityResult(data).getUri();
 
                 try {
-                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, ImageUtils.EXTERNAL_CACHE, resultUri, 540);
-                    book.addBookPhotoUri(resizedPhotoUri); //add photo uri to collection (to position 0)
+                    Uri resizedPhotoUri = ImageUtils.resizeJpegPhoto(this, ImageUtils.EXTERNAL_CACHE, resultUri, 540, true);
+                    book.getBookPhotosUri().add(resizedPhotoUri);
 
                     //notify update of the collection to Recycle View adapter
-                    rvAdapter.notifyItemInserted(0);
-                    rvLayoutManager.scrollToPosition(0);
+                    int lastPosition = book.getPhotosName().size() + book.getBookPhotosUri().size() - 1;
+                    rvAdapter.notifyItemInserted(lastPosition);
+                    rvLayoutManager.scrollToPosition(lastPosition);
 
                 } catch (IOException e) {
                     Log.d("error", "IOException when retrieving resized image Uri");
@@ -469,7 +477,6 @@ public class EditBookActivity extends AppCompatActivity {
         bookData.put("language", book.getLanguage());
         bookData.put("bookConditions", book.getBookConditions());
         bookData.put("tags", book.getTags());
-        bookData.put("thumbnail", book.getThumbnail());
         bookData.put("numPhotos", book.getBookPhotosUri().size());
         if (book.getCreationTime() == 0) {
 
@@ -490,6 +497,18 @@ public class EditBookActivity extends AppCompatActivity {
             bookData.put("location_long", book.getLocation_long());
         }
 
+        // Get photo names
+        for (Uri uri : book.getBookPhotosUri()) {
+            String fileName = uri.getLastPathSegment();
+            book.getPhotosName().add(fileName);
+        }
+        bookData.put("photosName", book.getPhotosName());
+
+        // Set thumbnail value (only if still present)
+        if (isNewBook && book.getBookPhotosUri().get(0).toString().equals(book.getThumbnail())) {
+            book.setThumbnail(book.getPhotosName().get(0));
+        }
+        bookData.put("thumbnail", book.getThumbnail());
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -524,9 +543,14 @@ public class EditBookActivity extends AppCompatActivity {
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
                 geoLocationRef = firebaseDatabase.getReference(getString(R.string.books_locations));
                 geoFire = new GeoFire(geoLocationRef);
+                geoFire.setLocation(bookRef.getKey(),
+                        new GeoLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long())),
+                        (key, error) -> Log.d("DEBUG", "Location set correctly"));
 
-                geoFire.setLocation(bookRef.getKey(), new GeoLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long())), (key, error) -> firebaseSavePhotos(bookRef.getKey()));
-
+                // Load new photos on firebase
+                firebaseSavePhotos(bookRef.getKey());
+                // Delete removed photos from firebase
+                firebaseDeletePhotos(bookRef.getKey());
 
             } else {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
@@ -537,25 +561,29 @@ public class EditBookActivity extends AppCompatActivity {
 
 
     /**
-     * Save al photos on firebase
+     * Save all photos on firebase
      */
     private void firebaseSavePhotos(String bookKey) {
         // Get list of photos
-        List<Uri> photos = book.getBookPhotosUri();
+        List<Uri> photosUri = book.getBookPhotosUri();
+        List<String> photosName = book.getPhotosName();
+        int photosNameInitSize = photosName.size() - photosUri.size();
+
         List<Task<UploadTask.TaskSnapshot>> taskList = new ArrayList<>();
         photoLoaded = 0;
-        int numPhotos = photos.size();
+        int numPhotos = photosUri.size();
 
         // Show message "uploading books"
         updateProgressDialogMessage(++photoLoaded, numPhotos);
 
         // Launch a task for every photo that should be updated
-        for (int i = 0; i < photos.size(); i++) {
+        for (int i = 0; i < photosUri.size(); i++) {
             final int num = i;
+            String fileName = photosName.get(photosNameInitSize + i);
 
             // Generate new file on firebase and write it
-            StorageReference newFile = bookImagesStorage.child(bookKey + "/" + i + ".jpg");
-            Task<UploadTask.TaskSnapshot> newTask = newFile.putFile(photos.get(i))
+            StorageReference newFile = bookImagesStorage.child(bookKey + "/" + fileName);
+            Task<UploadTask.TaskSnapshot> newTask = newFile.putFile(photosUri.get(i))
                     .addOnSuccessListener(taskSnapshot -> {
                         // Handle successful uploads
                         Log.d("Debug", "Photo n. " + num + " uploaded!");
@@ -573,52 +601,22 @@ public class EditBookActivity extends AppCompatActivity {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-            // Book newAnnounce = book;
-            // newAnnounce.setBookId(bookKey);
-            // i.putExtra("newAnnounce",newAnnounce);
-            //  Log.d("NEWHHHH:",newAnnounce.getBookId());
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
             finish();
         });
     }
 
-
     /**
-     * Load all photos from firebase storage
+     * Delete removed photos from firebase
      */
-    private void firebaseDownloadPhotos() {
+    private void firebaseDeletePhotos(String bookKey) {
 
-        for (int i = 0; i < book.getNumPhotos(); i++) {
-
-            File localFile = null;
-            try {
-                localFile = ImageUtils.createImageFile(this, ImageUtils.EXTERNAL_CACHE);
-            } catch (IOException e) {
-                Log.d("DEBUG", "Cannot create new file now, this photo has been skipped");
-                e.printStackTrace();
-            }
-
-            // Continue if is not possible to create a new file
-            if (localFile == null) continue;
-
-            // Get uri for localFile
-            final Uri localFileUri = ImageUtils.getUriForFile(this, localFile);
-
-            StorageReference photoRef = bookImagesStorage.child(book.getBookId() + "/" + i + ".jpg");
-            photoRef.getFile(localFile)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Successfully downloaded data to local file
-                        book.addBookPhotoUri(localFileUri);
-
-                        //notify update of the collection to Recycle View adapter
-                        rvAdapter.notifyItemInserted(0);
-                        rvLayoutManager.scrollToPosition(0);
-                    })
-                    .addOnFailureListener(exception -> {
-                        // Handle failed download
-                        Log.d("DEBUG", "An error occurred during photo downloading, this photo has been skipped");
-                    });
+        for (String fileName : removedPhotos) {
+            StorageReference photoRef = bookImagesStorage.child(bookKey + "/" + fileName);
+            photoRef.delete()
+                    .addOnSuccessListener(aVoid -> Log.d("DEBUG", "Photo removed from firebase -> " + photoRef.toString()))
+                    .addOnFailureListener(e -> Log.d("DEBUG", "Error during photo removal from firebase -> " + photoRef.toString()));
         }
     }
 
@@ -639,20 +637,21 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("isbn", book.getIsbn())
                     .put("title", book.getTitle())
                     .put("subtitle", book.getSubtitle())
-                    .put("authors", book.getAuthors())
+                    .put("authors", new JSONArray(book.getAuthors()))
                     .put("publisher", book.getPublisher())
                     .put("publishedDate", book.getPublishedDate())
                     .put("description", book.getDescription())
                     .put("pageCount", book.getPageCount())
-                    .put("categories", book.getCategories())
+                    .put("categories", new JSONArray(book.getCategories()))
                     .put("language", book.getLanguage())
                     .put("bookConditions", book.getBookConditions())
-                    .put("tags", book.getTags())
+                    .put("tags", new JSONArray(book.getTags()))
                     .put("thumbnail", book.getThumbnail())
                     .put("numPhotos", book.getBookPhotosUri().size())
                     .put("creationTime", book.getCreationTime()) //setted in firebaseSaveBook()
                     .put("location_lat", book.getLocation_lat())
-                    .put("location_long", book.getLocation_long());
+                    .put("location_long", book.getLocation_long())
+                    .put("photosName", new JSONArray(book.getPhotosName()));
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)
@@ -747,7 +746,7 @@ public class EditBookActivity extends AppCompatActivity {
             thumbnailIsPresent = 0;
         else thumbnailIsPresent = 1; //thumbnail is present
 
-        if (book.getBookPhotosUri().size() - thumbnailIsPresent < MIN_REQUIRED_BOOK_PHOTO) {
+        if (book.getBookPhotosUri().size() + book.getPhotosName().size() - thumbnailIsPresent < MIN_REQUIRED_BOOK_PHOTO) {
             isValid = false;
             if (!alreadyFocused) {
                 UserInterface.scrollToViewTop(editbook_scrollview, editbook_rv_bookPhotos);
@@ -835,28 +834,39 @@ public class EditBookActivity extends AppCompatActivity {
 /**
  * BookPhotoAdapter class
  */
-
 class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
 
-    private Book book;
-    private List<Uri> bookPhotosUri;
+    private Book mBook;
+    private List<Uri> mBookPhotosUri;
+    private List<String> mPhotosName;
+    private Activity mActivity;
     private ContentResolver mContentResolver;
+    private List<String> mRemovedPhotos;
+    private StorageReference bookImagesStorage;
 
     //constructor
-    BookPhotoAdapter(Book book, ContentResolver contentResolver) {
-        this.book = book;
-        this.bookPhotosUri = book.getBookPhotosUri();
-        this.mContentResolver = contentResolver;
+    BookPhotoAdapter(Book book, Activity activity, List<String> removedPhotos) {
+        this.mBook = book;
+        this.mBookPhotosUri = book.getBookPhotosUri();
+        this.mPhotosName = book.getPhotosName();
+        this.mActivity = activity;
+        this.mContentResolver = activity.getContentResolver();
+        this.mRemovedPhotos = removedPhotos;
+        this.bookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
     class BookPhotoViewHolder extends RecyclerView.ViewHolder {
 
         private RelativeLayout item_book_photo_iv;
+        private ImageView iv;
+        private ImageButton ib;
 
         BookPhotoViewHolder(RelativeLayout rl) {
             super(rl);
             this.item_book_photo_iv = rl;
+            this.iv = rl.findViewById(R.id.itembookphoto_iv_bookphoto);
+            this.ib = rl.findViewById(R.id.itembookphoto_ib_deletePhoto);
         }
     }
 
@@ -887,37 +897,65 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     @Override
     public void onBindViewHolder(@NonNull BookPhotoViewHolder holder, int position) {
 
-        Uri photoUri = this.bookPhotosUri.get(position);
-        Bitmap bmPhoto;
+        if (mPhotosName.size() > 0 && position < mPhotosName.size()) {
+            String fileName = mPhotosName.get(position);
+            StorageReference photoRef = bookImagesStorage.child(mBook.getBookId() + "/" + fileName);
 
-        try {
-            bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
-
-            ImageView iv = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_iv_bookphoto);
-            iv.setImageBitmap(bmPhoto);
-
-            ImageButton ib = holder.item_book_photo_iv.findViewById(R.id.itembookphoto_ib_deletePhoto);
-            ib.setTag(photoUri);
+            GlideApp.with(mActivity)
+                    .load(photoRef)
+                    .into(holder.iv);
+            holder.ib.setTag(fileName);
 
             //onClick listener for the delete photo button
-            ib.setOnClickListener((v) -> {
+            holder.ib.setOnClickListener((v) -> {
 
-                if (bookPhotosUri.size() > 0) {
+                if (mPhotosName.size() > 0) {
 
-                    Uri uri = (Uri) v.getTag();
-                    int ib_position = bookPhotosUri.indexOf(uri);
+                    String tag = (String) v.getTag();
+                    int ib_position = mPhotosName.indexOf(tag);
 
                     //check if thumbnail must be removed
-                    if (uri.toString().equals(Uri.parse(book.getThumbnail()).toString()))
-                        book.setThumbnail("");
+                    if (tag.equals(mBook.getThumbnail()))
+                        mBook.setThumbnail("");
 
-                    bookPhotosUri.remove(ib_position);
+                    mPhotosName.remove(ib_position);
                     notifyItemRemoved(ib_position);
+                    mRemovedPhotos.add(tag);
                 }
             });
-        } catch (IOException e) {
-            Log.d("error", "IOException when retrieving image Bitmap");
-            e.printStackTrace();
+        } else {
+
+            int relPosition = position - mPhotosName.size();
+
+            Uri photoUri = this.mBookPhotosUri.get(relPosition);
+            Bitmap bmPhoto;
+
+            try {
+                bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
+
+                holder.iv.setImageBitmap(bmPhoto);
+                holder.ib.setTag(photoUri);
+
+                //onClick listener for the delete photo button
+                holder.ib.setOnClickListener((v) -> {
+
+                    if (mBookPhotosUri.size() > 0) {
+
+                        Uri tag = (Uri) v.getTag();
+                        int ib_position = mBookPhotosUri.indexOf(tag) + mPhotosName.size();
+
+                        //check if thumbnail must be removed
+                        if (tag.toString().equals(mBook.getThumbnail()))
+                            mBook.setThumbnail("");
+
+                        mBookPhotosUri.remove(ib_position);
+                        notifyItemRemoved(ib_position);
+                    }
+                });
+            } catch (IOException e) {
+                Log.d("error", "IOException when retrieving image Bitmap");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -925,6 +963,6 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return this.bookPhotosUri.size();
+        return this.mPhotosName.size() + this.mBookPhotosUri.size();
     }
 }

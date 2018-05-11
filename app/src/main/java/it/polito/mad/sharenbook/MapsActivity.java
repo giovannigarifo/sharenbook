@@ -80,7 +80,8 @@ public class MapsActivity extends FragmentActivity
         }
 
         //Algolia's InstantSearch setup
-        searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
+        // searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
+        searcher = Searcher.create("K7HV32WVKQ", "04a25396f978e2d22348e5520d70437e", "books");
         helper = new InstantSearch(searcher);
 
         searcher.registerResultListener((results, isLoadingMore) -> {
@@ -234,21 +235,9 @@ public class MapsActivity extends FragmentActivity
 
         try {
 
-            Object a = jsonObject.get("authors");
-
-            if (a instanceof String) {
-
-                String author = (String) a;
-                author = author.replace("[", "");
-                author = author.replace("]", "");
-                authors.add(author);
-
-            } else {
-
-                JSONArray jsonCategories = jsonObject.getJSONArray("authors");
-                for (int i = 0; i < jsonCategories.length(); i++)
-                    authors.add(jsonCategories.optString(i));
-            }
+            JSONArray jsonCategories = jsonObject.getJSONArray("authors");
+            for (int i = 0; i < jsonCategories.length(); i++)
+                authors.add(jsonCategories.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -265,21 +254,9 @@ public class MapsActivity extends FragmentActivity
 
         try {
 
-            Object c = jsonObject.get("categories");
-
-            if (c instanceof String) {
-
-                String category = (String) c;
-                category = category.replace("[", "");
-                category = category.replace("]", "");
-                categories.add(category);
-
-            } else {
-
-                JSONArray jsonCategories = jsonObject.getJSONArray("categories");
-                for (int i = 0; i < jsonCategories.length(); i++)
-                    categories.add(jsonCategories.optString(i));
-            }
+            JSONArray jsonCategories = jsonObject.getJSONArray("categories");
+            for (int i = 0; i < jsonCategories.length(); i++)
+                categories.add(jsonCategories.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -297,21 +274,9 @@ public class MapsActivity extends FragmentActivity
 
         try {
 
-            Object t = jsonObject.get("tags");
-
-            if (t instanceof String) {
-
-                String tag = (String) t;
-                tag = tag.replace("[", "");
-                tag = tag.replace("]", "");
-                tags.add(tag);
-
-            } else {
-
-                JSONArray jsonTags = jsonObject.getJSONArray("tags");
-                for (int i = 0; i < jsonTags.length(); i++)
-                    tags.add(jsonTags.optString(i));
-            }
+            JSONArray jsonTags = jsonObject.getJSONArray("tags");
+            for (int i = 0; i < jsonTags.length(); i++)
+                tags.add(jsonTags.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -322,8 +287,22 @@ public class MapsActivity extends FragmentActivity
         String locationLat = jsonObject.optString("location_lat");
         String locationLong = jsonObject.optString("location_long");
 
-        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description,
-                pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong);
+        //photos
+        ArrayList<String> photosName = new ArrayList<>();
+
+        try {
+
+            JSONArray jsonPhotos = jsonObject.getJSONArray("photosName");
+            for (int i = 0; i < jsonPhotos.length(); i++)
+                photosName.add(jsonPhotos.optString(i));
+
+        } catch (JSONException e) {
+            Log.d("debug", "Error during BookJsonParse");
+            e.printStackTrace();
+        }
+
+        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories,
+                language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong, photosName);
     }
 
 

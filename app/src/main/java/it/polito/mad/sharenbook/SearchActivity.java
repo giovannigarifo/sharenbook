@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -50,12 +49,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
-import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class SearchActivity extends AppCompatActivity
@@ -143,7 +141,8 @@ public class SearchActivity extends AppCompatActivity
         search_rv_result.setAdapter(sbAdapter);
 
         //Algolia's InstantSearch setup
-        searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
+        // searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
+        searcher = Searcher.create("K7HV32WVKQ", "04a25396f978e2d22348e5520d70437e", "books");
         helper = new InstantSearch(searcher);
 
         searcher.registerResultListener((results, isLoadingMore) -> {
@@ -302,21 +301,9 @@ public class SearchActivity extends AppCompatActivity
 
         try {
 
-            Object a = jsonObject.get("authors");
-
-            if (a instanceof String) {
-
-                String author = (String) a;
-                author = author.replace("[", "");
-                author = author.replace("]", "");
-                authors.add(author);
-
-            } else {
-
-                JSONArray jsonCategories = jsonObject.getJSONArray("authors");
-                for (int i = 0; i < jsonCategories.length(); i++)
-                    authors.add(jsonCategories.optString(i));
-            }
+            JSONArray jsonCategories = jsonObject.getJSONArray("authors");
+            for (int i = 0; i < jsonCategories.length(); i++)
+                authors.add(jsonCategories.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -333,21 +320,9 @@ public class SearchActivity extends AppCompatActivity
 
         try {
 
-            Object c = jsonObject.get("categories");
-
-            if (c instanceof String) {
-
-                String category = (String) c;
-                category = category.replace("[", "");
-                category = category.replace("]", "");
-                categories.add(category);
-
-            } else {
-
-                JSONArray jsonCategories = jsonObject.getJSONArray("categories");
-                for (int i = 0; i < jsonCategories.length(); i++)
-                    categories.add(jsonCategories.optString(i));
-            }
+            JSONArray jsonCategories = jsonObject.getJSONArray("categories");
+            for (int i = 0; i < jsonCategories.length(); i++)
+                categories.add(jsonCategories.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -365,21 +340,9 @@ public class SearchActivity extends AppCompatActivity
 
         try {
 
-            Object t = jsonObject.get("tags");
-
-            if (t instanceof String) {
-
-                String tag = (String) t;
-                tag = tag.replace("[", "");
-                tag = tag.replace("]", "");
-                tags.add(tag);
-
-            } else {
-
-                JSONArray jsonTags = jsonObject.getJSONArray("tags");
-                for (int i = 0; i < jsonTags.length(); i++)
-                    tags.add(jsonTags.optString(i));
-            }
+            JSONArray jsonTags = jsonObject.getJSONArray("tags");
+            for (int i = 0; i < jsonTags.length(); i++)
+                tags.add(jsonTags.optString(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -390,8 +353,22 @@ public class SearchActivity extends AppCompatActivity
         String locationLat = jsonObject.optString("location_lat");
         String locationLong = jsonObject.optString("location_long");
 
-        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description,
-                pageCount, categories, language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong);
+        //photos
+        ArrayList<String> photosName = new ArrayList<>();
+
+        try {
+
+            JSONArray jsonPhotos = jsonObject.getJSONArray("photosName");
+            for (int i = 0; i < jsonPhotos.length(); i++)
+                photosName.add(jsonPhotos.optString(i));
+
+        } catch (JSONException e) {
+            Log.d("debug", "Error during BookJsonParse");
+            e.printStackTrace();
+        }
+
+        return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories,
+                language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong, photosName);
     }
 
 
@@ -670,25 +647,15 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
         photo.setImageResource(R.drawable.book_photo_placeholder);
 
-        String bookId = searchResult.get(position).getBookId();
+        Book book = searchResult.get(position);
+        String fileName = (book.getPhotosName().size() > 1) ? book.getPhotosName().get(1) : book.getPhotosName().get(0);
+        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + book.getBookId() + "/" + fileName);
 
-        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + bookId + "/" + "0.jpg");
-
-        thumbnailOrFirstPhotoRef.getDownloadUrl().addOnSuccessListener((Uri uri) -> {
-
-            String imageURL = uri.toString();
-
-            GlideApp.with(context).load(imageURL)
-                    .placeholder(R.drawable.book_photo_placeholder)
-                    .error(R.drawable.book_photo_placeholder)
-                    .transition(DrawableTransitionOptions.withCrossFade(500))
-                    .into(photo);
-
-        }).addOnFailureListener((exception) -> {
-                    // handle errors here
-                    Log.e("error", "Error while retrieving book photo/thumbnail from firebase storage.");
-                }
-        );
+        GlideApp.with(context).load(thumbnailOrFirstPhotoRef)
+                .placeholder(R.drawable.book_photo_placeholder)
+                .error(R.drawable.book_photo_placeholder)
+                .transition(DrawableTransitionOptions.withCrossFade(500))
+                .into(photo);
 
         //title
         TextView title = holder.item_search_result.findViewById(R.id.item_searchresult_title);

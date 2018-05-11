@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,13 +39,14 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     private static int positionUnderModificaiton;
     private Context context;
     private LinearLayoutManager llm;
+    private StorageReference mBookImagesStorage;
 
-    MyAnnounceRVAdapter(List<Book> announcements, Context context, LinearLayoutManager llm){
+    MyAnnounceRVAdapter(List<Book> announcements, Context context, LinearLayoutManager llm, StorageReference bookImagesStorage) {
         MyAnnounceRVAdapter.announcements = announcements;
         this.context = context;
         this.llm = llm;
+        this.mBookImagesStorage = bookImagesStorage;
         underModification = null;
-
     }
 
     @NonNull
@@ -58,10 +60,13 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     @Override
     public void onBindViewHolder(@NonNull MyAnnounceRVAdapter.AnnounceViewHolder holder, int position) {
 
-
-
         if(!announcements.isEmpty()) {
-           // UserInterface.TextViewFontResize(announcements.get(position).getTitle().length(),(WindowManager)context.getSystemService(Context.WINDOW_SERVICE) , holder.bookTitle);
+            // UserInterface.TextViewFontResize(announcements.get(position).getTitle().length(),(WindowManager)context.getSystemService(Context.WINDOW_SERVICE) , holder.bookTitle);
+
+            // Get Book Image
+            StorageReference photoRef = mBookImagesStorage.child(announcements.get(position).getBookId() + "/" + announcements.get(position).getPhotosName().get(0));
+            Glide.with(context).load(photoRef).into(holder.bookPhoto);
+
             holder.bookTitle.setText(announcements.get(position).getTitle());
             holder.bookAuthors.setText(announcements.get(position).getAuthorsAsString());
             holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString(context));
@@ -78,8 +83,6 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
                 holder.bookLocation.setText(place.get(0).getLocality() + ", " + place.get(0).getCountryName());
             else
                 holder.bookLocation.setText(R.string.unknown_place);
-
-            Glide.with(context).load(announcements.get(position).getThumbnail()).into(holder.bookPhoto);
 
             holder.editButton.setOnClickListener(new View.OnClickListener() {
                 @Override

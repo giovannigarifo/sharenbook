@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "564905698190",
-    "firebase_url": "https://sharenbook-debug.firebaseio.com",
-    "project_id": "sharenbook-debug",
-    "storage_bucket": "sharenbook-debug.appspot.com"
+    "project_number": "284783646504",
+    "firebase_url": "https://sharenbook-1b8ac.firebaseio.com",
+    "project_id": "sharenbook-1b8ac",
+    "storage_bucket": "sharenbook-1b8ac.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:564905698190:android:1e2c241afc777a17",
+        "mobilesdk_app_id": "1:284783646504:android:1e2c241afc777a17",
         "android_client_info": {
           "package_name": "it.polito.mad.sharenbook"
         }
       },
       "oauth_client": [
         {
-          "client_id": "564905698190-enqkbr41dp3isgtkl3eg3op9bi0uff60.apps.googleusercontent.com",
+          "client_id": "284783646504-iead90umcnt2fgpvd5a0il2akmqrq662.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB8H1S9BpU-B2tOZOSYCt5bd_JLStQdhik"
+          "current_key": "AIzaSyAHadtF66bJK6l4rb-wC8VEneuDd002iXI"
         }
       ],
       "services": {

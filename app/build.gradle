@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:12.0.1'
     implementation 'com.google.firebase:firebase-database:12.0.1'
     implementation 'com.google.firebase:firebase-auth:12.0.1'
+    implementation 'com.firebaseui:firebase-ui-storage:3.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:3.3.0'
     implementation 'com.google.firebase:firebase-storage:12.0.1'
     implementation 'com.google.android.gms:play-services-auth:12.0.1'
