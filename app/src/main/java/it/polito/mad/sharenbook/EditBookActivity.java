@@ -284,7 +284,7 @@ public class EditBookActivity extends AppCompatActivity {
 
         Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
 
-        if (book.getBookPhotosUri().size() >= MAX_ALLOWED_BOOK_PHOTO) {
+        if (book.getPhotosName().size() + book.getBookPhotosUri().size() >= MAX_ALLOWED_BOOK_PHOTO) {
 
             showToast(getString(R.string.max_allowed_book_photo));
 
@@ -942,14 +942,14 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
                     if (mBookPhotosUri.size() > 0) {
 
                         Uri tag = (Uri) v.getTag();
-                        int ib_position = mBookPhotosUri.indexOf(tag) + mPhotosName.size();
+                        int ib_position = mBookPhotosUri.indexOf(tag);
 
                         //check if thumbnail must be removed
                         if (tag.toString().equals(mBook.getThumbnail()))
                             mBook.setThumbnail("");
 
                         mBookPhotosUri.remove(ib_position);
-                        notifyItemRemoved(ib_position);
+                        notifyItemRemoved(ib_position  + mPhotosName.size());
                     }
                 });
             } catch (IOException e) {
