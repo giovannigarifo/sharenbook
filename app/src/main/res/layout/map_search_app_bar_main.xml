@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             app:mt_hint="@string/search_hint"
-            app:mt_maxSuggestionsCount="10"
+            app:mt_maxSuggestionsCount="0"
             app:mt_navIconEnabled="true"
             app:mt_placeholder="@string/searchbar_placeholder"
             app:mt_searchBarColor="@color/colorPrimary"

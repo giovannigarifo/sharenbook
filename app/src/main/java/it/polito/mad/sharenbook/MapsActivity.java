@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -28,16 +29,22 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.maps.android.SphericalUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.robertlevonyan.views.chip.Chip;
@@ -70,6 +77,11 @@ public class MapsActivity extends FragmentActivity
     FloatingActionButton search_fab_list;
 
     Chip filterDistanceChip;
+    private static boolean distanceFilterEnabled = false;
+    private static List<Address> place = new ArrayList<>();
+    private static int searchRange;
+
+    Circle distanceFilterCircle;
 
     DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
     GeoFire geoFire = new GeoFire(location_ref);
@@ -111,16 +123,23 @@ public class MapsActivity extends FragmentActivity
 
                 searchResult.clear();
                 searchResult.addAll(parseResults(results.hits));
-                showSearchResults();
+
+                if(distanceFilterEnabled){
+                    filterByDistance(place, searchRange);
+                } else
+                    showSearchResults();
+
                 sba_searchbar.disableSearch();
 
             } else {
+                mMap.clear();
                 Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
             }
         });
 
         searcher.registerErrorListener((query, error) -> {
 
+            mMap.clear();
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
             Log.d("error", "Unable to retrieve search isValid from Algolia");
         });
@@ -522,11 +541,47 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-    public void filterByDistance(List<Address> place, int range){
+    private void showFilterDistanceCircle(List<Address> place, int range, int color){
 
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(place.get(0).getLatitude(), place.get(0).getLongitude()), range);
+        LatLng point = new LatLng(place.get(0).getLatitude(), place.get(0).getLongitude());
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(point)   //set center
+                .radius(range*1000)   //set radius in meters
+                .fillColor(Color.TRANSPARENT)  //default
+                .strokeColor(color)
+                .strokeWidth(8);
+
+        distanceFilterCircle = mMap.addCircle(circleOptions);
+    }
+
+    /*public LatLngBounds toBounds(LatLng center, double radiusInMeters) {
+        double distanceFromCenterToCorner = radiusInMeters * Math.sqrt(2.0);
+        LatLng southwestCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
+        LatLng northeastCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
+        return new LatLngBounds(southwestCorner, northeastCorner);
+    }*/
+
+    public void filterByDistance(List<Address> center, int range){
+
+        place = center;
+        searchRange = range;
 
         List<String> results = new ArrayList<>();
+
+        //move camera to requested place
+        LatLng point = new LatLng(place.get(0).getLatitude(), place.get(0).getLongitude());
+        CameraUpdate update = CameraUpdateFactory.newLatLng(point);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo((200-range)/11 - ((200-range)/30));
+        mMap.moveCamera(update);
+        mMap.animateCamera(zoom);
+
+        distanceFilterEnabled = true;
+
+        //query the DB
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(place.get(0).getLatitude(), place.get(0).getLongitude()), range);
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
 
@@ -543,7 +598,12 @@ public class MapsActivity extends FragmentActivity
             @Override
             public void onGeoQueryReady() {
 
+                mMap.clear();
+
                 if(!results.isEmpty()) {
+
+                    //TODO search globally from algolia than filter the search
+
                     ArrayList<Book> copySearchResult = (ArrayList<Book>) searchResult.clone();
                     for (Book b : copySearchResult) {
                         if (!results.contains(b.getBookId())) {
@@ -551,14 +611,20 @@ public class MapsActivity extends FragmentActivity
                         }
                     }
 
-                    showSearchResults();
+                    if(searchResult.isEmpty()){
+                        showFilterDistanceCircle(place, range, Color.RED);
+                        Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+                    } else {
+                        showSearchResults();
+                        showFilterDistanceCircle(place, range, Color.BLUE);
+                    }
+
+                    searchResult = (ArrayList<Book>) copySearchResult.clone();
 
                 } else {
-                    mMap.clear();
+                    showFilterDistanceCircle(place, range, Color.RED);
                     Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
                 }
-
-
 
             }
 

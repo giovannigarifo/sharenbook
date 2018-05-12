@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook.fragments;
 
+import android.app.Activity;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.robertlevonyan.views.chip.Chip;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -134,10 +137,18 @@ public class DistanceFilterFragment extends DialogFragment {
                 }
 
                 if(error){
+
                     mEditText.setError(getString(R.string.unknown_place));
+
                 } else {
                     getDialog().dismiss();
-                    ((MapsActivity) getActivity()).filterByDistance(place, range);
+
+                    Activity activity = getActivity();
+                    if(activity instanceof MapsActivity){
+                        MapsActivity mapsActivity = (MapsActivity) activity;
+                        mapsActivity.filterByDistance(place, range);
+                    }
+
                 }
             }
 
