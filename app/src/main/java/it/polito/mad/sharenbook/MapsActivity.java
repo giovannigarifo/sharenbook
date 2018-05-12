@@ -2,11 +2,15 @@ package it.polito.mad.sharenbook;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +23,10 @@ import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,6 +34,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.robertlevonyan.views.chip.Chip;
@@ -37,7 +49,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import it.polito.mad.sharenbook.fragments.DistanceFilterFragment;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.CustomInfoWindowAdapter;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
@@ -56,6 +70,9 @@ public class MapsActivity extends FragmentActivity
     FloatingActionButton search_fab_list;
 
     Chip filterDistanceChip;
+
+    DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
+    GeoFire geoFire = new GeoFire(location_ref);
 
     // Algolia instant search
     Searcher searcher;
@@ -206,15 +223,34 @@ public class MapsActivity extends FragmentActivity
     private void setChipFilters() {
 
         filterDistanceChip = findViewById(R.id.distanceChip);
+        filterDistanceChip.setChipText(getString(R.string.filter_distance));
+        filterDistanceChip.changeBackgroundColor(getResources().getColor(R.color.white));
         OnChipClickListener chipClickListener = v -> {
 
-            //TODO: open dialog fragment
+            showDialog();
 
         };
         filterDistanceChip.setOnChipClickListener(chipClickListener);
 
     }
 
+
+    private void showDialog() {
+
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("distanceDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = DistanceFilterFragment.newInstance("Test Fragment");
+        newFragment.show(ft, "distanceDialog");
+    }
 
 
     /**
@@ -485,5 +521,59 @@ public class MapsActivity extends FragmentActivity
         startActivity(showBook);
     }
 
+
+    public void filterByDistance(List<Address> place, int range){
+
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(place.get(0).getLatitude(), place.get(0).getLongitude()), range);
+
+        List<String> results = new ArrayList<>();
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+                if(!results.isEmpty()) {
+                    ArrayList<Book> copySearchResult = (ArrayList<Book>) searchResult.clone();
+                    for (Book b : copySearchResult) {
+                        if (!results.contains(b.getBookId())) {
+                            searchResult.remove(b);
+                        }
+                    }
+
+                    showSearchResults();
+
+                } else {
+                    mMap.clear();
+                    Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+                }
+
+
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                results.add(key);
+            }
+
+        });
+
+    }
 
 }

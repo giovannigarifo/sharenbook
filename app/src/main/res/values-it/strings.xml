@@ -29,6 +29,9 @@
     <!-- common words -->
     <string name="search">Cerca</string>
     <string name="settings">Impostazioni</string>
+    <string name="undo">Annulla</string>
+    <string name="confirm">Conferma</string>
+
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -187,6 +190,12 @@
 
     <!-- Search filters and other -->
     <string name="filter_distance">Filtra per distanza</string>
+    <string name="filter_distance_message"> Inserisci la città o l\'area in cui effettuare la ricerca e specifica una distanza:</string>
+    <string name="filter_distance_address">Indirizzo: </string>
+    <string name="filter_distance_range">Raggio: %1$d KM</string>
+    <string name="address_empty">Questo campo è obbligatorio!</string>
+
+
 
 
     <!-- Firebase keys -->
