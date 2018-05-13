@@ -504,7 +504,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (creatingProfile && !(et_userNickName.getText().toString().equals(username)) && !(et_userNickName.getText().toString().isEmpty())) {
 
-            if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 3) {
+            if ((TextUtils.getTrimmedLength(et_userNickName.getText().toString())) < 3 || (TextUtils.getTrimmedLength(et_userNickName.getText().toString())) > 12) {
                 et_userNickName.setError(getString(R.string.username_bad_lenght_rationale));
                 isValid = false;
             }

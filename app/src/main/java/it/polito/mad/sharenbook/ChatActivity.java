@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,7 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.onesignal.OneSignal;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,6 +35,8 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import it.polito.mad.sharenbook.utils.UserInterface;
+
 
 public class ChatActivity extends AppCompatActivity {
     LinearLayout layout;
@@ -43,7 +45,10 @@ public class ChatActivity extends AppCompatActivity {
     EditText messageArea;
     ScrollView scrollView;
     DatabaseReference chatToOthersReference, chatFromOthersReference;
-    String recipientUsername;
+    String recipientUsername, recipientUID;
+    ImageView iv_profile;
+    TextView tv_username;
+    private boolean lastMessageWasFromCounterpart = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +60,16 @@ public class ChatActivity extends AppCompatActivity {
         sendButton = (ImageView)findViewById(R.id.sendButton);
         messageArea = (EditText)findViewById(R.id.messageArea);
         scrollView = (ScrollView)findViewById(R.id.scrollView);
+        iv_profile = findViewById(R.id.iv_profile);
+        tv_username = findViewById(R.id.tv_username);
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
+        recipientUID = getIntent().getStringExtra("recipientUID");
+        tv_username.setText(recipientUsername);
+
+        //show recipient profile pic
+        StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUID +".jpg");
+        UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
 
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + App.username + "_" + recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" +App.username);
@@ -68,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("message", messageText);
                 map.put("user", App.username);
-                sendNotification(recipientUsername);
+                sendNotification(recipientUsername, App.username);
                 chatToOthersReference.push().setValue(map);
                 chatFromOthersReference.push().setValue(map);
                 messageArea.setText("");
@@ -83,10 +96,10 @@ public class ChatActivity extends AppCompatActivity {
                 String userName = map.get("user").toString();
 
                 if(userName.equals(App.username)){
-                    addMessageBox(message, 1);
+                    addMessageBox(message, 1, null);
                 }
                 else{
-                    addMessageBox(userName + ":\n" + message, 2);
+                    addMessageBox(message, 2, userName);
                 }
             }
 
@@ -113,9 +126,9 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    public void addMessageBox(String message, int type){
+    public void addMessageBox(String message, int type, String userName){
         TextView textView = new TextView(ChatActivity.this);
-        textView.setText(message);
+
 
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp2.weight = 1.0f;
@@ -126,10 +139,23 @@ public class ChatActivity extends AppCompatActivity {
         if(type == 1) {
             lp2.gravity = Gravity.RIGHT;
             textView.setBackgroundResource(R.drawable.message_bubble_out);
+            textView.setText(message);
+
+            lastMessageWasFromCounterpart = false;
         }
         else{
             lp2.gravity = Gravity.LEFT;
             textView.setBackgroundResource(R.drawable.message_bubble_in);
+
+            if(lastMessageWasFromCounterpart){
+                textView.setText(message);
+            } else {
+                String modMessage = userName + ":\n" + message;
+                textView.setText(modMessage);
+            }
+
+            lastMessageWasFromCounterpart = true;
+
         }
 
         textView.setTextColor(getResources().getColor(R.color.white));
@@ -138,10 +164,11 @@ public class ChatActivity extends AppCompatActivity {
         textView.setPadding(24, 24,24,24);
         textView.setLayoutParams(lp2);
         layout.addView(textView);
-        scrollView.fullScroll(View.FOCUS_DOWN);
+        UserInterface.scrollToViewTop(scrollView, textView);
+        //scrollView.fullScroll(View.FOCUS_DOWN);
     }
 
-    public void sendNotification(String destination){
+    public void sendNotification(String destination, String sender){
         AsyncTask.execute(() -> {
             int SDK_INT = Build.VERSION.SDK_INT;
             if(SDK_INT > 8){
@@ -169,7 +196,9 @@ public class ChatActivity extends AppCompatActivity {
                             + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
 
                             + "\"data\": {\"foo\": \"bar\"},"
-                            + "\"contents\": {\"en\": \"English Message\"}"
+                            + "\"contents\": {\"en\": \"" + sender + " sent you a message!\", " +
+                                             "\"it\": \"" + sender + " ti ha inviato un messaggio!\"}"
+                            + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"
                             + "}";
 
                     System.out.println("strJsonBody:" + strJsonBody);

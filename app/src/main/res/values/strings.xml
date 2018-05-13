@@ -142,7 +142,7 @@
     <string name="name_length_format_rationale">Your full name must have at least 5 characters</string>
     <string name="bad_email"> Bad email format!</string>
     <string name="email_bad_format_rationale">If you modify your email, do not leave it empty please!</string>
-    <string name="username_bad_lenght_rationale">Please, your username should have at least 3 characters</string>
+    <string name="username_bad_lenght_rationale">Please, your username must have from 3 to 12 characters!</string>
     <string name="username_already_exists">This username is already taken! Please use a different one</string>
     <string name="city_bad_lenght_rationale">Please, city name should be at least 2 characters</string>
     <string name="city_bad_format_rationale">Please, city name must contain just letters. Initial capital letters</string>

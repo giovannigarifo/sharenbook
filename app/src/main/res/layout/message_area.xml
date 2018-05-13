@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content"
+    android:gravity="bottom">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/darkGrey" />
 
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textColorHint="@color/white"
-        android:textColor="@color/white"
-        android:background="@drawable/ui_bubble"
-        android:padding="8dp"
-        android:textCursorDrawable="@color/white"
-        android:hint="@string/chat_write_msg"
         android:id="@+id/messageArea"
-        android:maxHeight="80dp"
-        />
-
-    <ImageView
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
-        android:padding="4dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:src="@android:drawable/ic_menu_send"
         android:background="@drawable/ui_bubble"
-        android:id="@+id/sendButton"/>
-</LinearLayout>
+        android:hint="@string/chat_write_msg"
+        android:maxHeight="80dp"
+        android:padding="8dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/black"
+        android:textCursorDrawable="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/sendButton"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/messageArea"
+        android:layout_toRightOf="@id/messageArea"
+        android:background="@drawable/ui_bubble"
+        android:padding="4dp"
+        android:src="@android:drawable/ic_menu_send"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/messageArea"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>
