@@ -196,6 +196,8 @@
     <string name="address_empty">Questo campo è obbligatorio!</string>
 
 
+    <!-- Chat things -->
+    <string name="chat_you">Tu: \n</string>
 
 
     <!-- Firebase keys -->

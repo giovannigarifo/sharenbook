@@ -13,6 +13,7 @@ import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -63,6 +64,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private FloatingActionButton fabContactUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +91,15 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         // Use a zoom linear layout manager
         mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        //setup the chat fab
+        fabContactUser = findViewById(R.id.message_user);
+        fabContactUser.setOnClickListener(view -> {
+            Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
+            chatActivity.putExtra("recipientUsername", book.getOwner_username());
+            startActivity(chatActivity);
+            finish();
+        });
 
         // Specify an adapter
         mAdapter = new MyAdapter(book, this, bookImagesStorage);

@@ -105,7 +105,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
-
+        App.username = user.getUsername();
 
         //modify default typography
         getViews();

@@ -197,6 +197,9 @@
     <string name="filter_distance_range">Range: %1$d KM</string>
     <string name="address_empty">This field is mandatory!</string>
 
+    <!-- Chat things -->
+    <string name="chat_you">You: \n</string>
+
 
     <!-- Firebase keys -->
     <string name="uid_key" translatable="false">uid_key</string>

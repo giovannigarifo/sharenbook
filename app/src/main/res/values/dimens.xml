@@ -16,4 +16,5 @@
 
     <!-- Card specific dimension  -->
     <dimen name="card_corner_radius">0dp</dimen>
+
 </resources>

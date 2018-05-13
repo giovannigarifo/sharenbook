@@ -602,8 +602,6 @@ public class MapsActivity extends FragmentActivity
 
                 if(!results.isEmpty()) {
 
-                    //TODO search globally from algolia than filter the search
-
                     ArrayList<Book> copySearchResult = (ArrayList<Book>) searchResult.clone();
                     for (Book b : copySearchResult) {
                         if (!results.contains(b.getBookId())) {
