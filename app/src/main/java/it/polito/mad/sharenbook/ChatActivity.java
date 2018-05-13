@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -65,12 +68,10 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("message", messageText);
                 map.put("user", App.username);
+                sendNotification(recipientUsername);
                 chatToOthersReference.push().setValue(map);
                 chatFromOthersReference.push().setValue(map);
                 messageArea.setText("");
-
-                sendNotification(recipientUsername);
-
             }
         });
 
@@ -140,71 +141,69 @@ public class ChatActivity extends AppCompatActivity {
         scrollView.fullScroll(View.FOCUS_DOWN);
     }
 
-    private void sendNotification(String destination){
-        AsyncTask.execute(new Runnable() {
+    public void sendNotification(String destination){
+        AsyncTask.execute(() -> {
+            int SDK_INT = Build.VERSION.SDK_INT;
+            if(SDK_INT > 8){
+                Log.d("notification", "sending to " + destination);
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
 
-            @Override
-            public void run() {
-                int SDK_INT = Build.VERSION.SDK_INT;
-                if(SDK_INT > 8){
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                            .permitAll().build();
-                    StrictMode.setThreadPolicy(policy);
-                    String destinationID = destination;
+                try{
+                    String jsonResponse;
 
-                    try{
-                        String jsonResponse;
+                    URL url = new URL("https://onesignal.com/api/v1/notifications");
+                    HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                    conn.setUseCaches(false);
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
 
-                        URL url = new URL("https://onesignal.com/api/v1/notifications");
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                        conn.setUseCaches(false);
-                        conn.setDoOutput(true);
-                        conn.setDoInput(true);
+                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    conn.setRequestProperty("Authorization", "Basic ZTc3MjExODEtYmM4Yy00YjU5LWFjNWEtM2VlNGNmYTA0OWU1");
+                    conn.setRequestMethod("POST");
 
-                        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                        conn.setRequestProperty("Authorization", "Basic ZTc3MjExODEtYmM4Yy00YjU5LWFjNWEtM2VlNGNmYTA0OWU1");
-                        conn.setRequestMethod("POST");
+                    String strJsonBody = "{"
+                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
 
-                        String strJsonBody = "("
-                                + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
-                                + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destinationID + "\"}],"
-                                + "\"data\": {\"foo\": \"bar\"},"
-                                + "\"contents\": {\"en\": \"This is a test message! Ciao!\"}"
-                                + "}";
+                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
 
-                        System.out.println("strJsonBody:\n" + strJsonBody);
+                            + "\"data\": {\"foo\": \"bar\"},"
+                            + "\"contents\": {\"en\": \"English Message\"}"
+                            + "}";
 
-                        byte[] sendBytes = strJsonBody.getBytes("UTF-8");
-                        conn.setFixedLengthStreamingMode(sendBytes.length);
+                    System.out.println("strJsonBody:" + strJsonBody);
 
-                        OutputStream outputStream = conn.getOutputStream();
-                        outputStream.write(sendBytes);
+                    byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                    conn.setFixedLengthStreamingMode(sendBytes.length);
 
-                        int httpResponse = conn.getResponseCode();
-                        System.out.println("httpResponse: " + httpResponse);
+                    OutputStream outputStream = conn.getOutputStream();
+                    outputStream.write(sendBytes);
 
-                        if (httpResponse >= HttpURLConnection.HTTP_OK
-                                && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
-                            Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
-                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                            scanner.close();
-                        } else {
-                            Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8");
-                            jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                            scanner.close();
-                        }
-                        System.out.println("jsonResponse:\n" + jsonResponse);
+                    int httpResponse = conn.getResponseCode();
+                    System.out.println("httpResponse: " + httpResponse);
 
-
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (httpResponse >= HttpURLConnection.HTTP_OK
+                            && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                        Log.d("notification", "done");
+                        Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
+                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                        scanner.close();
+                    } else {
+                        Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8");
+                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                        scanner.close();
                     }
+                    System.out.println("jsonResponse:\n" + jsonResponse);
 
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
 
+            }
         });
     }
 
