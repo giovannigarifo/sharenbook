@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/'}
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:0.8.1'
+    }
+}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+
+repositories {
+    maven { url 'https://maven.google.com' }
+}
 
 android {
     compileSdkVersion 27
@@ -11,6 +24,14 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         resConfigs "en,it" // And any other languages you support
+        multiDexEnabled true
+
+        manifestPlaceholders = [
+                onesignal_app_id: 'edfbe9fb-e0fc-4fdb-b449-c5d6369fada5',
+                // Project number pulled from dashboard, local value is ignored.
+                onesignal_google_project_number: 'REMOTE'
+        ]
+
     }
     buildTypes {
         release {
@@ -41,6 +62,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
 
+    implementation 'com.android.support:multidex:1.0.3'
+
     /*
      * FIREBASE LIBRARIES
      */
@@ -66,6 +89,11 @@ dependencies {
     //circle layout for imageviews from https://github.com/lopspower/CircularImageView
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
 
+    //
+    //oneSignal
+    implementation 'com.onesignal:OneSignal:[3.8.3, 3.99.99]'
+
+    //
     //Chips Library
     implementation 'com.robertlevonyan.view:MaterialChipView:1.2.1'
 

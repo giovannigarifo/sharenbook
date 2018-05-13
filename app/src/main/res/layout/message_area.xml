@@ -9,9 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColorHint="@color/colorAccent"
-        android:textColor="@color/colorAccent"
-        android:hint="Write a message..."
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        android:background="@drawable/ui_bubble"
+        android:padding="8dp"
+        android:textCursorDrawable="@color/white"
+        android:hint="@string/chat_write_msg"
         android:id="@+id/messageArea"
         android:maxHeight="80dp"
         />
@@ -24,5 +27,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:src="@android:drawable/ic_menu_send"
+        android:background="@drawable/ui_bubble"
         android:id="@+id/sendButton"/>
 </LinearLayout>

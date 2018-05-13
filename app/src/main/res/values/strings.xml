@@ -199,6 +199,7 @@
 
     <!-- Chat things -->
     <string name="chat_you">You: \n</string>
+    <string name="chat_write_msg">Write a message...</string>
 
 
     <!-- Firebase keys -->

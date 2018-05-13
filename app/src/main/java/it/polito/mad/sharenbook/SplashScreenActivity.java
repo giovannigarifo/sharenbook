@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.onesignal.OneSignal;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,6 +95,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         NetworkUtilities.addConnectionStateListener(connListener);
 */
 
+        // OneSignal Initialization
+        initOneSignal();
+
+
         /*
          * Execute User authentication
          */
@@ -118,6 +123,14 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         /*Storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
+    }
+
+
+    private void initOneSignal(){
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init();
     }
 
 

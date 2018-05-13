@@ -92,14 +92,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //setup the chat fab
-        fabContactUser = findViewById(R.id.message_user);
-        fabContactUser.setOnClickListener(view -> {
-            Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
-            chatActivity.putExtra("recipientUsername", book.getOwner_username());
-            startActivity(chatActivity);
-            finish();
-        });
+        setupFabContactUser();
 
         // Specify an adapter
         mAdapter = new MyAdapter(book, this, bookImagesStorage);
@@ -153,6 +146,27 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("photoLoaded", true);
+    }
+
+    private void setupFabContactUser(){
+        //setup the chat fab
+        fabContactUser = findViewById(R.id.message_user);
+
+        if(!book.getOwner_username().equals(App.username)) {
+
+            fabContactUser.setVisibility(View.VISIBLE);
+
+            fabContactUser.setOnClickListener(view -> {
+                Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
+                chatActivity.putExtra("recipientUsername", book.getOwner_username());
+                startActivity(chatActivity);
+                finish();
+            });
+
+        } else {
+            fabContactUser.setVisibility(View.GONE);
+        }
+
     }
 
     private void loadViewWithBookData() {

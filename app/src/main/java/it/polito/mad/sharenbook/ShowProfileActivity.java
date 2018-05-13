@@ -22,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -106,6 +107,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
         App.username = user.getUsername();
+        OneSignal.sendTag("User_ID", App.username);  //let this user be identified on oneSignal
 
         //modify default typography
         getViews();
