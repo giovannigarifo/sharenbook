@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -40,12 +41,15 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import it.polito.mad.sharenbook.adapters.MessageAdapter;
+import it.polito.mad.sharenbook.model.Message;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class ChatActivity extends AppCompatActivity {
-    LinearLayout layout;
-    RelativeLayout layout_2;
+    //LinearLayout layout;
+    //RelativeLayout layout_2;
+    ListView messageView;
     ImageView sendButton;
     EditText messageArea;
     ScrollView scrollView;
@@ -53,22 +57,27 @@ public class ChatActivity extends AppCompatActivity {
     String recipientUsername, recipientUID;
     ImageView iv_profile;
     TextView tv_username;
-    private boolean lastMessageWasFromCounterpart = false;
+    private boolean lastMessageNotFromCounterpart = false;
     private String username, userID;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+
+    /** adapter setting **/
+
+    private MessageAdapter messageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        layout = (LinearLayout) findViewById(R.id.layout1);
-        layout_2 = (RelativeLayout)findViewById(R.id.layout2);
+        //layout = (LinearLayout) findViewById(R.id.layout1); //////////////////////////
+        //layout_2 = (RelativeLayout)findViewById(R.id.layout2); //////////////////////////
+        messageView = findViewById(R.id.chat_list_view);
         sendButton = (ImageView)findViewById(R.id.sendButton);
         messageArea = (EditText)findViewById(R.id.messageArea);
-        scrollView = (ScrollView)findViewById(R.id.scrollView);
+       // scrollView = (ScrollView)findViewById(R.id.scrollView);
         iv_profile = findViewById(R.id.iv_profile);
         tv_username = findViewById(R.id.tv_username);
 
@@ -86,6 +95,10 @@ public class ChatActivity extends AppCompatActivity {
         //show recipient profile pic
         StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUID +".jpg");
         UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
+
+        /** create and set adapter **/
+        messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
+        messageView.setAdapter(messageAdapter);
 
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + username + "_" + recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" + username);
@@ -108,14 +121,30 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Map<Object, Object> map = (Map<Object, Object>) dataSnapshot.getValue();
-                String message = map.get("message").toString();
+                String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
-
+                Message message;
+                //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
-                    addMessageBox(message, 1, null);
+                    //addMessageBox(message, 1, null);
+                    message = new Message(messageBody,true,userName,false);
+                    messageAdapter.addMessage(message);
+                    messageView.setSelection(messageView.getCount() - 1);
+                    lastMessageNotFromCounterpart = false;
+
+
                 }
                 else{
-                    addMessageBox(message, 2, userName);
+                    //addMessageBox(message, 2, userName);
+                    if(lastMessageNotFromCounterpart)
+                        message = new Message(messageBody,false,userName,true);
+                    else
+                        message = new Message(messageBody,false,userName,false);
+
+                    lastMessageNotFromCounterpart = true;
+
+                    messageAdapter.addMessage(message);
+                    messageView.setSelection(messageView.getCount() - 1);
                 }
             }
 
@@ -141,7 +170,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-
+/*
     public void addMessageBox(String message, int type, String userName){
         TextView textView = new TextView(ChatActivity.this);
 
@@ -183,7 +212,7 @@ public class ChatActivity extends AppCompatActivity {
         UserInterface.scrollToViewTop(scrollView, textView);
         //scrollView.fullScroll(View.FOCUS_DOWN);
     }
-
+*/
     public void sendNotification(String destination, String sender){
         AsyncTask.execute(() -> {
             int SDK_INT = Build.VERSION.SDK_INT;
