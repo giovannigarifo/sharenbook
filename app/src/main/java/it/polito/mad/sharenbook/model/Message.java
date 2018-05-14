@@ -1,22 +1,19 @@
 package it.polito.mad.sharenbook.model;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 public class Message {
 
-
-
     String message;
-    boolean thisBelongToMe;
+    boolean thisBelongsToMe;
     String username;
     boolean hide;
 
 
 
-    public Message(String message, boolean thisBelongToMe, String username, boolean hide){
+    public Message(String message, boolean thisBelongsToMe, String username, boolean hide){
 
         this.message = message;
-        this.thisBelongToMe = thisBelongToMe;
+        this.thisBelongsToMe = thisBelongsToMe;
         this.username = username;
         this.hide = hide;
     }
@@ -30,11 +27,11 @@ public class Message {
     }
 
     public boolean isThisBelongToMe() {
-        return thisBelongToMe;
+        return thisBelongsToMe;
     }
 
-    public void isThisBelongToMe(boolean thisBelongToMe) {
-        this.thisBelongToMe = thisBelongToMe;
+    public void isThisBelongsToMe(boolean thisBelongsToMe) {
+        this.thisBelongsToMe = thisBelongsToMe;
     }
 
     public String getUsername() {

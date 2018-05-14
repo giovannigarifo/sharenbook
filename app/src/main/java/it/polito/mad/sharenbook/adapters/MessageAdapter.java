@@ -2,9 +2,6 @@ package it.polito.mad.sharenbook.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +21,7 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 public class MessageAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Message> messages = new ArrayList<Message>();
+    private List<Message> messages = new ArrayList<>();
     private StorageReference profilePicRef;
 
     public MessageAdapter(Context context, StorageReference profilePicRef){
@@ -60,9 +57,13 @@ public class MessageAdapter extends BaseAdapter {
 
         if (message.isThisBelongToMe()) {
             convertView = messageInflater.inflate(R.layout.chat_my_message, null);
-            holder.messageBody = (TextView) convertView.findViewById(R.id.chat_message_body);
+            holder.messageBody = convertView.findViewById(R.id.chat_message_body);
             convertView.setTag(holder);
             holder.messageBody.setText(message.getMessage());
+
+            if(!message.isHide())
+                holder.messageBody.setBackgroundResource(R.drawable.chat_my_message_shape2);
+
         } else {
             convertView = messageInflater.inflate(R.layout.chat_their_message, null);
             holder.avatar = convertView.findViewById(R.id.chat_avatar);
@@ -77,14 +78,9 @@ public class MessageAdapter extends BaseAdapter {
             }
             else{
                 holder.messageBody.setText(message.getMessage());
-                holder.avatar.setBackground(ActivityCompat.getDrawable(context,R.drawable.chat_avatar_shape));
-                holder.name.setPadding(0,0,0,0);
-                holder.name.setVisibility(View.INVISIBLE);
-
-
-
-                //holder.name.setVisibility(View.GONE);
-                //holder.avatar.setVisibility(View.INVISIBLE);
+                holder.messageBody.setBackgroundResource(R.drawable.chat_their_message_shape2);
+                holder.avatar.setBackgroundResource(R.drawable.chat_avatar_shape);
+                holder.name.setVisibility(View.GONE);
             }
 
         }
@@ -94,9 +90,9 @@ public class MessageAdapter extends BaseAdapter {
 
     public class MessageViewHolder{
 
-        public CircularImageView avatar;
-        public TextView name;
-        public TextView messageBody;
+        CircularImageView avatar;
+        TextView name;
+        TextView messageBody;
 
     }
 }

@@ -57,6 +57,7 @@ public class ChatActivity extends AppCompatActivity {
     String recipientUsername, recipientUID;
     ImageView iv_profile;
     TextView tv_username;
+
     private boolean lastMessageNotFromCounterpart = false;
     private String username, userID;
 
@@ -127,7 +128,7 @@ public class ChatActivity extends AppCompatActivity {
                 //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
                     //addMessageBox(message, 1, null);
-                    message = new Message(messageBody,true,userName,false);
+                    message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart);
                     messageAdapter.addMessage(message);
                     messageView.setSelection(messageView.getCount() - 1);
                     lastMessageNotFromCounterpart = false;
@@ -136,10 +137,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 else{
                     //addMessageBox(message, 2, userName);
-                    if(lastMessageNotFromCounterpart)
-                        message = new Message(messageBody,false,userName,true);
-                    else
-                        message = new Message(messageBody,false,userName,false);
+
+                    message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart);
 
                     lastMessageNotFromCounterpart = true;
 
