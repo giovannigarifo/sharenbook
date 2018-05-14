@@ -57,8 +57,8 @@ public class EditProfileActivity extends AppCompatActivity {
     private com.mikhaellopez.circularimageview.CircularImageView userPicture;
 
     //Shared Preferences
-    private SharedPreferences editedProfile_copy;
-    private SharedPreferences.Editor writeProfile_copy;
+    private SharedPreferences editedProfile_copy, usernamePref;
+    private SharedPreferences.Editor writeProfile_copy, writeUsernamePref;
 
     //default profile values
     private String default_city;
@@ -167,6 +167,9 @@ public class EditProfileActivity extends AppCompatActivity {
         // Copy for rollbacks
         editedProfile_copy = getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
         writeProfile_copy = editedProfile_copy.edit();
+
+        usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        writeUsernamePref = usernamePref.edit();
 
         save_button = findViewById(R.id.fab_save);
 
@@ -523,6 +526,7 @@ public class EditProfileActivity extends AppCompatActivity {
          * Check if profile picture has been changed or not
          */
         App.username = user.getUsername();
+        writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
 
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
 

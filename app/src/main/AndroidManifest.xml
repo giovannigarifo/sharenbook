@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,6 +32,8 @@
         <meta-data
             android:name="it.polito.mad.sharenbook.utils.MyAppGlideModule"
             android:value="GlideApp" />
+
+        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
 
         <activity
             android:name=".ShowProfileActivity"

@@ -1,5 +1,7 @@
 package it.polito.mad.sharenbook;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,6 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.facebook.share.Share;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +54,10 @@ public class ChatActivity extends AppCompatActivity {
     ImageView iv_profile;
     TextView tv_username;
     private boolean lastMessageWasFromCounterpart = false;
+    private String username, userID;
+
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +76,19 @@ public class ChatActivity extends AppCompatActivity {
         recipientUID = getIntent().getStringExtra("recipientUID");
         tv_username.setText(recipientUsername);
 
+        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(getString(R.string.username_copy_key), "");
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        userID = firebaseUser.getUid();
+
         //show recipient profile pic
         StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUID +".jpg");
         UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
 
-        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + App.username + "_" + recipientUsername);
-        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" +App.username);
+        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + username + "_" + recipientUsername);
+        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" + username);
 
         sendButton.setOnClickListener(v -> {
             String messageText = messageArea.getText().toString();
@@ -80,8 +96,8 @@ public class ChatActivity extends AppCompatActivity {
             if(!messageText.equals("")){
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("message", messageText);
-                map.put("user", App.username);
-                sendNotification(recipientUsername, App.username);
+                map.put("user", username);
+                sendNotification(recipientUsername, username);
                 chatToOthersReference.push().setValue(map);
                 chatFromOthersReference.push().setValue(map);
                 messageArea.setText("");
@@ -95,7 +111,7 @@ public class ChatActivity extends AppCompatActivity {
                 String message = map.get("message").toString();
                 String userName = map.get("user").toString();
 
-                if(userName.equals(App.username)){
+                if(userName.equals(username)){
                     addMessageBox(message, 1, null);
                 }
                 else{
@@ -195,7 +211,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
 
-                            + "\"data\": {\"foo\": \"bar\"},"
+                            + "\"data\": {\"notificationType\": \"message\", \"senderName\": \"" + sender + "\", \"senderUid\": \"" + userID + "\"},"
                             + "\"contents\": {\"en\": \"" + sender + " sent you a message!\", " +
                                              "\"it\": \"" + sender + " ti ha inviato un messaggio!\"},"
                             + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"

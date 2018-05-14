@@ -34,6 +34,7 @@ import java.util.Map;
 import it.polito.mad.sharenbook.utils.ConnectionChangedListener;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
 
 import static android.content.ContentValues.TAG;
 import static it.polito.mad.sharenbook.utils.NetworkUtilities.checkNetworkConnection;
@@ -95,9 +96,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         NetworkUtilities.addConnectionStateListener(connListener);
 */
 
-        // OneSignal Initialization
-        initOneSignal();
-
 
         /*
          * Execute User authentication
@@ -112,10 +110,7 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private void initFirebase(){
         /*Database*/
-        if(firebaseDatabase == null) {
-            firebaseDatabase = FirebaseDatabase.getInstance();
-            firebaseDatabase.setPersistenceEnabled(true);           //set Persistance only one time at app startup
-        }
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         /*Authentication*/
         firebaseAuth = FirebaseAuth.getInstance();
@@ -123,14 +118,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         /*Storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
-    }
-
-
-    private void initOneSignal(){
-        OneSignal.startInit(this)
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                .unsubscribeWhenNotificationsAreDisabled(true)
-                .init();
     }
 
 
@@ -169,6 +156,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
                         user.setUserID(firebaseUser.getUid());
                         App.username = user.getUsername();
+                        App.userID = user.getUserID();
 
                         goShowProfile();
 

@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">Share\'nBook</string>
     <string name="profile_preferences" translatable="false">profile_preferences</string>
     <string name="profile_preferences_copy" translatable="false">profile_preferences_copy</string>
+    <string name="username_preferences" translatable="false">username_preferences</string>
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
