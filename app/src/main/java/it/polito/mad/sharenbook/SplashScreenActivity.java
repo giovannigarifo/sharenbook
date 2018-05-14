@@ -241,8 +241,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 }else {
                                     /*Login succesfull and profile not empty */
 
-                                    writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
                                     user = dataSnapshot.getValue(UserProfile.class);
+                                    writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
                                     user.setUserID(firebaseUser.getUid());
 
 
