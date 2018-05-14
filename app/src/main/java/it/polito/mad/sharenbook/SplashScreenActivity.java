@@ -1,6 +1,8 @@
 package it.polito.mad.sharenbook;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -59,6 +61,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     private String default_fullname;
     private String default_username;
     private String default_picture_signature;
+
+    private SharedPreferences usernamePref;
+    private SharedPreferences.Editor writeUsernamePref;
 
     private static ConnectionChangedListener connListener;
 
@@ -126,6 +131,9 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private void checkAuthentication(){
 
+        usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        writeUsernamePref = usernamePref.edit();
+
         if(firebaseUser != null) { /* User is already Logged in -> just check if his profile is completed or not*/
 
             /* Retrieve User profile data */
@@ -156,6 +164,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
                         user.setUserID(firebaseUser.getUid());
                         App.username = user.getUsername();
+                        writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
                         App.userID = user.getUserID();
 
                         goShowProfile();

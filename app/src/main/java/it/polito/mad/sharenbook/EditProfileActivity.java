@@ -251,6 +251,9 @@ public class EditProfileActivity extends AppCompatActivity {
         editedProfile_copy = getSharedPreferences(getString(R.string.profile_preferences_copy), Context.MODE_PRIVATE);
         writeProfile_copy = editedProfile_copy.edit();
 
+        usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        writeUsernamePref = usernamePref.edit();
+
         //get view button
         save_button = findViewById(R.id.fab_save);
 
