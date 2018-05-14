@@ -197,7 +197,7 @@ public class ChatActivity extends AppCompatActivity {
 
                             + "\"data\": {\"foo\": \"bar\"},"
                             + "\"contents\": {\"en\": \"" + sender + " sent you a message!\", " +
-                                             "\"it\": \"" + sender + " ti ha inviato un messaggio!\"}"
+                                             "\"it\": \"" + sender + " ti ha inviato un messaggio!\"},"
                             + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"
                             + "}";
 
