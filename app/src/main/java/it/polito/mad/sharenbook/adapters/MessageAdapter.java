@@ -77,8 +77,14 @@ public class MessageAdapter extends BaseAdapter {
             }
             else{
                 holder.messageBody.setText(message.getMessage());
-                holder.name.setVisibility(View.GONE);
-                holder.avatar.setVisibility(View.INVISIBLE);
+                holder.avatar.setBackground(ActivityCompat.getDrawable(context,R.drawable.chat_avatar_shape));
+                holder.name.setPadding(0,0,0,0);
+                holder.name.setVisibility(View.INVISIBLE);
+
+
+
+                //holder.name.setVisibility(View.GONE);
+                //holder.avatar.setVisibility(View.INVISIBLE);
             }
 
         }
