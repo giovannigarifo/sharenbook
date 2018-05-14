@@ -36,7 +36,6 @@ import java.util.Map;
 import it.polito.mad.sharenbook.utils.ConnectionChangedListener;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.model.UserProfile;
-import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
 
 import static android.content.ContentValues.TAG;
 import static it.polito.mad.sharenbook.utils.NetworkUtilities.checkNetworkConnection;
@@ -80,6 +79,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         default_fullname = getString(R.string.default_fullname_heading);
         default_username = getString(R.string.default_username_heading);
         default_picture_signature = getString(R.string.default_picture_path);
+
+        usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        writeUsernamePref = usernamePref.edit();
 
         initFirebase();
 
@@ -131,9 +133,6 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private void checkAuthentication(){
 
-        usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-        writeUsernamePref = usernamePref.edit();
-
         if(firebaseUser != null) { /* User is already Logged in -> just check if his profile is completed or not*/
 
             /* Retrieve User profile data */
@@ -163,9 +162,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         /* Profile is completed -> start ShowProfile */
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
                         user.setUserID(firebaseUser.getUid());
-                        App.username = user.getUsername();
                         writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
-                        App.userID = user.getUserID();
 
                         goShowProfile();
 
@@ -244,6 +241,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 }else {
                                     /*Login succesfull and profile not empty */
 
+                                    writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
                                     user = dataSnapshot.getValue(UserProfile.class);
                                     user.setUserID(firebaseUser.getUid());
 

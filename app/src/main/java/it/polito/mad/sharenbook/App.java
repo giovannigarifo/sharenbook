@@ -13,9 +13,7 @@ import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
 
 
 public class App extends Application {
-
-    static String username;
-    static String userID;
+    
     private FirebaseDatabase firebaseDatabase;
 
     @Override

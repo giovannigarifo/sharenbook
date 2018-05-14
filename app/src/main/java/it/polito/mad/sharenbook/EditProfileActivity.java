@@ -528,7 +528,6 @@ public class EditProfileActivity extends AppCompatActivity {
         /*
          * Check if profile picture has been changed or not
          */
-        App.username = user.getUsername();
         writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
 
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {

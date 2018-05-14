@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -106,8 +107,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
-        App.username = user.getUsername();
-        OneSignal.sendTag("User_ID", App.username);  //let this user be identified on oneSignal
+        OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
 
         //modify default typography
         getViews();

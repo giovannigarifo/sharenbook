@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -66,6 +67,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     private FloatingActionButton fabContactUser;
 
+    private String username;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +85,9 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         if (bundle != null) {
             book = bundle.getParcelable("book");
         }
+
+        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(getString(R.string.username_copy_key), "");
 
         mRecyclerView = findViewById(R.id.showbook_recycler_view);
 
@@ -152,7 +158,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         //setup the chat fab
         fabContactUser = findViewById(R.id.message_user);
 
-        if(!book.getOwner_username().equals(App.username)) {
+        if(!book.getOwner_username().equals(username)) {
 
             fabContactUser.setVisibility(View.VISIBLE);
 
@@ -160,7 +166,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
                 chatActivity.putExtra("recipientUID", book.getOwner_uid());
-                chatActivity.putExtra("username", App.username);
+                chatActivity.putExtra("username", username);
                 startActivity(chatActivity);
                 finish();
             });

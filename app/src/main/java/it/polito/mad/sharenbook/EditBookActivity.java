@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -127,6 +128,8 @@ public class EditBookActivity extends AppCompatActivity {
     private GeoFire geoFire;
     private List<Address> place = new ArrayList<>();
 
+    private String username;
+
     /**
      * onCreate callback
      *
@@ -138,6 +141,9 @@ public class EditBookActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_book);
         context = this.getApplicationContext();
         getViews(); //retrieve references to views objects and change default fonts
+
+        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(getString(R.string.username_copy_key), "");
 
         // Setup FireBase
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -464,7 +470,7 @@ public class EditBookActivity extends AppCompatActivity {
         // Retrieve all data
         HashMap<String, Object> bookData = new HashMap<>();
         bookData.put("owner_uid", firebaseUser.getUid());
-        bookData.put("owner_username", App.username);
+        bookData.put("owner_username", username);
         bookData.put("isbn", book.getIsbn());
         bookData.put("title", book.getTitle());
         bookData.put("subtitle", book.getSubtitle());
@@ -633,7 +639,7 @@ public class EditBookActivity extends AppCompatActivity {
             JSONObject bookData = new JSONObject()
                     .put("bookId", bookRef.getKey())
                     .put("owner_uid", firebaseUser.getUid())
-                    .put("owner_username", App.username)
+                    .put("owner_username", username)
                     .put("isbn", book.getIsbn())
                     .put("title", book.getTitle())
                     .put("subtitle", book.getSubtitle())
