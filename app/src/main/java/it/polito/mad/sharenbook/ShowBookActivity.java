@@ -166,7 +166,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
                 chatActivity.putExtra("recipientUID", book.getOwner_uid());
-                chatActivity.putExtra("username", username);
                 startActivity(chatActivity);
                 finish();
             });

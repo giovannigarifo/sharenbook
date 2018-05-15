@@ -58,6 +58,7 @@ public class ChatActivity extends AppCompatActivity {
     private String username, userID;
 
     public static boolean chatOpened = false;
+    private boolean openedFromNotification;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -69,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        intent.putExtra("openedFromNotification", false);
         setIntent(intent);
         this.recreate();
     }
@@ -86,6 +88,8 @@ public class ChatActivity extends AppCompatActivity {
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
         recipientUID = getIntent().getStringExtra("recipientUID");
+        openedFromNotification = getIntent().getBooleanExtra("openedFromNotification", false);
+
         tv_username.setText(recipientUsername);
 
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
@@ -236,7 +240,6 @@ public class ChatActivity extends AppCompatActivity {
 
                     if (httpResponse >= HttpURLConnection.HTTP_OK
                             && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
-                        Log.d("notification", "done");
                         Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
                         jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
                         scanner.close();
@@ -246,7 +249,6 @@ public class ChatActivity extends AppCompatActivity {
                         scanner.close();
                     }
                     System.out.println("jsonResponse:\n" + jsonResponse);
-
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -258,4 +260,13 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(openedFromNotification){
+            //TODO take user to myChats
+            Log.d("ChatActivity", "This activity was opened from notification.");
+        }
+
+    }
 }
