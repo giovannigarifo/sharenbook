@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -57,15 +58,21 @@ public class ChatActivity extends AppCompatActivity {
 
     public static boolean chatOpened = false;
     private boolean openedFromNotification;
+    private boolean firstTimeNotViewed = true;
+    private boolean isOnPause = false;
+    private boolean checkTimestamp = false;
+    private long messagesCounter;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
 
-    private boolean firstTimeNotViewed = true;
+    private ChildEventListener childEventListener;
 
     /** adapter setting **/
 
     private MessageAdapter messageAdapter;
+
+    private long unixTime;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -107,21 +114,21 @@ public class ChatActivity extends AppCompatActivity {
         messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
         messageView.setAdapter(messageAdapter);
 
-        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + username + "_" + recipientUsername);
-        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" + username);
+        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
+        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
 
         sendButton.setOnClickListener(v -> {
             String messageText = messageArea.getText().toString();
 
             if(!messageText.equals("")){
-                Map<String,Object> map = new HashMap<String, Object>();
+                Map<String,Object> map = new HashMap<>();
                 map.put("message", messageText);
                 map.put("user", username);
                 map.put("date_time", ServerValue.TIMESTAMP);
                 map.put("viewed", true);
                 sendNotification(recipientUsername, username);
                 chatToOthersReference.push().setValue(map);
-                Map<String,Object> map2 = new HashMap<String, Object>();
+                Map<String,Object> map2 = new HashMap<>();
                 map2.put("message", messageText);
                 map2.put("user", username);
                 map2.put("date_time", ServerValue.TIMESTAMP);
@@ -131,14 +138,33 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        chatToOthersReference.addChildEventListener(new ChildEventListener() {
+        chatToOthersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setBlockUnreadMessageCounter(dataSnapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
                 String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
                 Boolean viewed = (Boolean) map.get("viewed");
+
+                if(messagesCounter>1)
+                    messagesCounter--;
+                else
+                    checkTimestamp = true;
 
                 long date = 0;
                 if(map.get("date_time")!=null){
@@ -158,14 +184,18 @@ public class ChatActivity extends AppCompatActivity {
 
                     if(!viewed){
 
-                        if(firstTimeNotViewed) {
-                            message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
-                            messageAdapter.addMessage(message);
-                            firstTimeNotViewed = false;
-                        }
+                        if(checkTimestamp){
 
-                        map.put("viewed", true);
-                        dataSnapshot.getRef().updateChildren(map);
+                            if(date < unixTime && firstTimeNotViewed){ //&& (isOnPause || openedFromNotification)
+                                message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
+                                messageAdapter.addMessage(message);
+                                firstTimeNotViewed = false;
+                            }
+
+                            map.put("viewed", true);
+                            dataSnapshot.getRef().updateChildren(map);
+
+                        }
 
                     }
 
@@ -197,8 +227,16 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        chatToOthersReference.addChildEventListener(childEventListener);
 
+        unixTime = System.currentTimeMillis();
+
+    }
+
+    private void setBlockUnreadMessageCounter(long counter){
+        messagesCounter = counter;
+        System.out.println("Eccolo: " + counter);
     }
 
     @Override
@@ -285,7 +323,21 @@ public class ChatActivity extends AppCompatActivity {
         if(openedFromNotification){
             //TODO take user to myChats
             Log.d("ChatActivity", "This activity was opened from notification.");
+            finish();
         }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isOnPause = true;
+        chatToOthersReference.removeEventListener(childEventListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isOnPause = false;
+        chatToOthersReference.addChildEventListener(childEventListener);
     }
 }

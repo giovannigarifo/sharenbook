@@ -95,10 +95,10 @@ public class MessageAdapter extends BaseAdapter {
 
         }
 
-        if(message.getTimestamp()!=0) {
+        /*if(message.getTimestamp()!=0) {
             Log.d("TIME", "date ->" + message.getDate(message.getTimestamp()));
             Log.d("TIME", "hour ->" + message.getHour(message.getTimestamp()));
-        }
+        }*/
         return convertView;
     }
 
