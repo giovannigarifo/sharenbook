@@ -55,13 +55,15 @@ public class MessageAdapter extends BaseAdapter {
         MessageViewHolder holder = new MessageViewHolder();
         LayoutInflater messageInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         Message message = messages.get(position);
-        String messageBodyAndTime = new String(message.getMessage()+"\n\t\t"+message.getHour(message.getTimestamp()));
+        String messageBody = message.getMessage();
 
         if (message.isThisBelongToMe()) {
             convertView = messageInflater.inflate(R.layout.chat_my_message, null);
             holder.messageBody = convertView.findViewById(R.id.chat_message_body);
+            holder.timestamp = convertView.findViewById(R.id.timestamp);
+            holder.timestamp.setText(message.getHour(message.getTimestamp()));
+            holder.messageBody.setText(messageBody);
             convertView.setTag(holder);
-            holder.messageBody.setText(messageBodyAndTime);
 
             if(!message.isHide())
                 holder.messageBody.setBackgroundResource(R.drawable.chat_my_message_shape2);
@@ -71,15 +73,18 @@ public class MessageAdapter extends BaseAdapter {
             holder.avatar = convertView.findViewById(R.id.chat_avatar);
             holder.name = convertView.findViewById(R.id.chat_username);
             holder.messageBody =  convertView.findViewById(R.id.chat_message_body);
+            holder.timestamp = convertView.findViewById(R.id.timestamp);
+            holder.timestamp.setText(message.getHour(message.getTimestamp()));
+
             convertView.setTag(holder);
 
             if(!message.isHide()) {
                 holder.name.setText(message.getUsername());
-                holder.messageBody.setText(messageBodyAndTime);
+                holder.messageBody.setText(messageBody);
                 UserInterface.showGlideImage(context, profilePicRef, holder.avatar, 0);
             }
             else{
-                holder.messageBody.setText(messageBodyAndTime);
+                holder.messageBody.setText(messageBody);
                 holder.messageBody.setBackgroundResource(R.drawable.chat_their_message_shape2);
                 holder.avatar.setBackgroundResource(R.drawable.chat_avatar_shape);
                 holder.name.setVisibility(View.GONE);
@@ -99,6 +104,7 @@ public class MessageAdapter extends BaseAdapter {
         CircularImageView avatar;
         TextView name;
         TextView messageBody;
+        TextView timestamp;
 
     }
 }

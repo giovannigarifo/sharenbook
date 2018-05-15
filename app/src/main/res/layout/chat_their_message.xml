@@ -42,4 +42,18 @@
         android:elevation="2dp"
         android:textSize="16sp"
         />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/chat_message_body"
+        android:layout_toRightOf="@id/chat_message_body"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_alignParentBottom="true"
+        android:textSize="10sp"
+        android:alpha="0.5"
+        />
+
 </RelativeLayout>
