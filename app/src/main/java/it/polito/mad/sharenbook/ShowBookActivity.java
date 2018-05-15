@@ -57,8 +57,6 @@ import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 
 public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private StorageReference bookImagesStorage;
-    private List<StorageReference> bookPhotos;
     private Book book;
 
     private RecyclerView mRecyclerView;
@@ -76,9 +74,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         // Setup navigation tools
         setupNavigationTools();
-
-        // Setup Firebase storage
-        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
         // Get book info
         Bundle bundle = getIntent().getExtras();
@@ -98,14 +93,15 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        setupFabContactUser();
-
         // Specify an adapter
-        mAdapter = new MyAdapter(book, this, bookImagesStorage);
+        mAdapter = new MyAdapter(book, this);
         mRecyclerView.setAdapter(mAdapter);
 
         // Load book data into view
         loadViewWithBookData();
+
+        // Setup fab button for message with user
+        setupFabContactUser();
     }
 
     @Override
@@ -329,41 +325,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        setupNavbar();
-    }
-
-    private void setupNavbar() {
-        BottomNavigationView navBar = findViewById(R.id.navigation);
-
-        // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        // Set the listeners for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
-                    startActivity(searchBooks);
-                    finish();
-                    break;
-
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    finish();
-                    break;
-            }
-
-            return true;
-        });
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 }
 
@@ -390,11 +352,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Book book, Activity activity, StorageReference bookImagesStorage) {
+    public MyAdapter(Book book, Activity activity) {
         mActivity = activity;
         mBook = book;
         mPhotosName = book.getPhotosName();
-        mBookImagesStorage = bookImagesStorage;
+        mBookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
     }
 
     // Create new views (invoked by the layout manager)

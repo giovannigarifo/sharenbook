@@ -43,6 +43,7 @@ import java.util.List;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.MyBooksUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class MyBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -304,7 +305,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        setupNavbar();
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
     @Override
@@ -337,8 +338,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(),ShareBookActivity.class);
                 startActivity(i);
-                finish();
-
             }
         });
     }
@@ -353,41 +352,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             adapter = new MyAnnounceRVAdapter(announcements, MyBookActivity.this, llm, bookImagesStorage);
             rv.setAdapter(adapter);
         }
-    }
-
-
-
-    private void setupNavbar() {
-        navBar = findViewById(R.id.navigation);
-
-
-        // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        // Set the listeners for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
-                    startActivity(searchBooks);
-                    finish();
-                    break;
-
-                case R.id.navigation_myBook:
-
-                    break;
-            }
-
-            return true;
-        });
     }
 
     @Override
@@ -434,10 +398,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
+            startActivity(show_case);
+            finish();
         }
         navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
-
-
     }
 }

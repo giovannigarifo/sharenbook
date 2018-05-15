@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- <item
+    <item
         android:id="@+id/navigation_showcase"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_showcase" /> -->
-
-    <item
-        android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_person_black_135dp"
-        android:title="@string/title_profile" />
+        android:title="@string/title_showcase" />
 
     <item
         android:id="@+id/navigation_search"
@@ -20,6 +15,5 @@
         android:id="@+id/navigation_myBook"
         android:icon="@drawable/ic_book_64dp"
         android:title="@string/title_mybooks" />
-
 
 </menu>

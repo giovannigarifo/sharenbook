@@ -158,7 +158,8 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         });
 
-        setupNavbar();
+        // Setup navbar
+        UserInterface.setupNavigationBar(this, 0);
 
         /*
          * SearchBar
@@ -182,33 +183,6 @@ public class ShowProfileActivity  extends AppCompatActivity
             }
         }
     }
-
-    /**
-     * navBar
-     */
-    private void setupNavbar() {
-
-        //set navigation_profile as selected item
-        navBar.setSelectedItemId(R.id.navigation_profile);
-
-        //set the listener for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    break;
-
-                case R.id.navigation_search:
-                    startSearchActivity(null);
-                    break;
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    break;
-            }
-            return true;
-        });
-    }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -282,12 +256,6 @@ public class ShowProfileActivity  extends AppCompatActivity
 
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        navBar.setSelectedItemId(R.id.navigation_profile);
     }
 
     /**

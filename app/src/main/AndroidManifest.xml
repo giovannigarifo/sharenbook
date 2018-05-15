@@ -116,8 +116,8 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".ShowCaseActivity" />
+
     </application>
-
-
 
 </manifest>

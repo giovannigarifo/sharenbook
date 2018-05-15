@@ -225,34 +225,8 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_ib_addBookPhoto.setOnClickListener(this::addBookPhoto);
         editbook_btn_addBookPhoto.setOnClickListener(this::addBookPhoto);
 
-
-        /*
-         * navBar
-         */
-
-        //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        //set the listener for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    break;
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    finish();
-                    break;
-            }
-            return true;
-        });
+        // Setup bottom navbar
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
 

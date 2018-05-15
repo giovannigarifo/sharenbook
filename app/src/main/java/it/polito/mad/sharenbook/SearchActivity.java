@@ -54,6 +54,7 @@ import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class SearchActivity extends AppCompatActivity
@@ -102,17 +103,13 @@ public class SearchActivity extends AppCompatActivity
         setContentView(R.layout.activity_search);
 
         //setup bottom navigation bar
-        setBottomNavigationBar();
+        UserInterface.setupNavigationBar(this, R.id.navigation_search);
 
         //setup map floating action button
         setMapButton();
 
         // setup Drawer and Search Bar
         setDrawerAndSearchBar();
-
-
-
-
 
         // RecylerView setup
         searchResult = new ArrayList<>();
@@ -225,39 +222,6 @@ public class SearchActivity extends AppCompatActivity
         sbAdapter.notifyDataSetChanged();
 
         searchStatusCheck(savedInstanceState);
-    }
-
-    /**
-     *
-     */
-    private void setBottomNavigationBar() {
-
-        search_bottom_nav_bar = findViewById(R.id.search_bottom_nav_bar);
-
-        search_bottom_nav_bar.setVisibility(View.VISIBLE);
-
-        //set navigation_profile as selected item
-        search_bottom_nav_bar.setSelectedItemId(R.id.navigation_search);
-
-        //set the listener for the navigation bar items
-        search_bottom_nav_bar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i_show_profile = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    startActivity(i_show_profile);
-                    break;
-
-                case R.id.navigation_search:
-                    sba_searchbar.enableSearch();
-                    break;
-
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    break;
-            }
-            return true;
-        });
     }
 
     /**
@@ -455,9 +419,10 @@ public class SearchActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
+            startActivity(show_case);
+            finish();
         }
-        //navigationView.setCheckedItem(R.id.drawer_navigation_profile);
     }
 
 
@@ -466,8 +431,10 @@ public class SearchActivity extends AppCompatActivity
      */
     private void setDrawerAndSearchBar() {
 
-        /** DRAWER AND SEARCHBAR **/
+        // Get bottom navbar
+        search_bottom_nav_bar = findViewById(R.id.navigation);
 
+        /** DRAWER AND SEARCHBAR **/
         drawer = findViewById(R.id.search_drawer_layout);
         navigationView = findViewById(R.id.search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
