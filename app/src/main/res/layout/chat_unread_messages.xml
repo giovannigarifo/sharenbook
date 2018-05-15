@@ -3,7 +3,7 @@
     android:id="@id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="2dp"
+    android:paddingVertical="10dp"
     android:paddingRight="15dp"
     android:paddingLeft="60dp"
     android:clipToPadding="false">

@@ -126,7 +126,7 @@ public class ChatActivity extends AppCompatActivity {
                 map2.put("user", username);
                 map2.put("date_time", ServerValue.TIMESTAMP);
                 map2.put("viewed", false);
-                chatFromOthersReference.push().setValue(map);
+                chatFromOthersReference.push().setValue(map2);
                 messageArea.setText("");
             }
         });
@@ -147,7 +147,7 @@ public class ChatActivity extends AppCompatActivity {
                 Message message;
                 //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
-                    //addMessageBox(message, 1, null);
+
                     message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
                     messageAdapter.addMessage(message);
                     messageView.setSelection(messageView.getCount() - 1);
@@ -166,6 +166,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         map.put("viewed", true);
                         dataSnapshot.getRef().updateChildren(map);
+
                     }
 
                     message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
