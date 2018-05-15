@@ -1,25 +1,20 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.ViewGroup;
+
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.facebook.share.Share;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -47,19 +42,19 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class ChatActivity extends AppCompatActivity {
-    //LinearLayout layout;
-    //RelativeLayout layout_2;
+
     ListView messageView;
     ImageView sendButton;
     EditText messageArea;
-    ScrollView scrollView;
     DatabaseReference chatToOthersReference, chatFromOthersReference;
-    String recipientUsername, recipientUID;
+    public static String recipientUsername, recipientUID;
     ImageView iv_profile;
     TextView tv_username;
 
     private boolean lastMessageNotFromCounterpart = false;
     private String username, userID;
+
+    public static boolean chatOpened = false;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -69,16 +64,20 @@ public class ChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        this.recreate();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        //layout = (LinearLayout) findViewById(R.id.layout1); //////////////////////////
-        //layout_2 = (RelativeLayout)findViewById(R.id.layout2); //////////////////////////
         messageView = findViewById(R.id.chat_list_view);
-        sendButton = (ImageView)findViewById(R.id.sendButton);
-        messageArea = (EditText)findViewById(R.id.messageArea);
-       // scrollView = (ScrollView)findViewById(R.id.scrollView);
+        sendButton = findViewById(R.id.sendButton);
+        messageArea = findViewById(R.id.messageArea);
         iv_profile = findViewById(R.id.iv_profile);
         tv_username = findViewById(R.id.tv_username);
 
@@ -108,7 +107,7 @@ public class ChatActivity extends AppCompatActivity {
             String messageText = messageArea.getText().toString();
 
             if(!messageText.equals("")){
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map.put("message", messageText);
                 map.put("user", username);
                 sendNotification(recipientUsername, username);
@@ -127,12 +126,10 @@ public class ChatActivity extends AppCompatActivity {
                 Message message;
                 //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
-                    //addMessageBox(message, 1, null);
                     message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart);
                     messageAdapter.addMessage(message);
                     messageView.setSelection(messageView.getCount() - 1);
                     lastMessageNotFromCounterpart = false;
-
 
                 }
                 else{
@@ -169,49 +166,19 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-/*
-    public void addMessageBox(String message, int type, String userName){
-        TextView textView = new TextView(ChatActivity.this);
 
-
-        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp2.weight = 1.0f;
-
-        final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
-        int pixels = (int) (300 * scale + 0.5f);
-
-        if(type == 1) {
-            lp2.gravity = Gravity.RIGHT;
-            textView.setBackgroundResource(R.drawable.message_bubble_out);
-            textView.setText(message);
-
-            lastMessageWasFromCounterpart = false;
-        }
-        else{
-            lp2.gravity = Gravity.LEFT;
-            textView.setBackgroundResource(R.drawable.message_bubble_in);
-
-            if(lastMessageWasFromCounterpart){
-                textView.setText(message);
-            } else {
-                String modMessage = userName + ":\n" + message;
-                textView.setText(modMessage);
-            }
-
-            lastMessageWasFromCounterpart = true;
-
-        }
-
-        textView.setTextColor(getResources().getColor(R.color.white));
-        textView.setMaxWidth(pixels);
-        textView.setTypeface(null, Typeface.BOLD);
-        textView.setPadding(24, 24,24,24);
-        textView.setLayoutParams(lp2);
-        layout.addView(textView);
-        UserInterface.scrollToViewTop(scrollView, textView);
-        //scrollView.fullScroll(View.FOCUS_DOWN);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        chatOpened = true;
     }
-*/
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        chatOpened = false;
+    }
+
     public void sendNotification(String destination, String sender){
         AsyncTask.execute(() -> {
             int SDK_INT = Build.VERSION.SDK_INT;

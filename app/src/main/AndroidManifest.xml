@@ -38,13 +38,17 @@
         <activity
             android:name=".ShowProfileActivity"
             android:launchMode="singleTask" />
+
         <activity
             android:name=".EditProfileActivity"
             android:launchMode="singleTask" />
+
         <activity
             android:name=".ShowPictureActivity"
             android:theme="@style/myShowPictureWindow" />
+
         <activity android:name=".ShareBookActivity" />
+
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
@@ -98,7 +102,21 @@
             android:label="@string/title_activity_maps"
             android:launchMode="singleTask" />
         <activity android:name=".ShowBookActivity" />
-        <activity android:name=".ChatActivity"></activity>
+
+        <activity android:name=".ChatActivity"
+                  android:launchMode="singleTask"/>
+
+        <service
+            android:name=".utils.NotificationExtender"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.onesignal.NotificationExtender" />
+            </intent-filter>
+        </service>
+
     </application>
+
+
 
 </manifest>

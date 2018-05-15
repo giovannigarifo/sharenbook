@@ -1,6 +1,7 @@
 package it.polito.mad.sharenbook;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.onesignal.OneSignal;
@@ -12,7 +13,7 @@ import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
  */
 
 
-public class App extends Application {
+public class App extends MultiDexApplication {
     
     private FirebaseDatabase firebaseDatabase;
 

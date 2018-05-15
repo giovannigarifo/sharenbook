@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;

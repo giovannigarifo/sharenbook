@@ -10,8 +10,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 
-import it.polito.mad.sharenbook.utils.FirebaseImageLoader;
-
 @GlideModule
 public class MyAppGlideModule extends AppGlideModule {
 
