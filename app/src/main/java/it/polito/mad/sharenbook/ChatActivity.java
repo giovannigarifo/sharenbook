@@ -31,8 +31,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -62,6 +60,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+
+    private boolean firstTimeNotViewed = true;
 
     /** adapter setting **/
 
@@ -118,8 +118,14 @@ public class ChatActivity extends AppCompatActivity {
                 map.put("message", messageText);
                 map.put("user", username);
                 map.put("date_time", ServerValue.TIMESTAMP);
+                map.put("viewed", true);
                 sendNotification(recipientUsername, username);
                 chatToOthersReference.push().setValue(map);
+                Map<String,Object> map2 = new HashMap<String, Object>();
+                map2.put("message", messageText);
+                map2.put("user", username);
+                map2.put("date_time", ServerValue.TIMESTAMP);
+                map2.put("viewed", false);
                 chatFromOthersReference.push().setValue(map);
                 messageArea.setText("");
             }
@@ -128,10 +134,11 @@ public class ChatActivity extends AppCompatActivity {
         chatToOthersReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Map<Object, Object> map = (Map<Object, Object>) dataSnapshot.getValue();
+                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
                 String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
+                Boolean viewed = (Boolean) map.get("viewed");
 
                 long date = 0;
                 if(map.get("date_time")!=null){
@@ -148,7 +155,18 @@ public class ChatActivity extends AppCompatActivity {
 
                 }
                 else{
-                    //addMessageBox(message, 2, userName);
+
+                    if(!viewed){
+
+                        if(firstTimeNotViewed) {
+                            message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
+                            messageAdapter.addMessage(message);
+                            firstTimeNotViewed = false;
+                        }
+
+                        map.put("viewed", true);
+                        dataSnapshot.getRef().updateChildren(map);
+                    }
 
                     message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
 

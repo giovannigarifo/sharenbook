@@ -57,7 +57,10 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(position);
         String messageBody = message.getMessage();
 
-        if (message.isThisBelongToMe()) {
+        if(messageBody == null){    //show unread messages
+            convertView = messageInflater.inflate(R.layout.chat_unread_messages, null);
+        }
+        else if (message.isThisBelongToMe()) {
             convertView = messageInflater.inflate(R.layout.chat_my_message, null);
             holder.messageBody = convertView.findViewById(R.id.chat_message_body);
             holder.timestamp = convertView.findViewById(R.id.timestamp);
