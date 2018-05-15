@@ -239,6 +239,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             // Load book photo
             GlideApp.with(mActivity)
                     .load(photoRef)
+                    .placeholder(R.drawable.book_cover_portrait)
                     .into(holder.bookPhoto);
 
             // Set title
