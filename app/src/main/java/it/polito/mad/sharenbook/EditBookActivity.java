@@ -580,7 +580,7 @@ public class EditBookActivity extends AppCompatActivity {
         Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
             finish();

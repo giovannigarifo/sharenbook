@@ -59,6 +59,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         lastBookRecyclerView.setLayoutManager(lastBookLayoutManager);
 
         DatabaseReference booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key));
+        booksDb.keepSynced(true);
         booksDb.orderByChild("creationTime").limitToLast(15)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
