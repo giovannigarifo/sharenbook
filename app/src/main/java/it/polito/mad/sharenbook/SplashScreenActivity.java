@@ -245,7 +245,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                     writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
                                     user.setUserID(firebaseUser.getUid());
 
-
+                                    OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
 
                                     goShowProfile();
 

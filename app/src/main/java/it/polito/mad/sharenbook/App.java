@@ -29,7 +29,7 @@ public class App extends MultiDexApplication {
 
     private void initOneSignal(){
         OneSignal.startInit(this)
-                .setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext()))      //set open handler
+                .setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext()))//set open handler
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();

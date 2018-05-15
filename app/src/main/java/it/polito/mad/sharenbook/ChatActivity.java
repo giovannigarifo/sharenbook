@@ -59,9 +59,6 @@ public class ChatActivity extends AppCompatActivity {
     public static boolean chatOpened = false;
     private boolean openedFromNotification;
     private boolean firstTimeNotViewed = true;
-    private boolean isOnPause = false;
-    private boolean checkTimestamp = false;
-    private long messagesCounter;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -117,6 +114,26 @@ public class ChatActivity extends AppCompatActivity {
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReferenceFromUrl("https://sharenbook-debug.firebaseio.com/server_timestamp");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                unixTime = (Long) snapshot.getValue() + 40000;
+                System.out.println("current time: "+ unixTime);
+                continueOnCreate();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        ref.setValue(ServerValue.TIMESTAMP);
+
+    }
+
+    private void continueOnCreate(){
+
         sendButton.setOnClickListener(v -> {
             String messageText = messageArea.getText().toString();
 
@@ -138,19 +155,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        chatToOthersReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                setBlockUnreadMessageCounter(dataSnapshot.getChildrenCount());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
-
         childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -160,11 +164,6 @@ public class ChatActivity extends AppCompatActivity {
                 String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
                 Boolean viewed = (Boolean) map.get("viewed");
-
-                if(messagesCounter>1)
-                    messagesCounter--;
-                else
-                    checkTimestamp = true;
 
                 long date = 0;
                 if(map.get("date_time")!=null){
@@ -184,8 +183,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     if(!viewed){
 
-                        if(checkTimestamp){
-
+                            Log.d("tempi:", "Eccoli: " + date + "  local on create: "+ unixTime);
                             if(date < unixTime && firstTimeNotViewed){ //&& (isOnPause || openedFromNotification)
                                 message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
                                 messageAdapter.addMessage(message);
@@ -194,8 +192,6 @@ public class ChatActivity extends AppCompatActivity {
 
                             map.put("viewed", true);
                             dataSnapshot.getRef().updateChildren(map);
-
-                        }
 
                     }
 
@@ -229,27 +225,29 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
         chatToOthersReference.addChildEventListener(childEventListener);
-
-        unixTime = System.currentTimeMillis();
-
-    }
-
-    private void setBlockUnreadMessageCounter(long counter){
-        messagesCounter = counter;
-        System.out.println("Eccolo: " + counter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         chatOpened = true;
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        chatToOthersReference.addChildEventListener(childEventListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         chatOpened = false;
+        chatToOthersReference.removeEventListener(childEventListener);
     }
+
+
 
     public void sendNotification(String destination, String sender){
         AsyncTask.execute(() -> {
@@ -323,21 +321,20 @@ public class ChatActivity extends AppCompatActivity {
         if(openedFromNotification){
             //TODO take user to myChats
             Log.d("ChatActivity", "This activity was opened from notification.");
-            finish();
+
         }
+        chatToOthersReference.removeEventListener(childEventListener);
+        finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        isOnPause = true;
-        chatToOthersReference.removeEventListener(childEventListener);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        isOnPause = false;
-        chatToOthersReference.addChildEventListener(childEventListener);
+
     }
 }
