@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,12 +55,13 @@ public class MessageAdapter extends BaseAdapter {
         MessageViewHolder holder = new MessageViewHolder();
         LayoutInflater messageInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         Message message = messages.get(position);
+        String messageBodyAndTime = new String(message.getMessage()+"\n\t\t"+message.getHour(message.getTimestamp()));
 
         if (message.isThisBelongToMe()) {
             convertView = messageInflater.inflate(R.layout.chat_my_message, null);
             holder.messageBody = convertView.findViewById(R.id.chat_message_body);
             convertView.setTag(holder);
-            holder.messageBody.setText(message.getMessage());
+            holder.messageBody.setText(messageBodyAndTime);
 
             if(!message.isHide())
                 holder.messageBody.setBackgroundResource(R.drawable.chat_my_message_shape2);
@@ -73,11 +75,11 @@ public class MessageAdapter extends BaseAdapter {
 
             if(!message.isHide()) {
                 holder.name.setText(message.getUsername());
-                holder.messageBody.setText(message.getMessage());
+                holder.messageBody.setText(messageBodyAndTime);
                 UserInterface.showGlideImage(context, profilePicRef, holder.avatar, 0);
             }
             else{
-                holder.messageBody.setText(message.getMessage());
+                holder.messageBody.setText(messageBodyAndTime);
                 holder.messageBody.setBackgroundResource(R.drawable.chat_their_message_shape2);
                 holder.avatar.setBackgroundResource(R.drawable.chat_avatar_shape);
                 holder.name.setVisibility(View.GONE);
@@ -85,6 +87,10 @@ public class MessageAdapter extends BaseAdapter {
 
         }
 
+        if(message.getTimestamp()!=0) {
+            Log.d("TIME", "date ->" + message.getDate(message.getTimestamp()));
+            Log.d("TIME", "hour ->" + message.getHour(message.getTimestamp()));
+        }
         return convertView;
     }
 

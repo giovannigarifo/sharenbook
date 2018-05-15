@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -30,6 +31,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -107,9 +110,10 @@ public class ChatActivity extends AppCompatActivity {
             String messageText = messageArea.getText().toString();
 
             if(!messageText.equals("")){
-                Map<String, String> map = new HashMap<>();
+                Map<String,Object> map = new HashMap<String, Object>();
                 map.put("message", messageText);
                 map.put("user", username);
+                map.put("date_time", ServerValue.TIMESTAMP);
                 sendNotification(recipientUsername, username);
                 chatToOthersReference.push().setValue(map);
                 chatFromOthersReference.push().setValue(map);
@@ -121,12 +125,19 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Map<Object, Object> map = (Map<Object, Object>) dataSnapshot.getValue();
+
                 String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
+
+                long date = 0;
+                if(map.get("date_time")!=null){
+                    date = (long)map.get("date_time");
+                }
                 Message message;
                 //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
-                    message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart);
+                    //addMessageBox(message, 1, null);
+                    message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
                     messageAdapter.addMessage(message);
                     messageView.setSelection(messageView.getCount() - 1);
                     lastMessageNotFromCounterpart = false;
@@ -135,7 +146,7 @@ public class ChatActivity extends AppCompatActivity {
                 else{
                     //addMessageBox(message, 2, userName);
 
-                    message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart);
+                    message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
 
                     lastMessageNotFromCounterpart = true;
 
