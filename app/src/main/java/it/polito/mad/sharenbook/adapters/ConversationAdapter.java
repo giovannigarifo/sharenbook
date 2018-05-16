@@ -81,12 +81,12 @@ public class ConversationAdapter extends BaseAdapter {
                 conv.setMessageReceived(conversation.getMessageReceived());
                 conv.setNewInboxMessageCounter(conv.getNewInboxMessageCounter() + 1);
                 conv.setProfilePicRef(conversation.getProfilePicRef());
+                index = conversations.indexOf(conv);
+                Log.d("conversation","mod at pos ->"+index);
+                upFront = new Conversation(conversation);
                 if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())) {
                     modification = true;
-                    index = conversations.indexOf(conv);
-                    Log.d("conversation","mod at pos ->"+index);
-                    upFront = new Conversation(conversation);
-                    }
+                }
                 break;
             }
 
