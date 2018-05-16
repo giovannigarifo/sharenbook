@@ -24,6 +24,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -47,7 +48,8 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     private BottomNavigationView navBar;
     private SharedPreferences userPreferences;
     private ListView chatsListView;
-
+    private ConversationAdapter adapter;
+    private DatabaseReference mychatsDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,38 +58,43 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         setupNavigationTools();
         chatsListView = findViewById(R.id.my_chats_lv);
 
-        ConversationAdapter adapter = new ConversationAdapter(MyChatsActivity.this);
+        adapter = new ConversationAdapter(MyChatsActivity.this);
         chatsListView.setAdapter(adapter);
 
 
-        userPreferences =getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         String username = userPreferences.getString(getString(R.string.username_copy_key), "void");
 
-        if(!username.equals("void"))
-        FirebaseDatabase.getInstance().getReference("chats").child(username).addChildEventListener(new ChildEventListener() {
+        if (!username.equals("void")){
+            mychatsDB = FirebaseDatabase.getInstance().getReference("chats").child(username);
+
+            /**take actual number of conversations **/
+
+            mychatsDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    /*TODO IF 0 -> CERCA LIBRI */
+                    Log.d("Conversation:","actual chats size:"+dataSnapshot.getChildrenCount());
+                    adapter.setWithoutIncomingMessagesCounter(dataSnapshot.getChildrenCount());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        mychatsDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("conversations added:","->"+dataSnapshot.getKey()+"and"+s);
+                Log.d("conversations added:", "->" + dataSnapshot.getKey() + "and" + s);
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("conversation add lmsg",dataSnapshot.toString());
+                        Log.d("conversation add lmsg", dataSnapshot.toString());
+                        setConversationAndApapter(dataSnapshot, true);
 
-                        /** Construct the message **/
-                        Message message = null;
-                        Map<String, Map<String,Object>> snapshot =( Map<String, Map<String,Object>>) dataSnapshot.getValue();
-                        Map<String,Object> messageMap;
-                        Set<String> key = snapshot.keySet();
-                        for(String s:key){
-                            messageMap = snapshot.get(s);
-                            message = new Message(messageMap.get("message").toString(),false,messageMap.get("user").toString(),
-                                    false,(long)messageMap.get("date_time"),MyChatsActivity.this);
 
-                        }
-
-                        Conversation conversation = new Conversation(dataSnapshot.getKey(),message, 0,
-                                FirebaseStorage.getInstance().getReference().child("images/" + userPreferences.getString(dataSnapshot.getKey(),"void") +".jpg"));
-                        adapter.addConversation(conversation);
                     }
 
                     @Override
@@ -100,11 +107,12 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d("conversations changed:","->"+dataSnapshot.getKey()+"and"+s);
+                Log.d("conversations changed:", "->" + dataSnapshot.getKey() + "and" + s);
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("conversation chg lmsg",dataSnapshot.toString());
+                        Log.d("conversation chg lmsg", dataSnapshot.toString());
+                        setConversationAndApapter(dataSnapshot, false);
                     }
 
                     @Override
@@ -130,6 +138,28 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
             }
         });
+    }
+    }
+
+    private void setConversationAndApapter(DataSnapshot dataSnapshot, boolean newConversation){
+        /** Construct the message **/
+        Message message = null;
+        Map<String, Map<String,Object>> snapshot =( Map<String, Map<String,Object>>) dataSnapshot.getValue();
+        Map<String,Object> messageMap;
+        Set<String> key = snapshot.keySet();
+        for(String s:key){
+            messageMap = snapshot.get(s);
+            message = new Message(messageMap.get("message").toString(),false,messageMap.get("user").toString(),
+                    false,(long)messageMap.get("date_time"),MyChatsActivity.this);
+
+        }
+
+        Conversation conversation = new Conversation(dataSnapshot.getKey(),message, 0,
+                FirebaseStorage.getInstance().getReference().child("images/" + userPreferences.getString(dataSnapshot.getKey(),"void") +".jpg"));
+        if(newConversation)
+            adapter.addConversation(conversation);
+        else
+            adapter.modifyConversation(conversation);
     }
 
     private void setupNavigationTools() {

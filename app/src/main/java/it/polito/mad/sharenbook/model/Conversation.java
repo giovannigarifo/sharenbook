@@ -1,13 +1,22 @@
 package it.polito.mad.sharenbook.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.storage.StorageReference;
 
-public class Conversation {
+public class Conversation implements Comparable<Conversation>{
 
     private String conversationCounterpart;
     private Message messageReceived;
     private int newInboxMessageCounter;
     private StorageReference profilePicRef;
+
+    public Conversation(Conversation conversation){
+        this.conversationCounterpart = conversation.getConversationCounterpart();
+        this.messageReceived = conversation.getMessageReceived();
+        this.newInboxMessageCounter = conversation.getNewInboxMessageCounter();
+        this.profilePicRef = conversation.getProfilePicRef();
+    }
 
     public Conversation(String conversationCounterpart, Message messageReceived, int newInboxMessageCounter, StorageReference profilePicRef){
 
@@ -47,6 +56,22 @@ public class Conversation {
 
     public void setProfilePicRef(StorageReference profilePicRef) {
         this.profilePicRef = profilePicRef;
+    }
+
+
+    @Override
+    public int compareTo(@NonNull Conversation other) {
+
+        //extract the message
+        Message messageUnderComparison = other.getMessageReceived();
+        Long currentMessageTimestamp = this.messageReceived.timestamp;
+        Long underComparisonTimestamp = messageUnderComparison.getTimestamp();
+
+        if((currentMessageTimestamp.compareTo(underComparisonTimestamp))!=0){
+            return currentMessageTimestamp.compareTo(underComparisonTimestamp);
+        }else
+            return this.conversationCounterpart.compareTo(other.getConversationCounterpart());
+
     }
 
 
