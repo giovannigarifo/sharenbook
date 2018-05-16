@@ -103,7 +103,7 @@ public class SearchActivity extends AppCompatActivity
         setContentView(R.layout.activity_search);
 
         //setup bottom navigation bar
-        UserInterface.setupNavigationBar(this, R.id.navigation_search);
+        UserInterface.setupNavigationBar(this, 0);
 
         //setup map floating action button
         setMapButton();
@@ -223,6 +223,8 @@ public class SearchActivity extends AppCompatActivity
 
         searchStatusCheck(savedInstanceState);
     }
+
+
 
     /**
      * Fire the map fragment

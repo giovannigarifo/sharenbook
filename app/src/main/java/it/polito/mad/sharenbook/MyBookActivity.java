@@ -1,7 +1,6 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -94,6 +92,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         userBooksDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null)
                 if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
                     AlertDialog.Builder no_books = new AlertDialog.Builder(MyBookActivity.this); //give a context to Dialog
                     no_books.setTitle(R.string.no_books_alert_title);
@@ -353,6 +352,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             rv.setAdapter(adapter);
         }
     }
+
+
+
+
 
     @Override
     public boolean onSupportNavigateUp() {

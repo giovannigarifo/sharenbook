@@ -118,6 +118,7 @@
 
         <activity android:name=".ShowCaseActivity" />
 
+        <activity android:name=".MyChatsActivity"></activity>
     </application>
 
 </manifest>

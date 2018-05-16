@@ -234,6 +234,9 @@
 
     <!-- ShowBook -->
     <string name="showbook_toolbar_title">Book Details</string>
+    <!-- MyChats -->
+    <string name="mychats_title" >My chats</string>
+    <string name="navigation_mychats">Messages</string>
 
 
 </resources>

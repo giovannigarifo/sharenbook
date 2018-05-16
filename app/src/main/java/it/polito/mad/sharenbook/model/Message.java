@@ -16,6 +16,7 @@ public class Message {
     Context context;
 
 
+    public Message(){}
 
     public Message(String message, boolean thisBelongsToMe, String username, boolean hide, long timestamp, Context context){
 

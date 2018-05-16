@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -184,6 +183,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         }
     }
 
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState); //the activity is going to be destroyed I need to save user
@@ -257,6 +257,7 @@ public class ShowProfileActivity  extends AppCompatActivity
             }
         }
     }
+
 
     /**
      * Starts the search activity with the appropriate bundle

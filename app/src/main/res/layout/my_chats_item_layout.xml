@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/conversation"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:paddingVertical="2dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="60dp"
+    android:clipToPadding="false"
+    android:clickable="true">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/mychats_avatar"
+        android:layout_alignParentLeft="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        />
+
+    <TextView
+        android:id="@+id/mychats_username"
+        android:layout_marginLeft="6dp"
+        android:textColor="@color/transparentBlack"
+        android:layout_marginStart="6dp"
+        android:layout_toRightOf="@+id/mychats_avatar"
+        android:layout_toEndOf="@+id/mychats_avatar"
+        android:layout_alignTop="@+id/mychats_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mychats_message_body"
+        android:layout_below="@+id/mychats_username"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_toRightOf="@+id/mychats_avatar"
+        android:layout_toEndOf="@+id/mychats_avatar"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="16dp"
+        android:elevation="2dp"
+        android:textSize="14sp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mychats_date"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        />
+
+    <TextView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/mychats_inboxCounter"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/chat_inbox_counter_shape"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:text="1"
+        android:gravity="center"
+        />
+
+
+</RelativeLayout>

@@ -18,6 +18,7 @@ import com.bumptech.glide.signature.ObjectKey;
 import com.google.firebase.storage.StorageReference;
 
 import it.polito.mad.sharenbook.MyBookActivity;
+import it.polito.mad.sharenbook.MyChatsActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.SearchActivity;
 import it.polito.mad.sharenbook.ShowCaseActivity;
@@ -107,11 +108,11 @@ public class UserInterface {
                     }
                     break;
 
-                case R.id.navigation_search:
-                    if (!(activity instanceof SearchActivity)) {
-                        Intent search_books = new Intent(activity.getApplicationContext(), SearchActivity.class);
-                        search_books.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        activity.startActivity(search_books);
+                case R.id.navigation_chat:
+                    if (!(activity instanceof MyChatsActivity)) {
+                        Intent myChats = new Intent(activity.getApplicationContext(), MyChatsActivity.class);
+                        myChats.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        activity.startActivity(myChats);
                         activity.finish();
                     }
                     break;

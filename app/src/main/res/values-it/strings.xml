@@ -229,4 +229,8 @@
     <!-- ShowBook -->
     <string name="showbook_toolbar_title">Dettagli libro</string>
 
+    <!-- MyChats -->
+    <string name="mychats_title" >Le mie conversazioni</string>
+    <string name="navigation_mychats">Messagi</string>
+
 </resources>

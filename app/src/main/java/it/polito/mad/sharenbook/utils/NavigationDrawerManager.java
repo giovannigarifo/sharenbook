@@ -49,8 +49,9 @@ public class NavigationDrawerManager {
     }
 
     public static void setDrawerViews(Context context,WindowManager windowManager, TextView drawer_fullname, TextView drawer_email, CircularImageView drawer_userPicture,NavigationDrawerProfile navigationDrawerProfile){
-
-        String profile_picture_signature = navigationDrawerProfile.getPictureSignature();
+        String profile_picture_signature = null;
+        if(navigationDrawerProfile.getPictureSignature()!=null)
+            profile_picture_signature = navigationDrawerProfile.getPictureSignature();
         String default_picture_timestamp = "void";
 
         UserInterface.TextViewFontResize(navigationDrawerProfile.getUser_fullname().length(), windowManager, drawer_fullname);

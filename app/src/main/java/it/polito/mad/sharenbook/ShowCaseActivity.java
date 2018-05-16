@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -41,6 +42,9 @@ import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
+
+    private String searchState;
+    private BottomNavigationView navBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +131,45 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     }
 
     @Override
+    public void onSearchStateChanged(boolean enabled) {
+        searchState = enabled ? "enabled" : "disabled";
+        Log.d("debug", "Search " + searchState);
+        if( searchState.equals("enabled")) {
+            navBar.setVisibility(View.GONE);
+
+        }
+        else {
+            navBar.setVisibility(View.VISIBLE);
+
+        }
+
+    }
+    /**
+     * Starts the search activity with the appropriate bundle
+     */
+    private void startSearchActivity(CharSequence searchInputText){
+        Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+        if(searchInputText!=null)
+            i.putExtra("searchInputText",searchInputText);
+        startActivity(i);
+    }
+
+    //send intent to SearchActivity
+    @Override
+    public void onSearchConfirmed(CharSequence searchInputText) {
+
+        startSearchActivity(searchInputText);
+    }
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("searchState",searchState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        searchState = savedInstanceState.getString("searchState");
     }
 
     @Override
@@ -148,15 +189,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
-    @Override
-    public void onSearchStateChanged(boolean enabled) {
 
-    }
-
-    @Override
-    public void onSearchConfirmed(CharSequence text) {
-
-    }
 
     private void setupNavigationTools() {
 
@@ -180,6 +213,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_showcase);
+        navBar = findViewById(R.id.navigation);
     }
 
     /**

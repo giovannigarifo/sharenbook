@@ -92,6 +92,8 @@ public class ChatActivity extends AppCompatActivity {
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
         recipientUID = getIntent().getStringExtra("recipientUID");
+        SharedPreferences userPreferences =getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        userPreferences.edit().putString(recipientUsername,recipientUID).commit();
         openedFromNotification = getIntent().getBooleanExtra("openedFromNotification", false);
 
         tv_username.setText(recipientUsername);
