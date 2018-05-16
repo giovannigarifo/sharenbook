@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
     TextView tv_username;
 
     private boolean lastMessageNotFromCounterpart = false;
+    private boolean activityWasOnPause =false, isOnPause = false;
     private String username, userID;
 
     public static boolean chatOpened = false;
@@ -62,8 +64,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference serverTimeRef;
 
     private ChildEventListener childEventListener;
+    private ValueEventListener readServerTime;
 
     /** adapter setting **/
 
@@ -116,46 +120,22 @@ public class ChatActivity extends AppCompatActivity {
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReferenceFromUrl("https://sharenbook-debug.firebaseio.com/server_timestamp");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        serverTimeRef = FirebaseDatabase.getInstance().getReferenceFromUrl("https://sharenbook-debug.firebaseio.com/server_timestamp");
+
+        readServerTime = new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                unixTime = (Long) snapshot.getValue() + 40000;
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                unixTime = (Long) dataSnapshot.getValue() + 80000;
                 System.out.println("current time: "+ unixTime);
-                continueOnCreate();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
-        ref.setValue(ServerValue.TIMESTAMP);
-
-    }
-
-    private void continueOnCreate(){
-
-        sendButton.setOnClickListener(v -> {
-            String messageText = messageArea.getText().toString();
-
-            if(!messageText.equals("")){
-                Map<String,Object> map = new HashMap<>();
-                map.put("message", messageText);
-                map.put("user", username);
-                map.put("date_time", ServerValue.TIMESTAMP);
-                map.put("viewed", true);
-                sendNotification(recipientUsername, username);
-                chatToOthersReference.push().setValue(map);
-                Map<String,Object> map2 = new HashMap<>();
-                map2.put("message", messageText);
-                map2.put("user", username);
-                map2.put("date_time", ServerValue.TIMESTAMP);
-                map2.put("viewed", false);
-                chatFromOthersReference.push().setValue(map2);
-                messageArea.setText("");
-            }
-        });
+        };
+        serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+        serverTimeRef.setValue(ServerValue.TIMESTAMP);
 
         childEventListener = new ChildEventListener() {
             @Override
@@ -185,15 +165,15 @@ public class ChatActivity extends AppCompatActivity {
 
                     if(!viewed){
 
-                            Log.d("tempi:", "Eccoli: " + date + "  local on create: "+ unixTime);
-                            if(date < unixTime && firstTimeNotViewed){ //&& (isOnPause || openedFromNotification)
-                                message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
-                                messageAdapter.addMessage(message);
-                                firstTimeNotViewed = false;
-                            }
+                        if((date < unixTime && firstTimeNotViewed) || activityWasOnPause || (openedFromNotification && firstTimeNotViewed)){
+                            message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
+                            messageAdapter.addMessage(message);
+                            firstTimeNotViewed = false;
+                            activityWasOnPause = false;
+                        }
 
-                            map.put("viewed", true);
-                            dataSnapshot.getRef().updateChildren(map);
+                        map.put("viewed", true);
+                        dataSnapshot.getRef().updateChildren(map);
 
                     }
 
@@ -227,7 +207,30 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
         chatToOthersReference.addChildEventListener(childEventListener);
+
+        sendButton.setOnClickListener(v -> {
+            String messageText = messageArea.getText().toString();
+
+            if(!messageText.equals("")){
+                Map<String,Object> map = new HashMap<>();
+                map.put("message", messageText);
+                map.put("user", username);
+                map.put("date_time", ServerValue.TIMESTAMP);
+                map.put("viewed", true);
+                sendNotification(recipientUsername, username);
+                chatToOthersReference.push().setValue(map);
+                Map<String,Object> map2 = new HashMap<>();
+                map2.put("message", messageText);
+                map2.put("user", username);
+                map2.put("date_time", ServerValue.TIMESTAMP);
+                map2.put("viewed", false);
+                chatFromOthersReference.push().setValue(map2);
+                messageArea.setText("");
+            }
+        });
+
     }
+
 
     @Override
     protected void onStart() {
@@ -239,14 +242,12 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        chatToOthersReference.addChildEventListener(childEventListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         chatOpened = false;
-        chatToOthersReference.removeEventListener(childEventListener);
     }
 
 
@@ -331,12 +332,21 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        chatToOthersReference.removeEventListener(childEventListener);
+        isOnPause = true;
+        activityWasOnPause = true;
         super.onPause();
     }
 
     @Override
     protected void onResume() {
+        if(isOnPause) {
+            //serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+            //serverTimeRef.setValue(ServerValue.TIMESTAMP);
+            messageAdapter.clearMessages();
+            isOnPause = false;
+            chatToOthersReference.addChildEventListener(childEventListener);
+        }
         super.onResume();
-
     }
 }

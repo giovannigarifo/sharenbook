@@ -231,7 +231,7 @@
 
     <!-- MyChats -->
     <string name="mychats_title" >Le mie conversazioni</string>
-    <string name="navigation_mychats">Messagi</string>
+    <string name="navigation_mychats">Messaggi</string>
     <string name="no_chats_alert_title">Nessuna conversazione!</string>
     <string name="no_chats_suggestion">Ti consigliamo di cercare un libro e contattare il proprietario! Vuoi farlo ora?</string>
 
