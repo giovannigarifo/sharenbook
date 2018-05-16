@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -30,9 +31,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,8 +72,13 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     /*TODO IF 0 -> CERCA LIBRI */
-                    Log.d("Conversation:","actual chats size:"+dataSnapshot.getChildrenCount());
-                    adapter.setWithoutIncomingMessagesCounter(dataSnapshot.getChildrenCount());
+                    long actualChats = dataSnapshot.getChildrenCount();
+
+                    if(actualChats == 0)
+                        noChatsDialog();
+
+                    Log.d("Conversation:","actual chats size:"+actualChats);
+                    adapter.setWithoutIncomingMessagesCounter(actualChats);
                 }
 
                 @Override
@@ -141,6 +144,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     }
     }
 
+
     private void setConversationAndApapter(DataSnapshot dataSnapshot, boolean newConversation){
         /** Construct the message **/
         Message message = null;
@@ -160,6 +164,27 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             adapter.addConversation(conversation);
         else
             adapter.modifyConversation(conversation);
+    }
+
+    private void noChatsDialog(){
+        AlertDialog.Builder no_chats = new AlertDialog.Builder(MyChatsActivity.this); //give a context to Dialog
+        no_chats.setTitle(R.string.no_chats_alert_title);
+        no_chats.setMessage(R.string.no_chats_suggestion);
+        no_chats.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+
+                    Intent i = new Intent (getApplicationContext(), ShowCaseActivity.class);
+                    startActivity(i);
+
+
+                }
+        ).setNegativeButton(android.R.string.cancel,
+                (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
+                }
+        );
+
+        no_chats.show();
     }
 
     private void setupNavigationTools() {
