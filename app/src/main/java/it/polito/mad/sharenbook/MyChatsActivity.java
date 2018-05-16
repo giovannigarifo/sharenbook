@@ -77,7 +77,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
                     if(actualChats == 0)
                         noChatsDialog();
 
-                    Log.d("Conversation:","actual chats size:"+actualChats);
+                  //  Log.d("Conversation:","actual chats size:"+actualChats);
                     adapter.setWithoutIncomingMessagesCounter(actualChats);
                 }
 
@@ -90,11 +90,11 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         mychatsDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("conversations added:", "->" + dataSnapshot.getKey() + "and" + s);
+              //  Log.d("conversations added:", "->" + dataSnapshot.getKey() + "and" + s);
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("conversation add lmsg", dataSnapshot.toString());
+                     //   Log.d("conversation add lmsg", dataSnapshot.toString());
                         setConversationAndApapter(dataSnapshot, true);
 
 
@@ -110,11 +110,11 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d("conversations changed:", "->" + dataSnapshot.getKey() + "and" + s);
+               // Log.d("conversations changed:", "->" + dataSnapshot.getKey() + "and" + s);
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("conversation chg lmsg", dataSnapshot.toString());
+                     //   Log.d("conversation chg lmsg", dataSnapshot.toString());
                         setConversationAndApapter(dataSnapshot, false);
                     }
 
@@ -155,7 +155,11 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             messageMap = snapshot.get(s);
             message = new Message(messageMap.get("message").toString(),false,messageMap.get("user").toString(),
                     false,(long)messageMap.get("date_time"),MyChatsActivity.this);
-
+            message.setViewed((boolean)messageMap.get("viewed"));
+            if(message.isViewed())
+                Log.d("conversation","added true");
+            else
+                Log.d("conversation","added false");
         }
 
         Conversation conversation = new Conversation(dataSnapshot.getKey(),message, 0,

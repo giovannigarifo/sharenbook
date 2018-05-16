@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.storage.StorageException;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
@@ -46,14 +48,24 @@ public class ConversationAdapter extends BaseAdapter {
     public void addConversation(Conversation conversation) {
 
         if(this.conversations.size()==(int)this.withoutIncomingMessagesCounter){
+            /** CHECK IF LAST MESSAGE VIEWED*/
+            if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())
+                    && !conversation.getMessageReceived().isViewed()) {
+                conversation.setNewInboxMessageCounter(1);
+            }
             this.conversations.add(0,conversation);
-            Log.d("Conversation after:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
+           // Log.d("Conversation after:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
             notifyDataSetChanged();
         }
         else {
+            /** CHECK IF LAST MESSAGE VIEWED*/
+            if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())
+                    && !conversation.getMessageReceived().isViewed()) {
+                conversation.setNewInboxMessageCounter(1);
+            }
             this.conversations.add(conversation);
             sortAfterInsertNewElement();
-            Log.d("Conversation during:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
+           // Log.d("Conversation during:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
             if (this.conversations.size() == this.withoutIncomingMessagesCounter)
                 notifyDataSetChanged();
         }
@@ -79,14 +91,21 @@ public class ConversationAdapter extends BaseAdapter {
         for(Conversation conv : conversations){
             if(conv.getConversationCounterpart().equals(conversation.getConversationCounterpart())) {
                 conv.setMessageReceived(conversation.getMessageReceived());
-                conv.setNewInboxMessageCounter(conv.getNewInboxMessageCounter() + 1);
+               // conv.setNewInboxMessageCounter(conv.getNewInboxMessageCounter() + 1);
                 conv.setProfilePicRef(conversation.getProfilePicRef());
                 index = conversations.indexOf(conv);
-                Log.d("conversation","mod at pos ->"+index);
+              //  Log.d("conversation","mod at pos ->"+index);
                 upFront = new Conversation(conversation);
+
                 if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())) {
                     modification = true;
+                    int inbox =conv.getNewInboxMessageCounter();
+                    Log.d("Conversation","currentcounter ->"+inbox);
+                    inbox++;
+                    Log.d("Conversation","new counter ->"+inbox);
+                    upFront.setNewInboxMessageCounter(inbox);
                 }
+
                 break;
             }
 
@@ -94,6 +113,7 @@ public class ConversationAdapter extends BaseAdapter {
         if(upFront!=null && index!=0){
             conversations.remove(index);
             addConversation(upFront);
+            return;
         }
         notifyDataSetChanged();
     }
@@ -133,12 +153,30 @@ public class ConversationAdapter extends BaseAdapter {
         holder.avatar = convertView.findViewById(R.id.mychats_avatar);
         holder.conversation = convertView.findViewById(R.id.conversation);
 
-        UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
+        /*TODO find a way to visualize correctly counterpart avatar*/
+
+            UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
+
+
+
         holder.username.setText(conversation.getConversationCounterpart());
         holder.lastMessageBody.setText(conversation.getMessageReceived().getMessage());
         holder.date.setText(conversation.getMessageReceived().getTimeStampAsString(conversation.getMessageReceived().getTimestamp()));
-        if(conversation.getNewInboxMessageCounter() == -1)
+
+        if(conversation.getNewInboxMessageCounter() == 0)
             holder.inboxCounter.setVisibility(View.GONE);
+        else{
+            if(modification){
+                String inbox = String.valueOf(conversations.get(position).getNewInboxMessageCounter());
+                Log.d("conversation",inbox);
+                holder.inboxCounter.setVisibility(View.VISIBLE);
+                holder.inboxCounter.setText(inbox);
+                modification = false;
+            }else {
+                holder.inboxCounter.setVisibility(View.VISIBLE);
+                holder.inboxCounter.setText(context.getString(R.string.NEW));
+            }
+        }
         //else
           //  holder.inboxCounter.setText(conversation.getNewInboxMessageCounter());
 
@@ -148,13 +186,14 @@ public class ConversationAdapter extends BaseAdapter {
         holder.conversation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                conversations.get(position).setNewInboxMessageCounter(0);
+                notifyDataSetChanged();
                 Intent chatActivity = new Intent(context, ChatActivity.class);
                 SharedPreferences userPreferences =context.getSharedPreferences(context.getString(R.string.username_preferences), Context.MODE_PRIVATE);
                 chatActivity.putExtra("recipientUsername",conversation.getConversationCounterpart() );
                 chatActivity.putExtra("recipientUID", userPreferences.getString(conversation.getConversationCounterpart(),"void"));
                 context.startActivity(chatActivity);
-                conversations.get(position).setNewInboxMessageCounter(-1);
-                notifyDataSetChanged();
+
 
             }
         });
