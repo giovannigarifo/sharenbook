@@ -18,6 +18,12 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageException;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -180,10 +186,10 @@ public class ConversationAdapter extends BaseAdapter {
             public void onClick(View v) {
                 conversations.get(position).setNewInboxMessageCounter(0);
                 notifyDataSetChanged();
+
                 Intent chatActivity = new Intent(context, ChatActivity.class);
                 chatActivity.putExtra("recipientUsername",conversation.getConversationCounterpart() );
                 context.startActivity(chatActivity);
-
 
             }
         });

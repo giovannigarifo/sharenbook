@@ -147,8 +147,7 @@ public class ChatActivity extends AppCompatActivity {
         readServerTime = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                unixTime = (Long) dataSnapshot.getValue() + 70000;
-                System.out.println("current time: "+ unixTime);
+                unixTime = (Long) dataSnapshot.getValue();
             }
 
             @Override
@@ -156,8 +155,8 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         };
-        serverTimeRef.addListenerForSingleValueEvent(readServerTime);
         serverTimeRef.setValue(ServerValue.TIMESTAMP);
+        serverTimeRef.addListenerForSingleValueEvent(readServerTime);
 
         childEventListener = new ChildEventListener() {
             @Override
@@ -187,7 +186,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     if(!viewed){
 
-                        if((date < unixTime && firstTimeNotViewed) || activityWasOnPause || (openedFromNotification && firstTimeNotViewed)){
+                        if((date < unixTime && firstTimeNotViewed) || (date < unixTime && activityWasOnPause) || (openedFromNotification && firstTimeNotViewed)){
                             message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
                             messageAdapter.addMessage(message);
                             firstTimeNotViewed = false;
@@ -368,14 +367,17 @@ public class ChatActivity extends AppCompatActivity {
         chatToOthersReference.removeEventListener(childEventListener);
         isOnPause = true;
         activityWasOnPause = true;
+
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         if(isOnPause) {
-            serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+            /*serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+            serverTimeRef.setValue(ServerValue.TIMESTAMP);*/
             serverTimeRef.setValue(ServerValue.TIMESTAMP);
+            serverTimeRef.addListenerForSingleValueEvent(readServerTime);
             messageAdapter.clearMessages();
             isOnPause = false;
             chatToOthersReference.addChildEventListener(childEventListener);

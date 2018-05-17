@@ -254,6 +254,10 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
             startActivity(i);
 
+        } else if (id == R.id.drawer_navigation_myBook) {
+            Intent i = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(i);
+
         } else if (id == R.id.drawer_navigation_logout) {
             AuthUI.getInstance()
                     .signOut(this)
