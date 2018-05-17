@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -192,7 +193,7 @@ public class ConversationAdapter extends BaseAdapter {
 
     public class ConversationViewHolder{
 
-        CircularImageView avatar;
+        ImageView avatar;
         TextView username;
         TextView lastMessageBody;
         TextView date;
