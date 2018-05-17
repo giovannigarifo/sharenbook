@@ -43,7 +43,7 @@
 
     </ListView>
 
-
+<!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_newchat"
         android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/navigation"
         app:layout_constraintEnd_toEndOf="parent"/>
-
+-->
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

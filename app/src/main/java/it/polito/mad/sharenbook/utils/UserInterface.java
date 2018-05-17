@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,6 +53,7 @@ public class UserInterface {
                 .apply(RequestOptions.circleCropTransform()
                     .signature(new ObjectKey(signature))
                     .diskCacheStrategy(DiskCacheStrategy.ALL))
+                .placeholder(AppCompatResources.getDrawable(context,R.drawable.ic_profile))
                 .into(iv);
     }
 

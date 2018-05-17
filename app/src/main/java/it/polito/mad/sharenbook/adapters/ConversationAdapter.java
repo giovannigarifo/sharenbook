@@ -155,9 +155,8 @@ public class ConversationAdapter extends BaseAdapter {
         holder.conversation = convertView.findViewById(R.id.conversation);
 
 
-        conversation.getProfilePicRef().getDownloadUrl().addOnSuccessListener(uri -> UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0)).addOnFailureListener(exception -> {
-            // File not found
-        });
+        if(conversation.getProfilePicRef()!=null)
+            UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
 
         holder.username.setText(conversation.getConversationCounterpart());
         holder.lastMessageBody.setText(conversation.getMessageReceived().getMessage());

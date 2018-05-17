@@ -72,7 +72,6 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             mychatsDB.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    /*TODO IF 0 -> CERCA LIBRI */
                     long actualChats = dataSnapshot.getChildrenCount();
 
                     if(actualChats == 0)
@@ -165,10 +164,15 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
         Conversation conversation = new Conversation(dataSnapshot.getKey(),message, 0,
                 FirebaseStorage.getInstance().getReference().child("images/" + dataSnapshot.getKey() +".jpg"));
-        if(newConversation)
+
+        if(newConversation) {
             adapter.addConversation(conversation);
-        else
+            Log.d("chatpicture","new recipient->"+dataSnapshot.getKey()+" path->"+"images/" + dataSnapshot.getKey() +".jpg");
+        }
+        else {
             adapter.modifyConversation(conversation);
+            Log.d("chatpicture","mod recipient->"+dataSnapshot.getKey()+" path->"+"images/" + dataSnapshot.getKey() +".jpg");
+        }
     }
 
     private void noChatsDialog(){
@@ -185,7 +189,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         ).setNegativeButton(android.R.string.cancel,
                 (dialog, which) -> {
                     dialog.dismiss();
-                    finish();
+                    
                 }
         );
 

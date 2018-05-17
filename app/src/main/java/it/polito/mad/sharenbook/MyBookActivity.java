@@ -103,7 +103,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     ).setNegativeButton(android.R.string.cancel,
                             (dialog, which) -> {
                                 dialog.dismiss();
-                                finish();
+
                             }
                     );
 
