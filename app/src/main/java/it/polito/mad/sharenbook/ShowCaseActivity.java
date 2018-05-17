@@ -1,14 +1,16 @@
 package it.polito.mad.sharenbook;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,13 +24,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,115 +44,77 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
-public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
+public class ShowCaseActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
     private String searchState;
     private BottomNavigationView navBar;
+    boolean shouldExecuteOnResume;
+
+    private DatabaseReference booksDb;
+    private DatabaseReference favoritesDb;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private Location mLocation;
+
+    private String user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_case);
+        shouldExecuteOnResume = false;
 
         // Setup navigation tools
         setupNavigationTools();
 
         // Get bookDb reference
-        DatabaseReference booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key));
+        booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key));
         booksDb.keepSynced(true);
 
         // Get favoriteBooks reference
-        String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference favoritesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        favoritesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoritesDb.keepSynced(true);
 
-        // LAST BOOKS recycler view
-        RecyclerView lastBooksRV = findViewById(R.id.showcase_rv_last);
-        lastBooksRV.setHasFixedSize(true);
-        LinearLayoutManager lastBooksLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        lastBooksRV.setLayoutManager(lastBooksLayoutManager);
-
-        // FAVORITE BOOKS recycler view
-        RecyclerView favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
-        favoriteBooksRV.setHasFixedSize(true);
-        LinearLayoutManager favoriteBookLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        favoriteBooksRV.setLayoutManager(favoriteBookLM);
-
-        // Load Last Book RV
-        booksDb.orderByChild("creationTime").limitToLast(15)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        List<Book> bookList = new ArrayList<>();
-
-                        if (dataSnapshot.getChildrenCount() == 0)
-                            return;
-
-                        // Read books
-                        for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
-                            Book book = bookSnapshot.getValue(Book.class);
-                            book.setBookId(bookSnapshot.getKey());
-                            bookList.add(0, book);
-                        }
-
-                        // Specify an adapter
-                        MyAdapter lastBooksAdapter = new MyAdapter(bookList);
-                        lastBooksRV.setAdapter(lastBooksAdapter);
-                        findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("ERROR", "There was an error while fetching last book inserted");
-                    }
+        // Get last location
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onAllGranted() {
+                Log.d("DEBUG", "Sono qua");
+                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                    mLocation = location;
+                    loadCloseBooksRecyclerView();
                 });
-
-        // Load Favorite Books RV
-        favoritesDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                List<Book> bookList = new ArrayList<>();
-                final long bookCount = dataSnapshot.getChildrenCount();
-
-                if (bookCount == 0)
-                    return;
-
-                // Read books reference
-                for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
-
-                    String bookId = bookIdSnapshot.getKey();
-                    booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Book book = dataSnapshot.getValue(Book.class);
-                            book.setBookId(dataSnapshot.getKey());
-                            bookList.add(0, book);
-
-                            if (bookList.size() == bookCount) {
-                                // Set RV adapter
-                                MyAdapter favoriteBooksAdapter = new MyAdapter(bookList);
-                                favoriteBooksRV.setAdapter(favoriteBooksAdapter);
-                                findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {}
-                    });
-                }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
         });
+
+        // Load recycler views
+        loadLastBooksRecyclerView();
+        loadFavoriteBooksRecylerView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (shouldExecuteOnResume) {
+            //Reload recycler views
+            loadLastBooksRecyclerView();
+            loadFavoriteBooksRecylerView();
+
+        } else {
+            shouldExecuteOnResume = true;
+        }
     }
 
     @Override
@@ -270,6 +239,181 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_showcase);
         navBar = findViewById(R.id.navigation);
+    }
+
+    private void loadLastBooksRecyclerView() {
+
+        // LAST BOOKS recycler view
+        RecyclerView lastBooksRV = findViewById(R.id.showcase_rv_last);
+        lastBooksRV.setHasFixedSize(true);
+        LinearLayoutManager lastBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        lastBooksRV.setLayoutManager(lastBooksLM);
+
+        // Load Last Book RV
+        booksDb.orderByChild("creationTime").limitToLast(15)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        List<Book> bookList = new ArrayList<>();
+
+                        if (dataSnapshot.getChildrenCount() == 0)
+                            return;
+
+                        // Read books
+                        for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
+                            Book book = bookSnapshot.getValue(Book.class);
+                            book.setBookId(bookSnapshot.getKey());
+                            bookList.add(0, book);
+                        }
+
+                        // Specify an adapter
+                        MyAdapter lastBooksAdapter = new MyAdapter(bookList);
+                        lastBooksRV.setAdapter(lastBooksAdapter);
+                        findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("ERROR", "There was an error while fetching last book inserted");
+                    }
+                });
+
+        // Set MORE button listener
+        findViewById(R.id.last_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadFavoriteBooksRecylerView() {
+
+        // FAVORITE BOOKS recycler view
+        RecyclerView favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
+        favoriteBooksRV.setHasFixedSize(true);
+        LinearLayoutManager favoriteBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        favoriteBooksRV.setLayoutManager(favoriteBooksLM);
+
+        // Load Favorite Books RV
+        favoritesDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                List<Book> bookList = new ArrayList<>();
+                final long bookCount = dataSnapshot.getChildrenCount();
+
+                if (bookCount == 0) {
+                    findViewById(R.id.showcase_cw_favorites).setVisibility(View.GONE);
+                    return;
+                }
+
+                // Read books reference
+                for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
+                    String bookId = bookIdSnapshot.getKey();
+
+                    booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Book book = dataSnapshot.getValue(Book.class);
+                            book.setBookId(dataSnapshot.getKey());
+                            bookList.add(0, book);
+
+                            if (bookList.size() == bookCount) {
+                                // Set RV adapter
+                                MyAdapter favoriteBooksAdapter = new MyAdapter(bookList);
+                                favoriteBooksRV.setAdapter(favoriteBooksAdapter);
+                                findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        // Set MORE button listener
+        findViewById(R.id.favorites_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadCloseBooksRecyclerView() {
+
+        // Get Geofire
+        DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
+        GeoFire geoFire = new GeoFire(location_ref);
+
+        // FAVORITE BOOKS recycler view
+        RecyclerView closeBooksRV = findViewById(R.id.showcase_rv_closebooks);
+        closeBooksRV.setHasFixedSize(true);
+        LinearLayoutManager closeBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        closeBooksRV.setLayoutManager(closeBooksLM);
+
+        // Get close books
+        List<String> queryResults = new ArrayList<>();
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLocation.getLatitude(), mLocation.getLongitude()), 10.0);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                queryResults.add(key);
+            }
+
+            @Override
+            public void onKeyExited(String key) {}
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {}
+
+            @Override
+            public void onGeoQueryReady() {
+                loadCloseBooksAdapter(queryResults, closeBooksRV);
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {}
+        });
+
+        // Set MORE button listener
+        findViewById(R.id.closebooks_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+    }
+
+    private void loadCloseBooksAdapter(List<String> geofireResults, RecyclerView closeBooksRV) {
+
+        List<Book> bookList = new ArrayList<>();
+        AtomicLong bookCount = new AtomicLong(geofireResults.size());
+
+        if (bookCount.get() == 0) {
+            findViewById(R.id.showcase_cw_closebooks).setVisibility(View.GONE);
+            return;
+        }
+
+        // Read books reference
+        for (String bookId : geofireResults) {
+
+            booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Book book = dataSnapshot.getValue(Book.class);
+                    book.setBookId(dataSnapshot.getKey());
+
+                    if (book.getOwner_uid().equals(user_id)) {
+                        bookCount.decrementAndGet();
+                    } else {
+                        bookList.add(book);
+                    }
+
+                    if (bookList.size() == bookCount.get()) {
+                        // Set RV adapter
+                        MyAdapter closeBooksAdapter = new MyAdapter(bookList);
+                        closeBooksRV.setAdapter(closeBooksAdapter);
+                        findViewById(R.id.showcase_cw_closebooks).setVisibility(View.VISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }
     }
 
     /**

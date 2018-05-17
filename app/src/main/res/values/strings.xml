@@ -30,6 +30,7 @@
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Uploading..</string>
     <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
+    <string name="to_be_implemented">To be implemented!</string>
 
     <!-- common words -->
     <string name="search">Search</string>
@@ -248,6 +249,10 @@
     <!-- ShowCase -->
     <string name="showcase_lastbook">Last announcements</string>
     <string name="showcase_favorites">My favorites</string>
+    <string name="showcase_lucky">I\'m feeling lucky</string>
+    <string name="showcase_closebooks">Announcements close to you</string>
     <string name="showcase_more_button">MORE</string>
+    <string name="showcase_add_favorite">Added to Favorites</string>
+    <string name="showcase_del_favorite">Removed from Favorites</string>
 
 </resources>

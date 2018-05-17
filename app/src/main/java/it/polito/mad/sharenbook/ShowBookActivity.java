@@ -196,6 +196,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
                     if (databaseError == null) {
                         favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                        Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
                         favoriteClicked = false;
                     } else
                         Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
@@ -205,6 +206,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 favoriteBooksRef.setValue(true, (databaseError, databaseReference) -> {
                     if (databaseError == null) {
                         favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
                         favoriteClicked = true;
                     } else
                         Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());

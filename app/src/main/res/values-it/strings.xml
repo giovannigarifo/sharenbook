@@ -25,6 +25,7 @@
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Upload in corso..</string>
     <string name="network_alert">Non è stata rilevata alcuna connessione a internet! E\' necessaria per il corretto funzionamento dell\'app! Vuoi controllare le tue impostazioni?</string>
+    <string name="to_be_implemented">Funzionalità da implementare!</string>
 
     <!-- common words -->
     <string name="search">Cerca</string>
@@ -240,6 +241,10 @@
     <!-- ShowCase -->
     <string name="showcase_lastbook">Ultimi annunci</string>
     <string name="showcase_favorites">I miei preferiti</string>
+    <string name="showcase_lucky">Mi sento fortunato</string>
+    <string name="showcase_closebooks">Annunci nelle vicinanze</string>
     <string name="showcase_more_button">ALTRO</string>
+    <string name="showcase_add_favorite">Aggiunto ai Preferiti</string>
+    <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
 
 </resources>
