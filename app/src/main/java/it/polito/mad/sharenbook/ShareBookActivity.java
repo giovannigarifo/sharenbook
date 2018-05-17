@@ -139,6 +139,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
 
         if (id == R.id.drawer_navigation_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
         } else if (id == R.id.drawer_navigation_myBook) {
             Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);

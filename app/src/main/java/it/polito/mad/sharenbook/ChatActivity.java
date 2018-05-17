@@ -46,6 +46,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import it.polito.mad.sharenbook.adapters.MessageAdapter;
 import it.polito.mad.sharenbook.model.Message;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 
@@ -338,8 +339,8 @@ public class ChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         if(openedFromNotification){
-            /*Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
-            startActivity(i);*/
+            Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
+            startActivity(i);
         }
         chatToOthersReference.removeEventListener(childEventListener);
         finish();

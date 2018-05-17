@@ -134,6 +134,7 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
 
         if (id == R.id.drawer_navigation_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
         } else if (id == R.id.drawer_navigation_shareBook) {
             Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);

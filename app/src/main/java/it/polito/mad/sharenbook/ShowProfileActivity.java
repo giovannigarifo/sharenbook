@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -45,6 +46,8 @@ public class ShowProfileActivity  extends AppCompatActivity
     private CircularImageView userPicture;
 
     private String searchState;
+
+    private SharedPreferences userProfileData;
 
     /**
      * default profile values

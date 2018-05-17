@@ -3,6 +3,14 @@
     <string name="profile_preferences" translatable="false">profile_preferences</string>
     <string name="profile_preferences_copy" translatable="false">profile_preferences_copy</string>
     <string name="username_preferences" translatable="false">username_preferences</string>
+    <string name="userData_preferences" translatable="false">userData_preferences</string>
+    <string name="bio_pref" translatable="false">bio_pref</string>
+    <string name="username_pref" translatable="false">username_pref</string>
+    <string name="city_pref" translatable="false">city_pref</string>
+    <string name="email_pref" translatable="false">email_pref</string>
+    <string name="uid_pref" translatable="false">uid_pref</string>
+    <string name="fullname_pref" translatable="false">fullname_pref</string>
+    <string name="picture_pref" translatable="false">picture_pref</string>
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>

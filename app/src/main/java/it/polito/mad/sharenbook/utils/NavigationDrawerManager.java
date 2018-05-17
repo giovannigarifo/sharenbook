@@ -1,6 +1,7 @@
 package it.polito.mad.sharenbook.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -8,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 public class NavigationDrawerManager {
@@ -49,6 +51,10 @@ public class NavigationDrawerManager {
     }
 
     public static void setDrawerViews(Context context,WindowManager windowManager, TextView drawer_fullname, TextView drawer_email, CircularImageView drawer_userPicture,NavigationDrawerProfile navigationDrawerProfile){
+
+        if(navigationDrawerProfile == null)
+            navigationDrawerProfile = new NavigationDrawerProfile(NavigationDrawerManager.getUserParcelable(context));
+
         String profile_picture_signature = null;
         if(navigationDrawerProfile.getPictureSignature()!=null)
             profile_picture_signature = navigationDrawerProfile.getPictureSignature();
@@ -69,4 +75,24 @@ public class NavigationDrawerManager {
         }
 
     }
+
+
+    public static UserProfile getUserParcelable(Context context){
+
+        SharedPreferences userData = context.getSharedPreferences(context.getString(R.string.userData_preferences), Context.MODE_PRIVATE);
+
+        UserProfile user = new UserProfile(
+                userData.getString(context.getString(R.string.uid_pref), "void"),
+                userData.getString(context.getString(R.string.fullname_pref), "void"),
+                userData.getString(context.getString(R.string.username_pref), "void"),
+                userData.getString(context.getString(R.string.email_pref), "void"),
+                userData.getString(context.getString(R.string.city_pref), "void"),
+                userData.getString(context.getString(R.string.bio_pref), "void"),
+                userData.getString(context.getString(R.string.picture_pref), "void")
+                );
+
+        return user;
+
+    }
+
 }

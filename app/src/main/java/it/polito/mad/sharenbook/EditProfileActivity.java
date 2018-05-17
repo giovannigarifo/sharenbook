@@ -59,6 +59,8 @@ public class EditProfileActivity extends AppCompatActivity {
     //Shared Preferences
     private SharedPreferences editedProfile_copy, usernamePref;
     private SharedPreferences.Editor writeProfile_copy, writeUsernamePref;
+    private SharedPreferences userProfileData;
+    private SharedPreferences.Editor write_userProfileData;
 
     //default profile values
     private String default_city;
@@ -171,6 +173,9 @@ public class EditProfileActivity extends AppCompatActivity {
         usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         writeUsernamePref = usernamePref.edit();
 
+        userProfileData = getSharedPreferences(getString(R.string.userData_preferences), Context.MODE_PRIVATE);
+        write_userProfileData = userProfileData.edit();
+
         save_button = findViewById(R.id.fab_save);
 
         /* String fullname */
@@ -253,6 +258,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         writeUsernamePref = usernamePref.edit();
+
+        userProfileData = getSharedPreferences(getString(R.string.userData_preferences), Context.MODE_PRIVATE);
+        write_userProfileData = userProfileData.edit();
 
         //get view button
         save_button = findViewById(R.id.fab_save);
@@ -545,6 +553,14 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key), user);
 
+            write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
+            write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
+            write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
+            write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
+            write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
+            write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
+            write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
+
             if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                 setResult(RESULT_OK, i);
             } else {
@@ -662,6 +678,14 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         user.setPicture_timestamp(String.valueOf(taskSnapshot.getMetadata().getCreationTimeMillis()));
                         //user.setPicture_uri(taskSnapshot.getDownloadUrl()); //save the download URL
+
+                        write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
+                        write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
+                        write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
+                        write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
+                        write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
+                        write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
+                        write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
 
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);

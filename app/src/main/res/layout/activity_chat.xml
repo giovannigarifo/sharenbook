@@ -38,7 +38,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:elevation="5dp"
-        android:src="@drawable/ic_person_black_135dp"
+        android:src="@drawable/ic_profile"
         app:layout_constraintBottom_toTopOf="@+id/chat_list_view"
         app:layout_constraintStart_toEndOf="@+id/back_button"
         app:layout_constraintTop_toTopOf="@+id/tv_top"

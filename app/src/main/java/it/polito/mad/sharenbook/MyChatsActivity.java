@@ -247,6 +247,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
         if(id == R.id.drawer_navigation_profile){
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
 
         } else if (id == R.id.drawer_navigation_shareBook) {
@@ -264,7 +265,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
                     });
         }
 
-        DrawerLayout drawer = findViewById(R.id.my_book_drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.my_chats_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
