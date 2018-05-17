@@ -125,7 +125,7 @@ public class ChatActivity extends AppCompatActivity {
         readServerTime = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                unixTime = (Long) dataSnapshot.getValue() + 80000;
+                unixTime = (Long) dataSnapshot.getValue() + 70000;
                 System.out.println("current time: "+ unixTime);
             }
 
@@ -341,8 +341,8 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if(isOnPause) {
-            //serverTimeRef.addListenerForSingleValueEvent(readServerTime);
-            //serverTimeRef.setValue(ServerValue.TIMESTAMP);
+            serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+            serverTimeRef.setValue(ServerValue.TIMESTAMP);
             messageAdapter.clearMessages();
             isOnPause = false;
             chatToOthersReference.addChildEventListener(childEventListener);

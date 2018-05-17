@@ -13,18 +13,24 @@
 
     <EditText
         android:id="@+id/messageArea"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:background="@drawable/ui_bubble"
         android:hint="@string/chat_write_msg"
         android:maxHeight="80dp"
         android:padding="8dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:nestedScrollingEnabled="true"
         android:textColor="@android:color/black"
-        android:textColorHint="@android:color/black"
-        android:textCursorDrawable="@color/white"
+        android:textColorHint="@color/secondaryText"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintEnd_toStartOf="@+id/sendButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,6 +38,8 @@
         android:id="@+id/sendButton"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_toEndOf="@id/messageArea"
         android:layout_toRightOf="@id/messageArea"
         android:background="@drawable/ui_bubble"
@@ -39,6 +47,5 @@
         android:src="@android:drawable/ic_menu_send"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="@+id/textView"
-        app:layout_constraintStart_toEndOf="@+id/messageArea"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

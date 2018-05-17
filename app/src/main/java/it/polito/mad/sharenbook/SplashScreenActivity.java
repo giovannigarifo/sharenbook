@@ -294,6 +294,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         users_dataPlaceholder.put(firebaseUser.getUid(), getString(R.string.empty_user_value));
         user_entries.put(getString(R.string.profile_key),getString(R.string.profile_value_placeholder));
         user_entries.put(getString(R.string.user_books_key),getString(R.string.users_books_placeholder));
+        user_entries.put(getString(R.string.user_favorites_key),getString(R.string.users_favorites_placeholder));
 
         dbReference = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key));
         dbReference.updateChildren(users_dataPlaceholder, (databaseError, databaseReference) -> {

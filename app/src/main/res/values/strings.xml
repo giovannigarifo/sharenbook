@@ -201,6 +201,7 @@
     <!-- Chat things -->
     <string name="chat_you">You: \n</string>
     <string name="chat_write_msg">Write a message...</string>
+    <string name="unread_messages">Unread messages</string>
 
 
     <!-- Firebase keys -->
@@ -213,7 +214,9 @@
     <string name="profile_key" translatable="false">profile</string>
     <string name="profile_value_placeholder" translatable="false">profile_empty</string>
     <string name="users_books_placeholder" translatable="false">books_empty</string>
+    <string name="users_favorites_placeholder" translatable="false">favorites_empty</string>
     <string name="user_books_key" translatable="false">user_books</string>
+    <string name="user_favorites_key" translatable="false">user_favorites</string>
     <string name="books_key" translatable="false">books</string>
     <string name="books_locations" translatable="false">books_locations</string>
     <string name="book_images_key" translatable="false">book_images</string>

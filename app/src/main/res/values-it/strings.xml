@@ -199,6 +199,8 @@
     <!-- Chat things -->
     <string name="chat_you">Tu: \n</string>
     <string name="chat_write_msg">Scrivi un messaggio...</string>
+    <string name="unread_messages">Messaggi non letti</string>
+
 
 
     <!-- Firebase keys -->
