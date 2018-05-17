@@ -28,7 +28,6 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 public class ConversationAdapter extends BaseAdapter {
 
     private List<Conversation> conversations = new ArrayList<>();
-    private boolean modification = false;
     private long withoutIncomingMessagesCounter = 0;
     private Context context;
 
@@ -54,7 +53,7 @@ public class ConversationAdapter extends BaseAdapter {
                 conversation.setNewInboxMessageCounter(1);
             }
             this.conversations.add(0,conversation);
-           // Log.d("Conversation after:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
+            Log.d("Conversation aft sort:","message not viewed so counter"+conversation.getNewInboxMessageCounter());
             notifyDataSetChanged();
         }
         else {
@@ -62,6 +61,7 @@ public class ConversationAdapter extends BaseAdapter {
             if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())
                     && !conversation.getMessageReceived().isViewed()) {
                 conversation.setNewInboxMessageCounter(1);
+                Log.d("Conversation","sorting->added counter because message is not viewed"+conversation.getNewInboxMessageCounter());
             }
             this.conversations.add(conversation);
             sortAfterInsertNewElement();
@@ -91,29 +91,26 @@ public class ConversationAdapter extends BaseAdapter {
         for(Conversation conv : conversations){
             if(conv.getConversationCounterpart().equals(conversation.getConversationCounterpart())) {
                 conv.setMessageReceived(conversation.getMessageReceived());
-               // conv.setNewInboxMessageCounter(conv.getNewInboxMessageCounter() + 1);
                 conv.setProfilePicRef(conversation.getProfilePicRef());
-                index = conversations.indexOf(conv);
-              //  Log.d("conversation","mod at pos ->"+index);
-                upFront = new Conversation(conversation);
-
-                if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())) {
-                    modification = true;
-                    int inbox =conv.getNewInboxMessageCounter();
-                    Log.d("Conversation","currentcounter ->"+inbox);
-                    inbox++;
-                    Log.d("Conversation","new counter ->"+inbox);
-                    upFront.setNewInboxMessageCounter(inbox);
+                if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())
+                        &&!conversation.getMessageReceived().isViewed()) {
+                    conv.setNewInboxMessageCounter(1);
+                    Log.d("Conversation","received message counter->"+conv.getNewInboxMessageCounter());
                 }
-
+                else {
+                    conv.setNewInboxMessageCounter(0);
+                    Log.d("Conversation","sent message counter ->"+conv.getNewInboxMessageCounter());
+                }
+                index = conversations.indexOf(conv);
+                upFront = new Conversation(conversation);
                 break;
             }
 
         }
+
         if(upFront!=null && index!=0){
             conversations.remove(index);
             addConversation(upFront);
-            return;
         }
         notifyDataSetChanged();
     }
@@ -166,19 +163,11 @@ public class ConversationAdapter extends BaseAdapter {
         if(conversation.getNewInboxMessageCounter() == 0)
             holder.inboxCounter.setVisibility(View.GONE);
         else{
-            if(modification){
-                String inbox = String.valueOf(conversations.get(position).getNewInboxMessageCounter());
-                Log.d("conversation",inbox);
-                holder.inboxCounter.setVisibility(View.VISIBLE);
-                holder.inboxCounter.setText(inbox);
-                modification = false;
-            }else {
-                holder.inboxCounter.setVisibility(View.VISIBLE);
-                holder.inboxCounter.setText(context.getString(R.string.NEW));
-            }
+            holder.inboxCounter.setVisibility(View.VISIBLE);
+            holder.inboxCounter.setText(context.getString(R.string.NEW));
+
         }
-        //else
-          //  holder.inboxCounter.setText(conversation.getNewInboxMessageCounter());
+
 
         convertView.setTag(holder);
 
@@ -197,15 +186,7 @@ public class ConversationAdapter extends BaseAdapter {
 
             }
         });
-/*
-        if(modification) {
-            Log.d("conversation", "true");
-            modification = false;
-            convertView.bringToFront();
-        }
-        else
-            Log.d("conversation","false");
-*/
+
         return convertView;
     }
 
