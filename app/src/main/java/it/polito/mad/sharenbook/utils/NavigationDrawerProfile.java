@@ -18,20 +18,17 @@ public class NavigationDrawerProfile {
 
         user_fullname = user.getFullname();
         user_email = user.getEmail();
-        user_picturePath = "images/" + user.getUserID() + ".jpg";
+        user_picturePath = "images/" + user.getUsername() + ".jpg";
         pictureSignature = user.getPicture_timestamp();
-
 
     }
 
-    public NavigationDrawerProfile(String user_fullname,String user_email,String userID, String pictureSignature){
+    public NavigationDrawerProfile(String user_fullname,String user_email,String username, String pictureSignature){
 
         this.user_fullname = user_fullname;
         this.user_email = user_email;
-        this.user_picturePath = "images/" + userID + ".jpg";
+        this.user_picturePath = "images/" + username + ".jpg";
         this.pictureSignature = pictureSignature;
-
-
 
     }
 

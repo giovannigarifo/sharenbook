@@ -120,13 +120,13 @@ public class ShowProfileActivity  extends AppCompatActivity
         profile_picture_signature = user.getPicture_timestamp();
 
             if (!profile_picture_signature.equals(default_picture_timestamp)) {
-                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUsername()+".jpg");
                 UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 
                 userPicture.setOnClickListener(v -> {
                     Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                     i.putExtra("PictureSignature", profile_picture_signature);
-                    i.putExtra("userId", user.getUserID());
+                    i.putExtra("username", user.getUsername());
                     startActivity(i);
                 });
 
@@ -228,7 +228,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
                 if (!profile_picture_signature.equals(default_picture_path)) {
 
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUsername()+".jpg");
 
                         UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 

@@ -1,15 +1,27 @@
 package it.polito.mad.sharenbook.utils;
 
+import android.support.v4.app.NotificationBuilderWithBuilderAccessor;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
 import com.onesignal.NotificationExtenderService;
+import com.onesignal.OSNotificationDisplayedResult;
 import com.onesignal.OSNotificationReceivedResult;
 
 import org.json.JSONException;
 
+import java.math.BigInteger;
+
 import it.polito.mad.sharenbook.ChatActivity;
 
 public class NotificationExtender extends NotificationExtenderService {
+
+    private String senderName = null;
+
     @Override
     protected boolean onNotificationProcessing(OSNotificationReceivedResult result) {
+
+
 
         // Read properties from result.
         String notificationType = null;
@@ -22,10 +34,19 @@ public class NotificationExtender extends NotificationExtenderService {
         if(notificationType != null && notificationType.equals("message")) {     //notification was because user received a new message
 
             //open the chat
-            String senderName = null, senderUid = null;
+            String senderUid = null;
             try {
                 senderName = result.payload.additionalData.getString("senderName");
                 senderUid = result.payload.additionalData.getString("senderUid");
+
+                /*OverrideSettings overrideSettings = new OverrideSettings();
+                overrideSettings.extender = builder -> {
+                    builder.setGroup(senderName);
+                    return builder;
+                };
+
+                OSNotificationDisplayedResult displayedResult = displayNotification(overrideSettings);*/
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

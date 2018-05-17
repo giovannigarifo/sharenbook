@@ -230,7 +230,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Load photo from Firebase using Glide cache
         if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUsername() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
@@ -282,7 +282,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
             userPicture.setImageURI(Uri.parse(chosenPicture));
         } else if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUsername() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
@@ -649,7 +649,7 @@ public class EditProfileActivity extends AppCompatActivity {
             progressDialog.setTitle(getString(R.string.loading_dialog));
             progressDialog.show();
 
-            StorageReference imageReference = storageReference.child("images/" + user.getUserID() + ".jpg");
+            StorageReference imageReference = storageReference.child("images/" + user.getUsername() + ".jpg");
             imageReference.putFile(file)
                     .addOnSuccessListener(taskSnapshot -> { //if the upload is successfull
 

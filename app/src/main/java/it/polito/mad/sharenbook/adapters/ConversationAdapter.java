@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,8 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageException;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -150,11 +154,10 @@ public class ConversationAdapter extends BaseAdapter {
         holder.avatar = convertView.findViewById(R.id.mychats_avatar);
         holder.conversation = convertView.findViewById(R.id.conversation);
 
-        /*TODO find a way to visualize correctly counterpart avatar*/
 
-            UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
-
-
+        conversation.getProfilePicRef().getDownloadUrl().addOnSuccessListener(uri -> UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0)).addOnFailureListener(exception -> {
+            // File not found
+        });
 
         holder.username.setText(conversation.getConversationCounterpart());
         holder.lastMessageBody.setText(conversation.getMessageReceived().getMessage());
@@ -178,9 +181,7 @@ public class ConversationAdapter extends BaseAdapter {
                 conversations.get(position).setNewInboxMessageCounter(0);
                 notifyDataSetChanged();
                 Intent chatActivity = new Intent(context, ChatActivity.class);
-                SharedPreferences userPreferences =context.getSharedPreferences(context.getString(R.string.username_preferences), Context.MODE_PRIVATE);
                 chatActivity.putExtra("recipientUsername",conversation.getConversationCounterpart() );
-                chatActivity.putExtra("recipientUID", userPreferences.getString(conversation.getConversationCounterpart(),"void"));
                 context.startActivity(chatActivity);
 
 

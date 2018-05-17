@@ -226,7 +226,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
                 SharedPreferences userPreferences =getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
                 userPreferences.edit().putString("recipientUsername",book.getOwner_username()).commit();
-                chatActivity.putExtra("recipientUID", book.getOwner_uid());
+                //chatActivity.putExtra("recipientUID", book.getOwner_uid());
                 startActivity(chatActivity);
                 finish();
             });
@@ -391,6 +391,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
+
     }
 }
 

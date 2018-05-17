@@ -16,7 +16,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_profile"
+        android:src="@drawable/ic_person_black_135dp"
         />
 
     <TextView

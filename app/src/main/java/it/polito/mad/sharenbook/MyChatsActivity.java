@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import java.util.Map;
 import java.util.Set;
@@ -163,7 +164,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         }
 
         Conversation conversation = new Conversation(dataSnapshot.getKey(),message, 0,
-                FirebaseStorage.getInstance().getReference().child("images/" + userPreferences.getString(dataSnapshot.getKey(),"void") +".jpg"));
+                FirebaseStorage.getInstance().getReference().child("images/" + dataSnapshot.getKey() +".jpg"));
         if(newConversation)
             adapter.addConversation(conversation);
         else
@@ -265,8 +266,6 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     }
 
 
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.my_chats_drawer_layout);
@@ -275,9 +274,13 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         } else {
             super.onBackPressed();
         }
+    }
 
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        OneSignal.clearOneSignalNotifications();
     }
 }
 

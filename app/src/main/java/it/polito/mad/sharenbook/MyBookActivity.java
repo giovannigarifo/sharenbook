@@ -45,11 +45,7 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class MyBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-
-
     private BottomNavigationView navBar;
-
-
 
     /** FireBase objects */
     private FirebaseUser firebaseUser;

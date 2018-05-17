@@ -315,7 +315,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         /*First take the profile picture signature from the storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference profile_pic_ref = storageReference.child("images/"+user.getUserID()+".jpg");
+        StorageReference profile_pic_ref = storageReference.child("images/"+user.getUsername()+".jpg");
 
         Task task = profile_pic_ref.getMetadata();
         task.addOnSuccessListener(new OnSuccessListener() {
