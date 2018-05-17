@@ -13,7 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,13 +54,15 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class ChatActivity extends AppCompatActivity {
 
-    ListView messageView;
-    ImageView sendButton;
-    EditText messageArea;
-    DatabaseReference chatToOthersReference, chatFromOthersReference;
+    private ListView messageView;
+    private ImageView sendButton;
+    private EditText messageArea;
+    private DatabaseReference chatToOthersReference, chatFromOthersReference;
     public static String recipientUsername;
-    ImageView iv_profile;
-    TextView tv_username;
+    private ImageView iv_profile;
+    private TextView tv_username;
+    private ImageButton im_back_button;
+
 
     private boolean lastMessageNotFromCounterpart = false;
     private boolean activityWasOnPause =false, isOnPause = false;
@@ -99,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
         messageArea = findViewById(R.id.messageArea);
         iv_profile = findViewById(R.id.iv_profile);
         tv_username = findViewById(R.id.tv_username);
+        im_back_button = findViewById(R.id.back_button);
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
         //recipientUID = getIntent().getStringExtra("recipientUID");
@@ -243,6 +248,18 @@ public class ChatActivity extends AppCompatActivity {
                 map2.put("viewed", false);
                 chatFromOthersReference.push().setValue(map2);
                 messageArea.setText("");
+            }
+        });
+
+        im_back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(openedFromNotification){
+                    Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
+                    startActivity(i);
+                }
+                chatToOthersReference.removeEventListener(childEventListener);
+                finish();
             }
         });
 
