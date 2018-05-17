@@ -23,10 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -54,22 +56,37 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Setup navigation tools
         setupNavigationTools();
 
-        // Setup recycler views
-        RecyclerView lastBookRecyclerView = findViewById(R.id.showcase_rv_last);
-        lastBookRecyclerView.setHasFixedSize(true);
-
-        // Use an horizontal linear layout manager
-        LinearLayoutManager lastBookLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        lastBookRecyclerView.setLayoutManager(lastBookLayoutManager);
-
+        // Get bookDb reference
         DatabaseReference booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key));
         booksDb.keepSynced(true);
+
+        // Get favoriteBooks reference
+        String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference favoritesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        favoritesDb.keepSynced(true);
+
+        // LAST BOOKS recycler view
+        RecyclerView lastBooksRV = findViewById(R.id.showcase_rv_last);
+        lastBooksRV.setHasFixedSize(true);
+        LinearLayoutManager lastBooksLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        lastBooksRV.setLayoutManager(lastBooksLayoutManager);
+
+        // FAVORITE BOOKS recycler view
+        RecyclerView favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
+        favoriteBooksRV.setHasFixedSize(true);
+        LinearLayoutManager favoriteBookLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        favoriteBooksRV.setLayoutManager(favoriteBookLM);
+
+        // Load Last Book RV
         booksDb.orderByChild("creationTime").limitToLast(15)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         List<Book> bookList = new ArrayList<>();
+
+                        if (dataSnapshot.getChildrenCount() == 0)
+                            return;
 
                         // Read books
                         for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
@@ -79,8 +96,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         }
 
                         // Specify an adapter
-                        MyAdapter lastBookAdapter = new MyAdapter(bookList);
-                        lastBookRecyclerView.setAdapter(lastBookAdapter);
+                        MyAdapter lastBooksAdapter = new MyAdapter(bookList);
+                        lastBooksRV.setAdapter(lastBooksAdapter);
+                        findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -88,6 +106,46 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         Log.d("ERROR", "There was an error while fetching last book inserted");
                     }
                 });
+
+        // Load Favorite Books RV
+        favoritesDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                List<Book> bookList = new ArrayList<>();
+                final long bookCount = dataSnapshot.getChildrenCount();
+
+                if (bookCount == 0)
+                    return;
+
+                // Read books reference
+                for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
+
+                    String bookId = bookIdSnapshot.getKey();
+                    booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Book book = dataSnapshot.getValue(Book.class);
+                            book.setBookId(dataSnapshot.getKey());
+                            bookList.add(0, book);
+
+                            if (bookList.size() == bookCount) {
+                                // Set RV adapter
+                                MyAdapter favoriteBooksAdapter = new MyAdapter(bookList);
+                                favoriteBooksRV.setAdapter(favoriteBooksAdapter);
+                                findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     @Override

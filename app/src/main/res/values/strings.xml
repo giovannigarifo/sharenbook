@@ -237,6 +237,7 @@
 
     <!-- ShowBook -->
     <string name="showbook_toolbar_title">Book Details</string>
+
     <!-- MyChats -->
     <string name="mychats_title" >My chats</string>
     <string name="navigation_mychats">Messages</string>
@@ -244,5 +245,9 @@
     <string name="no_chats_suggestion">We suggest you to search for a book and contact the owner! Do you want to do it now?</string>
     <string name="NEW" translatable="false">NEW</string>
 
+    <!-- ShowCase -->
+    <string name="showcase_lastbook">Last announcements</string>
+    <string name="showcase_favorites">My favorites</string>
+    <string name="showcase_more_button">MORE</string>
 
 </resources>

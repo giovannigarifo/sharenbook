@@ -19,15 +19,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -53,7 +61,14 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     private FloatingActionButton fabContactUser;
 
+    private String user_id;
     private String username;
+
+    private DatabaseReference favoriteBooksDb;
+    private DatabaseReference favoriteBooksRef;
+
+    private ImageView favoriteBtn;
+    private boolean favoriteClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +84,20 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             book = bundle.getParcelable("book");
         }
 
+        // Get current user info
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
 
-        mRecyclerView = findViewById(R.id.showbook_recycler_view);
+        // Setup firebase
+        favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
 
-        // Improve recyclerview performance
+        // Setup favorite button
+        setupFavoriteButton();
+
+        // Setup RecyclerView
+        mRecyclerView = findViewById(R.id.showbook_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
@@ -136,6 +159,58 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("photoLoaded", true);
+    }
+
+    private void setupFavoriteButton() {
+
+        favoriteBtn = findViewById(R.id.show_book_btn_favorite);
+
+        // Check if current user is the book owner
+        if (user_id.equals(book.getOwner_uid())) {
+            favoriteBtn.setVisibility(View.GONE);
+            return;
+        }
+
+        // Check if this book is inside user's favorites list
+        favoriteBooksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    favoriteClicked = true;
+                } else {
+                    favoriteClicked = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                favoriteClicked = false;
+            }
+        });
+
+        // Add click handlers
+        favoriteBtn.setOnClickListener(v -> {
+
+            if (favoriteClicked) {
+                favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
+                    if (databaseError == null) {
+                        favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                        favoriteClicked = false;
+                    } else
+                        Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                });
+
+            } else {
+                favoriteBooksRef.setValue(true, (databaseError, databaseReference) -> {
+                    if (databaseError == null) {
+                        favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        favoriteClicked = true;
+                    } else
+                        Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                });
+            }
+        });
     }
 
     private void setupFabContactUser(){

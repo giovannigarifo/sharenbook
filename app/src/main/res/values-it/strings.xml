@@ -237,4 +237,9 @@
     <string name="no_chats_alert_title">Nessuna conversazione!</string>
     <string name="no_chats_suggestion">Ti consigliamo di cercare un libro e contattare il proprietario! Vuoi farlo ora?</string>
 
+    <!-- ShowCase -->
+    <string name="showcase_lastbook">Ultimi annunci</string>
+    <string name="showcase_favorites">I miei preferiti</string>
+    <string name="showcase_more_button">ALTRO</string>
+
 </resources>

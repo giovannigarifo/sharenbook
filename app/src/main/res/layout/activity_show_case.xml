@@ -63,6 +63,8 @@
 
                     <!-- Ultimi Annunci -->
                     <android.support.v7.widget.CardView
+                        android:id="@+id/showcase_cw_lastbook"
+                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -87,18 +89,18 @@
                                 android:textColor="@color/primaryText"
                                 android:textSize="16sp"
                                 android:fontFamily="@font/roboto_medium"
-                                android:text="Ultimi Annunci"
+                                android:text="@string/showcase_lastbook"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent" />
 
                             <TextView
-                                android:id="@+id/more_button"
+                                android:id="@+id/last_more_button"
                                 android:clickable="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="22sp"
                                 android:gravity="center"
-                                android:text="MORE"
+                                android:text="@string/showcase_more_button"
                                 android:fontFamily="@font/roboto_medium"
                                 android:textColor="@color/colorAccent"
                                 android:textSize="12sp"
@@ -112,7 +114,66 @@
                                 android:layout_marginTop="8dp"
                                 android:paddingRight="-8dp"
                                 android:clipToPadding="false"
-                                app:layout_constraintTop_toBottomOf="@id/more_button" />
+                                app:layout_constraintTop_toBottomOf="@id/last_more_button" />
+
+                        </android.support.constraint.ConstraintLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <!-- I miei preferiti -->
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/showcase_cw_favorites"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="12dp"
+                            android:paddingStart="12dp"
+                            android:paddingLeft="12dp"
+                            android:paddingEnd="12dp"
+                            android:paddingRight="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="18sp"
+                                android:textColor="@color/primaryText"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/showcase_favorites"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent" />
+
+                            <TextView
+                                android:id="@+id/favorites_more_button"
+                                android:clickable="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="22sp"
+                                android:gravity="center"
+                                android:text="@string/showcase_more_button"
+                                android:fontFamily="@font/roboto_medium"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="12sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/showcase_rv_favorites"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:paddingRight="-8dp"
+                                android:clipToPadding="false"
+                                app:layout_constraintTop_toBottomOf="@id/favorites_more_button" />
 
                         </android.support.constraint.ConstraintLayout>
 
