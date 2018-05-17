@@ -58,7 +58,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         RecyclerView lastBookRecyclerView = findViewById(R.id.showcase_rv_last);
         lastBookRecyclerView.setHasFixedSize(true);
 
-        // Use a zoom linear layout manager
+        // Use an horizontal linear layout manager
         LinearLayoutManager lastBookLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         lastBookRecyclerView.setLayoutManager(lastBookLayoutManager);
 
@@ -72,7 +72,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         List<Book> bookList = new ArrayList<>();
 
                         // Read books
-                        for (DataSnapshot bookSnapshot: dataSnapshot.getChildren()) {
+                        for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
                             Book book = bookSnapshot.getValue(Book.class);
                             book.setBookId(bookSnapshot.getKey());
                             bookList.add(0, book);
@@ -134,23 +134,22 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     public void onSearchStateChanged(boolean enabled) {
         searchState = enabled ? "enabled" : "disabled";
         Log.d("debug", "Search " + searchState);
-        if( searchState.equals("enabled")) {
+
+        if (searchState.equals("enabled")) {
             navBar.setVisibility(View.GONE);
 
-        }
-        else {
+        } else {
             navBar.setVisibility(View.VISIBLE);
-
         }
-
     }
+
     /**
      * Starts the search activity with the appropriate bundle
      */
-    private void startSearchActivity(CharSequence searchInputText){
+    private void startSearchActivity(CharSequence searchInputText) {
         Intent i = new Intent(getApplicationContext(), SearchActivity.class);
-        if(searchInputText!=null)
-            i.putExtra("searchInputText",searchInputText);
+        if (searchInputText != null)
+            i.putExtra("searchInputText", searchInputText);
         startActivity(i);
     }
 
@@ -160,10 +159,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         startSearchActivity(searchInputText);
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("searchState",searchState);
+        outState.putString("searchState", searchState);
     }
 
     @Override
@@ -188,8 +188,6 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 break;
         }
     }
-
-
 
     private void setupNavigationTools() {
 
