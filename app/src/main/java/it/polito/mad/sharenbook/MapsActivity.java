@@ -37,14 +37,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.maps.android.SphericalUtil;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.robertlevonyan.views.chip.Chip;
@@ -58,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import it.polito.mad.sharenbook.fragments.DistanceFilterFragment;
+import it.polito.mad.sharenbook.fragments.SearchFilterFragment;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.CustomInfoWindowAdapter;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
@@ -267,7 +264,7 @@ public class MapsActivity extends FragmentActivity
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = DistanceFilterFragment.newInstance("Test Fragment");
+        DialogFragment newFragment = SearchFilterFragment.newInstance("Test Fragment");
         newFragment.show(ft, "distanceDialog");
     }
 

@@ -10,7 +10,6 @@
     android:background="@color/colorBackgroundCardContainer">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:algolia="http://schemas.android.com/apk/res-auto"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -28,16 +27,29 @@
 
             <com.mancj.materialsearchbar.MaterialSearchBar
                 android:id="@+id/sba_searchbar"
-                android:layout_width="wrap_content"
+                android:layout_width="320dp"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
                 app:mt_hint="@string/search_hint"
-                app:mt_maxSuggestionsCount="10"
+                app:mt_maxSuggestionsCount="5"
                 app:mt_navIconEnabled="true"
                 app:mt_placeholder="@string/searchbar_placeholder"
                 app:mt_searchBarColor="@color/colorPrimary"
-                app:mt_speechMode="false"
-                app:mt_textCursorTint="@color/colorAccent"/>
+                app:mt_searchIconTint="@color/colorPrimary"
+                app:mt_textCursorTint="@color/colorAccent" />
+
+            <ImageButton
+                android:id="@+id/sba_btn_filter"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="13dp"
+                android:background="@drawable/ic_filter_list_black_24dp"
+                android:backgroundTint="@color/darkGrey"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="13dp" />
+
 
         </RelativeLayout>
 

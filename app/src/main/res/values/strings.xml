@@ -82,6 +82,28 @@
 
     <string name="edit_book">EDIT</string>
 
+
+    <!-- ============================== -->
+    <!--        BOOK CONDITIONS         -->
+    <string-array name="book_conditions">
+        <item name="book_condition_new">New</item>
+        <item name="book_condition_likenew">Like new</item>
+        <item name="book_condition_verygood">Very good</item>
+        <item name="book_condition_good">Good</item>
+        <item name="book_condition_acceptable">Acceptable</item>
+    </string-array>
+
+    <!--        BOOK CATEGORIES         -->
+    <string-array name="book_categories">
+        <item name="book_category_art">Art, music, cinema</item>
+        <item name="book_category_biography">Biography</item>
+        <item name="book_category_right">Right</item>
+        <item name="book_category_economy">Economy</item>
+        <item name="book_category_scifi">Sci-fi</item>
+        <item name="book_category_fantasy">Fantasy</item>
+    </string-array>
+
+
     <!-- ============================== -->
 
     <!-- search activity strings -->
@@ -94,6 +116,29 @@
     <!-- Search Bar  -->
 
     <string name="searchbar_placeholder">Search a book...</string>
+
+
+    <!--Search filters and other -->
+    <string name="fragment_sf_title">Search filters</string>
+    <string name="fragmen_sf_msg">Here you can apply filters to your search</string>
+
+    <string name="filter_distance">Filter by distance</string>
+    <string name="fragment_sf_address_hint">Type an address and select a range</string>
+    <string name="filter_distance_message">Please, insert the city or area in which you want to search for books and specify a range:</string>
+    <string name="filter_distance_address">Delivery place</string>
+    <string name="filter_distance_range">Range %1$d KM</string>
+    <string name="address_empty">This field is mandatory!</string>
+
+    <string name="fragment_sf_et_conditions">Conditions</string>
+
+    <string name="fragment_sf_et_categories">Categories</string>
+
+    <string name="fragment_sf_et_author">Author</string>
+    <string name="fragment_sf_et_author_hint">Type here first name and last name of the author</string>
+
+    <string name="fragment_sf_et_tags">Tags</string>
+    <string name="fragment_sf_et_tags_hint">Type here the tags to use as filters</string>
+
 
     <!-- ======================== -->
 
@@ -190,13 +235,6 @@
     <string name="sba_getting_book_details">Retrieving book details…</string>
     <string name="sba_no_connection">Check your internet connection</string>
     <string name="sba_scan_your_barcode">Scan your Book Barcode</string>
-
-    <!--Search filters and other -->
-    <string name="filter_distance">Filter by distance</string>
-    <string name="filter_distance_message">Please, insert the city or area in which you want to search for books and specify a range:</string>
-    <string name="filter_distance_address">Address: </string>
-    <string name="filter_distance_range">Range: %1$d KM</string>
-    <string name="address_empty">This field is mandatory!</string>
 
     <!-- Chat things -->
     <string name="chat_you">You: \n</string>
