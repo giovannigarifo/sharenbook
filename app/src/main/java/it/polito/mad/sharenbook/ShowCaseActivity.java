@@ -63,6 +63,11 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
 
     private FusedLocationProviderClient mFusedLocationClient;
     private Location mLocation;
+    private GeoFire geoFire;
+
+    private RecyclerView lastBooksRV;
+    private RecyclerView favoriteBooksRV;
+    private RecyclerView closeBooksRV;
 
     private String user_id;
 
@@ -84,23 +89,18 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         favoritesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoritesDb.keepSynced(true);
 
-        // Get last location
+        //Setup location client
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onAllGranted() {
-                Log.d("DEBUG", "Sono qua");
-                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                    mLocation = location;
-                    loadCloseBooksRecyclerView();
-                });
-            }
-        });
+
+        // Get Geofire
+        DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
+        geoFire = new GeoFire(location_ref);
 
         // Load recycler views
+        setupRecyclerViews();
         loadLastBooksRecyclerView();
         loadFavoriteBooksRecylerView();
+        loadCloseBooksRecyclerView();
     }
 
     @Override
@@ -111,6 +111,7 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
             //Reload recycler views
             loadLastBooksRecyclerView();
             loadFavoriteBooksRecylerView();
+            loadCloseBooksRecyclerView();
 
         } else {
             shouldExecuteOnResume = true;
@@ -242,13 +243,28 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         navBar = findViewById(R.id.navigation);
     }
 
-    private void loadLastBooksRecyclerView() {
+    private void setupRecyclerViews() {
 
         // LAST BOOKS recycler view
-        RecyclerView lastBooksRV = findViewById(R.id.showcase_rv_last);
+        lastBooksRV = findViewById(R.id.showcase_rv_last);
         lastBooksRV.setHasFixedSize(true);
         LinearLayoutManager lastBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         lastBooksRV.setLayoutManager(lastBooksLM);
+
+        // FAVORITE BOOKS recycler view
+        favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
+        favoriteBooksRV.setHasFixedSize(true);
+        LinearLayoutManager favoriteBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        favoriteBooksRV.setLayoutManager(favoriteBooksLM);
+
+        // CLOSE BOOKS recycler view
+        closeBooksRV = findViewById(R.id.showcase_rv_closebooks);
+        closeBooksRV.setHasFixedSize(true);
+        LinearLayoutManager closeBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        closeBooksRV.setLayoutManager(closeBooksLM);
+    }
+
+    private void loadLastBooksRecyclerView() {
 
         // Load Last Book RV
         booksDb.orderByChild("creationTime").limitToLast(15)
@@ -285,12 +301,6 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
     }
 
     private void loadFavoriteBooksRecylerView() {
-
-        // FAVORITE BOOKS recycler view
-        RecyclerView favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
-        favoriteBooksRV.setHasFixedSize(true);
-        LinearLayoutManager favoriteBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        favoriteBooksRV.setLayoutManager(favoriteBooksLM);
 
         // Load Favorite Books RV
         favoritesDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -340,15 +350,23 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
 
     private void loadCloseBooksRecyclerView() {
 
-        // Get Geofire
-        DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
-        GeoFire geoFire = new GeoFire(location_ref);
+        // Get last location
+        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onAllGranted() {
+                Log.d("DEBUG", "Sono qua");
+                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                    mLocation = location;
+                });
+            }
+        });
 
-        // FAVORITE BOOKS recycler view
-        RecyclerView closeBooksRV = findViewById(R.id.showcase_rv_closebooks);
-        closeBooksRV.setHasFixedSize(true);
-        LinearLayoutManager closeBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        closeBooksRV.setLayoutManager(closeBooksLM);
+        // Check if location is available
+        if (mLocation == null) {
+            findViewById(R.id.showcase_cw_closebooks).setVisibility(View.GONE);
+            return;
+        }
 
         // Get close books
         List<String> queryResults = new ArrayList<>();
