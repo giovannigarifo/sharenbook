@@ -100,7 +100,7 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         setupRecyclerViews();
         loadLastBooksRecyclerView();
         loadFavoriteBooksRecylerView();
-        loadCloseBooksRecyclerView();
+        checkLocationThenLoadCloseBooks();
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
             //Reload recycler views
             loadLastBooksRecyclerView();
             loadFavoriteBooksRecylerView();
-            loadCloseBooksRecyclerView();
+            checkLocationThenLoadCloseBooks();
 
         } else {
             shouldExecuteOnResume = true;
@@ -350,18 +350,6 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
 
     private void loadCloseBooksRecyclerView() {
 
-        // Get last location
-        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onAllGranted() {
-                Log.d("DEBUG", "Sono qua");
-                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                    mLocation = location;
-                });
-            }
-        });
-
         // Check if location is available
         if (mLocation == null) {
             findViewById(R.id.showcase_cw_closebooks).setVisibility(View.GONE);
@@ -433,6 +421,22 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
                 public void onCancelled(DatabaseError databaseError) {}
             });
         }
+    }
+
+    private void checkLocationThenLoadCloseBooks() {
+
+        // Get last location
+        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onAllGranted() {
+                Log.d("DEBUG", "Sono qua");
+                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                    mLocation = location;
+                    loadCloseBooksRecyclerView();
+                });
+            }
+        });
     }
 
     /**
