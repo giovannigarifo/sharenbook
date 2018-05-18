@@ -423,19 +423,15 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void checkLocationThenLoadCloseBooks() {
 
         // Get last location
-        PermissionsHandler.check(this, new PermissionsHandler.GrantedPermissionListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onAllGranted() {
-                Log.d("DEBUG", "Sono qua");
-                mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                    mLocation = location;
-                    loadCloseBooksRecyclerView();
-                });
-            }
+        PermissionsHandler.check(this, () -> {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                mLocation = location;
+                loadCloseBooksRecyclerView();
+            });
         });
     }
 
@@ -451,13 +447,13 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         // Provide a reference to the views for each data item
         // Complex data items may need more than one view per item, and
         // you provide access to all the views for a data item in a view holder
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
             // each data item is just a string in this case
-            public LinearLayout mLayout;
-            public ImageView bookPhoto;
-            public TextView bookTitle;
+            LinearLayout mLayout;
+            ImageView bookPhoto;
+            TextView bookTitle;
 
-            public ViewHolder(LinearLayout layout) {
+            ViewHolder(LinearLayout layout) {
                 super(layout);
                 mLayout = layout;
                 bookPhoto = layout.findViewById(R.id.showcase_rv_book_photo);
@@ -466,26 +462,26 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public MyAdapter(List<Book> bookList) {
+        MyAdapter(List<Book> bookList) {
             mActivity = ShowCaseActivity.this;
             mBookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
             mBookList = bookList;
         }
 
         // Create new views (invoked by the layout manager)
+        @NonNull
         @Override
-        public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             // create a new view
             LinearLayout layout = (LinearLayout) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_book_showcase_rv, parent, false);
 
-            ViewHolder vh = new ViewHolder(layout);
-            return vh;
+            return new ViewHolder(layout);
         }
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(MyAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             Book book = mBookList.get(position);
@@ -503,13 +499,10 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
             holder.bookTitle.setText(book.getTitle());
 
             // Set listener
-            holder.mLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(mActivity, ShowBookActivity.class);
-                    i.putExtra("book", book);
-                    mActivity.startActivity(i);
-                }
+            holder.mLayout.setOnClickListener(v -> {
+                Intent i = new Intent(mActivity, ShowBookActivity.class);
+                i.putExtra("book", book);
+                mActivity.startActivity(i);
             });
         }
 
