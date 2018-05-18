@@ -91,16 +91,36 @@
         <item name="book_condition_verygood">Very good</item>
         <item name="book_condition_good">Good</item>
         <item name="book_condition_acceptable">Acceptable</item>
+        <item name="book_condition_notacceptable">Not acceptable</item>
     </string-array>
 
     <!--        BOOK CATEGORIES         -->
     <string-array name="book_categories">
         <item name="book_category_art">Art, music, cinema</item>
         <item name="book_category_biography">Biography</item>
-        <item name="book_category_right">Right</item>
+        <item name="book_category_comics">Comics</item>
         <item name="book_category_economy">Economy</item>
-        <item name="book_category_scifi">Sci-fi</item>
         <item name="book_category_fantasy">Fantasy</item>
+        <item name="book_category_food">Food</item>
+        <item name="book_category_hobbie">Hobby</item>
+        <item name="book_category_kids">Kids</item>
+        <item name="book_category_tech">Tech</item>
+        <item name="book_category_education">Education</item>
+        <item name="book_category_lgbt">LGBT</item>
+        <item name="book_category_health">Health</item>
+        <item name="book_category_history">History</item>
+        <item name="book_category_entertainment">Entertainment</item>
+        <item name="book_category_law">Law</item>
+        <item name="book_category_literature">Literature</item>
+        <item name="book_category_medicine">Medicine</item>
+        <item name="book_category_thriller">Thriller</item>
+        <item name="book_category_politics">Politics</item>
+        <item name="book_category_religion">Religion</item>
+        <item name="book_category_romance">Romance</item>
+        <item name="book_category_scifi">Sci-fi</item>
+        <item name="book_category_science">Science</item>
+        <item name="book_category_sport">Sport</item>
+        <item name="book_category_travel">Travel</item>
     </string-array>
 
 

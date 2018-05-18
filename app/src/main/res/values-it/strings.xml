@@ -161,6 +161,7 @@
 
 
     <!-- ============================== -->
+
     <!--        BOOK CONDITIONS         -->
     <string-array name="book_conditions">
         <item name="book_condition_new">Nuovo</item>
@@ -168,16 +169,36 @@
         <item name="book_condition_verygood">Molto buone</item>
         <item name="book_condition_good">Buone</item>
         <item name="book_condition_acceptable">Accettabili</item>
+        <item name="book_condition_notacceptable">Pessime</item>
     </string-array>
 
     <!--        BOOK CATEGORIES         -->
     <string-array name="book_categories">
         <item name="book_category_art">Arte, musica, cinema</item>
         <item name="book_category_biography">Biografia</item>
-        <item name="book_category_right">Diritto</item>
+        <item name="book_category_comics">Fumetti</item>
         <item name="book_category_economy">Economia</item>
-        <item name="book_category_scifi">Sci-fi</item>
         <item name="book_category_fantasy">Fantasy</item>
+        <item name="book_category_food">Cucina</item>
+        <item name="book_category_hobbie">Hobby</item>
+        <item name="book_category_kids">Bambini</item>
+        <item name="book_category_tech">Tecnologia</item>
+        <item name="book_category_education">Educazione</item>
+        <item name="book_category_lgbt">LGBT</item>
+        <item name="book_category_health">Salute</item>
+        <item name="book_category_history">Storia</item>
+        <item name="book_category_entertainment">Intrattenimento</item>
+        <item name="book_category_law">Diritto</item>
+        <item name="book_category_literature">Letterature</item>
+        <item name="book_category_medicine">Medicina</item>
+        <item name="book_category_thriller">Thriller</item>
+        <item name="book_category_politics">Politica</item>
+        <item name="book_category_religion">Religione</item>
+        <item name="book_category_romance">Romanzo</item>
+        <item name="book_category_scifi">Sci-fi</item>
+        <item name="book_category_science">Scienza</item>
+        <item name="book_category_sport">Sport</item>
+        <item name="book_category_travel">Viaggi</item>
     </string-array>
 
     <!-- ======================== -->
