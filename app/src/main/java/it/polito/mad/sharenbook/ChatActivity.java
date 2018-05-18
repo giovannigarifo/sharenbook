@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -32,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.onesignal.OneSignal;
 
@@ -48,6 +50,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import it.polito.mad.sharenbook.adapters.MessageAdapter;
 import it.polito.mad.sharenbook.model.Message;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -67,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
     private boolean lastMessageNotFromCounterpart = false;
     private boolean activityWasOnPause =false, isOnPause = false;
     private String username, userID;
+    private long picSignature = 0;
 
     public static boolean chatOpened = false;
     private boolean openedFromNotification;
@@ -120,9 +124,46 @@ public class ChatActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         userID = firebaseUser.getUid();
 
-        //show recipient profile pic
+
         StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUsername +".jpg");
-        profilePicRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+
+        /** create and set adapter **/
+        messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
+        messageView.setAdapter(messageAdapter);
+
+        //show recipient profile pic
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(recipientUsername).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    picSignature = (long) dataSnapshot.getValue();
+                    messageAdapter.setPicSignature(picSignature);
+                    UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, picSignature);
+                } else {
+                    GlideApp.with(getApplicationContext()).load(getResources().getDrawable(R.drawable.ic_profile)).into(iv_profile);
+                }
+
+
+             }
+
+             @Override
+             public void onCancelled(DatabaseError databaseError) {
+
+             }
+         });
+
+
+        /*Task task = profilePicRef.getMetadata();
+        task.addOnSuccessListener(result -> {
+            StorageMetadata metadata = (StorageMetadata) result;
+            long picSignature = metadata.getCreationTimeMillis();
+            UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, picSignature);
+            messageAdapter.setPicSignature(picSignature);
+        });
+        task.addOnFailureListener(e -> UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, 0));*/
+
+        /*profilePicRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
@@ -132,12 +173,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception exception) {
                 // File not found
             }
-        });
-
-
-        /** create and set adapter **/
-        messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
-        messageView.setAdapter(messageAdapter);
+        });*/
 
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
@@ -374,8 +410,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if(isOnPause) {
-            /*serverTimeRef.addListenerForSingleValueEvent(readServerTime);
-            serverTimeRef.setValue(ServerValue.TIMESTAMP);*/
             serverTimeRef.setValue(ServerValue.TIMESTAMP);
             serverTimeRef.addListenerForSingleValueEvent(readServerTime);
             messageAdapter.clearMessages();

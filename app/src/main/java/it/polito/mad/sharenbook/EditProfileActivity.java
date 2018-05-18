@@ -666,6 +666,7 @@ public class EditProfileActivity extends AppCompatActivity {
             progressDialog.show();
 
             StorageReference imageReference = storageReference.child("images/" + user.getUsername() + ".jpg");
+            DatabaseReference usernameRef = FirebaseDatabase.getInstance().getReference("usernames").child(user.getUsername());
             imageReference.putFile(file)
                     .addOnSuccessListener(taskSnapshot -> { //if the upload is successfull
 
@@ -676,8 +677,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
 
 
-                        user.setPicture_timestamp(String.valueOf(taskSnapshot.getMetadata().getCreationTimeMillis()));
-                        //user.setPicture_uri(taskSnapshot.getDownloadUrl()); //save the download URL
+                        long picSignature = taskSnapshot.getMetadata().getCreationTimeMillis();
+
+                        //Add profile pic signature on DB
+                        Map<String, Object> signature = new HashMap<>();
+                        signature.put("picSignature", picSignature);
+                        usernameRef.updateChildren(signature);
+
+                        user.setPicture_timestamp(String.valueOf(picSignature));
 
                         write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
                         write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
