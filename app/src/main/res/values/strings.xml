@@ -39,6 +39,7 @@
     <string name="loading_dialog">Uploading..</string>
     <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
     <string name="to_be_implemented">To be implemented!</string>
+    <string name="placeholder" translatable="false">placeholder</string>
 
     <!-- common words -->
     <string name="search">Search</string>
@@ -101,7 +102,6 @@
     <!-- ======================== -->
 
     <!-- Search Bar  -->
-
     <string name="searchbar_placeholder">Search a book...</string>
 
     <!-- ======================== -->
@@ -132,14 +132,12 @@
     <string name="changed_photo_flag_key">changed_photo_flag</string>
 
     <!-- photo dialog items -->
-
     <string name="photo_dialog_item_camera">Camera</string>
     <string name="photo_dialog_item_gallery">Gallery</string>
     <string name="photo_dialog_title">Add image</string>
     <string name="photo_dialog_select_gallery_method_title">Select method</string>
 
     <!-- exit dialogue -->
-
     <string name="exit_request_title">Edit exit</string>
     <string name="exit_rationale">Do you really want to exit? Any modification will be lost!</string>
 

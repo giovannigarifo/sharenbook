@@ -3,26 +3,19 @@ package it.polito.mad.sharenbook;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -33,9 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-import com.onesignal.OneSignal;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,7 +42,6 @@ import javax.net.ssl.HttpsURLConnection;
 import it.polito.mad.sharenbook.adapters.MessageAdapter;
 import it.polito.mad.sharenbook.model.Message;
 import it.polito.mad.sharenbook.utils.GlideApp;
-import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 
@@ -84,7 +74,6 @@ public class ChatActivity extends AppCompatActivity {
     private ValueEventListener readServerTime;
 
     /** adapter setting **/
-
     private MessageAdapter messageAdapter;
 
     private long unixTime;
@@ -110,9 +99,6 @@ public class ChatActivity extends AppCompatActivity {
         im_back_button = findViewById(R.id.back_button);
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
-        //recipientUID = getIntent().getStringExtra("recipientUID");
-        /*SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-        userPreferences.edit().putString(recipientUsername,recipientUID).commit();*/
         openedFromNotification = getIntent().getBooleanExtra("openedFromNotification", false);
 
         tv_username.setText(recipientUsername);
@@ -124,10 +110,8 @@ public class ChatActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         userID = firebaseUser.getUid();
 
-
         StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUsername +".jpg");
 
-        /** create and set adapter **/
         messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
         messageView.setAdapter(messageAdapter);
 
@@ -152,28 +136,6 @@ public class ChatActivity extends AppCompatActivity {
 
              }
          });
-
-
-        /*Task task = profilePicRef.getMetadata();
-        task.addOnSuccessListener(result -> {
-            StorageMetadata metadata = (StorageMetadata) result;
-            long picSignature = metadata.getCreationTimeMillis();
-            UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, picSignature);
-            messageAdapter.setPicSignature(picSignature);
-        });
-        task.addOnFailureListener(e -> UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, 0));*/
-
-        /*profilePicRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // File not found
-            }
-        });*/
 
         chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
         chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
@@ -286,16 +248,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        im_back_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(openedFromNotification){
-                    Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
-                    startActivity(i);
-                }
-                chatToOthersReference.removeEventListener(childEventListener);
-                finish();
+        im_back_button.setOnClickListener(v -> {
+            if(openedFromNotification){
+                Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
+                startActivity(i);
             }
+            chatToOthersReference.removeEventListener(childEventListener);
+            finish();
         });
 
     }

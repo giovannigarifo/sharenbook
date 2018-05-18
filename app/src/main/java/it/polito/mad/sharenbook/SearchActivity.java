@@ -33,6 +33,11 @@ import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -665,12 +670,37 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         }));
 
-        //Chip set
-        Chip chip = (Chip) holder.item_search_result.findViewById(R.id.chip);
-        chip.setChipText(searchResult.get(position).getOwner_username());
-        //ImageView im_icon = chip.
-        //UserInterface.showGlideImage(this.context, FirebaseStorage.getInstance().getReference().child("/images").child("/"+searchResult.get(position).getOwner_uid()+".jpg"), im_icon, 0);
+        //Set Chiptag data
+        View chiptag = holder.item_search_result.findViewById(R.id.chiptag);
+        TextView tv_chiptag = chiptag.findViewById(R.id.text_user);
+        tv_chiptag.setText(searchResult.get(position).getOwner_username());
+        ImageView iv_chiptag = chiptag.findViewById(R.id.img);
 
+        chiptag.setOnClickListener(view -> Toast.makeText(context, "Funzionalità da implementare", Toast.LENGTH_SHORT).show());
+
+        String username = searchResult.get(position).getOwner_username();
+
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    long picSignature = (long) dataSnapshot.getValue();
+                    UserInterface.showGlideImage(context,
+                            FirebaseStorage.getInstance().getReference().child("/images").child("/"+username+".jpg"),
+                            iv_chiptag,
+                            picSignature);
+                } else {
+                    GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(iv_chiptag);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //show card
         holder.item_search_result.setVisibility(View.VISIBLE);
