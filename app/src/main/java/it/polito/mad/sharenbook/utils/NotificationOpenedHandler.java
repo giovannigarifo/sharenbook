@@ -43,8 +43,8 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
 
             if(senderName != null && senderUid != null){
                 Intent chatActivity = new Intent(context, ChatActivity.class);
+                chatActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 chatActivity.putExtra("recipientUsername", senderName);
-                //chatActivity.putExtra("recipientUID", senderUid);
                 chatActivity.putExtra("openedFromNotification", true);
                 context.startActivity(chatActivity);
             }
