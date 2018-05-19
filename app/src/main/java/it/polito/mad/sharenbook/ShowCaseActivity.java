@@ -444,7 +444,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     /**
      * Recycler View Adapter Class
      */
-    class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private Activity mActivity;
         private StorageReference mBookImagesStorage;

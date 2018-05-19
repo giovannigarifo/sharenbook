@@ -3,8 +3,7 @@ package it.polito.mad.sharenbook.model;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-
-import java.text.SimpleDateFormat;
+import android.util.Log;
 
 public class Message {
 
@@ -17,9 +16,10 @@ public class Message {
     Context context;
 
 
-    public Message(){}
+    public Message() {
+    }
 
-    public Message(String message, boolean thisBelongsToMe, String username, boolean hide, long timestamp, Context context){
+    public Message(String message, boolean thisBelongsToMe, String username, boolean hide, long timestamp, Context context) {
 
         this.message = message;
         this.thisBelongsToMe = thisBelongsToMe;
@@ -77,26 +77,25 @@ public class Message {
         this.viewed = viewed;
     }
 
-    public String getTimeStampAsString(long timestamp){
+    public String getTimeStampAsString(long timestamp) {
         String formattedDate = DateUtils.formatDateTime(context, timestamp,
                 DateUtils.FORMAT_SHOW_DATE
                         | DateUtils.FORMAT_NUMERIC_DATE
-                        | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR);
+                        | DateUtils.FORMAT_SHOW_TIME
+                        | DateUtils.FORMAT_24HOUR);
 
         return formattedDate;
     }
 
-    public String getHour(long timestamp){
-        String timestamp_split[] = getTimeStampAsString(timestamp).split(", ");
+    public String getHour(long timestamp) {
+        String timestamp_split[] = getTimeStampAsString(timestamp).split(" ");
         String hour = timestamp_split[1];
-        String data = timestamp_split[0];
 
         return hour;
     }
 
-    public String getDate(long timestamp){
-        String timestamp_split[] = getTimeStampAsString(timestamp).split(", ");
-        String hour = timestamp_split[1];
+    public String getDate(long timestamp) {
+        String timestamp_split[] = getTimeStampAsString(timestamp).replace(",", "").split(" ");
         String data = timestamp_split[0];
 
         return data;

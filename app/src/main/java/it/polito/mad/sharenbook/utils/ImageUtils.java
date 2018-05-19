@@ -375,7 +375,7 @@ public class ImageUtils {
 
         // Check if exists
         if (!storageDir.exists()) {
-            if (!storageDir.mkdir())
+            if (!storageDir.mkdirs())
                 throw new IOException();
         }
 

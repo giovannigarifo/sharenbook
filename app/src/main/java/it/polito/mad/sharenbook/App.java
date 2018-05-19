@@ -2,6 +2,8 @@ package it.polito.mad.sharenbook;
 
 import android.app.Application;
 import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
+
 import com.google.firebase.database.FirebaseDatabase;
 import com.onesignal.OneSignal;
 
@@ -12,19 +14,15 @@ import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
  */
 
 
-public class App extends Application {
-    
-    private FirebaseDatabase firebaseDatabase;
+public class App extends MultiDexApplication {
 
     @Override
     public void onCreate() {
         super.onCreate();
         initOneSignal();
-        MultiDex.install(this);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);           //set Persistance only one time at app startup
-
     }
 
     private void initOneSignal(){

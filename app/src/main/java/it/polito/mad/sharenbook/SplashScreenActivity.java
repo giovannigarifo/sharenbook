@@ -49,7 +49,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private UserProfile user;
-    private String userID = "";
 
     /* Default profile values*/
     private String default_city;
@@ -80,8 +79,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         write_userProfileData = userProfileData.edit();
 
         initFirebase();
-
-        userID = firebaseUser.getUid();
 
         buildInternetRequestDialog();
 
@@ -136,7 +133,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         if(firebaseUser != null) { /* User is already Logged in -> just check if his profile is completed or not*/
 
             /* Retrieve User profile data */
-            dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(userID).child(getString(R.string.profile_key));
+            dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
             dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
@@ -160,7 +157,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     }else {
                         /* Profile is completed -> start ShowProfile */
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
-                        user.setUserID(userID);
+                        user.setUserID(firebaseUser.getUid());
                         usernamePref.edit().putString(getString(R.string.username_copy_key), user.getUsername()).commit();
 
                         goShowCase();
@@ -214,7 +211,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                      * otherwise go to ShowProfile
                      */
                     // Read user profile data from DB
-                    dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(userID).child(getString(R.string.profile_key));
+                    dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
                     dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
                         @Override
@@ -240,7 +237,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                                     user = dataSnapshot.getValue(UserProfile.class);
                                     usernamePref.edit().putString(getString(R.string.username_copy_key), user.getUsername()).commit();
-                                    user.setUserID(userID);
+                                    user.setUserID(firebaseUser.getUid());
 
                                     OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
 

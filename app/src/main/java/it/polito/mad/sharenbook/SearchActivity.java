@@ -13,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -43,17 +42,16 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -390,13 +388,7 @@ public class SearchActivity extends AppCompatActivity
             try {
 
                 JSONObject hit = hits.getJSONObject(i);
-
-                Iterator<String> keyList = hit.keys();
-
-                //first key (bookData): book object
-                String bookData = keyList.next();
-                Book b = BookJsonParser(hit.getJSONObject(bookData));
-                //b.setBookId(bookData); //save also the FireBase unique ID, is used to retrieve the photos from firebase storage
+                Book b = BookJsonParser(hit.getJSONObject("bookData"));
                 books.add(b);
 
                 //second key: objectId == bookId

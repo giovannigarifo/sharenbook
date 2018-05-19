@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,16 +54,9 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     private Book book;
 
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    private FloatingActionButton fabContactUser;
-
     private String user_id;
     private String username;
 
-    private DatabaseReference favoriteBooksDb;
     private DatabaseReference favoriteBooksRef;
 
     private ImageView favoriteBtn;
@@ -90,22 +82,22 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         username = userData.getString(getString(R.string.username_copy_key), "");
 
         // Setup firebase
-        favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        DatabaseReference favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
 
         // Setup favorite button
         setupFavoriteButton();
 
         // Setup RecyclerView
-        mRecyclerView = findViewById(R.id.showbook_recycler_view);
+        RecyclerView mRecyclerView = findViewById(R.id.showbook_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
-        mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
+        RecyclerView.LayoutManager mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Specify an adapter
-        mAdapter = new MyAdapter(book, this);
+        RecyclerView.Adapter mAdapter = new MyAdapter(book, this);
         mRecyclerView.setAdapter(mAdapter);
 
         // Load book data into view
@@ -216,19 +208,19 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         });
     }
 
-    private void setupFabContactUser(){
+    private void setupFabContactUser() {
         //setup the chat fab
-        fabContactUser = findViewById(R.id.message_user);
+        FloatingActionButton fabContactUser = findViewById(R.id.message_user);
 
-        if(!book.getOwner_username().equals(username)) {
+        if (!book.getOwner_username().equals(username)) {
 
             fabContactUser.setVisibility(View.VISIBLE);
 
             fabContactUser.setOnClickListener(view -> {
                 Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                SharedPreferences userPreferences =getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-                userPreferences.edit().putString("recipientUsername",book.getOwner_username()).commit();
+                SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+                userPreferences.edit().putString("recipientUsername", book.getOwner_username()).commit();
                 //chatActivity.putExtra("recipientUID", book.getOwner_uid());
                 startActivity(chatActivity);
                 finish();
@@ -240,20 +232,16 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadViewWithBookData() {
 
-        TextView isbnHeader = findViewById(R.id.showbook_tvh_isbn);
-        TextView titleHeader = findViewById(R.id.showbook_tvh_title);
         TextView subtitleHeader = findViewById(R.id.showbook_tvh_subtitle);
-        TextView authorsHeader = findViewById(R.id.showbook_tvh_authors);
         TextView publisherHeader = findViewById(R.id.showbook_tvh_publisher);
         TextView publishedDateHeader = findViewById(R.id.showbook_tvh_publishedDate);
         TextView descriptionHeader = findViewById(R.id.showbook_tvh_description);
         TextView pageCountHeader = findViewById(R.id.showbook_tvh_pageCount);
         TextView categoriesHeader = findViewById(R.id.showbook_tvh_categories);
         TextView languageHeader = findViewById(R.id.showbook_tvh_language);
-        TextView locationHeader = findViewById(R.id.showbook_tvh_location);
-        TextView bookConditionsHeader = findViewById(R.id.showbook_tvh_bookConditions);
         TextView tagsHeader = findViewById(R.id.showbook_tvh_tags);
 
         TextView isbn = findViewById(R.id.showbook_tvc_isbn);
@@ -335,7 +323,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         if (places.isEmpty()) {
             location.setText(R.string.unknown_place);
         } else {
-            location.setText(places.get(0).getLocality() + ", " + places.get(0).getCountryName());
+            String bookLocation = places.get(0).getLocality() + ", " + places.get(0).getCountryName();
+            location.setText(bookLocation);
         }
 
         bookConditions.setText(book.getBookConditionsAsString(getResources().getStringArray(R.array.book_conditions)));
@@ -396,66 +385,65 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
 
     }
-}
 
-/**
- * Recycler View Adapter Class
- */
-class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private Activity mActivity;
-    private Book mBook;
-    private List<String> mPhotosName;
-    private StorageReference mBookImagesStorage;
+    /**
+     * Recycler View Adapter Class
+     */
+    private class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+        private Activity mActivity;
+        private Book mBook;
+        private List<String> mPhotosName;
+        private StorageReference mBookImagesStorage;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public ImageView mImageView;
+        // Provide a reference to the views for each data item
+        // Complex data items may need more than one view per item, and
+        // you provide access to all the views for a data item in a view holder
+        class ViewHolder extends RecyclerView.ViewHolder {
+            // each data item is just a string in this case
+            ImageView mImageView;
 
-        public ViewHolder(ImageView v) {
-            super(v);
-            mImageView = v;
+            ViewHolder(ImageView v) {
+                super(v);
+                mImageView = v;
+            }
         }
-    }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Book book, Activity activity) {
-        mActivity = activity;
-        mBook = book;
-        mPhotosName = book.getPhotosName();
-        mBookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
-    }
+        // Provide a suitable constructor (depends on the kind of dataset)
+        MyAdapter(Book book, Activity activity) {
+            mActivity = activity;
+            mBook = book;
+            mPhotosName = book.getPhotosName();
+            mBookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
+        }
 
-    // Create new views (invoked by the layout manager)
-    @NonNull
-    @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // create a new view
-        ImageView v = (ImageView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_book_imageview, parent, false);
+        // Create new views (invoked by the layout manager)
+        @NonNull
+        @Override
+        public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            // create a new view
+            ImageView v = (ImageView) LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_book_imageview, parent, false);
 
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
+            return new ViewHolder(v);
+        }
 
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        String fileName = mPhotosName.get(position);
-        StorageReference photoRef = mBookImagesStorage.child(mBook.getBookId() + "/" + fileName);
+        // Replace the contents of a view (invoked by the layout manager)
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            // - get element from your dataset at this position
+            // - replace the contents of the view with that element
+            String fileName = mPhotosName.get(position);
+            StorageReference photoRef = mBookImagesStorage.child(mBook.getBookId() + "/" + fileName);
 
-        GlideApp.with(mActivity)
-                .load(photoRef)
-                .into(holder.mImageView);
-    }
+            GlideApp.with(mActivity)
+                    .load(photoRef)
+                    .into(holder.mImageView);
+        }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return mPhotosName.size();
+        // Return the size of your dataset (invoked by the layout manager)
+        @Override
+        public int getItemCount() {
+            return mPhotosName.size();
+        }
     }
 }

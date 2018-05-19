@@ -4,17 +4,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -60,7 +60,7 @@ import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.CustomInfoWindowAdapter;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 
-public class MapsActivity extends FragmentActivity
+public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, MaterialSearchBar.OnSearchActionListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
 ,NavigationView.OnNavigationItemSelectedListener{
 
