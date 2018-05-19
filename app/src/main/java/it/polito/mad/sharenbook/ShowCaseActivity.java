@@ -8,10 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -52,7 +53,7 @@ import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
-public class ShowCaseActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
+public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
     private String searchState;
     private BottomNavigationView navBar;
@@ -205,7 +206,6 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
     public void onButtonClicked(int buttonCode) {
         switch (buttonCode) {
             case MaterialSearchBar.BUTTON_NAVIGATION:
-                Log.d("TEST", "Double deck");
                 DrawerLayout drawer = findViewById(R.id.show_case_drawer_layout);
                 drawer.openDrawer(Gravity.START);
                 break;
@@ -250,24 +250,30 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
         lastBooksRV.setHasFixedSize(true);
         LinearLayoutManager lastBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         lastBooksRV.setLayoutManager(lastBooksLM);
+        LinearSnapHelper lastLinearSnapHelper = new LinearSnapHelper();
+        lastLinearSnapHelper.attachToRecyclerView(lastBooksRV);
 
         // FAVORITE BOOKS recycler view
         favoriteBooksRV = findViewById(R.id.showcase_rv_favorites);
         favoriteBooksRV.setHasFixedSize(true);
         LinearLayoutManager favoriteBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         favoriteBooksRV.setLayoutManager(favoriteBooksLM);
+        LinearSnapHelper favoritesLinearSnapHelper = new LinearSnapHelper();
+        favoritesLinearSnapHelper.attachToRecyclerView(favoriteBooksRV);
 
         // CLOSE BOOKS recycler view
         closeBooksRV = findViewById(R.id.showcase_rv_closebooks);
         closeBooksRV.setHasFixedSize(true);
         LinearLayoutManager closeBooksLM = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         closeBooksRV.setLayoutManager(closeBooksLM);
+        LinearSnapHelper closeLinearSnapHelper = new LinearSnapHelper();
+        closeLinearSnapHelper.attachToRecyclerView(closeBooksRV);
     }
 
     private void loadLastBooksRecyclerView() {
 
         // Load Last Book RV
-        booksDb.orderByChild("creationTime").limitToLast(15)
+        booksDb.orderByChild("creationTime").limitToLast(20)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -487,7 +493,6 @@ public class ShowCaseActivity extends FragmentActivity implements NavigationView
             Book book = mBookList.get(position);
             String fileName = book.getPhotosName().get(0);
             StorageReference photoRef = mBookImagesStorage.child(book.getBookId()).child(fileName);
-            Log.d("DEBUG", "filename: " + photoRef.toString());
 
             // Load book photo
             GlideApp.with(mActivity)

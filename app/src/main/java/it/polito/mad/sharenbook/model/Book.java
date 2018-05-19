@@ -37,8 +37,8 @@ public class Book implements Parcelable {
     private List<String> tags;
     private int numPhotos;
     private long creationTime;
-    private String location_lat;
-    private String location_long;
+    private double location_lat;
+    private double location_long;
     private List<String> photosName;
 
 
@@ -73,8 +73,8 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
-        this.location_lat = "";
-        this.location_long = "";
+        this.location_lat = 0;
+        this.location_long = 0;
         this.photosName = new ArrayList<>();
     }
 
@@ -84,7 +84,7 @@ public class Book implements Parcelable {
      */
     public Book(String bookId, String owner_uid, String owner_username, String isbn, String title, String subtitle, List<String> authors, String publisher,
                 String publishedDate, String description, int pageCount, List<Integer> categories, String language, String thumbnail,
-                int numPhotos, int bookConditions, List<String> tags, long creationTime, String location_lat, String location_long, List<String> photosName) {
+                int numPhotos, int bookConditions, List<String> tags, long creationTime, double location_lat, double location_long, List<String> photosName) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, language, thumbnail);
         this.bookId = bookId;
@@ -124,8 +124,8 @@ public class Book implements Parcelable {
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
-        this.location_lat = "";
-        this.location_long = "";
+        this.location_lat = 0;
+        this.location_long = 0;
         this.photosName = new ArrayList<>();
     }
 
@@ -270,11 +270,11 @@ public class Book implements Parcelable {
         return formattedDate;
     }
 
-    public String getLocation_lat() {
+    public double getLocation_lat() {
         return location_lat;
     }
 
-    public String getLocation_long() {
+    public double getLocation_long() {
         return location_long;
     }
 
@@ -358,11 +358,11 @@ public class Book implements Parcelable {
         this.creationTime = creationTime;
     }
 
-    public void setLocation_lat(String location) {
+    public void setLocation_lat(double location) {
         this.location_lat = location;
     }
 
-    public void setLocation_long(String location) {
+    public void setLocation_long(double location) {
         this.location_long = location;
     }
 
@@ -407,8 +407,8 @@ public class Book implements Parcelable {
         this.tags = in.readArrayList(String.class.getClassLoader());
         this.numPhotos = in.readInt();
         this.creationTime = in.readLong();
-        this.location_lat = in.readString();
-        this.location_long = in.readString();
+        this.location_lat = in.readDouble();
+        this.location_long = in.readDouble();
         this.photosName = in.readArrayList(String.class.getClassLoader());
     }
 
@@ -445,8 +445,8 @@ public class Book implements Parcelable {
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());
         dest.writeLong(getCreationTime());
-        dest.writeString(getLocation_lat());
-        dest.writeString(getLocation_long());
+        dest.writeDouble(getLocation_lat());
+        dest.writeDouble(getLocation_long());
         dest.writeList(getPhotosName());
     }
 

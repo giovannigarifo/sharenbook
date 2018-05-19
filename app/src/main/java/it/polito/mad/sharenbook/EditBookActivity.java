@@ -358,7 +358,7 @@ public class EditBookActivity extends AppCompatActivity {
             List<Address> places = new ArrayList<>();
             try {
                 Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-                places.addAll(geocoder.getFromLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long()), 1));
+                places.addAll(geocoder.getFromLocation(book.getLocation_lat(), book.getLocation_long(), 1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -366,7 +366,8 @@ public class EditBookActivity extends AppCompatActivity {
             if (places.isEmpty()) {
                 editbook_et_location.setText(R.string.unknown_place);
             } else {
-                editbook_et_location.setText(places.get(0).getLocality() + ", " + places.get(0).getCountryName());
+                String bookLocation = places.get(0).getLocality() + ", " + places.get(0).getCountryName();
+                editbook_et_location.setText(bookLocation);
             }
         }
 
@@ -490,16 +491,10 @@ public class EditBookActivity extends AppCompatActivity {
         } else
             bookData.put("creationTime", book.getCreationTime());
 
-        book.setLocation_lat(Double.toString(place.get(0).getLatitude()));
-        book.setLocation_long(Double.toString(place.get(0).getLongitude()));
-
-        if (book.getLocation_lat().equals("") || book.getLocation_lat().equals("")) {
-            bookData.put("location_lat", book.getLocation_lat());    //change to user chosen position
-            bookData.put("location_long", book.getLocation_long());
-        } else {
-            bookData.put("location_lat", book.getLocation_lat());
-            bookData.put("location_long", book.getLocation_long());
-        }
+        book.setLocation_lat(place.get(0).getLatitude());
+        book.setLocation_long(place.get(0).getLongitude());
+        bookData.put("location_lat", book.getLocation_lat());
+        bookData.put("location_long", book.getLocation_long());
 
         // Get photo names
         for (Uri uri : book.getBookPhotosUri()) {
@@ -548,7 +543,7 @@ public class EditBookActivity extends AppCompatActivity {
                 geoLocationRef = firebaseDatabase.getReference(getString(R.string.books_locations));
                 geoFire = new GeoFire(geoLocationRef);
                 geoFire.setLocation(bookRef.getKey(),
-                        new GeoLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long())),
+                        new GeoLocation(book.getLocation_lat(), book.getLocation_long()),
                         (key, error) -> Log.d("DEBUG", "Location set correctly"));
 
                 // Load new photos on firebase
@@ -958,7 +953,7 @@ class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoVi
                             mBook.setThumbnail("");
 
                         mBookPhotosUri.remove(ib_position);
-                        notifyItemRemoved(ib_position  + mPhotosName.size());
+                        notifyItemRemoved(ib_position + mPhotosName.size());
                     }
                 });
             } catch (IOException e) {

@@ -358,8 +358,8 @@ public class MapsActivity extends FragmentActivity
         }
 
         long creationTime = jsonObject.optLong("creationTime");
-        String locationLat = jsonObject.optString("location_lat");
-        String locationLong = jsonObject.optString("location_long");
+        double locationLat = jsonObject.optDouble("location_lat");
+        double locationLong = jsonObject.optDouble("location_long");
 
         //photos
         ArrayList<String> photosName = new ArrayList<>();
@@ -495,7 +495,7 @@ public class MapsActivity extends FragmentActivity
 
     public void setAnnouncementMarkers(){
         for(Book b : searchResult){
-            LatLng loc = new LatLng(Double.parseDouble(b.getLocation_lat()), Double.parseDouble(b.getLocation_long()));
+            LatLng loc = new LatLng(b.getLocation_lat(), b.getLocation_long());
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(loc)
                     .title(b.getTitle()));
