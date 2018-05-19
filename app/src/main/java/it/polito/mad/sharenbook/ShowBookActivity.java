@@ -327,7 +327,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         List<Address> places = new ArrayList<>();
         try {
             Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            places.addAll(geocoder.getFromLocation(Double.parseDouble(book.getLocation_lat()), Double.parseDouble(book.getLocation_long()), 1));
+            places.addAll(geocoder.getFromLocation(book.getLocation_lat(), book.getLocation_long(), 1));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -429,8 +429,9 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
         ImageView v = (ImageView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_book_imageview, parent, false);
@@ -441,7 +442,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         String fileName = mPhotosName.get(position);

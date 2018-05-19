@@ -74,7 +74,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             List<Address> place = new ArrayList<>();
             try {
-                place.addAll(geocoder.getFromLocation(Double.parseDouble(announcements.get(position).getLocation_lat()), Double.parseDouble(announcements.get(position).getLocation_long()), 1));
+                place.addAll(geocoder.getFromLocation(announcements.get(position).getLocation_lat(), announcements.get(position).getLocation_long(), 1));
             }catch (IOException e) {
                 e.printStackTrace();
             }

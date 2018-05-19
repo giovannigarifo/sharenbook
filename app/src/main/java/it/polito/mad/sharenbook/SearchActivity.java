@@ -353,8 +353,8 @@ public class SearchActivity extends AppCompatActivity
         }
 
         long creationTime = jsonObject.optLong("creationTime");
-        String locationLat = jsonObject.optString("location_lat");
-        String locationLong = jsonObject.optString("location_long");
+        Double locationLat = jsonObject.optDouble("location_lat");
+        Double locationLong = jsonObject.optDouble("location_long");
 
         //photos
         ArrayList<String> photosName = new ArrayList<>();
@@ -463,7 +463,7 @@ public class SearchActivity extends AppCompatActivity
         // Get bottom navbar
         search_bottom_nav_bar = findViewById(R.id.navigation);
 
-        /** DRAWER AND SEARCHBAR **/
+        /* DRAWER AND SEARCHBAR */
         drawer = findViewById(R.id.search_drawer_layout);
         navigationView = findViewById(R.id.search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
@@ -788,7 +788,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> place = new ArrayList<>();
         try {
-            place.addAll(geocoder.getFromLocation(Double.parseDouble(searchResult.get(position).getLocation_lat()), Double.parseDouble(searchResult.get(position).getLocation_long()), 1));
+            place.addAll(geocoder.getFromLocation(searchResult.get(position).getLocation_lat(), searchResult.get(position).getLocation_long(), 1));
         } catch (IOException e) {
             e.printStackTrace();
         }
