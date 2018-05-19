@@ -11,7 +11,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -36,8 +35,6 @@ import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,13 +51,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
@@ -225,34 +220,8 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_ib_addBookPhoto.setOnClickListener(this::addBookPhoto);
         editbook_btn_addBookPhoto.setOnClickListener(this::addBookPhoto);
 
-
-        /*
-         * navBar
-         */
-
-        //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        //set the listener for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    break;
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    finish();
-                    break;
-            }
-            return true;
-        });
+        // Setup bottom navbar
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
 
@@ -606,7 +575,7 @@ public class EditBookActivity extends AppCompatActivity {
         Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
             progressDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
             finish();

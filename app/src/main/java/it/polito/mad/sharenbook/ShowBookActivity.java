@@ -1,17 +1,12 @@
 package it.polito.mad.sharenbook;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -29,20 +24,22 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,15 +47,12 @@ import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
-import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 
 public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private StorageReference bookImagesStorage;
-    private List<StorageReference> bookPhotos;
     private Book book;
 
     private RecyclerView mRecyclerView;
@@ -67,7 +61,14 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     private FloatingActionButton fabContactUser;
 
+    private String user_id;
     private String username;
+
+    private DatabaseReference favoriteBooksDb;
+    private DatabaseReference favoriteBooksRef;
+
+    private ImageView favoriteBtn;
+    private boolean favoriteClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,35 +78,41 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         // Setup navigation tools
         setupNavigationTools();
 
-        // Setup Firebase storage
-        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-
         // Get book info
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             book = bundle.getParcelable("book");
         }
 
+        // Get current user info
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
 
-        mRecyclerView = findViewById(R.id.showbook_recycler_view);
+        // Setup firebase
+        favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
 
-        // Improve recyclerview performance
+        // Setup favorite button
+        setupFavoriteButton();
+
+        // Setup RecyclerView
+        mRecyclerView = findViewById(R.id.showbook_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
         mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        setupFabContactUser();
-
         // Specify an adapter
-        mAdapter = new MyAdapter(book, this, bookImagesStorage);
+        mAdapter = new MyAdapter(book, this);
         mRecyclerView.setAdapter(mAdapter);
 
         // Load book data into view
         loadViewWithBookData();
+
+        // Setup fab button for message with user
+        setupFabContactUser();
     }
 
     @Override
@@ -125,6 +132,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         if (id == R.id.drawer_navigation_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
         } else if (id == R.id.drawer_navigation_shareBook) {
             Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
@@ -154,6 +162,60 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         outState.putBoolean("photoLoaded", true);
     }
 
+    private void setupFavoriteButton() {
+
+        favoriteBtn = findViewById(R.id.show_book_btn_favorite);
+
+        // Check if current user is the book owner
+        if (user_id.equals(book.getOwner_uid())) {
+            favoriteBtn.setVisibility(View.GONE);
+            return;
+        }
+
+        // Check if this book is inside user's favorites list
+        favoriteBooksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    favoriteClicked = true;
+                } else {
+                    favoriteClicked = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                favoriteClicked = false;
+            }
+        });
+
+        // Add click handlers
+        favoriteBtn.setOnClickListener(v -> {
+
+            if (favoriteClicked) {
+                favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
+                    if (databaseError == null) {
+                        favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                        Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
+                        favoriteClicked = false;
+                    } else
+                        Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                });
+
+            } else {
+                favoriteBooksRef.setValue(true, (databaseError, databaseReference) -> {
+                    if (databaseError == null) {
+                        favoriteBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
+                        favoriteClicked = true;
+                    } else
+                        Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                });
+            }
+        });
+    }
+
     private void setupFabContactUser(){
         //setup the chat fab
         fabContactUser = findViewById(R.id.message_user);
@@ -165,7 +227,9 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             fabContactUser.setOnClickListener(view -> {
                 Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                chatActivity.putExtra("recipientUID", book.getOwner_uid());
+                SharedPreferences userPreferences =getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+                userPreferences.edit().putString("recipientUsername",book.getOwner_username()).commit();
+                //chatActivity.putExtra("recipientUID", book.getOwner_uid());
                 startActivity(chatActivity);
                 finish();
             });
@@ -329,41 +393,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        setupNavbar();
-    }
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
 
-    private void setupNavbar() {
-        BottomNavigationView navBar = findViewById(R.id.navigation);
-
-        // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        // Set the listeners for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
-                    startActivity(searchBooks);
-                    finish();
-                    break;
-
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    finish();
-                    break;
-            }
-
-            return true;
-        });
     }
 }
 
@@ -390,11 +421,11 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Book book, Activity activity, StorageReference bookImagesStorage) {
+    public MyAdapter(Book book, Activity activity) {
         mActivity = activity;
         mBook = book;
         mPhotosName = book.getPhotosName();
-        mBookImagesStorage = bookImagesStorage;
+        mBookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
     }
 
     // Create new views (invoked by the layout manager)

@@ -33,6 +33,7 @@ import it.polito.mad.sharenbook.utils.BookDetails;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class ShareBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -138,6 +139,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
 
         if (id == R.id.drawer_navigation_profile) {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
         } else if (id == R.id.drawer_navigation_myBook) {
             Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
@@ -195,41 +197,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        setupNavbar();
-    }
-
-    private void setupNavbar() {
-        navBar = findViewById(R.id.navigation);
-
-        // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        // Set the listeners for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
-                    startActivity(searchBooks);
-                    finish();
-                    break;
-
-                case R.id.navigation_myBook:
-                    /*Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    finish();*/
-                    break;
-            }
-
-            return true;
-        });
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
     private class GetBookDetailsTask extends AsyncTask<String, Integer, BookDetails> {

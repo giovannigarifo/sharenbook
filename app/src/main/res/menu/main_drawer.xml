@@ -24,6 +24,11 @@
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="@string/title_logout" />
 
+        <item
+            android:id="@+id/drawer_navigation_none"
+            android:title=""
+            android:visible="false"/>
+
     </group>
 
 

@@ -13,9 +13,11 @@ public class Message {
     String username;
     boolean hide;
     long timestamp;
+    boolean viewed = false;
     Context context;
 
 
+    public Message(){}
 
     public Message(String message, boolean thisBelongsToMe, String username, boolean hide, long timestamp, Context context){
 
@@ -65,6 +67,14 @@ public class Message {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isViewed() {
+        return viewed;
+    }
+
+    public void setViewed(boolean viewed) {
+        this.viewed = viewed;
     }
 
     public String getTimeStampAsString(long timestamp){

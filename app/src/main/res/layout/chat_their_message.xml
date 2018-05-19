@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:paddingVertical="2dp"
     android:paddingLeft="15dp"
-    android:paddingRight="60dp"
     android:clipToPadding="false">
 
-    <com.mikhaellopez.circularimageview.CircularImageView
+    <ImageView
         android:id="@+id/chat_avatar"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_width="40dp"
         android:layout_height="40dp"
         />
@@ -24,9 +24,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
+        android:textStyle="bold"
        />
 
     <TextView
+        android:maxWidth="300dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#fff"
@@ -53,6 +55,7 @@
         android:layout_marginLeft="6dp"
         android:layout_alignParentBottom="true"
         android:textSize="10sp"
+        android:maxLines="1"
         android:alpha="0.5"
         />
 

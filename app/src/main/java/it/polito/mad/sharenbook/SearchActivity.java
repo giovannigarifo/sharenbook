@@ -33,6 +33,11 @@ import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -54,6 +59,7 @@ import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class SearchActivity extends AppCompatActivity
@@ -102,17 +108,13 @@ public class SearchActivity extends AppCompatActivity
         setContentView(R.layout.activity_search);
 
         //setup bottom navigation bar
-        setBottomNavigationBar();
+        UserInterface.setupNavigationBar(this, 0);
 
         //setup map floating action button
         setMapButton();
 
         // setup Drawer and Search Bar
         setDrawerAndSearchBar();
-
-
-
-
 
         // RecylerView setup
         searchResult = new ArrayList<>();
@@ -227,38 +229,7 @@ public class SearchActivity extends AppCompatActivity
         searchStatusCheck(savedInstanceState);
     }
 
-    /**
-     *
-     */
-    private void setBottomNavigationBar() {
 
-        search_bottom_nav_bar = findViewById(R.id.search_bottom_nav_bar);
-
-        search_bottom_nav_bar.setVisibility(View.VISIBLE);
-
-        //set navigation_profile as selected item
-        search_bottom_nav_bar.setSelectedItemId(R.id.navigation_search);
-
-        //set the listener for the navigation bar items
-        search_bottom_nav_bar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i_show_profile = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    startActivity(i_show_profile);
-                    break;
-
-                case R.id.navigation_search:
-                    sba_searchbar.enableSearch();
-                    break;
-
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    break;
-            }
-            return true;
-        });
-    }
 
     /**
      * Fire the map fragment
@@ -455,9 +426,10 @@ public class SearchActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
+            startActivity(show_case);
+            finish();
         }
-        //navigationView.setCheckedItem(R.id.drawer_navigation_profile);
     }
 
 
@@ -466,8 +438,10 @@ public class SearchActivity extends AppCompatActivity
      */
     private void setDrawerAndSearchBar() {
 
-        /** DRAWER AND SEARCHBAR **/
+        // Get bottom navbar
+        search_bottom_nav_bar = findViewById(R.id.navigation);
 
+        /** DRAWER AND SEARCHBAR **/
         drawer = findViewById(R.id.search_drawer_layout);
         navigationView = findViewById(R.id.search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
@@ -549,6 +523,7 @@ public class SearchActivity extends AppCompatActivity
 
         if(id ==R.id.drawer_navigation_profile){
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(i);
 
@@ -695,12 +670,37 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         }));
 
-        //Chip set
-        Chip chip = (Chip) holder.item_search_result.findViewById(R.id.chip);
-        chip.setChipText(searchResult.get(position).getOwner_username());
-        //ImageView im_icon = chip.
-        //UserInterface.showGlideImage(this.context, FirebaseStorage.getInstance().getReference().child("/images").child("/"+searchResult.get(position).getOwner_uid()+".jpg"), im_icon, 0);
+        //Set Chiptag data
+        View chiptag = holder.item_search_result.findViewById(R.id.chiptag);
+        TextView tv_chiptag = chiptag.findViewById(R.id.text_user);
+        tv_chiptag.setText(searchResult.get(position).getOwner_username());
+        ImageView iv_chiptag = chiptag.findViewById(R.id.img);
 
+        chiptag.setOnClickListener(view -> Toast.makeText(context, "Funzionalità da implementare", Toast.LENGTH_SHORT).show());
+
+        String username = searchResult.get(position).getOwner_username();
+
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    long picSignature = (long) dataSnapshot.getValue();
+                    UserInterface.showGlideImage(context,
+                            FirebaseStorage.getInstance().getReference().child("/images").child("/"+username+".jpg"),
+                            iv_chiptag,
+                            picSignature);
+                } else {
+                    GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(iv_chiptag);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //show card
         holder.item_search_result.setVisibility(View.VISIBLE);

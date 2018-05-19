@@ -47,6 +47,8 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     private String searchState;
 
+    private SharedPreferences userProfileData;
+
     /**
      * default profile values
      **/
@@ -121,13 +123,13 @@ public class ShowProfileActivity  extends AppCompatActivity
         profile_picture_signature = user.getPicture_timestamp();
 
             if (!profile_picture_signature.equals(default_picture_timestamp)) {
-                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUsername()+".jpg");
                 UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 
                 userPicture.setOnClickListener(v -> {
                     Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                     i.putExtra("PictureSignature", profile_picture_signature);
-                    i.putExtra("userId", user.getUserID());
+                    i.putExtra("username", user.getUsername());
                     startActivity(i);
                 });
 
@@ -158,7 +160,8 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         });
 
-        setupNavbar();
+        // Setup navbar
+        UserInterface.setupNavigationBar(this, 0);
 
         /*
          * SearchBar
@@ -181,32 +184,6 @@ public class ShowProfileActivity  extends AppCompatActivity
                 goEdit_button.setVisibility(View.VISIBLE);
             }
         }
-    }
-
-    /**
-     * navBar
-     */
-    private void setupNavbar() {
-
-        //set navigation_profile as selected item
-        navBar.setSelectedItemId(R.id.navigation_profile);
-
-        //set the listener for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    break;
-
-                case R.id.navigation_search:
-                    startSearchActivity(null);
-                    break;
-                case R.id.navigation_myBook:
-                    Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-                    startActivity(my_books);
-                    break;
-            }
-            return true;
-        });
     }
 
 
@@ -254,7 +231,7 @@ public class ShowProfileActivity  extends AppCompatActivity
 
                 if (!profile_picture_signature.equals(default_picture_path)) {
 
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUserID()+".jpg");
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/"+user.getUsername()+".jpg");
 
                         UserInterface.showGlideImage(getApplicationContext(), storageRef, userPicture,  Long.valueOf(profile_picture_signature));
 
@@ -284,11 +261,6 @@ public class ShowProfileActivity  extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        navBar.setSelectedItemId(R.id.navigation_profile);
-    }
 
     /**
      * Starts the search activity with the appropriate bundle

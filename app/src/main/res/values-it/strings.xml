@@ -25,6 +25,7 @@
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Upload in corso..</string>
     <string name="network_alert">Non è stata rilevata alcuna connessione a internet! E\' necessaria per il corretto funzionamento dell\'app! Vuoi controllare le tue impostazioni?</string>
+    <string name="to_be_implemented">Funzionalità da implementare!</string>
 
     <!-- common words -->
     <string name="search">Cerca</string>
@@ -199,6 +200,8 @@
     <!-- Chat things -->
     <string name="chat_you">Tu: \n</string>
     <string name="chat_write_msg">Scrivi un messaggio...</string>
+    <string name="unread_messages">Messaggi non letti</string>
+
 
 
     <!-- Firebase keys -->
@@ -228,5 +231,20 @@
 
     <!-- ShowBook -->
     <string name="showbook_toolbar_title">Dettagli libro</string>
+
+    <!-- MyChats -->
+    <string name="mychats_title" >Le mie conversazioni</string>
+    <string name="navigation_mychats">Messaggi</string>
+    <string name="no_chats_alert_title">Nessuna conversazione!</string>
+    <string name="no_chats_suggestion">Ti consigliamo di cercare un libro e contattare il proprietario! Vuoi farlo ora?</string>
+
+    <!-- ShowCase -->
+    <string name="showcase_lastbook">Ultimi annunci</string>
+    <string name="showcase_favorites">I miei preferiti</string>
+    <string name="showcase_lucky">Mi sento fortunato</string>
+    <string name="showcase_closebooks">Annunci nelle vicinanze</string>
+    <string name="showcase_more_button">ALTRO</string>
+    <string name="showcase_add_favorite">Aggiunto ai Preferiti</string>
+    <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
 
 </resources>

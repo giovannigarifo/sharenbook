@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,8 +33,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -41,31 +41,42 @@ import javax.net.ssl.HttpsURLConnection;
 
 import it.polito.mad.sharenbook.adapters.MessageAdapter;
 import it.polito.mad.sharenbook.model.Message;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 public class ChatActivity extends AppCompatActivity {
 
-    ListView messageView;
-    ImageView sendButton;
-    EditText messageArea;
-    DatabaseReference chatToOthersReference, chatFromOthersReference;
-    public static String recipientUsername, recipientUID;
-    ImageView iv_profile;
-    TextView tv_username;
+    private ListView messageView;
+    private ImageView sendButton;
+    private EditText messageArea;
+    private DatabaseReference chatToOthersReference, chatFromOthersReference;
+    public static String recipientUsername;
+    private ImageView iv_profile;
+    private TextView tv_username;
+    private ImageButton im_back_button;
+
 
     private boolean lastMessageNotFromCounterpart = false;
+    private boolean activityWasOnPause =false, isOnPause = false;
     private String username, userID;
+    private long picSignature = 0;
 
     public static boolean chatOpened = false;
     private boolean openedFromNotification;
+    private boolean firstTimeNotViewed = true;
 
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference serverTimeRef;
+
+    private ChildEventListener childEventListener;
+    private ValueEventListener readServerTime;
 
     /** adapter setting **/
-
     private MessageAdapter messageAdapter;
+
+    private long unixTime;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -85,9 +96,9 @@ public class ChatActivity extends AppCompatActivity {
         messageArea = findViewById(R.id.messageArea);
         iv_profile = findViewById(R.id.iv_profile);
         tv_username = findViewById(R.id.tv_username);
+        im_back_button = findViewById(R.id.back_button);
 
         recipientUsername = getIntent().getStringExtra("recipientUsername");
-        recipientUID = getIntent().getStringExtra("recipientUID");
         openedFromNotification = getIntent().getBooleanExtra("openedFromNotification", false);
 
         tv_username.setText(recipientUsername);
@@ -99,39 +110,61 @@ public class ChatActivity extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         userID = firebaseUser.getUid();
 
-        //show recipient profile pic
-        StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUID +".jpg");
-        UserInterface.showGlideImage(getApplicationContext(),profilePicRef, iv_profile, 0 );
+        StorageReference profilePicRef = FirebaseStorage.getInstance().getReference().child("images/" + recipientUsername +".jpg");
 
-        /** create and set adapter **/
         messageAdapter = new MessageAdapter(ChatActivity.this,profilePicRef);
         messageView.setAdapter(messageAdapter);
 
-        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + username + "_" + recipientUsername);
-        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child("/" + recipientUsername + "_" + username);
+        //show recipient profile pic
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(recipientUsername).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    picSignature = (long) dataSnapshot.getValue();
+                    messageAdapter.setPicSignature(picSignature);
+                    UserInterface.showGlideImage(getApplicationContext(), profilePicRef, iv_profile, picSignature);
+                } else {
+                    GlideApp.with(getApplicationContext()).load(getResources().getDrawable(R.drawable.ic_profile)).into(iv_profile);
+                }
 
-        sendButton.setOnClickListener(v -> {
-            String messageText = messageArea.getText().toString();
 
-            if(!messageText.equals("")){
-                Map<String,Object> map = new HashMap<String, Object>();
-                map.put("message", messageText);
-                map.put("user", username);
-                map.put("date_time", ServerValue.TIMESTAMP);
-                sendNotification(recipientUsername, username);
-                chatToOthersReference.push().setValue(map);
-                chatFromOthersReference.push().setValue(map);
-                messageArea.setText("");
+             }
+
+             @Override
+             public void onCancelled(DatabaseError databaseError) {
+
+             }
+         });
+
+        chatToOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(username).child(recipientUsername);
+        chatFromOthersReference = FirebaseDatabase.getInstance().getReference("chats").child(recipientUsername).child(username);
+
+        serverTimeRef = FirebaseDatabase.getInstance().getReferenceFromUrl("https://sharenbook-debug.firebaseio.com/server_timestamp");
+
+        readServerTime = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                unixTime = (Long) dataSnapshot.getValue();
             }
-        });
 
-        chatToOthersReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        serverTimeRef.setValue(ServerValue.TIMESTAMP);
+        serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Map<Object, Object> map = (Map<Object, Object>) dataSnapshot.getValue();
+
+                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
                 String messageBody = map.get("message").toString();
                 String userName = map.get("user").toString();
+                Boolean viewed = (Boolean) map.get("viewed");
 
                 long date = 0;
                 if(map.get("date_time")!=null){
@@ -140,7 +173,7 @@ public class ChatActivity extends AppCompatActivity {
                 Message message;
                 //MESSAGE ADD -> MESSAGE string message, int type, string username
                 if(userName.equals(username)){
-                    //addMessageBox(message, 1, null);
+
                     message = new Message(messageBody,true, userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
                     messageAdapter.addMessage(message);
                     messageView.setSelection(messageView.getCount() - 1);
@@ -148,7 +181,20 @@ public class ChatActivity extends AppCompatActivity {
 
                 }
                 else{
-                    //addMessageBox(message, 2, userName);
+
+                    if(!viewed){
+
+                        if((date < unixTime && firstTimeNotViewed) || (date < unixTime && activityWasOnPause) || (openedFromNotification && firstTimeNotViewed)){
+                            message = new Message(null, true, null, lastMessageNotFromCounterpart, 0, ChatActivity.this);
+                            messageAdapter.addMessage(message);
+                            firstTimeNotViewed = false;
+                            activityWasOnPause = false;
+                        }
+
+                        map.put("viewed", true);
+                        dataSnapshot.getRef().updateChildren(map);
+
+                    }
 
                     message = new Message(messageBody,false,userName, lastMessageNotFromCounterpart, date, ChatActivity.this);
 
@@ -178,14 +224,52 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
+        };
+        chatToOthersReference.addChildEventListener(childEventListener);
+
+        sendButton.setOnClickListener(v -> {
+            String messageText = messageArea.getText().toString();
+
+            if(!messageText.equals("")){
+                Map<String,Object> map = new HashMap<>();
+                map.put("message", messageText);
+                map.put("user", username);
+                map.put("date_time", ServerValue.TIMESTAMP);
+                map.put("viewed", true);
+                sendNotification(recipientUsername, username);
+                chatToOthersReference.push().setValue(map);
+                Map<String,Object> map2 = new HashMap<>();
+                map2.put("message", messageText);
+                map2.put("user", username);
+                map2.put("date_time", ServerValue.TIMESTAMP);
+                map2.put("viewed", false);
+                chatFromOthersReference.push().setValue(map2);
+                messageArea.setText("");
+            }
+        });
+
+        im_back_button.setOnClickListener(v -> {
+            if(openedFromNotification){
+                Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
+                startActivity(i);
+            }
+            chatToOthersReference.removeEventListener(childEventListener);
+            finish();
         });
 
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
         chatOpened = true;
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     @Override
@@ -193,6 +277,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onStop();
         chatOpened = false;
     }
+
+
 
     public void sendNotification(String destination, String sender){
         AsyncTask.execute(() -> {
@@ -264,9 +350,31 @@ public class ChatActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         if(openedFromNotification){
-            //TODO take user to myChats
-            Log.d("ChatActivity", "This activity was opened from notification.");
+            Intent i = new Intent (getApplicationContext(), MyChatsActivity.class);
+            startActivity(i);
         }
+        chatToOthersReference.removeEventListener(childEventListener);
+        finish();
+    }
 
+    @Override
+    protected void onPause() {
+        chatToOthersReference.removeEventListener(childEventListener);
+        isOnPause = true;
+        activityWasOnPause = true;
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if(isOnPause) {
+            serverTimeRef.setValue(ServerValue.TIMESTAMP);
+            serverTimeRef.addListenerForSingleValueEvent(readServerTime);
+            messageAdapter.clearMessages();
+            isOnPause = false;
+            chatToOthersReference.addChildEventListener(childEventListener);
+        }
+        super.onResume();
     }
 }

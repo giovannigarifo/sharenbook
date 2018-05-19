@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.onesignal.OSNotificationOpenResult;
 import com.onesignal.OneSignal;
@@ -43,7 +44,7 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
             if(senderName != null && senderUid != null){
                 Intent chatActivity = new Intent(context, ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", senderName);
-                chatActivity.putExtra("recipientUID", senderUid);
+                //chatActivity.putExtra("recipientUID", senderUid);
                 chatActivity.putExtra("openedFromNotification", true);
                 context.startActivity(chatActivity);
             }

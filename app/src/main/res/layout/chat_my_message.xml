@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:paddingVertical="2dp"
     android:paddingRight="15dp"
-    android:paddingLeft="60dp"
     android:clipToPadding="false">
 
     <TextView
+        android:maxWidth="350dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/chat_message_body"
@@ -31,6 +31,7 @@
         android:layout_marginRight="6dp"
         android:layout_alignParentBottom="true"
         android:textSize="10sp"
+        android:maxLines="1"
         android:alpha="0.5"
         />
 

@@ -1,7 +1,6 @@
 package it.polito.mad.sharenbook;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,14 +41,11 @@ import java.util.List;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.MyBooksUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
+import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class MyBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-
-
     private BottomNavigationView navBar;
-
-
 
     /** FireBase objects */
     private FirebaseUser firebaseUser;
@@ -93,6 +88,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         userBooksDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null)
                 if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
                     AlertDialog.Builder no_books = new AlertDialog.Builder(MyBookActivity.this); //give a context to Dialog
                     no_books.setTitle(R.string.no_books_alert_title);
@@ -107,7 +103,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     ).setNegativeButton(android.R.string.cancel,
                             (dialog, which) -> {
                                 dialog.dismiss();
-                                finish();
+
                             }
                     );
 
@@ -304,7 +300,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        setupNavbar();
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
     @Override
@@ -337,8 +333,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(),ShareBookActivity.class);
                 startActivity(i);
-                finish();
-
             }
         });
     }
@@ -357,38 +351,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
 
 
-    private void setupNavbar() {
-        navBar = findViewById(R.id.navigation);
 
-
-        // Set navigation_shareBook as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-
-        // Set the listeners for the navigation bar items
-        navBar.setOnNavigationItemSelectedListener(item -> {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_profile:
-                    Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(i);
-                    finish();
-                    break;
-
-                case R.id.navigation_search:
-                    Intent searchBooks = new Intent(getApplicationContext(), SearchActivity.class);
-                    startActivity(searchBooks);
-                    finish();
-                    break;
-
-                case R.id.navigation_myBook:
-
-                    break;
-            }
-
-            return true;
-        });
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -407,6 +370,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         if(id == R.id.drawer_navigation_profile){
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
             startActivity(i);
 
         } else if (id == R.id.drawer_navigation_shareBook) {
@@ -434,10 +398,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
+            startActivity(show_case);
+            finish();
         }
         navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
-
-
     }
 }

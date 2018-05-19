@@ -34,19 +34,16 @@
                     android:layout_height="250dp"
                     android:scaleType="center" />
 
-                <com.robertlevonyan.views.chip.Chip
-                    android:id="@+id/chip"
+                <include
+                    android:id="@+id/chiptag"
+                    layout="@layout/custom_chiptag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="16dp"
-                    android:elevation="5dp"
-                    app:mcv_chipText="Unknown"
-                    app:mcv_chipIcon="@drawable/ic_profile"
-                    app:mcv_backgroundColor="@android:color/white"
-                    app:mcv_hasIcon="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="10dp"
                     />
+
 
             </RelativeLayout>
             <!-- title -->

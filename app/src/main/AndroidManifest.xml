@@ -105,7 +105,8 @@
         <activity android:name=".ShowBookActivity" />
 
         <activity android:name=".ChatActivity"
-                  android:launchMode="singleTask"/>
+                  android:launchMode="singleTask"
+                  android:windowSoftInputMode="stateHidden"/>
 
         <service
             android:name=".utils.NotificationExtender"
@@ -116,8 +117,9 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".ShowCaseActivity" />
+
+        <activity android:name=".MyChatsActivity"></activity>
     </application>
-
-
 
 </manifest>

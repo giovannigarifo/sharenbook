@@ -3,6 +3,14 @@
     <string name="profile_preferences" translatable="false">profile_preferences</string>
     <string name="profile_preferences_copy" translatable="false">profile_preferences_copy</string>
     <string name="username_preferences" translatable="false">username_preferences</string>
+    <string name="userData_preferences" translatable="false">userData_preferences</string>
+    <string name="bio_pref" translatable="false">bio_pref</string>
+    <string name="username_pref" translatable="false">username_pref</string>
+    <string name="city_pref" translatable="false">city_pref</string>
+    <string name="email_pref" translatable="false">email_pref</string>
+    <string name="uid_pref" translatable="false">uid_pref</string>
+    <string name="fullname_pref" translatable="false">fullname_pref</string>
+    <string name="picture_pref" translatable="false">picture_pref</string>
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
@@ -30,6 +38,8 @@
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Uploading..</string>
     <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
+    <string name="to_be_implemented">To be implemented!</string>
+    <string name="placeholder" translatable="false">placeholder</string>
 
     <!-- common words -->
     <string name="search">Search</string>
@@ -92,7 +102,6 @@
     <!-- ======================== -->
 
     <!-- Search Bar  -->
-
     <string name="searchbar_placeholder">Search a book...</string>
 
     <!-- ======================== -->
@@ -123,14 +132,12 @@
     <string name="changed_photo_flag_key">changed_photo_flag</string>
 
     <!-- photo dialog items -->
-
     <string name="photo_dialog_item_camera">Camera</string>
     <string name="photo_dialog_item_gallery">Gallery</string>
     <string name="photo_dialog_title">Add image</string>
     <string name="photo_dialog_select_gallery_method_title">Select method</string>
 
     <!-- exit dialogue -->
-
     <string name="exit_request_title">Edit exit</string>
     <string name="exit_rationale">Do you really want to exit? Any modification will be lost!</string>
 
@@ -201,6 +208,7 @@
     <!-- Chat things -->
     <string name="chat_you">You: \n</string>
     <string name="chat_write_msg">Write a message...</string>
+    <string name="unread_messages">Unread messages</string>
 
 
     <!-- Firebase keys -->
@@ -213,7 +221,9 @@
     <string name="profile_key" translatable="false">profile</string>
     <string name="profile_value_placeholder" translatable="false">profile_empty</string>
     <string name="users_books_placeholder" translatable="false">books_empty</string>
+    <string name="users_favorites_placeholder" translatable="false">favorites_empty</string>
     <string name="user_books_key" translatable="false">user_books</string>
+    <string name="user_favorites_key" translatable="false">user_favorites</string>
     <string name="books_key" translatable="false">books</string>
     <string name="books_locations" translatable="false">books_locations</string>
     <string name="book_images_key" translatable="false">book_images</string>
@@ -235,5 +245,20 @@
     <!-- ShowBook -->
     <string name="showbook_toolbar_title">Book Details</string>
 
+    <!-- MyChats -->
+    <string name="mychats_title" >My chats</string>
+    <string name="navigation_mychats">Messages</string>
+    <string name="no_chats_alert_title">No chats yet!</string>
+    <string name="no_chats_suggestion">We suggest you to search for a book and contact the owner! Do you want to do it now?</string>
+    <string name="NEW" translatable="false">NEW</string>
+
+    <!-- ShowCase -->
+    <string name="showcase_lastbook">Last announcements</string>
+    <string name="showcase_favorites">My favorites</string>
+    <string name="showcase_lucky">I\'m feeling lucky</string>
+    <string name="showcase_closebooks">Announcements close to you</string>
+    <string name="showcase_more_button">MORE</string>
+    <string name="showcase_add_favorite">Added to Favorites</string>
+    <string name="showcase_del_favorite">Removed from Favorites</string>
 
 </resources>

@@ -59,6 +59,8 @@ public class EditProfileActivity extends AppCompatActivity {
     //Shared Preferences
     private SharedPreferences editedProfile_copy, usernamePref;
     private SharedPreferences.Editor writeProfile_copy, writeUsernamePref;
+    private SharedPreferences userProfileData;
+    private SharedPreferences.Editor write_userProfileData;
 
     //default profile values
     private String default_city;
@@ -171,6 +173,9 @@ public class EditProfileActivity extends AppCompatActivity {
         usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         writeUsernamePref = usernamePref.edit();
 
+        userProfileData = getSharedPreferences(getString(R.string.userData_preferences), Context.MODE_PRIVATE);
+        write_userProfileData = userProfileData.edit();
+
         save_button = findViewById(R.id.fab_save);
 
         /* String fullname */
@@ -230,7 +235,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Load photo from Firebase using Glide cache
         if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUsername() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
@@ -253,6 +258,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         writeUsernamePref = usernamePref.edit();
+
+        userProfileData = getSharedPreferences(getString(R.string.userData_preferences), Context.MODE_PRIVATE);
+        write_userProfileData = userProfileData.edit();
 
         //get view button
         save_button = findViewById(R.id.fab_save);
@@ -282,7 +290,7 @@ public class EditProfileActivity extends AppCompatActivity {
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
             userPicture.setImageURI(Uri.parse(chosenPicture));
         } else if (!user.getPicture_timestamp().equals(default_picture_path)) {
-            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUserID() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
+            UserInterface.showGlideImage(getApplicationContext(), storageReference.child("images/" + user.getUsername() + ".jpg"), userPicture, Long.valueOf(user.getPicture_timestamp()));
         }
 
         fab_editPhoto = findViewById(R.id.fab_editPhoto);
@@ -545,6 +553,14 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key), user);
 
+            write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
+            write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
+            write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
+            write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
+            write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
+            write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
+            write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
+
             if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                 setResult(RESULT_OK, i);
             } else {
@@ -649,7 +665,8 @@ public class EditProfileActivity extends AppCompatActivity {
             progressDialog.setTitle(getString(R.string.loading_dialog));
             progressDialog.show();
 
-            StorageReference imageReference = storageReference.child("images/" + user.getUserID() + ".jpg");
+            StorageReference imageReference = storageReference.child("images/" + user.getUsername() + ".jpg");
+            DatabaseReference usernameRef = FirebaseDatabase.getInstance().getReference("usernames").child(user.getUsername());
             imageReference.putFile(file)
                     .addOnSuccessListener(taskSnapshot -> { //if the upload is successfull
 
@@ -660,8 +677,22 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
 
 
-                        user.setPicture_timestamp(String.valueOf(taskSnapshot.getMetadata().getCreationTimeMillis()));
-                        //user.setPicture_uri(taskSnapshot.getDownloadUrl()); //save the download URL
+                        long picSignature = taskSnapshot.getMetadata().getCreationTimeMillis();
+
+                        //Add profile pic signature on DB
+                        Map<String, Object> signature = new HashMap<>();
+                        signature.put("picSignature", picSignature);
+                        usernameRef.updateChildren(signature);
+
+                        user.setPicture_timestamp(String.valueOf(picSignature));
+
+                        write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
+                        write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
+                        write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
+                        write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
+                        write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
+                        write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
+                        write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
 
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);

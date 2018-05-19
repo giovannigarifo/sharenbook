@@ -24,10 +24,10 @@ public class ShowPictureActivity extends AppCompatActivity {
         /* Get extras */
         Intent i = getIntent();
         String pic_signature = i.getStringExtra("PictureSignature");
-        String userId = i.getStringExtra("userId");
+        String username = i.getStringExtra("username");
 
         /* Show Image */
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + userId + ".jpg");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + username + ".jpg");
         UserInterface.showGlideImage(getApplicationContext(), storageRef, fullSizePicture, Long.valueOf(pic_signature));
     }
 
