@@ -199,6 +199,7 @@
         <item name="book_category_science">Scienza</item>
         <item name="book_category_sport">Sport</item>
         <item name="book_category_travel">Viaggi</item>
+        <item name="book_category_travel">Altro</item>
     </string-array>
 
     <!-- ======================== -->

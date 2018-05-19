@@ -15,15 +15,14 @@ import it.polito.mad.sharenbook.R;
 /**
  * Book Conditions Adapter
  */
-public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
+public class SingleCheckableCheckboxAdapter extends ArrayAdapter<String> {
 
-    private ArrayList<String> selectedStrings;
+    private int selectedPosition = -1;// no selection by default
 
     //constructor
-    public MultipleCheckableCheckboxAdapter(Context context, int textViewResourceId, String[] collection) {
+    public SingleCheckableCheckboxAdapter(Context context, int textViewResourceId, String[] collection) {
 
         super(context, textViewResourceId, collection);
-        selectedStrings = new ArrayList<>();
     }
 
     @Override
@@ -32,19 +31,28 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        //inflate the layout
-        item_checkbox = inflater.inflate(R.layout.item_checkbox, parent, false);
+        //retrieve the layout
+        item_checkbox = inflater.inflate(R.layout.item_checkbox, null);
 
         //retrieve the view
         AppCompatCheckBox checkbox = item_checkbox.findViewById(R.id.checkbox);
 
+        //set checked or not
+        if(selectedPosition == position)
+            checkbox.setChecked(true);
+        else checkbox.setChecked(false);
+
         //checkbox listeners
         checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-            if (isChecked)
-                selectedStrings.add(checkbox.getText().toString());
-            else
-                selectedStrings.remove(checkbox.getText().toString());
+            if(isChecked)
+            {
+                selectedPosition = position;
+            }
+            else{
+                selectedPosition = -1;
+            }
+            notifyDataSetChanged();
         });
 
         //set checkbox text
@@ -54,8 +62,8 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
     }
 
 
-    public ArrayList<String> getSelectedStrings() {
-        return selectedStrings;
+    public int getSelectedPosition() {
+        return selectedPosition;
     }
 
 

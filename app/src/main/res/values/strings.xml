@@ -121,6 +121,7 @@
         <item name="book_category_science">Science</item>
         <item name="book_category_sport">Sport</item>
         <item name="book_category_travel">Travel</item>
+        <item name="book_category_travel">Other</item>
     </string-array>
 
 

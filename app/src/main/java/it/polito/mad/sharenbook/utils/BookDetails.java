@@ -77,13 +77,12 @@ public class BookDetails {
             String publishedDate = retrieveString(volumeInfo, "publishedDate");
             String description = retrieveString(volumeInfo, "description");
             int pageCount = retrieveInteger(volumeInfo, "pageCount");
-            List<String> categories = retrieveArrayList(volumeInfo, "categories");
             String language = retrieveString(volumeInfo, "language");
             String thumbnail = retrieveImageLink(volumeInfo, "thumbnail");
 
             // Create a new Book object
             Book newBook = new Book(isbn, title, subTitle, authors, publisher, publishedDate, description,
-                    pageCount, categories, language, thumbnail);
+                    pageCount, language, thumbnail);
 
             // Download thumbnail if present
             if (!thumbnail.equals("")) {

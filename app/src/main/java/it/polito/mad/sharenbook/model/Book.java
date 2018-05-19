@@ -5,8 +5,11 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import android.text.format.DateUtils;
+
+import it.polito.mad.sharenbook.R;
 
 
 /**
@@ -22,7 +25,7 @@ public class Book implements Parcelable {
     private String publishedDate;
     private String description;
     private String language;
-    private List<String> categories;
+    private List<Integer> categories;
     private List<String> authors;
     private int pageCount;
     private String thumbnail;
@@ -30,7 +33,7 @@ public class Book implements Parcelable {
 
     private String owner_uid;
     private String owner_username;
-    private String bookConditions;
+    private int bookConditions;
     private List<String> tags;
     private int numPhotos;
     private long creationTime;
@@ -43,8 +46,7 @@ public class Book implements Parcelable {
      * Constructor for the Book Class called by BookDetails
      */
     public Book(String isbn, String title, String subtitle, List<String> authors, String publisher,
-                String publishedDate, String description, int pageCount, List<String> categories,
-                String language, String thumbnail) {
+                String publishedDate, String description, int pageCount, String language, String thumbnail) {
 
         this.bookId = "";
         this.isbn = isbn;
@@ -62,17 +64,12 @@ public class Book implements Parcelable {
             this.authors = authors;
 
         this.pageCount = pageCount;
-
-        if (categories == null)
-            this.categories = new ArrayList<>();
-        else
-            this.categories = categories;
-
         this.bookPhotosUri = new ArrayList<>();
 
+        this.categories = new ArrayList<>();
         this.owner_uid = "";
         this.owner_username = "";
-        this.bookConditions = "";
+        this.bookConditions = -1;
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
@@ -85,13 +82,13 @@ public class Book implements Parcelable {
     /**
      * Constructor for the Book Class called Algolia
      */
-
     public Book(String bookId, String owner_uid, String owner_username, String isbn, String title, String subtitle, List<String> authors, String publisher,
-                String publishedDate, String description, int pageCount, List<String> categories, String language, String thumbnail,
-                int numPhotos, String bookConditions, List<String> tags, long creationTime, String location_lat, String location_long, List<String> photosName) {
+                String publishedDate, String description, int pageCount, List<Integer> categories, String language, String thumbnail,
+                int numPhotos, int bookConditions, List<String> tags, long creationTime, String location_lat, String location_long, List<String> photosName) {
 
-        this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories, language, thumbnail);
+        this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, language, thumbnail);
         this.bookId = bookId;
+        this.categories = categories;
         this.owner_uid = owner_uid;
         this.owner_username = owner_username;
         this.numPhotos = numPhotos;
@@ -123,7 +120,7 @@ public class Book implements Parcelable {
 
         this.owner_uid = "";
         this.owner_username = "";
-        this.bookConditions = "";
+        this.bookConditions = -1;
         this.tags = new ArrayList<>();
         this.numPhotos = 0;
         this.creationTime = 0;
@@ -188,8 +185,28 @@ public class Book implements Parcelable {
         return pageCount;
     }
 
-    public List<String> getCategories() {
+    public List<Integer> getCategories() {
         return categories;
+    }
+
+    /**
+     * @param bookCategoriesStringArray the array of strings obtained from string.xml file
+     */
+    public String getCategoriesAsString(String[] bookCategoriesStringArray) {
+
+        String categoriesAsString = "";
+
+        for (int i = 0; i < this.categories.size(); i++) {
+
+            String category = Arrays.asList(bookCategoriesStringArray).get(this.categories.get(i));
+
+            if (i == 0)
+                categoriesAsString = category;
+            else
+                categoriesAsString = categoriesAsString + ", " + category;
+        }
+
+        return categoriesAsString;
     }
 
     public String getLanguage() {
@@ -216,8 +233,15 @@ public class Book implements Parcelable {
         return owner_username;
     }
 
-    public String getBookConditions() {
+    public int getBookConditions() {
         return bookConditions;
+    }
+
+    /**
+     * @param bookConditionsStringArray the array of strings obtained from string.xml file
+     */
+    public String getBookConditionsAsString(String[] bookConditionsStringArray) {
+        return bookConditionsStringArray[this.bookConditions];
     }
 
     public List<String> getTags() {
@@ -244,9 +268,6 @@ public class Book implements Parcelable {
                         | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR);
 
         return formattedDate;
-
-
-
     }
 
     public String getLocation_lat() {
@@ -293,7 +314,7 @@ public class Book implements Parcelable {
         this.language = language;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<Integer> categories) {
         this.categories = categories;
     }
 
@@ -321,7 +342,7 @@ public class Book implements Parcelable {
         this.owner_username = owner_username;
     }
 
-    public void setBookConditions(String bookConditions) {
+    public void setBookConditions(int bookConditions) {
         this.bookConditions = bookConditions;
     }
 
@@ -376,13 +397,13 @@ public class Book implements Parcelable {
 
         this.pageCount = in.readInt();
 
-        this.categories = in.readArrayList(String.class.getClassLoader());
+        this.categories = in.readArrayList(Integer.class.getClassLoader());
 
         this.bookPhotosUri = in.readArrayList(Uri.class.getClassLoader());
 
         this.owner_uid = in.readString();
         this.owner_username = in.readString();
-        this.bookConditions = in.readString();
+        this.bookConditions = in.readInt();
         this.tags = in.readArrayList(String.class.getClassLoader());
         this.numPhotos = in.readInt();
         this.creationTime = in.readLong();
@@ -420,7 +441,7 @@ public class Book implements Parcelable {
 
         dest.writeString(getOwner_uid());
         dest.writeString(getOwner_username());
-        dest.writeString(getBookConditions());
+        dest.writeInt(getBookConditions());
         dest.writeList(getTags());
         dest.writeInt(getNumPhotos());
         dest.writeLong(getCreationTime());

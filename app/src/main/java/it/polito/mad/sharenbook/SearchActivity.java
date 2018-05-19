@@ -171,26 +171,31 @@ public class SearchActivity extends FragmentActivity
 
         //Algolia's InstantSearch setup
         // searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
-        searcher = Searcher.create("K7HV32WVKQ", "04a25396f978e2d22348e5520d70437e", "books_filter_search");
+        searcher = Searcher.create("K7HV32WVKQ", "04a25396f978e2d22348e5520d70437e", "books");
 
-        //listener for search result from Algolia
+        /**
+         * Listener for search result received from Algolia
+         */
         searcher.registerResultListener((results, isLoadingMore) -> {
 
             if (results.nbHits > 0) {
 
                 searchResult.clear();
+                searchResult.addAll(parseResults(results.hits)); //parse all algolia results and add them into collection
 
                 //if location and distance filter setted, filter the results received from algolia using geoFire
-                if (filterRange != -1 && filterPlace != null)
-                    searchResult = filterByDistance(parseResults(results.hits));
-                else searchResult.addAll(parseResults(results.hits));
+                if (filterRange != -1 && filterPlace != null){
+                    filterByDistance();
 
-                sbAdapter.notifyDataSetChanged();
+                    //test if filterByDistance removed all books
+                    if (searchResult.isEmpty())
+                        Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+
+                } else sbAdapter.notifyDataSetChanged(); //update RecyclerView and disable the search
+
                 sba_searchbar.disableSearch();
 
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
-            }
+            } else Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
         });
 
         searcher.registerErrorListener((query, error) -> {
@@ -201,11 +206,10 @@ public class SearchActivity extends FragmentActivity
 
 
         //retrieve data form intent or from saved state
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null)
             startedFromIntent();
-        } else {
+        else
             startedFromSavedState(savedInstanceState);
-        }
     }
 
     private void searchStatusCheck(Bundle data) {
@@ -348,13 +352,13 @@ public class SearchActivity extends FragmentActivity
         int pageCount = jsonObject.optInt("pageCount");
 
         //categories
-        ArrayList<String> categories = new ArrayList<>();
+        ArrayList<Integer> categories = new ArrayList<>();
 
         try {
 
             JSONArray jsonCategories = jsonObject.getJSONArray("categories");
             for (int i = 0; i < jsonCategories.length(); i++)
-                categories.add(jsonCategories.optString(i));
+                categories.add(jsonCategories.optInt(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -365,7 +369,7 @@ public class SearchActivity extends FragmentActivity
         String thumbnail = jsonObject.optString("thumbnail");
         int numPhotos = jsonObject.optInt("numPhotos");
 
-        String bookConditions = jsonObject.optString("bookConditions");
+        int bookConditions = jsonObject.optInt("bookConditions");
 
         //tags
         ArrayList<String> tags = new ArrayList<>();
@@ -642,59 +646,47 @@ public class SearchActivity extends FragmentActivity
     /**
      * filter the results received from Algolia using the location and range inserted by the user
      */
-    public ArrayList<Book> filterByDistance(ArrayList<Book> searchResult) {
+    public void filterByDistance() {
 
-        List<String> results = new ArrayList<>();
+        List<String> geofireResults = new ArrayList<>();
 
         //query the DB
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(filterPlace.getLatitude(), filterPlace.getLongitude()), filterRange);
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-            @Override
-            public void onKeyExited(String key) {
-            }
-
-            @Override
-            public void onKeyMoved(String key, GeoLocation location) {
-            }
 
             @Override
             public void onGeoQueryReady() {
 
-                if (!results.isEmpty()) {
+                if (!geofireResults.isEmpty()) {
 
                     //remove all the books that are not near the place
                     ArrayList<Book> copySearchResult = (ArrayList<Book>) searchResult.clone();
-
                     for (Book b : copySearchResult)
-                        if (!results.contains(b.getBookId()))
+                        if (!geofireResults.contains(b.getBookId()))
                             searchResult.remove(b);
 
-                    if (searchResult.isEmpty())
-                        Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+                } else searchResult.clear(); //no books near the place
 
-                } else {
-
-                    //no book near the place
-                    Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
-                    searchResult.clear();
-                }
-
-            }
-
-            @Override
-            public void onGeoQueryError(DatabaseError error) {
-
+                //update the recyclerview
+                sbAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                results.add(key);
+                geofireResults.add(key);
             }
 
+            @Override
+            public void onKeyExited(String key) {
+            }
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+            }
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+            }
         });
-
-        return searchResult;
     }
 
 

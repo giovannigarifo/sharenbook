@@ -323,13 +323,13 @@ public class MapsActivity extends FragmentActivity
         int pageCount = jsonObject.optInt("pageCount");
 
         //categories
-        ArrayList<String> categories = new ArrayList<>();
+        ArrayList<Integer> categories = new ArrayList<>();
 
         try {
 
             JSONArray jsonCategories = jsonObject.getJSONArray("categories");
             for (int i = 0; i < jsonCategories.length(); i++)
-                categories.add(jsonCategories.optString(i));
+                categories.add(jsonCategories.optInt(i));
 
         } catch (JSONException e) {
             Log.d("debug", "Error during BookJsonParse");
@@ -340,7 +340,7 @@ public class MapsActivity extends FragmentActivity
         String thumbnail = jsonObject.optString("thumbnail");
         int numPhotos = jsonObject.optInt("numPhotos");
 
-        String bookConditions = jsonObject.optString("bookConditions");
+        int bookConditions = jsonObject.optInt("bookConditions");
 
         //tags
         ArrayList<String> tags = new ArrayList<>();

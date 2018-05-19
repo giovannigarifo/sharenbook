@@ -250,7 +250,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             categoriesHeader.setVisibility(View.GONE);
             categories.setVisibility(View.GONE);
         } else {
-            categories.setText(listToCommaString(book.getCategories()));
+            categories.setText(book.getCategoriesAsString(getResources().getStringArray(R.array.book_categories)));
         }
 
         if (book.getLanguage().equals("")) {
@@ -274,7 +274,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             location.setText(places.get(0).getLocality() + ", " + places.get(0).getCountryName());
         }
 
-        bookConditions.setText(book.getBookConditions());
+        bookConditions.setText(book.getBookConditionsAsString(getResources().getStringArray(R.array.book_conditions)));
 
         if (book.getTags().size() == 0) {
             tagsHeader.setVisibility(View.GONE);

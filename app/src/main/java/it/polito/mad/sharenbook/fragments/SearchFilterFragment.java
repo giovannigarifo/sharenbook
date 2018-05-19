@@ -1,12 +1,10 @@
 package it.polito.mad.sharenbook.fragments;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +16,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import it.polito.mad.sharenbook.MapsActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.SearchActivity;
 import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
+import it.polito.mad.sharenbook.adapters.SingleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 
