@@ -161,11 +161,75 @@
     <string name="sa_no_results">Non siamo riusciti a trovare alcun risultato!</string>
 
 
+    <!-- ============================== -->
+
+    <!--        BOOK CONDITIONS         -->
+    <string-array name="book_conditions">
+        <item name="book_condition_new">Nuovo</item>
+        <item name="book_condition_likenew">Come nuovo</item>
+        <item name="book_condition_verygood">Molto buone</item>
+        <item name="book_condition_good">Buone</item>
+        <item name="book_condition_acceptable">Accettabili</item>
+        <item name="book_condition_notacceptable">Pessime</item>
+    </string-array>
+
+    <!--        BOOK CATEGORIES         -->
+    <string-array name="book_categories">
+        <item name="book_category_art">Arte, musica, cinema</item>
+        <item name="book_category_biography">Biografia</item>
+        <item name="book_category_comics">Fumetti</item>
+        <item name="book_category_economy">Economia</item>
+        <item name="book_category_fantasy">Fantasy</item>
+        <item name="book_category_food">Cucina</item>
+        <item name="book_category_hobbie">Hobby</item>
+        <item name="book_category_kids">Bambini</item>
+        <item name="book_category_tech">Tecnologia</item>
+        <item name="book_category_education">Educazione</item>
+        <item name="book_category_lgbt">LGBT</item>
+        <item name="book_category_health">Salute</item>
+        <item name="book_category_history">Storia</item>
+        <item name="book_category_entertainment">Intrattenimento</item>
+        <item name="book_category_law">Diritto</item>
+        <item name="book_category_literature">Letterature</item>
+        <item name="book_category_medicine">Medicina</item>
+        <item name="book_category_thriller">Thriller</item>
+        <item name="book_category_politics">Politica</item>
+        <item name="book_category_religion">Religione</item>
+        <item name="book_category_romance">Romanzo</item>
+        <item name="book_category_scifi">Sci-fi</item>
+        <item name="book_category_science">Scienza</item>
+        <item name="book_category_sport">Sport</item>
+        <item name="book_category_travel">Viaggi</item>
+        <item name="book_category_travel">Altro</item>
+    </string-array>
+
     <!-- ======================== -->
 
     <!-- Search Bar  -->
 
     <string name="searchbar_placeholder">Cerca un libro…</string>
+
+    <!-- Search filters -->
+    <string name="fragment_sf_title">Filtri di ricerca</string>
+    <string name="fragmen_sf_msg">Qui puoi applicare dei filtri alla tua ricerca</string>
+    <string name="fragment_sf_address_hint">Scrivi un indirizzo e seleziona un raggio</string>
+
+
+    <string name="filter_distance">Filtra per distanza</string>
+    <string name="filter_distance_message"> Inserisci la città o l\'area in cui effettuare la ricerca e specifica una distanza:</string>
+    <string name="filter_distance_address">Luogo di consegna</string>
+    <string name="filter_distance_range">Raggio %1$d KM</string>
+    <string name="address_empty">Questo campo è obbligatorio!</string>
+
+    <string name="fragment_sf_et_conditions">Condizioni</string>
+
+    <string name="fragment_sf_et_categories">Categorie</string>
+
+    <string name="fragment_sf_et_author">Autore</string>
+    <string name="fragment_sf_et_author_hint">Scrivi nome e cognome dell\'autore</string>
+
+    <string name="fragment_sf_et_tags">Tags</string>
+    <string name="fragment_sf_et_tags_hint">Scrivi qui i tag da usare come filtro</string>
 
     <!-- ======================== -->
 
@@ -188,13 +252,6 @@
     <string name="sba_getting_book_details">Recupero informazioni sul libro…</string>
     <string name="sba_no_connection">Connessione ad internet non disponibile</string>
     <string name="sba_scan_your_barcode">Scansiona il Barcode del tuo Libro</string>
-
-    <!-- Search filters and other -->
-    <string name="filter_distance">Filtra per distanza</string>
-    <string name="filter_distance_message"> Inserisci la città o l\'area in cui effettuare la ricerca e specifica una distanza:</string>
-    <string name="filter_distance_address">Indirizzo: </string>
-    <string name="filter_distance_range">Raggio: %1$d KM</string>
-    <string name="address_empty">Questo campo è obbligatorio!</string>
 
 
     <!-- Chat things -->

@@ -53,16 +53,20 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
+import it.polito.mad.sharenbook.adapters.SingleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
+import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 public class EditBookActivity extends AppCompatActivity {
 
@@ -75,8 +79,9 @@ public class EditBookActivity extends AppCompatActivity {
     // views
     private EditText editbook_et_isbn, editbook_et_title, editbook_et_subtitle, editbook_et_authors,
             editbook_et_publisher, editbook_et_publishedDate, editbook_et_description, editbook_et_pageCount,
-            editbook_et_categories, editbook_et_language, editbook_et_location, editbook_et_bookConditions,
-            editbook_et_tags;
+            editbook_et_language, editbook_et_location, editbook_et_tags;
+
+    private ExpandableHeightGridView editbook_ehgv_conditions, editbook_ehgv_categories;
 
     private ScrollView editbook_scrollview;
 
@@ -96,6 +101,8 @@ public class EditBookActivity extends AppCompatActivity {
     private RecyclerView editbook_rv_bookPhotos;
     private BookPhotoAdapter rvAdapter;
     private RecyclerView.LayoutManager rvLayoutManager;
+    private SingleCheckableCheckboxAdapter conditionAdapter;
+    private MultipleCheckableCheckboxAdapter categoryAdapter;
 
     //information of the book to be shared
     private Book book;
@@ -200,6 +207,21 @@ public class EditBookActivity extends AppCompatActivity {
         rvAdapter = new BookPhotoAdapter(book, this, removedPhotos);
         editbook_rv_bookPhotos.setAdapter(rvAdapter);
 
+        // Book Condition expandable height grid view
+        String[] book_conditions = getResources().getStringArray(R.array.book_conditions);
+        conditionAdapter = new SingleCheckableCheckboxAdapter(EditBookActivity.this, R.layout.item_checkbox, book_conditions);
+        editbook_ehgv_conditions.setAdapter(conditionAdapter);
+        editbook_ehgv_conditions.setNumColumns(2);
+        editbook_ehgv_conditions.setExpanded(true);
+        editbook_ehgv_conditions.setVerticalScrollBarEnabled(false);
+
+        // Book categories expandable height grid view
+        String[] book_categories = getResources().getStringArray(R.array.book_categories);
+        categoryAdapter = new MultipleCheckableCheckboxAdapter(EditBookActivity.this, R.layout.item_checkbox, book_categories);
+        editbook_ehgv_categories.setAdapter(categoryAdapter);
+        editbook_ehgv_categories.setNumColumns(2);
+        editbook_ehgv_categories.setExpanded(true);
+
         //Populate the view with all the information retrieved from Google Books API
         loadViewWithBookData();
 
@@ -245,9 +267,21 @@ public class EditBookActivity extends AppCompatActivity {
         else
             book.setPageCount(Integer.parseInt(pageCount));
 
-        book.setCategories(commaStringToList(editbook_et_categories.getText().toString()));
+        //retrieve categories
+        ArrayList<String> selectedCategories = categoryAdapter.getSelectedStrings();
+        ArrayList<Integer> selectedCategoriesAsInt = new ArrayList<>();
+
+        if (selectedCategories.size() > 0) {
+            String[] bookCategories = getResources().getStringArray(R.array.book_categories); //retrieve the array of all available conditions
+            for (int i = 0; i < selectedCategories.size(); i++)
+                selectedCategoriesAsInt.add(Arrays.asList(bookCategories).indexOf(selectedCategories.get(i))); //retrieve index of the condition
+        }
+        book.setCategories(selectedCategoriesAsInt);
+
+        //retrieve conditions
+        book.setBookConditions(conditionAdapter.getSelectedPosition());//get the condition selected by the user
+
         book.setLanguage(editbook_et_language.getText().toString());
-        book.setBookConditions(editbook_et_bookConditions.getText().toString());
         book.setTags(commaStringToList(editbook_et_tags.getText().toString()));
     }
 
@@ -338,15 +372,10 @@ public class EditBookActivity extends AppCompatActivity {
 
         if (book.getPageCount() != -1)
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
-        editbook_et_bookConditions.setText(book.getBookConditions());
 
         //authors to comma separated string
         String authors = listToCommaString(book.getAuthors());
         editbook_et_authors.setText(authors);
-
-        //categories to comma separated string
-        String categories = listToCommaString(book.getCategories());
-        editbook_et_categories.setText(categories);
 
         //tags to comma separated string
         String tags = listToCommaString(book.getTags());
@@ -705,13 +734,17 @@ public class EditBookActivity extends AppCompatActivity {
             }
         }
 
-        if (editbook_et_bookConditions.getText().toString().isEmpty()) {
-            editbook_et_bookConditions.setError(getText(R.string.field_required));
+        //book conditions validations
+        if (conditionAdapter.getSelectedPosition() == -1) {
+            showToast(getText(R.string.field_required).toString());
+            showToast("you must select one condition");
             isValid = false;
-            if (!alreadyFocused) {
-                editbook_et_bookConditions.requestFocus();
-                alreadyFocused = true;
-            }
+        }
+
+        //book category validations
+        if (categoryAdapter.getSelectedStrings().size() < 1 || categoryAdapter.getSelectedStrings().size() > 3) {
+            showToast("max three categories are allowed");
+            isValid = false;
         }
 
         //there must be at least one photo (excluding the thumbnail)
@@ -788,6 +821,9 @@ public class EditBookActivity extends AppCompatActivity {
         //get recycle views
         editbook_rv_bookPhotos = findViewById(R.id.editbook_rv_bookPhotos);
 
+        editbook_ehgv_conditions = findViewById(R.id.editbook_ehgv_conditions);
+        editbook_ehgv_categories = findViewById(R.id.editbook_ehgv_categories);
+
         //get the rest of views
         editbook_et_isbn = findViewById(R.id.editbook_et_isbn);
         editbook_et_title = findViewById(R.id.editbook_et_title);
@@ -797,10 +833,8 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_publishedDate = findViewById(R.id.editbook_et_publishedDate);
         editbook_et_description = findViewById(R.id.editbook_et_description);
         editbook_et_pageCount = findViewById(R.id.editbook_et_pageCount);
-        editbook_et_categories = findViewById(R.id.editbook_et_categories);
         editbook_et_language = findViewById(R.id.editbook_et_language);
         editbook_et_location = findViewById(R.id.editbook_et_location);
-        editbook_et_bookConditions = findViewById(R.id.editbook_et_bookConditions);
         editbook_et_tags = findViewById(R.id.editbook_et_tags);
     }
 }

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:padding="25dp"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- heading -->
+        <TextView
+            android:id="@+id/fragment_sf_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp"
+            android:text="@string/fragment_sf_title"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/fragmen_sf_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="28dp"
+            android:text="@string/fragmen_sf_msg"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph" />
+
+        <!-- filter by distance -->
+        <TextView
+            android:id="@+id/fragment_sf_tv_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/filter_distance_address"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/fragment_sf_et_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fragment_sf_address_hint"
+            android:inputType="text"
+            android:maxLines="4"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph" />
+
+        <TextView
+            android:id="@+id/fragment_sf_tv_range"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/filter_distance_range"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/fragment_sf_sb_range"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:max="25"
+            android:min="1"
+            android:progress="5" />
+
+
+        <!-- filter by book conditions -->
+        <TextView
+            android:id="@+id/fragment_sf_tv_conditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="28dp"
+            android:text="@string/fragment_sf_et_conditions"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+            android:id="@+id/fragment_sf_ehgv_conditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- filter by category -->
+        <TextView
+            android:id="@+id/fragment_sf_tv_categories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/fragment_sf_et_categories"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+            android:id="@+id/fragment_sf_ehgv_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- filter by author -->
+        <TextView
+            android:id="@+id/fragment_sf_tv_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/fragment_sf_et_author"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/fragment_sf_et_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fragment_sf_et_author_hint"
+            android:inputType="text"
+            android:maxLines="4"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph" />
+
+
+        <!-- filter by tag -->
+        <TextView
+            android:id="@+id/fragment_sf_tv_tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/fragment_sf_et_tags"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/fragment_sf_et_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/fragment_sf_et_tags_hint"
+            android:inputType="text"
+            android:maxLines="4"
+            android:textColor="@color/darkGrey"
+            android:textSize="@dimen/paragraph" />
+
+
+        <!-- buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/undo_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@string/undo"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/confirm_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="@string/confirm"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</ScrollView>

@@ -93,7 +93,9 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
             String insertedIsbn = editIsbn.getText().toString();
             new GetBookDetailsTask().execute(insertedIsbn);
         });
+
         btnScan.setOnClickListener(v -> PermissionsHandler.check(mActivity, () -> qrScan.initiateScan()));
+
         btnManual.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), EditBookActivity.class);
             i.putExtra("book", new Book());
@@ -109,6 +111,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
         if (result != null) {
@@ -119,11 +122,11 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
     }
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -224,6 +227,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
         // This runs in UI when background thread finishes
         @Override
         protected void onPostExecute(BookDetails result) {
+
             super.onPostExecute(result);
 
             // Do things like hide the progress bar or change a TextView

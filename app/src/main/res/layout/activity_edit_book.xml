@@ -242,14 +242,12 @@
 
                     android:text="@string/default_categories_heading" />
 
-                <EditText
-                    android:id="@+id/editbook_et_categories"
-                    style="@style/TextViewContent"
+                <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+                    android:id="@+id/editbook_ehgv_categories"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/default_categories"
-                    android:inputType="text"
-                    android:maxLength="200" />
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginBottom="16dp"/>
 
                 <!-- language -->
                 <TextView
@@ -295,14 +293,13 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/default_book_condition_heading" />
 
-                <EditText
-                    android:id="@+id/editbook_et_bookConditions"
-                    style="@style/TextViewContent"
+                <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+                    android:id="@+id/editbook_ehgv_conditions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/default_book_condition"
-                    android:inputType="text"
-                    android:maxLength="250" />
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginBottom="16dp"
+                    />
 
                 <!-- additional tags -->
                 <TextView
