@@ -48,6 +48,7 @@ import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
+import it.polito.mad.sharenbook.utils.Utils;
 import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 
 public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -268,7 +269,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             subtitle.setText(book.getSubtitle());
         }
 
-        authors.setText(listToCommaString(book.getAuthors()));
+        authors.setText(Utils.listToCommaString(book.getAuthors()));
 
         if (book.getPublisher().equals("")) {
             publisherHeader.setVisibility(View.GONE);
@@ -333,24 +334,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             tagsHeader.setVisibility(View.GONE);
             tags.setVisibility(View.GONE);
         } else {
-            tags.setText(listToCommaString(book.getTags()));
+            tags.setText(Utils.listToCommaString(book.getTags()));
         }
-    }
-
-    /**
-     * Convert a string list to comma separated multiple words string
-     */
-    private String listToCommaString(List<String> stringList) {
-        StringBuilder sb = new StringBuilder();
-
-        String prefix = "";
-        for (String string : stringList) {
-            sb.append(prefix);
-            prefix = ", ";
-            sb.append(string);
-        }
-
-        return sb.toString();
     }
 
     private void setupNavigationTools() {

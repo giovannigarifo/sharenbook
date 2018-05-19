@@ -52,6 +52,7 @@ import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
+import it.polito.mad.sharenbook.utils.Utils;
 
 public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
@@ -99,9 +100,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         // Load recycler views
         setupRecyclerViews();
+        checkLocationThenLoadCloseBooks();
         loadLastBooksRecyclerView();
         loadFavoriteBooksRecylerView();
-        checkLocationThenLoadCloseBooks();
     }
 
     @Override
@@ -110,9 +111,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         if (shouldExecuteOnResume) {
             //Reload recycler views
+            checkLocationThenLoadCloseBooks();
             loadLastBooksRecyclerView();
             loadFavoriteBooksRecylerView();
-            checkLocationThenLoadCloseBooks();
 
         } else {
             shouldExecuteOnResume = true;
@@ -458,12 +459,14 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             LinearLayout mLayout;
             ImageView bookPhoto;
             TextView bookTitle;
+            TextView bookDistance;
 
             ViewHolder(LinearLayout layout) {
                 super(layout);
                 mLayout = layout;
                 bookPhoto = layout.findViewById(R.id.showcase_rv_book_photo);
                 bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
+                bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
             }
         }
 
@@ -502,6 +505,20 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
             // Set title
             holder.bookTitle.setText(book.getTitle());
+
+            // Set distance
+            if (mLocation != null) {
+                String distance = Utils.distanceBetweenLocations(
+                        mLocation.getLatitude(),
+                        mLocation.getLongitude(),
+                        book.getLocation_lat(),
+                        book.getLocation_long());
+                holder.bookDistance.setText(distance);
+                holder.bookDistance.setVisibility(View.VISIBLE);
+
+            } else {
+                holder.bookDistance.setVisibility(View.GONE);
+            }
 
             // Set listener
             holder.mLayout.setOnClickListener(v -> {

@@ -17,9 +17,21 @@
         android:id="@+id/showcase_rv_book_title"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
+        android:lines="2"
         android:maxLines="2"
         android:ellipsize="end"
         android:textColor="@color/primaryText"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/showcase_rv_book_location"
+        android:visibility="gone"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="12sp"
+        android:drawableStart="@drawable/ic_location_black_12dp"
+        android:drawableLeft="@drawable/ic_location_black_12dp"
+        android:drawablePadding="2dp" />
 
 </LinearLayout>

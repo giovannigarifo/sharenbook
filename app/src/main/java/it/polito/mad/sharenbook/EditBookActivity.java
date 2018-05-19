@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -66,6 +67,7 @@ import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
+import it.polito.mad.sharenbook.utils.Utils;
 import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 public class EditBookActivity extends AppCompatActivity {
@@ -113,11 +115,7 @@ public class EditBookActivity extends AppCompatActivity {
     private DatabaseReference booksDb;
     private DatabaseReference bookRef; //the unique key obtained by firebase
     private DatabaseReference userBooksDb;
-    private DatabaseReference geoLocationRef;
     private StorageReference bookImagesStorage;
-
-    // Algolia objects
-    private Client algoliaClient;
 
     // ProgressDialog
     private ProgressDialog progressDialog;
@@ -126,10 +124,6 @@ public class EditBookActivity extends AppCompatActivity {
     // Boolean value to check if a new book should be added
     private boolean isNewBook;
 
-    // Geofire variable
-    private GeoFire geoFire;
-    private List<Address> place = new ArrayList<>();
-
     private String username;
 
     /**
@@ -137,6 +131,7 @@ public class EditBookActivity extends AppCompatActivity {
      *
      * @param savedInstanceState : bundle that contains activity state information (null or the book)
      */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -154,12 +149,6 @@ public class EditBookActivity extends AppCompatActivity {
         booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
         userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-
-        // Setup Algolia - Release config
-        // algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8");
-
-        // Setup Algolia - Debug config
-        algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
 
         // Setup progress dialog
         progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
@@ -239,8 +228,8 @@ public class EditBookActivity extends AppCompatActivity {
             }
         });
 
-        editbook_ib_addBookPhoto.setOnClickListener(this::addBookPhoto);
-        editbook_btn_addBookPhoto.setOnClickListener(this::addBookPhoto);
+        editbook_ib_addBookPhoto.setOnClickListener(v -> addBookPhoto());
+        editbook_btn_addBookPhoto.setOnClickListener(v -> addBookPhoto());
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
@@ -255,7 +244,7 @@ public class EditBookActivity extends AppCompatActivity {
         book.setIsbn(editbook_et_isbn.getText().toString());
         book.setTitle(editbook_et_title.getText().toString());
         book.setSubtitle(editbook_et_subtitle.getText().toString());
-        book.setAuthors(commaStringToList(editbook_et_authors.getText().toString()));
+        book.setAuthors(Utils.commaStringToList(editbook_et_authors.getText().toString()));
         book.setPublisher(editbook_et_publisher.getText().toString());
         book.setPublishedDate(editbook_et_publishedDate.getText().toString());
         book.setDescription(editbook_et_description.getText().toString());
@@ -282,16 +271,14 @@ public class EditBookActivity extends AppCompatActivity {
         book.setBookConditions(conditionAdapter.getSelectedPosition());//get the condition selected by the user
 
         book.setLanguage(editbook_et_language.getText().toString());
-        book.setTags(commaStringToList(editbook_et_tags.getText().toString()));
+        book.setTags(Utils.commaStringToList(editbook_et_tags.getText().toString()));
     }
 
 
     /*
      * Add Book photo button listener
      */
-    private void addBookPhoto(View v) {
-
-        Log.d("debug", "editbook_ib_addBookPhoto onClickListener fired");
+    private void addBookPhoto() {
 
         if (book.getPhotosName().size() + book.getBookPhotosUri().size() >= MAX_ALLOWED_BOOK_PHOTO) {
 
@@ -342,6 +329,7 @@ public class EditBookActivity extends AppCompatActivity {
     /**
      * Loads all the info obtained from Google Books API into the view
      */
+    @SuppressLint("SetTextI18n")
     private void loadViewWithBookData() {
 
         isNewBook = book.getBookId().equals("");
@@ -375,11 +363,11 @@ public class EditBookActivity extends AppCompatActivity {
             editbook_et_pageCount.setText(Integer.valueOf(book.getPageCount()).toString());
 
         //authors to comma separated string
-        String authors = listToCommaString(book.getAuthors());
+        String authors = Utils.listToCommaString(book.getAuthors());
         editbook_et_authors.setText(authors);
 
         //tags to comma separated string
-        String tags = listToCommaString(book.getTags());
+        String tags = Utils.listToCommaString(book.getTags());
         editbook_et_tags.setText(tags);
     }
 
@@ -466,48 +454,8 @@ public class EditBookActivity extends AppCompatActivity {
      */
     private void firebaseSaveBook() {
 
-        // Retrieve all data
-        HashMap<String, Object> bookData = new HashMap<>();
-        bookData.put("owner_uid", firebaseUser.getUid());
-        bookData.put("owner_username", username);
-        bookData.put("isbn", book.getIsbn());
-        bookData.put("title", book.getTitle());
-        bookData.put("subtitle", book.getSubtitle());
-        bookData.put("authors", book.getAuthors());
-        bookData.put("publisher", book.getPublisher());
-        bookData.put("publishedDate", book.getPublishedDate());
-        bookData.put("description", book.getDescription());
-        bookData.put("pageCount", book.getPageCount());
-        bookData.put("categories", book.getCategories());
-        bookData.put("language", book.getLanguage());
-        bookData.put("bookConditions", book.getBookConditions());
-        bookData.put("tags", book.getTags());
-        bookData.put("numPhotos", book.getBookPhotosUri().size());
-        if (book.getCreationTime() == 0) {
-
-            bookData.put("creationTime", ServerValue.TIMESTAMP); //get timestamp from firebase
-            book.setCreationTime(System.currentTimeMillis()); //get timestamp from local device
-
-        } else
-            bookData.put("creationTime", book.getCreationTime());
-
-        book.setLocation_lat(place.get(0).getLatitude());
-        book.setLocation_long(place.get(0).getLongitude());
-        bookData.put("location_lat", book.getLocation_lat());
-        bookData.put("location_long", book.getLocation_long());
-
-        // Get photo names
-        for (Uri uri : book.getBookPhotosUri()) {
-            String fileName = uri.getLastPathSegment();
-            book.getPhotosName().add(fileName);
-        }
-        bookData.put("photosName", book.getPhotosName());
-
-        // Set thumbnail value (only if still present)
-        if (isNewBook && book.getBookPhotosUri().get(0).toString().equals(book.getThumbnail())) {
-            book.setThumbnail(book.getPhotosName().get(0));
-        }
-        bookData.put("thumbnail", book.getThumbnail());
+        // Get HashMap containing book data
+        HashMap<String, Object> bookData = createHashMapFromBook();
 
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
@@ -538,10 +486,9 @@ public class EditBookActivity extends AppCompatActivity {
                     });
                 }
 
-                //geoLocationRef = bookRef.child("location");
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                geoLocationRef = firebaseDatabase.getReference(getString(R.string.books_locations));
-                geoFire = new GeoFire(geoLocationRef);
+                // Set book location on DB
+                DatabaseReference geoLocationRef = FirebaseDatabase.getInstance().getReference(getString(R.string.books_locations));
+                GeoFire geoFire = new GeoFire(geoLocationRef);
                 geoFire.setLocation(bookRef.getKey(),
                         new GeoLocation(book.getLocation_lat(), book.getLocation_long()),
                         (key, error) -> Log.d("DEBUG", "Location set correctly"));
@@ -556,6 +503,56 @@ public class EditBookActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    /**
+     * Create firebase HashMap containing data to save
+     */
+    private HashMap<String, Object> createHashMapFromBook() {
+
+        // Retrieve all book data
+        HashMap<String, Object> bookData = new HashMap<>();
+        bookData.put("owner_uid", firebaseUser.getUid());
+        bookData.put("owner_username", username);
+        bookData.put("isbn", book.getIsbn());
+        bookData.put("title", book.getTitle());
+        bookData.put("subtitle", book.getSubtitle());
+        bookData.put("authors", book.getAuthors());
+        bookData.put("publisher", book.getPublisher());
+        bookData.put("publishedDate", book.getPublishedDate());
+        bookData.put("description", book.getDescription());
+        bookData.put("pageCount", book.getPageCount());
+        bookData.put("categories", book.getCategories());
+        bookData.put("language", book.getLanguage());
+        bookData.put("bookConditions", book.getBookConditions());
+        bookData.put("tags", book.getTags());
+        bookData.put("numPhotos", book.getBookPhotosUri().size());
+
+        if (book.getCreationTime() == 0) {
+
+            bookData.put("creationTime", ServerValue.TIMESTAMP); //get timestamp from firebase
+            book.setCreationTime(System.currentTimeMillis()); //get timestamp from local device
+
+        } else
+            bookData.put("creationTime", book.getCreationTime());
+
+        bookData.put("location_lat", book.getLocation_lat());
+        bookData.put("location_long", book.getLocation_long());
+
+        // Get photo names
+        for (Uri uri : book.getBookPhotosUri()) {
+            String fileName = uri.getLastPathSegment();
+            book.getPhotosName().add(fileName);
+        }
+        bookData.put("photosName", book.getPhotosName());
+
+        // Set thumbnail value (only if still present)
+        if (isNewBook && book.getBookPhotosUri().get(0).toString().equals(book.getThumbnail())) {
+            book.setThumbnail(book.getPhotosName().get(0));
+        }
+        bookData.put("thumbnail", book.getThumbnail());
+
+        return bookData;
     }
 
 
@@ -627,6 +624,9 @@ public class EditBookActivity extends AppCompatActivity {
 
         try {
 
+            // Setup Algolia
+            // Client algoliaClient = new Client("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8"); <- RELEASE CONFIG
+            Client algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
             Index index = algoliaClient.getIndex("books");
 
             JSONObject bookData = new JSONObject()
@@ -708,9 +708,10 @@ public class EditBookActivity extends AppCompatActivity {
         } else {
             boolean error = false;
             String location = editbook_et_location.getText().toString();
+
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> place = new ArrayList<>();
             try {
-                place.clear();
                 place.addAll(geocoder.getFromLocationName(location, 1));
                 if (place.size() == 0) {
                     error = true;
@@ -726,6 +727,10 @@ public class EditBookActivity extends AppCompatActivity {
                     editbook_et_location.requestFocus();
                     alreadyFocused = true;
                 }
+            } else {
+                // Set book's location attributes
+                book.setLocation_lat(place.get(0).getLatitude());
+                book.setLocation_long(place.get(0).getLongitude());
             }
         }
 
@@ -771,33 +776,6 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
     /**
-     * Convert a comma separated multiple words string to a string list
-     */
-    private List<String> commaStringToList(String commaString) {
-        List<String> stringList = new ArrayList<>();
-        for (String s : commaString.split(",")) {
-            stringList.add(s.trim());
-        }
-        return stringList;
-    }
-
-    /**
-     * Convert a string list to comma separated multiple words string
-     */
-    private String listToCommaString(List<String> stringList) {
-        StringBuilder sb = new StringBuilder();
-
-        String prefix = "";
-        for (String string : stringList) {
-            sb.append(prefix);
-            prefix = ", ";
-            sb.append(string);
-        }
-
-        return sb.toString();
-    }
-
-    /**
      * getViews method
      */
     private void getViews() {
@@ -832,141 +810,138 @@ public class EditBookActivity extends AppCompatActivity {
         editbook_et_location = findViewById(R.id.editbook_et_location);
         editbook_et_tags = findViewById(R.id.editbook_et_tags);
     }
-}
 
+    /**
+     * BookPhotoAdapter class
+     */
+    private class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
 
-/**
- * BookPhotoAdapter class
- */
-class BookPhotoAdapter extends RecyclerView.Adapter<BookPhotoAdapter.BookPhotoViewHolder> {
+        private Book mBook;
+        private List<Uri> mBookPhotosUri;
+        private List<String> mPhotosName;
+        private Activity mActivity;
+        private ContentResolver mContentResolver;
+        private List<String> mRemovedPhotos;
+        private StorageReference bookImagesStorage;
 
-    private Book mBook;
-    private List<Uri> mBookPhotosUri;
-    private List<String> mPhotosName;
-    private Activity mActivity;
-    private ContentResolver mContentResolver;
-    private List<String> mRemovedPhotos;
-    private StorageReference bookImagesStorage;
+        //Inner Class that provides a reference to the views for each data item of the collection
+        class BookPhotoViewHolder extends RecyclerView.ViewHolder {
 
-    //constructor
-    BookPhotoAdapter(Book book, Activity activity, List<String> removedPhotos) {
-        this.mBook = book;
-        this.mBookPhotosUri = book.getBookPhotosUri();
-        this.mPhotosName = book.getPhotosName();
-        this.mActivity = activity;
-        this.mContentResolver = activity.getContentResolver();
-        this.mRemovedPhotos = removedPhotos;
-        this.bookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
-    }
+            private ImageView iv;
+            private ImageButton ib;
 
-    //Inner Class that provides a reference to the views for each data item of the collection
-    class BookPhotoViewHolder extends RecyclerView.ViewHolder {
-
-        private RelativeLayout item_book_photo_iv;
-        private ImageView iv;
-        private ImageButton ib;
-
-        BookPhotoViewHolder(RelativeLayout rl) {
-            super(rl);
-            this.item_book_photo_iv = rl;
-            this.iv = rl.findViewById(R.id.itembookphoto_iv_bookphoto);
-            this.ib = rl.findViewById(R.id.itembookphoto_ib_deletePhoto);
+            BookPhotoViewHolder(RelativeLayout rl) {
+                super(rl);
+                this.iv = rl.findViewById(R.id.itembookphoto_iv_bookphoto);
+                this.ib = rl.findViewById(R.id.itembookphoto_ib_deletePhoto);
+            }
         }
-    }
 
-    /**
-     * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
-     * display it's content
-     *
-     * @param parent   :
-     * @param viewType :
-     * @return BookPhotoViewHolder :
-     */
-    @NonNull
-    @Override
-    public BookPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        //constructor
+        BookPhotoAdapter(Book book, Activity activity, List<String> removedPhotos) {
+            this.mBook = book;
+            this.mBookPhotosUri = book.getBookPhotosUri();
+            this.mPhotosName = book.getPhotosName();
+            this.mActivity = activity;
+            this.mContentResolver = activity.getContentResolver();
+            this.mRemovedPhotos = removedPhotos;
+            this.bookImagesStorage = FirebaseStorage.getInstance().getReference(activity.getString(R.string.book_images_key));
+        }
 
-        LayoutInflater li = LayoutInflater.from(parent.getContext());
-        RelativeLayout rl = (RelativeLayout) li.inflate(R.layout.item_book_photo, parent, false);
+        /**
+         * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
+         * display it's content
+         *
+         * @param parent   :
+         * @param viewType :
+         * @return BookPhotoViewHolder :
+         */
+        @NonNull
+        @Override
+        public BookPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        return new BookPhotoAdapter.BookPhotoViewHolder(rl);
-    }
+            LayoutInflater li = LayoutInflater.from(parent.getContext());
+            RelativeLayout rl = (RelativeLayout) li.inflate(R.layout.item_book_photo, parent, false);
 
-    /**
-     * Replace the contents of a ViewHolder (invoked by the layout manager)
-     *
-     * @param holder   :
-     * @param position :
-     */
-    @Override
-    public void onBindViewHolder(@NonNull BookPhotoViewHolder holder, int position) {
+            return new BookPhotoAdapter.BookPhotoViewHolder(rl);
+        }
 
-        if (mPhotosName.size() > 0 && position < mPhotosName.size()) {
-            String fileName = mPhotosName.get(position);
-            StorageReference photoRef = bookImagesStorage.child(mBook.getBookId() + "/" + fileName);
+        /**
+         * Replace the contents of a ViewHolder (invoked by the layout manager)
+         *
+         * @param holder   :
+         * @param position :
+         */
+        @Override
+        public void onBindViewHolder(@NonNull BookPhotoViewHolder holder, int position) {
 
-            GlideApp.with(mActivity)
-                    .load(photoRef)
-                    .into(holder.iv);
-            holder.ib.setTag(fileName);
+            if (mPhotosName.size() > 0 && position < mPhotosName.size()) {
+                String fileName = mPhotosName.get(position);
+                StorageReference photoRef = bookImagesStorage.child(mBook.getBookId() + "/" + fileName);
 
-            //onClick listener for the delete photo button
-            holder.ib.setOnClickListener((v) -> {
-
-                if (mPhotosName.size() > 0) {
-
-                    String tag = (String) v.getTag();
-                    int ib_position = mPhotosName.indexOf(tag);
-
-                    //check if thumbnail must be removed
-                    if (tag.equals(mBook.getThumbnail()))
-                        mBook.setThumbnail("");
-
-                    mPhotosName.remove(ib_position);
-                    notifyItemRemoved(ib_position);
-                    mRemovedPhotos.add(tag);
-                }
-            });
-        } else {
-
-            int relPosition = position - mPhotosName.size();
-
-            Uri photoUri = this.mBookPhotosUri.get(relPosition);
-            Bitmap bmPhoto;
-
-            try {
-                bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
-
-                holder.iv.setImageBitmap(bmPhoto);
-                holder.ib.setTag(photoUri);
+                GlideApp.with(mActivity)
+                        .load(photoRef)
+                        .into(holder.iv);
+                holder.ib.setTag(fileName);
 
                 //onClick listener for the delete photo button
                 holder.ib.setOnClickListener((v) -> {
 
-                    if (mBookPhotosUri.size() > 0) {
+                    if (mPhotosName.size() > 0) {
 
-                        Uri tag = (Uri) v.getTag();
-                        int ib_position = mBookPhotosUri.indexOf(tag);
+                        String tag = (String) v.getTag();
+                        int ib_position = mPhotosName.indexOf(tag);
 
                         //check if thumbnail must be removed
-                        if (tag.toString().equals(mBook.getThumbnail()))
+                        if (tag.equals(mBook.getThumbnail()))
                             mBook.setThumbnail("");
 
-                        mBookPhotosUri.remove(ib_position);
-                        notifyItemRemoved(ib_position + mPhotosName.size());
+                        mPhotosName.remove(ib_position);
+                        notifyItemRemoved(ib_position);
+                        mRemovedPhotos.add(tag);
                     }
                 });
-            } catch (IOException e) {
-                Log.d("error", "IOException when retrieving image Bitmap");
-                e.printStackTrace();
+            } else {
+
+                int relPosition = position - mPhotosName.size();
+
+                Uri photoUri = this.mBookPhotosUri.get(relPosition);
+                Bitmap bmPhoto;
+
+                try {
+                    bmPhoto = MediaStore.Images.Media.getBitmap(mContentResolver, photoUri);
+
+                    holder.iv.setImageBitmap(bmPhoto);
+                    holder.ib.setTag(photoUri);
+
+                    //onClick listener for the delete photo button
+                    holder.ib.setOnClickListener((v) -> {
+
+                        if (mBookPhotosUri.size() > 0) {
+
+                            Uri tag = (Uri) v.getTag();
+                            int ib_position = mBookPhotosUri.indexOf(tag);
+
+                            //check if thumbnail must be removed
+                            if (tag.toString().equals(mBook.getThumbnail()))
+                                mBook.setThumbnail("");
+
+                            mBookPhotosUri.remove(ib_position);
+                            notifyItemRemoved(ib_position + mPhotosName.size());
+                        }
+                    });
+                } catch (IOException e) {
+                    Log.d("error", "IOException when retrieving image Bitmap");
+                    e.printStackTrace();
+                }
             }
         }
-    }
 
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return this.mPhotosName.size() + this.mBookPhotosUri.size();
+        // Return the size of your dataset (invoked by the layout manager)
+        @Override
+        public int getItemCount() {
+            return this.mPhotosName.size() + this.mBookPhotosUri.size();
+        }
     }
 }
