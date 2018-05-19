@@ -109,8 +109,6 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         user = data.getParcelable(getString(R.string.user_profile_data_key));
 
-        OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
-
         //modify default typography
         getViews();
 
@@ -238,7 +236,7 @@ public class ShowProfileActivity  extends AppCompatActivity
                         userPicture.setOnClickListener(v -> {
                             Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                             i.putExtra("PictureSignature", profile_picture_signature);
-                            i.putExtra("userId", user.getUserID());
+                            i.putExtra("username", user.getUsername());
                             startActivity(i);
                         });
 

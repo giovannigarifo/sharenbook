@@ -5,18 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.share.Share;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,24 +49,20 @@ public class SplashScreenActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private UserProfile user;
+    private String userID = "";
 
     /* Default profile values*/
     private String default_city;
     private String default_bio;
-    private String default_email;
-    private String default_fullname;
     private String default_username;
     private String default_picture_signature;
 
     private SharedPreferences usernamePref;
-    private SharedPreferences.Editor writeUsernamePref;
-
     private SharedPreferences userProfileData;
     private SharedPreferences.Editor write_userProfileData;
 
     private static ConnectionChangedListener connListener;
 
-    private AlertDialog.Builder internetRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,18 +71,17 @@ public class SplashScreenActivity extends AppCompatActivity {
         /* Set default values */
         default_city = getString(R.string.default_city);
         default_bio = getString(R.string.default_bio);
-        default_email = getString(R.string.default_email);
-        default_fullname = getString(R.string.default_fullname_heading);
         default_username = getString(R.string.default_username_heading);
         default_picture_signature = getString(R.string.default_picture_path);
 
         usernamePref = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-        writeUsernamePref = usernamePref.edit();
 
         userProfileData = getSharedPreferences(getString(R.string.userData_preferences), Context.MODE_PRIVATE);
         write_userProfileData = userProfileData.edit();
 
         initFirebase();
+
+        userID = firebaseUser.getUid();
 
         buildInternetRequestDialog();
 
@@ -132,6 +123,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         /*Storage*/
         storageReference = FirebaseStorage.getInstance().getReference();
+
+
     }
 
 
@@ -143,7 +136,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         if(firebaseUser != null) { /* User is already Logged in -> just check if his profile is completed or not*/
 
             /* Retrieve User profile data */
-            dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
+            dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(userID).child(getString(R.string.profile_key));
             dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
@@ -161,15 +154,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                     else if (dataSnapshot.getValue().equals(getString(R.string.profile_value_placeholder))) {
                         /* Profile is empty -> start EditProfile */
 
-                        //Load user data from the registration account used
                         createDefaultUserProfile();
                         goEditProfile();
 
                     }else {
                         /* Profile is completed -> start ShowProfile */
                         user = dataSnapshot.getValue(UserProfile.class);    //take user data
-                        user.setUserID(firebaseUser.getUid());
-                        writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
+                        user.setUserID(userID);
+                        usernamePref.edit().putString(getString(R.string.username_copy_key), user.getUsername()).commit();
 
                         goShowCase();
 
@@ -193,7 +185,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                     AuthUI.getInstance().createSignInIntentBuilder()                    // Get an instance of AuthUI
                             .setAvailableProviders(Arrays.asList(
                                     new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                    //new AuthUI.IdpConfig.FacebookBuilder().build(),
                                     new AuthUI.IdpConfig.TwitterBuilder().build(),
                                     new AuthUI.IdpConfig.EmailBuilder().build()))
                             .setLogo(R.mipmap.ic_launcher)
@@ -209,7 +200,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         /* Here from Sign_In or Log_In */
-
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
@@ -224,7 +214,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                      * otherwise go to ShowProfile
                      */
                     // Read user profile data from DB
-                    dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.profile_key));
+                    dbReference = firebaseDatabase.getReference(getString(R.string.users_key)).child(userID).child(getString(R.string.profile_key));
                     dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
                         @Override
@@ -249,8 +239,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                                     /*Login succesfull and profile not empty */
 
                                     user = dataSnapshot.getValue(UserProfile.class);
-                                    writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
-                                    user.setUserID(firebaseUser.getUid());
+                                    usernamePref.edit().putString(getString(R.string.username_copy_key), user.getUsername()).commit();
+                                    user.setUserID(userID);
 
                                     OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
 
@@ -325,51 +315,31 @@ public class SplashScreenActivity extends AppCompatActivity {
         StorageReference profile_pic_ref = storageReference.child("images/"+user.getUsername()+".jpg");
 
         Task task = profile_pic_ref.getMetadata();
-        task.addOnSuccessListener(new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object result) {
-                StorageMetadata metadata = (StorageMetadata) result;
-                user.setPicture_timestamp(String.valueOf(metadata.getCreationTimeMillis()));
-                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
-                Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
-                write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
-                write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
-                write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
-                write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
-                write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
-                write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
-                write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
-                startActivity(i);
-                finish();
-            }
-
+        task.addOnSuccessListener(result -> {
+            StorageMetadata metadata = (StorageMetadata) result;
+            user.setPicture_timestamp(String.valueOf(metadata.getCreationTimeMillis()));
+            saveDataAndShowCase();
         });
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                user.setPicture_timestamp(default_picture_signature);
-                NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
-                Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
-                write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
-                write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
-                write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
-                write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
-                write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
-                write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
-                write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
-                startActivity(i);
-                finish();
-
-            }
+        task.addOnFailureListener(exception -> {
+            user.setPicture_timestamp(default_picture_signature);
+            saveDataAndShowCase();
         });
 
     }
 
-    private void initNavigationDrawerProfile(UserProfile user){
+    private void saveDataAndShowCase(){
+        write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
+        write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
+        write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
+        write_userProfileData.putString(getString(R.string.city_pref), user.getCity()).commit();
+        write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
+        write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
+        write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
 
-        NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
-
-
+        NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
+        Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
+        startActivity(i);
+        finish();
     }
 
 

@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.onesignal.OneSignal;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
@@ -537,6 +538,7 @@ public class EditProfileActivity extends AppCompatActivity {
          * Check if profile picture has been changed or not
          */
         writeUsernamePref.putString(getString(R.string.username_copy_key), user.getUsername()).commit();
+        OneSignal.sendTag("User_ID", user.getUsername());
 
         if (editedProfile_copy.getBoolean(getString(R.string.changed_photo_flag_key), false)) {
 
