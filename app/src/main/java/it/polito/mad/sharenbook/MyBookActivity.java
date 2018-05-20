@@ -270,6 +270,12 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         */
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navBar.setSelectedItemId(R.id.navigation_myBook);
+    }
+
     private void setupNavigationTools() {
         // Setup toolbar
         Toolbar toolbar = findViewById(R.id.sba_toolbar);
@@ -301,6 +307,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
+        navBar = findViewById(R.id.navigation);
     }
 
     @Override
@@ -350,16 +357,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     }
 
 
-
-
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        // Terminate activity (actionbar left arrow pressed)
-        finish();
-        return true;
-    }
-
     /**
      * Navigation Drawer Listeners
      */
@@ -398,9 +395,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
-            startActivity(show_case);
-            finish();
+            super.onBackPressed();
         }
         navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
     }

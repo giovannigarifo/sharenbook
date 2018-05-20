@@ -226,16 +226,9 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this,R.id.navigation_chat);
+        navBar = findViewById(R.id.navigation);
     }
 
-
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        // Terminate activity (actionbar left arrow pressed)
-        finish();
-        return true;
-    }
 
     /**
      * Navigation Drawer Listeners
@@ -290,6 +283,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     protected void onResume() {
         super.onResume();
         OneSignal.clearOneSignalNotifications();
+        navBar.setSelectedItemId(R.id.navigation_chat);
     }
 }
 

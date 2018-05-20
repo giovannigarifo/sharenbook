@@ -440,9 +440,7 @@ public class SearchActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            Intent show_case = new Intent(getApplicationContext(), ShowCaseActivity.class);
-            startActivity(show_case);
-            finish();
+            super.onBackPressed();
         }
     }
 

@@ -159,7 +159,7 @@ public class ShowProfileActivity  extends AppCompatActivity
         });
 
         // Setup navbar
-        UserInterface.setupNavigationBar(this, 0);
+        UserInterface.setupNavigationBar(this, 0, true);
 
         /*
          * SearchBar

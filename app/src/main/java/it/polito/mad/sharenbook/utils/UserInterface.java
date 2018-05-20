@@ -90,7 +90,7 @@ public class UserInterface {
     /**
      * Setup Bottom Navigation Bar
      */
-    public static void setupNavigationBar(Activity activity, int selectedItem) {
+    public static void setupNavigationBar(Activity activity, int selectedItem, boolean finishOnNav) {
 
         // Get navigationBar view
         BottomNavigationView navBar = activity.findViewById(R.id.navigation);
@@ -108,7 +108,8 @@ public class UserInterface {
                         Intent show_case = new Intent(activity.getApplicationContext(), ShowCaseActivity.class);
                         show_case.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         activity.startActivity(show_case);
-                        activity.finish();
+                        if (finishOnNav)
+                            activity.finish();
                     }
                     break;
 
@@ -117,7 +118,8 @@ public class UserInterface {
                         Intent myChats = new Intent(activity.getApplicationContext(), MyChatsActivity.class);
                         myChats.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         activity.startActivity(myChats);
-                        activity.finish();
+                        if (finishOnNav)
+                            activity.finish();
                     }
                     break;
 
@@ -126,12 +128,17 @@ public class UserInterface {
                         Intent my_books = new Intent(activity.getApplicationContext(), MyBookActivity.class);
                         my_books.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         activity.startActivity(my_books);
-                        activity.finish();
+                        if (finishOnNav)
+                            activity.finish();
                     }
                     break;
             }
 
             return true;
         });
+    }
+
+    public static void setupNavigationBar(Activity activity, int selectedItem) {
+        setupNavigationBar(activity, selectedItem, false);
     }
 }

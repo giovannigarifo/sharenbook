@@ -71,9 +71,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity
-            android:name=".MyBookActivity"
-            android:launchMode="singleTask" />
+        <activity android:name=".MyBookActivity" />
 
         <!-- crop image activity -->
         <activity
@@ -118,7 +116,7 @@
 
         <activity android:name=".ShowCaseActivity" />
 
-        <activity android:name=".MyChatsActivity"></activity>
+        <activity android:name=".MyChatsActivity" />
     </application>
 
 </manifest>

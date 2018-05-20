@@ -200,7 +200,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
 
         // Setup bottom navbar
-        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook, true);
     }
 
     private class GetBookDetailsTask extends AsyncTask<String, Integer, BookDetails> {

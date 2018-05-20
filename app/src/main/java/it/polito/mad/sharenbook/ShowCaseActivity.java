@@ -56,9 +56,9 @@ import it.polito.mad.sharenbook.utils.Utils;
 
 public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
-    private String searchState;
+    private MaterialSearchBar searchBar;
     private BottomNavigationView navBar;
-    boolean shouldExecuteOnResume;
+    private boolean shouldExecuteOnResume;
 
     private DatabaseReference booksDb;
     private DatabaseReference favoritesDb;
@@ -108,6 +108,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
+        navBar.setSelectedItemId(R.id.navigation_showcase);
+        if (searchBar.isSearchEnabled())
+            searchBar.disableSearch();
 
         if (shouldExecuteOnResume) {
             //Reload recycler views
@@ -163,12 +166,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public void onSearchStateChanged(boolean enabled) {
-        searchState = enabled ? "enabled" : "disabled";
-        Log.d("debug", "Search " + searchState);
-
-        if (searchState.equals("enabled")) {
+        // Hide or show navbar when searchbar change state
+        if (enabled) {
             navBar.setVisibility(View.GONE);
-
         } else {
             navBar.setVisibility(View.VISIBLE);
         }
@@ -192,18 +192,6 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("searchState", searchState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        searchState = savedInstanceState.getString("searchState");
-    }
-
-    @Override
     public void onButtonClicked(int buttonCode) {
         switch (buttonCode) {
             case MaterialSearchBar.BUTTON_NAVIGATION:
@@ -222,7 +210,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private void setupNavigationTools() {
 
         // Setup material serach bar
-        MaterialSearchBar searchBar = findViewById(R.id.searchBar);
+        searchBar = findViewById(R.id.searchBar);
         searchBar.setOnSearchActionListener(this);
 
         // Setup navigation drawer
