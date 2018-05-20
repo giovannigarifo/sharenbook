@@ -266,12 +266,9 @@
     <string name="user_profile_data_key">user_data</string>
     <string name="empty_user_value">empty_user</string>
     <string name="empty_profile_value">empty_profile</string>
-    <string name="users_key">users</string>
     <string name="profile_key">profile</string>
     <string name="profile_value_placeholder">profile_empty</string>
     <string name="users_books_placeholder">books_empty</string>
-    <string name="user_books_key">user_books</string>
-    <string name="books_key">books</string>
     <string name="book_images_key">book_images</string>
 
     <string name="mba_title">I miei annunci</string>

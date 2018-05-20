@@ -34,8 +34,8 @@ import android.widget.Toast;
 
 import com.algolia.search.saas.Client;
 import com.algolia.search.saas.Index;
-import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.core.GeoHash;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.adapters.SingleCheckableCheckboxAdapter;
@@ -108,13 +109,11 @@ public class EditBookActivity extends AppCompatActivity {
 
     //information of the book to be shared
     private Book book;
+    private String bookKey;
     private ArrayList<String> removedPhotos;
 
     // FireBase objects
     private FirebaseUser firebaseUser;
-    private DatabaseReference booksDb;
-    private DatabaseReference bookRef; //the unique key obtained by firebase
-    private DatabaseReference userBooksDb;
     private StorageReference bookImagesStorage;
 
     // ProgressDialog
@@ -143,11 +142,7 @@ public class EditBookActivity extends AppCompatActivity {
         username = userData.getString(getString(R.string.username_copy_key), "");
 
         // Setup FireBase
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
-        userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
 
         // Setup progress dialog
@@ -454,55 +449,47 @@ public class EditBookActivity extends AppCompatActivity {
      */
     private void firebaseSaveBook() {
 
-        // Get HashMap containing book data
-        HashMap<String, Object> bookData = createHashMapFromBook();
-
         // Show ProgressDialog
         progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        // Write on DB
+        // Get Firebase root node reference
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        // Get book key
+        bookKey = isNewBook ? rootRef.child(getString(R.string.books_key)).push().getKey() : book.getBookId();
+
+        // Get Map containing book data
+        Map<String, Object> bookData = createHashMapFromBook();
+
+        // Create Map containing book location data
+        GeoLocation location = new GeoLocation(book.getLocation_lat(), book.getLocation_long());
+        GeoHash geoHash = new GeoHash(location);
+        Map<String, Object> bookLocation = new HashMap<>();
+        bookLocation.put("g", geoHash.getGeoHashString());
+        bookLocation.put("l", Arrays.asList(location.latitude, location.longitude));
+
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put(getString(R.string.books_key) + "/" + bookKey, bookData);
+        transaction.put(getString(R.string.books_locations) + "/" + bookKey, bookLocation);
         if (isNewBook)
-            bookRef = booksDb.push();
-        else
-            bookRef = booksDb.child(book.getBookId());
+            transaction.put(getString(R.string.users_key) + "/" + firebaseUser.getUid() + "/" + getString(R.string.user_books_key) + "/" + bookKey, bookKey);
 
-
-        // Push newBook on "books" section
-        bookRef.updateChildren(bookData, (databaseError, databaseReference) -> {
-
+        // Push newBook or edited book on firebase
+        rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
             if (databaseError == null) {
 
-                // Push newBook reference on "user_books" section if newBook
-                if (isNewBook) {
-                    userBooksDb.push().setValue(bookRef.getKey(), (databaseError1, databaseReference1) -> {
-
-                        if (databaseError1 == null) {
-                            Log.d("DEBUG", "Book data for id " + bookRef.getKey() + "correctly loaded on firebase");
-                        } else {
-                            Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-
-                // Set book location on DB
-                DatabaseReference geoLocationRef = FirebaseDatabase.getInstance().getReference(getString(R.string.books_locations));
-                GeoFire geoFire = new GeoFire(geoLocationRef);
-                geoFire.setLocation(bookRef.getKey(),
-                        new GeoLocation(book.getLocation_lat(), book.getLocation_long()),
-                        (key, error) -> Log.d("DEBUG", "Location set correctly"));
-
                 // Load new photos on firebase
-                firebaseSavePhotos(bookRef.getKey());
+                firebaseSavePhotos(bookKey);
                 // Delete removed photos from firebase
-                firebaseDeletePhotos(bookRef.getKey());
+                firebaseDeletePhotos(bookKey);
 
             } else {
                 Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     /**
@@ -630,7 +617,7 @@ public class EditBookActivity extends AppCompatActivity {
             Index index = algoliaClient.getIndex("books");
 
             JSONObject bookData = new JSONObject()
-                    .put("bookId", bookRef.getKey())
+                    .put("bookId", bookKey)
                     .put("owner_uid", firebaseUser.getUid())
                     .put("owner_username", username)
                     .put("isbn", book.getIsbn())
@@ -654,12 +641,12 @@ public class EditBookActivity extends AppCompatActivity {
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)
-                    .put("objectID", bookRef.getKey());
+                    .put("objectID", bookKey);
 
             if (isNewBook) {
                 index.addObjectAsync(ob, (jsonObject, e) -> Log.d("DEBUG", "Algolia ADD request completed."));
             } else {
-                index.saveObjectAsync(ob, bookRef.getKey(), (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
+                index.saveObjectAsync(ob, bookKey, (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
             }
 
         } catch (JSONException e) {
