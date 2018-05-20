@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -34,6 +35,7 @@ import java.util.List;
 import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.model.Conversation;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class ConversationAdapter extends BaseAdapter {
@@ -162,8 +164,32 @@ public class ConversationAdapter extends BaseAdapter {
         holder.conversation = convertView.findViewById(R.id.conversation);
 
 
-        if(conversation.getProfilePicRef()!=null)
-            UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
+       // if(conversation.getProfilePicRef()!=null)
+         //   UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
+
+        String username = conversation.getConversationCounterpart();
+
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    long picSignature = (long) dataSnapshot.getValue();
+                    UserInterface.showGlideImage(context,
+                            conversation.getProfilePicRef(),
+                            holder.avatar,
+                            picSignature);
+                } else {
+                    GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(holder.avatar);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         holder.username.setText(conversation.getConversationCounterpart());
         holder.lastMessageBody.setText(conversation.getMessageReceived().getMessage());

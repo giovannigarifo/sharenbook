@@ -38,6 +38,7 @@ import java.util.Set;
 import it.polito.mad.sharenbook.adapters.ConversationAdapter;
 import it.polito.mad.sharenbook.model.Conversation;
 import it.polito.mad.sharenbook.model.Message;
+import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -67,6 +68,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         if (!username.equals("void")){
             mychatsDB = FirebaseDatabase.getInstance().getReference("chats").child(username);
 
+
             /**take actual number of conversations **/
 
             mychatsDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,6 +93,10 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
               //  Log.d("conversations added:", "->" + dataSnapshot.getKey() + "and" + s);
+                /** Verificare getkey come una stringa concatenata di tutti gli utenti **/
+                /** Altrimenti vedere se l'iterable ritornato da getChildren è sincrono
+                 * e salvare tu**/
+
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
