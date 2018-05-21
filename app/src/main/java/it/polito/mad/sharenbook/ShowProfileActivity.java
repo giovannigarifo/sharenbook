@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -23,7 +22,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.onesignal.OneSignal;
 
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -47,12 +45,9 @@ public class ShowProfileActivity  extends AppCompatActivity
 
     private String searchState;
 
-    private SharedPreferences userProfileData;
-
     /**
      * default profile values
      **/
-
     private String default_city;
     private String default_bio;
     private String default_email;
@@ -89,8 +84,8 @@ public class ShowProfileActivity  extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE); //disable title bar
-        setContentView(R.layout.activity_show_profile); //load view
-        Context context = this.getApplicationContext(); //retrieve context
+        setContentView(R.layout.activity_show_profile);
+        Context context = this.getApplicationContext();
 
         //retrieve the default values
         default_city = context.getResources().getString(R.string.default_city);
@@ -142,7 +137,8 @@ public class ShowProfileActivity  extends AppCompatActivity
          */
         UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
         tv_userFullName.setText(user.getFullname());
-        tv_userNickName.setText(user.getUsername());
+        String tv_username = getString(R.string.tv_username, user.getUsername());
+        tv_userNickName.setText(tv_username);
         tv_userCityContent.setText(user.getCity());
         tv_userBioContent.setText(user.getBio());
         tv_userEmailContent.setText(user.getEmail());
@@ -160,11 +156,6 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         // Setup navbar
         UserInterface.setupNavigationBar(this, 0, true);
-
-        /*
-         * SearchBar
-         */
-        //setupSearchBar(findViewById(R.id.searchBar));
 
         searchStatusCheck(data);
 

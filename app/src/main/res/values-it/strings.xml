@@ -304,5 +304,6 @@
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>
+    <string name="desc_img_book">Copertina del libro</string>
 
 </resources>

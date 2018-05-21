@@ -15,6 +15,7 @@
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
     <string name="default_username">Your username</string>
+    <string name="tv_username" translatable="false">\@%1$s</string>
     <string name="default_city_heading">City</string>
     <string name="default_city">City, Country</string>
     <string name="default_email_heading">Email</string>
@@ -324,5 +325,7 @@
 
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>
+    <string name="desc_img_book">Book image</string>
+
 
 </resources>

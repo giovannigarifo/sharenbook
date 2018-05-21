@@ -13,8 +13,7 @@
         android:layout_width="35dp"
         android:layout_height="0dp"
         android:src="@drawable/ic_profile"
-        android:padding="2dp"
-        android:elevation="6dp"
+        android:padding="3dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -25,20 +24,28 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginLeft="2dp"
-        android:elevation="6dp"
         android:padding="8dp"
-        android:paddingEnd="16dp"
-        android:paddingRight="16dp"
+        android:paddingEnd="4dp"
+        android:paddingRight="4dp"
         android:text="@string/placeholder"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/img"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+    <ImageView
+        android:id="@+id/img_popup_menu"
+        android:layout_width="24dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_expand_more_black_24dp"
+        android:padding="2dp"
+        app:layout_constraintStart_toEndOf="@id/text_user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
 
 </android.support.constraint.ConstraintLayout>

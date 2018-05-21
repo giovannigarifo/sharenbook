@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -31,7 +33,10 @@ import com.onesignal.OneSignal;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -503,7 +508,30 @@ public class EditProfileActivity extends AppCompatActivity {
                 et_userCity.setError(getString(R.string.city_bad_format_rationale));
                 isValid = false;
             } else {
-                et_userCity.setError(null);
+
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+                List<Address> place = new ArrayList<>();
+                String location = et_userCity.getText().toString();
+                Boolean location_error = false;
+
+                try {
+
+                    place.clear();
+                    place.addAll(geocoder.getFromLocationName(location, 1));
+                    if (place.size() == 0)
+                        location_error = true;
+
+                } catch (IOException e) { //if it was not possible to recognize location
+                    location_error = true;
+                }
+
+                if (location_error) {
+                    isValid = false;
+                    et_userCity.setError(getString(R.string.unknown_place));
+                } else {
+                    et_userCity.setError(null);
+                }
             }
 
 
