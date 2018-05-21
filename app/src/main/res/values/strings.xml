@@ -46,6 +46,8 @@
     <string name="settings">Settings</string>
     <string name="undo">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="contact_user">Contact user</string>
+    <string name="show_profile">Show profile</string>
 
 
     <!-- ============================== -->
@@ -319,5 +321,8 @@
     <string name="showcase_more_button">MORE</string>
     <string name="showcase_add_favorite">Added to Favorites</string>
     <string name="showcase_del_favorite">Removed from Favorites</string>
+
+    <!-- Books Cardview -->
+    <string name="authors">Authors: %1$s </string>
 
 </resources>

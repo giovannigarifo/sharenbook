@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -78,9 +80,6 @@ public class SearchActivity extends AppCompatActivity
 
     CharSequence searchInputText; //search query received in bundle
     ArrayList<Book> searchResult; //list of book that matched the query
-
-    //user
-    private UserProfile user;
 
 
     /**
@@ -689,12 +688,14 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
     private List<Book> searchResult;
     private Context context;
     private Activity activity;
+    private UserProfile user;
 
     //constructor
     SearchBookAdapter(ArrayList<Book> searchResult, Activity activity) {
         this.searchResult = searchResult;
         this.context = activity.getApplicationContext();
         this.activity = activity;
+        user = NavigationDrawerManager.getUserParcelable(context);
     }
 
     //Inner Class that provides a reference to the views for each data item of the collection
@@ -805,7 +806,26 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         tv_chiptag.setText(searchResult.get(position).getOwner_username());
         ImageView iv_chiptag = chiptag.findViewById(R.id.img);
 
-        chiptag.setOnClickListener(view -> Toast.makeText(context, "Funzionalità da implementare", Toast.LENGTH_SHORT).show());
+        chiptag.setOnClickListener(view -> {
+            if(!book.getOwner_username().equals(user.getUsername())) {
+                final PopupMenu popup = new PopupMenu(view.getContext(), view);
+                popup.getMenuInflater().inflate(R.menu.chiptag_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.contact_user:
+                            Intent chatActivity = new Intent(context, ChatActivity.class);
+                            chatActivity.putExtra("recipientUsername", book.getOwner_username());
+                            context.startActivity(chatActivity);
+                            break;
+                        case R.id.show_profile:
+                            // to show user profile
+                            break;
+                    }
+                    return false;
+                });
+                popup.show();
+            }
+        });
 
         String username = searchResult.get(position).getOwner_username();
 

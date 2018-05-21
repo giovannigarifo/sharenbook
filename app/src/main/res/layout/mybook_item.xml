@@ -2,124 +2,120 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="168dp">
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:id="@+id/mybook_item"
         style="CardViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingRight="8dp"
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        app:cardElevation="2dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
         android:foreground="?android:attr/selectableItemBackground">
 
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/wrapper"
+            android:paddingEnd="16dp"
+            android:paddingRight="19dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/book_title"
+                style="@style/item_searchresult_title"
+                android:layout_width="0dp"
+                android:layout_marginTop="6dp"
+                android:ellipsize="middle"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/lightGrey"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="19dp"
+                android:layout_marginLeft="19dp"
+                app:layout_constraintStart_toEndOf="@id/book_photo"
+                app:layout_constraintTop_toBottomOf="@id/book_title" />
 
             <ImageView
                 android:id="@+id/book_photo"
                 android:layout_width="100dp"
                 android:layout_height="150dp"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <TextView
-                android:id="@+id/book_title"
-                style="@style/item_searchresult_title"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="19dp"
-                android:layout_marginStart="19dp"
-                app:layout_constraintLeft_toRightOf="@id/book_photo"
-                app:layout_constraintStart_toEndOf="@id/book_photo"
-                app:layout_constraintTop_toTopOf="parent"
-                android:singleLine="true"
-                android:ellipsize="middle"
-                android:textStyle="bold"/>
-
-            <TextView
                 android:id="@+id/book_authors"
                 style="@style/item_searchresult_creationTime"
-                android:drawablePadding="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginStart="19dp"
                 android:layout_marginLeft="19dp"
-                android:layout_marginTop="8dp"
-                android:textSize="@dimen/paragraph"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/book_photo"
                 app:layout_constraintTop_toBottomOf="@id/book_title" />
 
             <TextView
                 android:id="@+id/book_creationTime"
                 style="@style/item_searchresult_creationTime"
-                android:drawableLeft="@drawable/ic_date_range_black_24dp"
-                android:drawableStart="@drawable/ic_date_range_black_24dp"
-                android:drawableTint="@color/colorAccent"
+                android:drawableStart="@drawable/ic_date_range_black_12dp"
+                android:drawableLeft="@drawable/ic_date_range_black_12dp"
                 android:drawablePadding="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="19dp"
                 android:layout_marginLeft="19dp"
-                android:layout_marginTop="8dp"
-                android:textSize="@dimen/paragraph"
+                android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/book_photo"
-                app:layout_constraintTop_toBottomOf="@id/book_authors" />
+                app:layout_constraintBottom_toTopOf="@id/book_location"/>
 
             <TextView
                 android:id="@+id/book_location"
                 style="@style/item_searchresult_location"
-                android:drawableLeft="@drawable/ic_place_black_24dp"
-                android:drawableStart="@drawable/ic_place_black_24dp"
-                android:drawableTint="@color/colorAccent"
+                android:drawableStart="@drawable/ic_place_black_12dp"
+                android:drawableLeft="@drawable/ic_place_black_12dp"
                 android:drawablePadding="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="19dp"
                 android:layout_marginLeft="19dp"
-                android:layout_marginTop="8dp"
-                android:textSize="@dimen/paragraph"
-                app:layout_constraintStart_toEndOf="@id/book_creationTime"
-                app:layout_constraintTop_toBottomOf="@id/book_authors" />
-
-
-<!--
-            <TextView
-                android:id="@+id/book_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="19dp"
-                android:layout_marginLeft="19dp"
-                android:layout_marginTop="8dp"
-                android:textSize="@dimen/paragraph"
+                android:maxEms="20"
+                android:ellipsize="end"
+                android:textSize="12sp"
                 app:layout_constraintStart_toEndOf="@id/book_photo"
-                app:layout_constraintTop_toBottomOf="@id/book_title" />
--->
-            <Button
+                app:layout_constraintBottom_toTopOf="@id/edit_button"/>
+
+             <Button
                 android:id="@+id/edit_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:gravity="start"
                 android:text="@string/edit_book"
-                android:textColor="@color/secondaryText"
-                android:textSize="16sp"
+                android:textColor="@color/colorAccent"
+                android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/book_photo" />
+                app:layout_constraintEnd_toEndOf="parent" />
+            
 
         </android.support.constraint.ConstraintLayout>
 

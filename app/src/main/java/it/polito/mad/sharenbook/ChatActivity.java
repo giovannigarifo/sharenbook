@@ -284,16 +284,20 @@ public class ChatActivity extends AppCompatActivity {
         AsyncTask.execute(() -> {
             int SDK_INT = Build.VERSION.SDK_INT;
             if(SDK_INT > 8){
-                Log.d("notification", "sending to " + destination);
+
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                         .permitAll().build();
                 StrictMode.setThreadPolicy(policy);
 
+                HttpsURLConnection conn = null;
+                OutputStream outputStream = null;
+
                 try{
+
                     String jsonResponse;
 
                     URL url = new URL("https://onesignal.com/api/v1/notifications");
-                    HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                    conn = (HttpsURLConnection) url.openConnection();
                     conn.setUseCaches(false);
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
@@ -313,16 +317,16 @@ public class ChatActivity extends AppCompatActivity {
                             + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"
                             + "}";
 
-                    System.out.println("strJsonBody:" + strJsonBody);
+                    Log.d("strJsonBody:" , strJsonBody);
 
                     byte[] sendBytes = strJsonBody.getBytes("UTF-8");
                     conn.setFixedLengthStreamingMode(sendBytes.length);
 
-                    OutputStream outputStream = conn.getOutputStream();
+                    outputStream = conn.getOutputStream();
                     outputStream.write(sendBytes);
 
                     int httpResponse = conn.getResponseCode();
-                    System.out.println("httpResponse: " + httpResponse);
+                    Log.d("httpResponse: " , "" + httpResponse);
 
                     if (httpResponse >= HttpURLConnection.HTTP_OK
                             && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -334,12 +338,22 @@ public class ChatActivity extends AppCompatActivity {
                         jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
                         scanner.close();
                     }
-                    System.out.println("jsonResponse:\n" + jsonResponse);
+                    Log.d("jsonResponse: " , jsonResponse);
 
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+
+                    if(conn!=null)
+                        conn.disconnect();
+
+                    try {
+                        if(outputStream!=null)
+                            outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
             }

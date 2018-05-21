@@ -68,7 +68,10 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
             Glide.with(context).load(photoRef).into(holder.bookPhoto);
 
             holder.bookTitle.setText(announcements.get(position).getTitle());
-            holder.bookAuthors.setText(announcements.get(position).getAuthorsAsString());
+
+            String authors = context.getString(R.string.authors, announcements.get(position).getAuthorsAsString());
+            holder.bookAuthors.setText(authors);
+
             holder.bookCreationTime.setText(announcements.get(position).getCreationTimeAsString(context));
 
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());

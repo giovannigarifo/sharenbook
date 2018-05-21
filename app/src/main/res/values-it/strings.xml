@@ -32,7 +32,8 @@
     <string name="settings">Impostazioni</string>
     <string name="undo">Annulla</string>
     <string name="confirm">Conferma</string>
-
+    <string name="contact_user">Contatta utente</string>
+    <string name="show_profile">Mostra profilo</string>
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -300,5 +301,8 @@
     <string name="showcase_more_button">ALTRO</string>
     <string name="showcase_add_favorite">Aggiunto ai Preferiti</string>
     <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
+
+    <!-- Books Cardview -->
+    <string name="authors">Autori: %1$s </string>
 
 </resources>

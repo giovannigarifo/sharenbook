@@ -220,8 +220,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             fabContactUser.setOnClickListener(view -> {
                 Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
                 chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-                userPreferences.edit().putString("recipientUsername", book.getOwner_username()).commit();
+                /*SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+                userPreferences.edit().putString("recipientUsername", book.getOwner_username()).commit();*/
                 //chatActivity.putExtra("recipientUID", book.getOwner_uid());
                 startActivity(chatActivity);
                 finish();
