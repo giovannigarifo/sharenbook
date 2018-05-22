@@ -4,7 +4,10 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +25,7 @@ public class UserProfile implements Parcelable {
     private String city;
     private String bio;
     private String picture_timestamp;
+    private List<Integer> categories;
 
     public UserProfile(){
 
@@ -36,6 +40,7 @@ public class UserProfile implements Parcelable {
         this.city = in.readString();
         this.bio = in.readString();
         this.picture_timestamp = in.readString();
+        this.categories = in.readArrayList(Integer.class.getClassLoader());
 
     }
 
@@ -54,6 +59,8 @@ public class UserProfile implements Parcelable {
         if(picture_timestamp != null)
             this.picture_timestamp = picture_timestamp;
 
+        this.categories = new ArrayList<>();
+
     }
 
 
@@ -67,6 +74,7 @@ public class UserProfile implements Parcelable {
         result.put("city",getCity());
         result.put("bio",getBio());
         result.put("picture_timestamp", getPicture_timestamp());
+        //result.put("pref_categories", getCategories());
 
         return result;
     }
@@ -100,6 +108,10 @@ public class UserProfile implements Parcelable {
         return picture_timestamp;
     }
 
+    public List<Integer> getCategories() {
+        return categories;
+    }
+
     public void setUserID(String userID) {
         this.userID = userID;
     }
@@ -128,6 +140,26 @@ public class UserProfile implements Parcelable {
         this.picture_timestamp = picture_timestamp;
     }
 
+    public void setCategories(List<Integer> categories) {
+        this.categories = categories;
+    }
+
+    public String getCategoriesAsString(String[] bookCategoriesStringArray) {
+
+        String categoriesAsString = "";
+
+        for (int i = 0; i < this.categories.size(); i++) {
+            String category = Arrays.asList(bookCategoriesStringArray).get(this.categories.get(i));
+
+            if (i == 0)
+                categoriesAsString = category;
+            else
+                categoriesAsString = categoriesAsString + ", " + category;
+        }
+
+        return categoriesAsString;
+    }
+
 
     @Override
     public int describeContents() {
@@ -144,6 +176,7 @@ public class UserProfile implements Parcelable {
         dest.writeString(getCity());
         dest.writeString(getBio());
         dest.writeString(getPicture_timestamp());
+        dest.writeList(getCategories());
 
     }
 

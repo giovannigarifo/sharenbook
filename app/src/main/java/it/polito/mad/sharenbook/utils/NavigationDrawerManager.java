@@ -9,6 +9,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.model.UserProfile;
 
@@ -90,6 +94,19 @@ public class NavigationDrawerManager {
                 userData.getString(context.getString(R.string.bio_pref), "void"),
                 userData.getString(context.getString(R.string.picture_pref), "void")
                 );
+
+        String pref_categories_String = userData.getString(context.getString(R.string.categories_pref), "void");
+        String[] categories = pref_categories_String.split(", ");
+        ArrayList<String> selectedCategories = new ArrayList<String>(Arrays.asList(categories));
+
+        String[] book_categories = context.getResources().getStringArray(R.array.book_categories);
+        List<Integer> pref_categories_Int = new ArrayList<>();
+
+        for (int i = 0; i < selectedCategories.size(); i++)
+            pref_categories_Int.add(Arrays.asList(book_categories).indexOf(selectedCategories.get(i)));
+
+
+        user.setCategories(pref_categories_Int);
 
         return user;
 

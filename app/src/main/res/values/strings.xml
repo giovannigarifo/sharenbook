@@ -11,6 +11,7 @@
     <string name="uid_pref" translatable="false">uid_pref</string>
     <string name="fullname_pref" translatable="false">fullname_pref</string>
     <string name="picture_pref" translatable="false">picture_pref</string>
+    <string name="categories_pref" translatable="false">categories_pref</string>
     <string name="default_fullname_heading">Full Name</string>
     <string name="default_username_heading">Username</string>
     <string name="default_fullname">Your full name.</string>
@@ -49,6 +50,9 @@
     <string name="confirm">Confirm</string>
     <string name="contact_user">Contact user</string>
     <string name="show_profile">Show profile</string>
+    <string name="personal_info">PERSONAL INFO</string>
+    <string name="preferred_categories">PREFERRED GENRES</string>
+    <string name="preferred_categories2">Preferred genres</string>
 
 
     <!-- ============================== -->
@@ -190,13 +194,15 @@
     <string name="bio_key">bio</string>
     <string name="email_key">email</string>
     <string name="userPicture_key">picture_uri</string>
+    <string name="categories_key" translatable="false">categories</string>
 
     <!-- copy keys for rollbacks-->
-    <string name="fullname_copy_key">fullname_copy</string>
-    <string name="username_copy_key">username_copy</string>
-    <string name="city_copy_key">city_copy</string>
-    <string name="bio_copy_key">bio_copy</string>
-    <string name="email_copy_key">email_copy</string>
+    <string name="fullname_copy_key" translatable="false">fullname_copy</string>
+    <string name="username_copy_key" translatable="false">username_copy</string>
+    <string name="city_copy_key" translatable="false">city_copy</string>
+    <string name="bio_copy_key" translatable="false">bio_copy</string>
+    <string name="email_copy_key" translatable="false">email_copy</string>
+    <string name="categories_copy_key" translatable="false">categories_copy</string>
     <string name="userPicture_copy_key">user_picture_copy</string>
     <string name="changed_photo_flag_key">changed_photo_flag</string>
 
@@ -227,6 +233,7 @@
     <string name="required_field">This field is mandatory</string>
     <string name="isbn_bad_format">ISBN not valid</string>
     <string name="field_required">Field required</string>
+    <string name="select_one_category">You must select at least one genre.</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Let\'s start!</string>

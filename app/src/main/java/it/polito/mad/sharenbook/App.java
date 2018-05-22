@@ -1,6 +1,7 @@
 package it.polito.mad.sharenbook;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
@@ -16,10 +17,13 @@ import it.polito.mad.sharenbook.utils.NotificationOpenedHandler;
 
 public class App extends MultiDexApplication {
 
+    private static Context mContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
         initOneSignal();
+        mContext = this;
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.setPersistenceEnabled(true);           //set Persistance only one time at app startup
@@ -32,5 +36,10 @@ public class App extends MultiDexApplication {
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
     }
+
+    public static Context getContext(){
+        return mContext;
+    }
+
 
 }

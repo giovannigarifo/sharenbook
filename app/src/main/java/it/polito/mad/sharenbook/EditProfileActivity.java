@@ -34,18 +34,21 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 
 public class EditProfileActivity extends AppCompatActivity {
@@ -55,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     //views
     private EditText et_userFullName, et_userNickName, et_userCity, et_userBio, et_userEmail;
-    private TextView tv_userNickName;
+    private TextView tv_userNickName, tv_categories;
     private FloatingActionButton save_button;
     private FloatingActionButton fab_editPhoto;
 
@@ -94,6 +97,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private DatabaseReference usernamesReference;
     private StorageReference storageReference;
 
+    private ExpandableHeightGridView fragment_sf_ehgv_categories;
+    private MultipleCheckableCheckboxAdapter categoryAdapter;
+
     // ImageUtils for image handling
     private ImageUtils imageUtils;
 
@@ -125,6 +131,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             creatingProfile = true;
             completeProfileAlert.show();
+
         } else {    //User already created the profile
             et_userNickName.setVisibility(View.GONE);
             tv_userNickName.setVisibility(View.GONE);
@@ -153,6 +160,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Initialize image class
         imageUtils = new ImageUtils(this);
+
+        // Book categories expandable height grid view
+        String[] book_categories = getResources().getStringArray(R.array.book_categories);
+        categoryAdapter = new MultipleCheckableCheckboxAdapter(EditProfileActivity.this, R.layout.item_checkbox, book_categories);
+        fragment_sf_ehgv_categories.setAdapter(categoryAdapter);
+        fragment_sf_ehgv_categories.setNumColumns(2);
+        fragment_sf_ehgv_categories.setExpanded(true);
 
         // Methods that implements the final part of onCreate
         if ((savedInstanceState == null) || (savedInstanceState.isEmpty())) { //First time make copies and visualize stable profile
@@ -236,6 +250,16 @@ public class EditProfileActivity extends AppCompatActivity {
         writeProfile_copy.putString(getString(R.string.email_copy_key), email).commit();
 
 
+        String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+        if(user.getCategories() != null && user.getCategories().size() != 0) {
+
+            for(Integer catNumber : user.getCategories()){
+                categoryAdapter.setCheckboxCheck(Arrays.asList(bookCategories).get(catNumber));
+            }
+
+            writeProfile_copy.putString(getString(R.string.categories_copy_key), user.getCategoriesAsString(bookCategories)).commit();
+        }
+
         /* Edit photo section */
         userPicture = findViewById(R.id.userPicture_edit);
 
@@ -284,6 +308,21 @@ public class EditProfileActivity extends AppCompatActivity {
         else {
             et_userBio.setText(actualBio);
             et_userBio.setTextColor(Color.GRAY);
+        }
+
+        /* Restore categories selection from shared preferences */
+        String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+        String pref_categories = editedProfile_copy.getString(getString(R.string.categories_copy_key), "void");
+        if(!pref_categories.equals("void")) {
+
+            String[] categories = pref_categories.split(", ");
+            ArrayList<String> selectedCategories = new ArrayList<String>(Arrays.asList(categories));
+
+            String[] book_categories = getApplicationContext().getResources().getStringArray(R.array.book_categories);
+
+            for (int i = 0; i < selectedCategories.size(); i++)
+                categoryAdapter.setCheckboxCheck(Arrays.asList(bookCategories).get(Arrays.asList(book_categories).indexOf(selectedCategories.get(i))));
+
         }
 
         et_userEmail.setHint(editedProfile_copy.getString(getString(R.string.email_copy_key), default_email));
@@ -425,6 +464,17 @@ public class EditProfileActivity extends AppCompatActivity {
             user.setBio(et_userBio.getText().toString());
         }
 
+        /* get preferred categories */
+        ArrayList<String> selectedCategories = categoryAdapter.getSelectedStrings();
+        ArrayList<Integer> selectedCategoriesAsInt = new ArrayList<>();
+
+        String[] bookCategories = getResources().getStringArray(R.array.book_categories); //retrieve the array of all available categories
+        for (int i = 0; i < selectedCategories.size(); i++)
+            selectedCategoriesAsInt.add(Arrays.asList(bookCategories).indexOf(selectedCategories.get(i))); //retrieve index of the categories
+
+        userData.put(getString(R.string.categories_key), selectedCategoriesAsInt);
+        user.setCategories(selectedCategoriesAsInt);
+
         if(creatingProfile) {
 
             HashMap<String, Object> unameEntry = new HashMap<>();
@@ -555,7 +605,19 @@ public class EditProfileActivity extends AppCompatActivity {
         } else if (creatingProfile && et_userNickName.getText().toString().isEmpty()) {
             et_userNickName.setError(getString(R.string.required_field));
             isValid = false;
+        } else {
+            et_userNickName.setError(null);
         }
+
+        /* Validate categories */
+        if (categoryAdapter.getSelectedStrings().size() == 0) {
+            tv_categories.requestFocus();
+            tv_categories.setError(getString(R.string.select_one_category));
+            isValid = false;
+        } else {
+            tv_categories.setError(null);
+        }
+
 
         return isValid;
     }
@@ -583,6 +645,7 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key), user);
 
+            /* Update local data */
             write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
             write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
             write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
@@ -590,6 +653,8 @@ public class EditProfileActivity extends AppCompatActivity {
             write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
             write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
             write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
+            String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+            write_userProfileData.putString(getString(R.string.categories_pref), user.getCategoriesAsString(bookCategories)).commit();
 
             if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                 setResult(RESULT_OK, i);
@@ -679,7 +744,9 @@ public class EditProfileActivity extends AppCompatActivity {
         et_userCity = findViewById(R.id.et_userCityContent_edit);
         et_userBio = findViewById(R.id.et_userBioContent_edit);
         et_userEmail = findViewById(R.id.et_emailContent_edit);
+        tv_categories = findViewById(R.id.tv_categories);
         tv_userNickName = findViewById(R.id.tv_userNameHeading_edit);
+        fragment_sf_ehgv_categories = findViewById(R.id.ehgv_categories);
 
     }
 
@@ -716,6 +783,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         user.setPicture_timestamp(String.valueOf(picSignature));
 
+                        /* Update local data */
                         write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
                         write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
                         write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
@@ -723,6 +791,8 @@ public class EditProfileActivity extends AppCompatActivity {
                         write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
                         write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
                         write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
+                        String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+                        write_userProfileData.putString(getString(R.string.categories_pref), user.getCategoriesAsString(bookCategories)).commit();
 
                         Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);

@@ -152,7 +152,24 @@
                     style="@style/TextViewContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLength="150" />
+                    android:maxLines="4" />
+
+                <TextView
+                    android:id="@+id/tv_categories"
+                    style="@style/TextViewHeading"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/preferred_categories2"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                     />
+
+                <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+                    android:id="@+id/ehgv_categories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="16dp"/>
 
 
             </LinearLayout>
@@ -160,17 +177,6 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <!-- <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/darkGrey"
-        app:itemIconTint="@drawable/nav_bar_selector"
-        app:itemTextColor="@drawable/nav_bar_selector"
-        app:itemBackground="@drawable/nav_bar_bg_selector"
-        app:menu="@menu/navigation" />-->
 
     <!-- Save Floating Action Button-->
     <android.support.design.widget.FloatingActionButton

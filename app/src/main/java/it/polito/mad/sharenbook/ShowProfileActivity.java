@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,10 +11,18 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +32,9 @@ import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.Arrays;
+
+import it.polito.mad.sharenbook.adapters.CategoriesAdapter;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.model.UserProfile;
@@ -44,6 +56,10 @@ public class ShowProfileActivity  extends AppCompatActivity
     private CircularImageView userPicture;
 
     private String searchState;
+
+    private CategoriesAdapter categoriesAdapter;
+
+    private it.polito.mad.sharenbook.views.ExpandableHeightGridView grid;
 
     /**
      * default profile values
@@ -72,7 +88,6 @@ public class ShowProfileActivity  extends AppCompatActivity
     private TextView drawer_fullname;
     private TextView drawer_email;
     private CircularImageView drawer_userPicture;
-
 
     /**
      * onCreate callback
@@ -128,8 +143,23 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         }
 
-        /* set drawer **/
+        categoriesAdapter = new CategoriesAdapter(ShowProfileActivity.this);
+        grid.setAdapter(categoriesAdapter);
 
+       /* float scalefactor = getResources().getDisplayMetrics().density * 100;
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int columns = (int) ((float) metrics.densityDpi / (float) scalefactor);
+        Log.d("columns", "num: "+columns);*/
+        /*grid.setNumColumns(3);
+        grid.setVerticalSpacing(50);
+        grid.setHorizontalSpacing(80);*/
+        grid.setExpanded(true);
+
+        /* Add preferred categories */
+        setPrefCategories();
+
+        /* set drawer **/
         setDrawer();
 
         /*
@@ -207,6 +237,9 @@ public class ShowProfileActivity  extends AppCompatActivity
                 Bundle userData = data.getExtras();
                 user = userData.getParcelable(getString(R.string.user_profile_data_key));
 
+                /* Update preferred categories */
+                categoriesAdapter.clearCategories();
+                setPrefCategories();
 
                 /* update user info in nav drawer */
                 NavigationDrawerManager.setDrawerViews(getApplicationContext(),
@@ -261,6 +294,14 @@ public class ShowProfileActivity  extends AppCompatActivity
         startActivity(i);
     }
 
+    private void setPrefCategories(){
+
+        String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+        for(Integer cat : user.getCategories()) {
+            categoriesAdapter.addCategory(Arrays.asList(bookCategories).get(cat));
+        }
+
+    }
 
     private void setDrawer(){
 
@@ -292,11 +333,13 @@ public class ShowProfileActivity  extends AppCompatActivity
         //get views
         tv_userFullName = findViewById(R.id.tv_userFullName);
         tv_userNickName = findViewById(R.id.tv_userNickName);
-        tv_userRatingInfo = findViewById(R.id.tv_userRatingInfo);
+        //tv_userRatingInfo = findViewById(R.id.tv_userRatingInfo);
 
         tv_userCityContent = findViewById(R.id.tv_userCityContent);
         tv_userBioContent = findViewById(R.id.tv_userBioContent);
         tv_userEmailContent = findViewById(R.id.tv_userEmailContent);
+
+        grid = findViewById(R.id.gridview);
 
         // set views text
         UserInterface.TextViewFontResize(user.getFullname().length(), getWindowManager(), tv_userFullName);
@@ -389,4 +432,31 @@ public class ShowProfileActivity  extends AppCompatActivity
         }
 
     }
+
+
+    private void refreshGridView() {
+
+        int gridViewEntrySize = getResources().getDimensionPixelSize(R.dimen.grip_view_entry_size);
+        int gridViewSpacing = getResources().getDimensionPixelSize(R.dimen.grip_view_spacing);
+
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        int numColumns = (display.getWidth() - gridViewSpacing) / (gridViewEntrySize + gridViewSpacing);
+
+        grid.setNumColumns(numColumns);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        refreshGridView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshGridView();
+    }
+
 }

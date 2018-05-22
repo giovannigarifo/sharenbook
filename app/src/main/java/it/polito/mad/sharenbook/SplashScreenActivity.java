@@ -307,7 +307,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void goShowCase(){
 
-        /*First take the profile picture signature from the storage*/
+        /* Take the profile picture signature from the storage */
         storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference profile_pic_ref = storageReference.child("images/"+user.getUsername()+".jpg");
 
@@ -325,6 +325,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void saveDataAndShowCase(){
+        /* Save user data in shared preferences */
         write_userProfileData.putString(getString(R.string.username_pref), user.getUsername()).commit();
         write_userProfileData.putString(getString(R.string.uid_pref), user.getUserID()).commit();
         write_userProfileData.putString(getString(R.string.bio_pref), user.getBio()).commit();
@@ -332,6 +333,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         write_userProfileData.putString(getString(R.string.email_pref), user.getEmail()).commit();
         write_userProfileData.putString(getString(R.string.fullname_pref), user.getFullname()).commit();
         write_userProfileData.putString(getString(R.string.picture_pref), user.getPicture_timestamp()).commit();
+        String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+        write_userProfileData.putString(getString(R.string.categories_pref), user.getCategoriesAsString(bookCategories)).commit();
 
         NavigationDrawerManager.setNavigationDrawerProfileByUser(user);  //init NavigationDrawerProfile
         Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);

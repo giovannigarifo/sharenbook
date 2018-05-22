@@ -17,4 +17,7 @@
     <!-- Card specific dimension  -->
     <dimen name="card_corner_radius">0dp</dimen>
 
+    <dimen name="grip_view_entry_size">100dp</dimen>
+    <dimen name="grip_view_spacing">10dp</dimen>
+
 </resources>

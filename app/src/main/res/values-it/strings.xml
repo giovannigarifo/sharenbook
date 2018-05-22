@@ -34,6 +34,8 @@
     <string name="confirm">Conferma</string>
     <string name="contact_user">Contatta utente</string>
     <string name="show_profile">Mostra profilo</string>
+    <string name="personal_info">INFORMAZIONI PERSONALI</string>
+    <string name="preferred_categories">GENERI PREFERITI</string>
 
     <!-- navigation bar -->
     <string name="title_profile">Profilo</string>
@@ -89,6 +91,7 @@
     <string name="required_field">Questo campo è obbligatorio!</string>
     <string name="isbn_bad_format">ISBN non valido</string>
     <string name="field_required">Campo richiesto</string>
+    <string name="select_one_category">Devi selezionare almeno un genere.</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Cominciamo! :-)</string>
@@ -308,5 +311,6 @@
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>
     <string name="desc_img_book">Copertina del libro</string>
+    <string name="preferred_categories2">Generi preferiti</string>
 
 </resources>
