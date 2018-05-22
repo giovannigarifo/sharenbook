@@ -41,6 +41,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -304,48 +305,51 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private void loadFavoriteBooksRecylerView() {
 
         // Load Favorite Books RV
-        favoritesDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        favoritesDb.orderByValue().limitToLast(20)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                List<Book> bookList = new ArrayList<>();
-                favoritesIdList = new HashSet<>();
-                final long bookCount = dataSnapshot.getChildrenCount();
+                        List<Book> bookList = new ArrayList<>();
+                        favoritesIdList = new HashSet<>();
+                        final long bookCount = dataSnapshot.getChildrenCount();
 
-                if (bookCount == 0) {
-                    findViewById(R.id.showcase_cw_favorites).setVisibility(View.GONE);
-                    return;
-                }
-
-                // Read books reference
-                for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
-                    String bookId = bookIdSnapshot.getKey();
-                    favoritesIdList.add(bookId);
-
-                    booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Book book = dataSnapshot.getValue(Book.class);
-                            book.setBookId(dataSnapshot.getKey());
-                            bookList.add(0, book);
-
-                            if (bookList.size() == bookCount) {
-                                // Set RV adapter
-                                MyAdapter favoriteBooksAdapter = new MyAdapter(bookList);
-                                favoriteBooksRV.setAdapter(favoriteBooksAdapter);
-                                findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
-                            }
+                        if (bookCount == 0) {
+                            findViewById(R.id.showcase_cw_favorites).setVisibility(View.GONE);
+                            return;
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {}
-                    });
-                }
-            }
+                        // Read books reference
+                        for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
+                            String bookId = bookIdSnapshot.getKey();
+                            favoritesIdList.add(bookId);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
+                            booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Book book = dataSnapshot.getValue(Book.class);
+                                    book.setBookId(dataSnapshot.getKey());
+                                    bookList.add(0, book);
+
+                                    if (bookList.size() == bookCount) {
+                                        // Set RV adapter
+                                        MyAdapter favoriteBooksAdapter = new MyAdapter(bookList);
+                                        favoriteBooksRV.setAdapter(favoriteBooksAdapter);
+                                        findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
         // Set MORE button listener
         findViewById(R.id.favorites_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
@@ -369,10 +373,12 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             }
 
             @Override
-            public void onKeyExited(String key) {}
+            public void onKeyExited(String key) {
+            }
 
             @Override
-            public void onKeyMoved(String key, GeoLocation location) {}
+            public void onKeyMoved(String key, GeoLocation location) {
+            }
 
             @Override
             public void onGeoQueryReady() {
@@ -380,7 +386,8 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             }
 
             @Override
-            public void onGeoQueryError(DatabaseError error) {}
+            public void onGeoQueryError(DatabaseError error) {
+            }
         });
 
         // Set MORE button listener
@@ -421,7 +428,8 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {}
+                public void onCancelled(DatabaseError databaseError) {
+                }
             });
         }
     }
@@ -532,19 +540,29 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 popup.inflate(R.menu.showcase_rv_options_menu);
                 popup.setOnMenuItemClickListener(item -> {
 
+                    DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
+                            .getReference(getString(R.string.users_key))
+                            .child(user_id)
+                            .child(getString(R.string.user_favorites_key))
+                            .child(book.getBookId());
+
                     switch (item.getItemId()) {
 
                         case R.id.add_to_favorites:
-                            DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
-                                    .getReference(getString(R.string.users_key))
-                                    .child(user_id)
-                                    .child(getString(R.string.user_favorites_key))
-                                    .child(book.getBookId());
-
-                            favoriteBooksRef.setValue(true, (databaseError, databaseReference) -> {
+                            favoriteBooksRef.setValue(ServerValue.TIMESTAMP, (databaseError, databaseReference) -> {
                                 if (databaseError == null) {
                                     loadFavoriteBooksRecylerView();
                                     Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
+                                } else
+                                    Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                            });
+                            return true;
+
+                        case R.id.del_from_favorites:
+                            favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
+                                if (databaseError == null) {
+                                    loadFavoriteBooksRecylerView();
+                                    Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
                                 } else
                                     Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
                             });
@@ -564,9 +582,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 // Disable contact owner menu entry if is an user's book
                 if (book.getOwner_uid().equals(user_id)) {
                     popup.getMenu().getItem(0).setEnabled(false);
-                    popup.getMenu().getItem(1).setEnabled(false);
+                    popup.getMenu().getItem(2).setEnabled(false);
                 } else if (favoritesIdList.contains(book.getBookId())) {
-                    popup.getMenu().getItem(0).setEnabled(false);
+                    popup.getMenu().getItem(0).setVisible(false);
+                    popup.getMenu().getItem(1).setVisible(true);
                 }
 
                 popup.show();

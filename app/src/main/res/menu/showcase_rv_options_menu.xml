@@ -4,6 +4,10 @@
     <item android:id="@+id/add_to_favorites"
         android:title="@string/add_to_favorites" />
 
+    <item android:id="@+id/del_from_favorites"
+        android:title="@string/del_from_favorites"
+        android:visible="false" />
+
     <item android:id="@+id/contact_owner"
         android:title="@string/contact_owner" />
 
