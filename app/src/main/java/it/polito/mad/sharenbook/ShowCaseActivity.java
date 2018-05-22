@@ -3,9 +3,11 @@ package it.polito.mad.sharenbook;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,10 +20,12 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +48,7 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -72,6 +77,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private RecyclerView closeBooksRV;
 
     private String user_id;
+    private HashSet<String> favoritesIdList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -303,6 +309,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 List<Book> bookList = new ArrayList<>();
+                favoritesIdList = new HashSet<>();
                 final long bookCount = dataSnapshot.getChildrenCount();
 
                 if (bookCount == 0) {
@@ -313,6 +320,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 // Read books reference
                 for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
                     String bookId = bookIdSnapshot.getKey();
+                    favoritesIdList.add(bookId);
 
                     booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -444,17 +452,19 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // you provide access to all the views for a data item in a view holder
         class ViewHolder extends RecyclerView.ViewHolder {
             // each data item is just a string in this case
-            LinearLayout mLayout;
+            ConstraintLayout mLayout;
             ImageView bookPhoto;
             TextView bookTitle;
             TextView bookDistance;
+            ImageView bookOptions;
 
-            ViewHolder(LinearLayout layout) {
+            ViewHolder(ConstraintLayout layout) {
                 super(layout);
                 mLayout = layout;
                 bookPhoto = layout.findViewById(R.id.showcase_rv_book_photo);
                 bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
                 bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
+                bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
             }
         }
 
@@ -470,7 +480,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         @Override
         public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             // create a new view
-            LinearLayout layout = (LinearLayout) LayoutInflater.from(parent.getContext())
+            ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_book_showcase_rv, parent, false);
 
             return new ViewHolder(layout);
@@ -513,6 +523,53 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 Intent i = new Intent(mActivity, ShowBookActivity.class);
                 i.putExtra("book", book);
                 mActivity.startActivity(i);
+            });
+
+            // Setup options menu
+            holder.bookOptions.setOnClickListener(v -> {
+
+                final PopupMenu popup = new PopupMenu(mActivity, v);
+                popup.inflate(R.menu.showcase_rv_options_menu);
+                popup.setOnMenuItemClickListener(item -> {
+
+                    switch (item.getItemId()) {
+
+                        case R.id.add_to_favorites:
+                            DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
+                                    .getReference(getString(R.string.users_key))
+                                    .child(user_id)
+                                    .child(getString(R.string.user_favorites_key))
+                                    .child(book.getBookId());
+
+                            favoriteBooksRef.setValue(true, (databaseError, databaseReference) -> {
+                                if (databaseError == null) {
+                                    loadFavoriteBooksRecylerView();
+                                    Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
+                                } else
+                                    Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                            });
+                            return true;
+
+                        case R.id.contact_owner:
+                            Intent chatActivity = new Intent(mActivity, ChatActivity.class);
+                            chatActivity.putExtra("recipientUsername", book.getOwner_username());
+                            mActivity.startActivity(chatActivity);
+                            return true;
+
+                        default:
+                            return false;
+                    }
+                });
+
+                // Disable contact owner menu entry if is an user's book
+                if (book.getOwner_uid().equals(user_id)) {
+                    popup.getMenu().getItem(0).setEnabled(false);
+                    popup.getMenu().getItem(1).setEnabled(false);
+                } else if (favoritesIdList.contains(book.getBookId())) {
+                    popup.getMenu().getItem(0).setEnabled(false);
+                }
+
+                popup.show();
             });
         }
 

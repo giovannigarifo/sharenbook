@@ -301,6 +301,8 @@
     <string name="showcase_more_button">ALTRO</string>
     <string name="showcase_add_favorite">Aggiunto ai Preferiti</string>
     <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
+    <string name="add_to_favorites">Aggiungi ai preferiti</string>
+    <string name="contact_owner">Contatta il proprietario</string>
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>

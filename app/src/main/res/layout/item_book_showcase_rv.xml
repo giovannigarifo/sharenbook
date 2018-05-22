@@ -1,37 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
-    android:layout_marginRight="8dp">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/showcase_rv_book_photo"
-        android:layout_width="110dp"
-        android:layout_height="165dp"
-        android:layout_marginBottom="6dp" />
+        android:layout_width="112dp"
+        android:layout_height="168dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/showcase_rv_book_title"
-        android:layout_width="110dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
         android:lines="2"
         android:maxLines="2"
         android:ellipsize="end"
         android:textColor="@color/primaryText"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/showcase_rv_book_options"
+        app:layout_constraintRight_toLeftOf="@id/showcase_rv_book_options" />
+
+    <ImageView
+        android:id="@+id/showcase_rv_book_options"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="22dp"
+        android:layout_height="36dp"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="6dp"
+        android:src="@drawable/ic_more_vert_black_20dp"
+        android:scaleType="center"
+        android:tint="@color/secondaryText"
+        app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/showcase_rv_book_location"
-        android:visibility="gone"
-        android:layout_width="110dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="2dp"
-        android:textSize="12sp"
-        android:drawableStart="@drawable/ic_location_black_12dp"
         android:drawableLeft="@drawable/ic_location_black_12dp"
-        android:drawablePadding="2dp" />
+        android:drawablePadding="2dp"
+        android:drawableStart="@drawable/ic_location_black_12dp"
+        android:paddingLeft="-2dp"
+        android:paddingStart="-2dp"
+        android:textSize="12sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_title" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

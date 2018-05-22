@@ -30,7 +30,7 @@
                 app:mt_textCursorTint="@android:color/darker_gray"
                 app:mt_maxSuggestionsCount="0"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_margin="8dp" />
 
         </android.support.design.widget.AppBarLayout>
@@ -79,15 +79,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="12dp"
-                            android:paddingLeft="12dp"
-                            android:paddingEnd="12dp"
-                            android:paddingRight="12dp">
+                            android:paddingBottom="12dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="20sp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginLeft="12dp"
                                 android:textColor="@color/primaryText"
                                 android:textSize="16sp"
                                 android:fontFamily="@font/roboto_medium"
@@ -99,8 +97,11 @@
                             <TextView
                                 android:id="@+id/last_more_button"
                                 android:clickable="true"
+                                android:focusable="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="22sp"
+                                android:layout_marginEnd="12dp"
+                                android:layout_marginRight="12dp"
                                 android:gravity="center"
                                 android:text="@string/showcase_more_button"
                                 android:fontFamily="@font/roboto_medium"
@@ -114,7 +115,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:paddingRight="-8dp"
+                                android:paddingStart="7dp"
+                                android:paddingLeft="7dp"
+                                android:paddingEnd="7dp"
+                                android:paddingRight="7dp"
                                 android:clipToPadding="false"
                                 app:layout_constraintTop_toBottomOf="@id/last_more_button" />
 
@@ -138,15 +142,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="12dp"
-                            android:paddingLeft="12dp"
-                            android:paddingEnd="12dp"
-                            android:paddingRight="12dp">
+                            android:paddingBottom="12dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="20sp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginLeft="12dp"
                                 android:textColor="@color/primaryText"
                                 android:textSize="16sp"
                                 android:fontFamily="@font/roboto_medium"
@@ -158,8 +160,11 @@
                             <TextView
                                 android:id="@+id/favorites_more_button"
                                 android:clickable="true"
+                                android:focusable="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="22sp"
+                                android:layout_marginEnd="12dp"
+                                android:layout_marginRight="12dp"
                                 android:gravity="center"
                                 android:text="@string/showcase_more_button"
                                 android:fontFamily="@font/roboto_medium"
@@ -173,7 +178,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:paddingRight="-8dp"
+                                android:paddingStart="7dp"
+                                android:paddingLeft="7dp"
+                                android:paddingEnd="7dp"
+                                android:paddingRight="7dp"
                                 android:clipToPadding="false"
                                 app:layout_constraintTop_toBottomOf="@id/favorites_more_button" />
 
@@ -197,15 +205,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="12dp"
-                            android:paddingLeft="12dp"
-                            android:paddingEnd="12dp"
-                            android:paddingRight="12dp">
+                            android:paddingBottom="12dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="20sp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginLeft="12dp"
                                 android:textColor="@color/primaryText"
                                 android:textSize="16sp"
                                 android:fontFamily="@font/roboto_medium"
@@ -217,8 +223,11 @@
                             <TextView
                                 android:id="@+id/lucky_more_button"
                                 android:clickable="true"
+                                android:focusable="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="22sp"
+                                android:layout_marginEnd="12dp"
+                                android:layout_marginRight="12dp"
                                 android:gravity="center"
                                 android:text="@string/showcase_more_button"
                                 android:fontFamily="@font/roboto_medium"
@@ -232,7 +241,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:paddingRight="-8dp"
+                                android:paddingStart="7dp"
+                                android:paddingLeft="7dp"
+                                android:paddingEnd="7dp"
+                                android:paddingRight="7dp"
                                 android:clipToPadding="false"
                                 app:layout_constraintTop_toBottomOf="@id/lucky_more_button" />
 
@@ -256,15 +268,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="12dp"
-                            android:paddingLeft="12dp"
-                            android:paddingEnd="12dp"
-                            android:paddingRight="12dp">
+                            android:paddingBottom="12dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="20sp"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginLeft="12dp"
                                 android:textColor="@color/primaryText"
                                 android:textSize="16sp"
                                 android:fontFamily="@font/roboto_medium"
@@ -276,8 +286,11 @@
                             <TextView
                                 android:id="@+id/closebooks_more_button"
                                 android:clickable="true"
+                                android:focusable="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="22sp"
+                                android:layout_marginEnd="12dp"
+                                android:layout_marginRight="12dp"
                                 android:gravity="center"
                                 android:text="@string/showcase_more_button"
                                 android:fontFamily="@font/roboto_medium"
@@ -291,7 +304,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:paddingRight="-8dp"
+                                android:paddingStart="7dp"
+                                android:paddingLeft="7dp"
+                                android:paddingEnd="7dp"
+                                android:paddingRight="7dp"
                                 android:clipToPadding="false"
                                 app:layout_constraintTop_toBottomOf="@id/closebooks_more_button" />
 
