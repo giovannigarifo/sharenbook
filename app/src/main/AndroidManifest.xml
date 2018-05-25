@@ -33,9 +33,6 @@
             android:value="FFC107" />
 
         <activity
-            android:name=".ShowProfileActivity"
-            android:launchMode="singleTask" />
-        <activity
             android:name=".EditProfileActivity"
             android:launchMode="singleTask" />
         <activity

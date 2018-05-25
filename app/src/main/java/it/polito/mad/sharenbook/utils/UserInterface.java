@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -18,10 +17,8 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -29,9 +26,7 @@ import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.MyChatsActivity;
 import it.polito.mad.sharenbook.R;
-import it.polito.mad.sharenbook.SearchActivity;
 import it.polito.mad.sharenbook.ShowCaseActivity;
-import it.polito.mad.sharenbook.ShowProfileActivity;
 
 public class UserInterface {
 
