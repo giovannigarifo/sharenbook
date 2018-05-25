@@ -36,7 +36,7 @@
     <string name="unknown_error">Unknown Error!</string>
     <string name="internal_error">Server Database Error!</string>
     <string name="welcome_msg">Welcome to Share\'nBook!</string>
-    <string name="search_hint">Search a book or a user…</string>
+    <string name="search_hint">Search a book…</string>
     <string name="log_out">Logged Out!</string>
     <string name="loading_dialog">Uploading..</string>
     <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
@@ -315,7 +315,7 @@
     <string name="showbook_toolbar_title">Book Details</string>
 
     <!-- MyChats -->
-    <string name="mychats_title" >My chats</string>
+    <string name="mychats_title">My chats</string>
     <string name="navigation_mychats">Messages</string>
     <string name="no_chats_alert_title">No chats yet!</string>
     <string name="no_chats_suggestion">We suggest you to search for a book and contact the owner! Do you want to do it now?</string>
@@ -336,5 +336,11 @@
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>
     <string name="desc_img_book">Book image</string>
+
+    <string name="title_activity_tabbed_show_profile">TabbedShowProfileActivity</string>
+    <string name="tab_profile_info">Profile info</string>
+    <string name="tab_profile_reviews">Reviews</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 </resources>

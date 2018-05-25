@@ -642,7 +642,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             Toast.makeText(getApplicationContext(), getString(R.string.profile_saved), Toast.LENGTH_LONG).show();
 
-            Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
             i.putExtra(getString(R.string.user_profile_data_key), user);
 
             /* Update local data */
@@ -794,7 +794,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         String[] bookCategories = getResources().getStringArray(R.array.book_categories);
                         write_userProfileData.putString(getString(R.string.categories_pref), user.getCategoriesAsString(bookCategories)).commit();
 
-                        Intent i = new Intent(getApplicationContext(), ShowProfileActivity.class);
+                        Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);
                         if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                             setResult(RESULT_OK, i);

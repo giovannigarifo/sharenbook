@@ -16,13 +16,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -145,15 +141,6 @@ public class ShowProfileActivity  extends AppCompatActivity
 
         categoriesAdapter = new CategoriesAdapter(ShowProfileActivity.this);
         grid.setAdapter(categoriesAdapter);
-
-       /* float scalefactor = getResources().getDisplayMetrics().density * 100;
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int columns = (int) ((float) metrics.densityDpi / (float) scalefactor);
-        Log.d("columns", "num: "+columns);*/
-        /*grid.setNumColumns(3);
-        grid.setVerticalSpacing(50);
-        grid.setHorizontalSpacing(80);*/
         grid.setExpanded(true);
 
         /* Add preferred categories */
