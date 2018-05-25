@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -13,19 +16,24 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.model.UserProfile;
+import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class TabbedShowProfileActivity extends AppCompatActivity
-        implements MaterialSearchBar.OnSearchActionListener{
+        implements MaterialSearchBar.OnSearchActionListener,NavigationView.OnNavigationItemSelectedListener{
 
     /* Views */
     private BottomNavigationView navBar;
@@ -47,6 +55,14 @@ public class TabbedShowProfileActivity extends AppCompatActivity
     /* Other vars */
     private static final int EDIT_RETURN_VALUE = 1;
     private String searchState;
+
+    /* Navigation Drawer */
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+    private View nav;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+    private CircularImageView drawer_userPicture;
 
 
     @Override
@@ -96,6 +112,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
         UserInterface.setupNavigationBar(this, 0, true);
 
         searchStatusCheck(data);
+        setDrawer();
 
     }
 
@@ -276,7 +293,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
     public void onButtonClicked(int buttonCode) {
         switch (buttonCode){
             case MaterialSearchBar.BUTTON_NAVIGATION:
-                //drawer.openDrawer(Gravity.START);
+                drawer.openDrawer(Gravity.START);
                 break;
             case MaterialSearchBar.BUTTON_SPEECH:
                 break;
@@ -304,4 +321,80 @@ public class TabbedShowProfileActivity extends AppCompatActivity
         startActivity(i);
     }
 
+    /** FUNCTIONS FOR NAVIGATION DRAWER*/
+    private void setDrawer(){
+
+        /* DRAWER AND SEARCHBAR */
+
+        drawer =  findViewById(R.id.tabbed_show_profile_drawer_layout);
+        navigationView =  findViewById(R.id.tabbed_show_profile_nav_view);
+        searchBar =  findViewById(R.id.searchBar);
+
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+        navigationView.setNavigationItemSelectedListener(TabbedShowProfileActivity.this);
+        searchBar.setOnSearchActionListener(TabbedShowProfileActivity.this);
+
+        nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
+
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.tabbed_show_profile_drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+
+        } else {
+            super.onBackPressed();
+
+        }
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+
+    }
+
+
+    /**
+     * Navigation Drawer Listeners
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.drawer_navigation_shareBook) {
+
+            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
+            startActivity(i);
+        } else if (id == R.id.drawer_navigation_myBook) {
+
+            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
+            startActivity(my_books);
+        } else if (id == R.id.drawer_navigation_logout) {
+
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
+                        startActivity(i);
+                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        }
+
+        DrawerLayout drawer = findViewById(R.id.tabbed_show_profile_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navigationView.setCheckedItem(R.id.drawer_navigation_profile);
+    }
 }
