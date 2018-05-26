@@ -17,7 +17,6 @@ import java.util.Map;
 public class UserProfile implements Parcelable {
 
 
-
     private String userID;
     private String fullname;
     private String username;
@@ -27,11 +26,11 @@ public class UserProfile implements Parcelable {
     private String picture_timestamp;
     private List<Integer> categories;
 
-    public UserProfile(){
+    public UserProfile() {
 
     }
 
-    public UserProfile (Parcel in){
+    public UserProfile(Parcel in) {
 
         this.userID = in.readString();
         this.fullname = in.readString();
@@ -47,7 +46,7 @@ public class UserProfile implements Parcelable {
     /**
      * UserProfile Complete Constructor
      */
-    public UserProfile (String userID, String fullname, String username, String email, String city, String bio, String picture_timestamp){
+    public UserProfile(String userID, String fullname, String username, String email, String city, String bio, String picture_timestamp) {
 
         this.userID = userID;
         this.fullname = fullname;
@@ -56,7 +55,7 @@ public class UserProfile implements Parcelable {
         this.city = city;
         this.bio = bio;
 
-        if(picture_timestamp != null)
+        if (picture_timestamp != null)
             this.picture_timestamp = picture_timestamp;
 
         this.categories = new ArrayList<>();
@@ -64,15 +63,15 @@ public class UserProfile implements Parcelable {
     }
 
 
-    public Map<String,Object> toMap(){
-        Map<String,Object> result = new HashMap<String,Object>();
+    public Map<String, Object> toMap() {
+        Map<String, Object> result = new HashMap<String, Object>();
 
-        result.put("userID",getUserID());
-        result.put("fullname",getFullname());
-        result.put("username",getUsername());
-        result.put("email",getEmail());
-        result.put("city",getCity());
-        result.put("bio",getBio());
+        result.put("userID", getUserID());
+        result.put("fullname", getFullname());
+        result.put("username", getUsername());
+        result.put("email", getEmail());
+        result.put("city", getCity());
+        result.put("bio", getBio());
         result.put("picture_timestamp", getPicture_timestamp());
         //result.put("pref_categories", getCategories());
 
@@ -148,14 +147,15 @@ public class UserProfile implements Parcelable {
 
         String categoriesAsString = "";
 
-        for (int i = 0; i < this.categories.size(); i++) {
-            String category = Arrays.asList(bookCategoriesStringArray).get(this.categories.get(i));
+        if (this.categories != null)
+            for (int i = 0; i < this.categories.size(); i++) {
+                String category = Arrays.asList(bookCategoriesStringArray).get(this.categories.get(i));
 
-            if (i == 0)
-                categoriesAsString = category;
-            else
-                categoriesAsString = categoriesAsString + ", " + category;
-        }
+                if (i == 0)
+                    categoriesAsString = category;
+                else
+                    categoriesAsString = categoriesAsString + ", " + category;
+            }
 
         return categoriesAsString;
     }
