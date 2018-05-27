@@ -726,11 +726,11 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
         if (parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-            ll = (LinearLayout) li.inflate(R.layout.item_search_result_land, parent, false);
+            ll = (LinearLayout) li.inflate(R.layout.book_item, parent, false);
 
         } else if (parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-            ll = (LinearLayout) li.inflate(R.layout.item_search_result, parent, false);
+            ll = (LinearLayout) li.inflate(R.layout.book_item, parent, false);
         }
 
         return new SearchBookViewHolder(ll);
@@ -749,7 +749,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         holder.item_search_result.setVisibility(View.INVISIBLE);
 
         //photo
-        ImageView photo = holder.item_search_result.findViewById(R.id.item_searchresult_photo);
+        ImageView photo = holder.item_search_result.findViewById(R.id.book_photo);
         photo.setImageResource(R.drawable.book_photo_placeholder);
 
         Book book = searchResult.get(position);
@@ -763,19 +763,19 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
                 .into(photo);
 
         //title
-        TextView title = holder.item_search_result.findViewById(R.id.item_searchresult_title);
+        TextView title = holder.item_search_result.findViewById(R.id.book_title);
         title.setText(this.searchResult.get(position).getTitle());
 
-        //author
-        TextView authors = holder.item_search_result.findViewById(R.id.item_searchresult_author);
+        //authors
+        TextView authors = holder.item_search_result.findViewById(R.id.book_authors);
         authors.setText(this.searchResult.get(position).getAuthorsAsString());
 
         //creationTime
-        TextView creationTime = holder.item_search_result.findViewById(R.id.item_searchresult_creationTime);
+        TextView creationTime = holder.item_search_result.findViewById(R.id.book_creationTime);
         creationTime.setText(this.searchResult.get(position).getCreationTimeAsString(context));
 
         //location
-        TextView location = holder.item_search_result.findViewById(R.id.item_searchresult_location);
+        TextView location = holder.item_search_result.findViewById(R.id.book_location);
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> place = new ArrayList<>();
         try {
@@ -791,14 +791,16 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
 
 
         //card listeners
-        CardView card = holder.item_search_result.findViewById(R.id.item_searchresult_cv);
-
+        CardView card = holder.item_search_result.findViewById(R.id.book_item);
         card.setOnClickListener((v -> {
             Intent i = new Intent(context, ShowBookActivity.class);
             i.putExtra("book", searchResult.get(position));
             activity.startActivity(i); // start activity without finishing in order to return back with back pressed
 
         }));
+
+        //remove Modify button
+        holder.item_search_result.findViewById(R.id.edit_button).setVisibility(View.INVISIBLE);
 
         //Set Chiptag data
         View chiptag = holder.item_search_result.findViewById(R.id.chiptag);

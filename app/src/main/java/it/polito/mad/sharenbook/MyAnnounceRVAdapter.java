@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.utils.UserInterface;
 
 
 /**
@@ -52,7 +50,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     @NonNull
     @Override
     public MyAnnounceRVAdapter.AnnounceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.mybook_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_item, parent, false);
         AnnounceViewHolder announceViewHolder = new AnnounceViewHolder(v);
         return announceViewHolder;
     }
@@ -87,25 +85,21 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
             else
                 holder.bookLocation.setText(R.string.unknown_place);
 
-            holder.editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(context, EditBookActivity.class);
-                    i.putExtra("book", announcements.get(position));
-                    context.startActivity(i);
-                    underModification = announcements.get(position);
-                    positionUnderModificaiton = position;
+            holder.chiptag.setVisibility(View.INVISIBLE);
 
-                }
+            holder.editButton.setOnClickListener(v -> {
+                Intent i = new Intent(context, EditBookActivity.class);
+                i.putExtra("book", announcements.get(position));
+                context.startActivity(i);
+                underModification = announcements.get(position);
+                positionUnderModificaiton = position;
+
             });
-            holder.cv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(context, ShowBookActivity.class);
-                    i.putExtra("book",announcements.get(position));
-                    context.startActivity(i); // start activity without finishing in order to return back with back pressed
+            holder.cv.setOnClickListener(v -> {
+                Intent i = new Intent(context, ShowBookActivity.class);
+                i.putExtra("book",announcements.get(position));
+                context.startActivity(i); // start activity without finishing in order to return back with back pressed
 
-                }
             });
         }
 
@@ -175,16 +169,18 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
         TextView bookLocation;
         ImageView bookPhoto;
         Button editButton;
+        View chiptag;
 
         AnnounceViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.mybook_item);
+            cv = (CardView)itemView.findViewById(R.id.book_item);
             bookTitle = (TextView)itemView.findViewById(R.id.book_title);
             bookAuthors = (TextView)itemView.findViewById(R.id.book_authors);
             bookCreationTime = (TextView)itemView.findViewById(R.id.book_creationTime);
             bookLocation = (TextView)itemView.findViewById(R.id.book_location);
             bookPhoto = (ImageView)itemView.findViewById(R.id.book_photo);
             editButton = itemView.findViewById(R.id.edit_button);
+            chiptag = itemView.findViewById(R.id.chiptag);
         }
     }
 

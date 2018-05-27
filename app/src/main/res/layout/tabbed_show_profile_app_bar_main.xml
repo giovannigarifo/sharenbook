@@ -155,7 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:layout_scrollFlags="scroll">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItemProfile"
