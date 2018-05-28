@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook;
+package it.polito.mad.sharenbook.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import it.polito.mad.sharenbook.EditBookActivity;
+import it.polito.mad.sharenbook.R;
+import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.model.Book;
 
 public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapter.AnnounceViewHolder>{

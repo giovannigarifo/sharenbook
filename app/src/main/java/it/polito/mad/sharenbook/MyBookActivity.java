@@ -1,6 +1,8 @@
 package it.polito.mad.sharenbook;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -15,12 +17,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,23 +28,12 @@ import android.widget.Toast;
 
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-import java.util.ArrayList;
-
+import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
+import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncements;
-import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.utils.MyBooksUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -63,6 +52,8 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     /* TabView vars*/
     private MyBookActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+
+    private String username;
 
 
     @Override
@@ -83,6 +74,8 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         setupNavigationTools();
         findAndSetNewAnnouncementFab();
 
+        SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userPreferences.getString(getString(R.string.username_copy_key), "void");
 
         // Setup toolbar
         /*
@@ -225,6 +218,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         private ShowMyAnnouncements announcementsFragment;
         private ProfileReviewsFragment revFragment;
+        private BorrowRequestsFragment bReqsFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -233,24 +227,29 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         @Override
         public Fragment getItem(int position) {
 
+            Fragment fragment = null;
+
             switch (position) {
                 case 0:
-                    announcementsFragment = new ShowMyAnnouncements();
-                    return announcementsFragment;
+                    fragment = new ShowMyAnnouncements();
+                    break;
+                    //return announcementsFragment;
                 case 1:
+                    Bundle bundle = new Bundle();
+                    bundle.putString(getString(R.string.username_key), username);
+                    fragment = new BorrowRequestsFragment();
+                    fragment.setArguments(bundle);
+                    break;
+                    //return bReqsFragment;
+                case 2:
                     //bundle = new Bundle();
                     //bundle.putParcelable("userData", user);
-                    revFragment = new ProfileReviewsFragment();
+                    fragment = new ProfileReviewsFragment();
                     //revFragment.setArguments(bundle);
-                    return revFragment;
-                case 2:
-                    revFragment = new ProfileReviewsFragment();
-                    //revFragment.setArguments(bundle);
-                    return revFragment;
-                default:
-                    return null;
+                    //return revFragment;
+                    break;
             }
-
+            return fragment;
         }
 
         @Override

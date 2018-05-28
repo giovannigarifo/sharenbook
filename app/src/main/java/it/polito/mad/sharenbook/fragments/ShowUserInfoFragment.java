@@ -1,4 +1,4 @@
-package it.polito.mad.sharenbook;
+package it.polito.mad.sharenbook.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,10 +10,12 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
+import it.polito.mad.sharenbook.App;
+import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.adapters.CategoriesAdapter;
 import it.polito.mad.sharenbook.model.UserProfile;
 
-public class ShowUserInfo extends Fragment {
+public class ShowUserInfoFragment extends Fragment {
 
     private TextView tv_userCityContent, tv_userBioContent, tv_userEmailContent;
     private CategoriesAdapter categoriesAdapter;

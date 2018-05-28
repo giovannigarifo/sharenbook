@@ -29,6 +29,7 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
+import it.polito.mad.sharenbook.fragments.ShowUserInfoFragment;
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -154,7 +155,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ShowUserInfo userFragment;
+        private ShowUserInfoFragment userFragment;
         private ProfileReviewsFragment revFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -168,7 +169,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
                 case 0:
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("userData", user);
-                    userFragment = new ShowUserInfo();
+                    userFragment = new ShowUserInfoFragment();
                     userFragment.setArguments(bundle);
                     return userFragment;
                 case 1:

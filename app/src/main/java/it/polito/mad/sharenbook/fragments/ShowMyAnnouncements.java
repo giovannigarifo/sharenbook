@@ -22,13 +22,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 import it.polito.mad.sharenbook.App;
-import it.polito.mad.sharenbook.AnnouncementAdapter;
+import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShareBookActivity;
 import it.polito.mad.sharenbook.model.Book;
@@ -46,6 +44,16 @@ public class ShowMyAnnouncements extends Fragment {
     private RecyclerView rv;
 
     private ArrayList<Book> books = new ArrayList<>();
+
+    public static ShowMyAnnouncements newInstance() {
+        ShowMyAnnouncements fragment = new ShowMyAnnouncements();
+
+        //Bundle args = new Bundle();
+        //args.putInt("someInt", someInt);
+        //fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
