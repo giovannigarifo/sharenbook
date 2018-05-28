@@ -23,7 +23,7 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/wrapper"
             android:paddingEnd="16dp"
-            android:paddingRight="19dp"
+            android:paddingRight="16dp"
             android:paddingStart="0dp"
             android:paddingLeft="0dp"
             android:layout_width="match_parent"
@@ -126,6 +126,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
                 android:layout_marginTop="8dp"
                 />
             

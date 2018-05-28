@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -153,7 +154,8 @@ public class TabbedShowProfileActivity extends AppCompatActivity
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ShowUserInfo fragment;
+        private ShowUserInfo userFragment;
+        private ProfileReviewsFragment revFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -166,16 +168,15 @@ public class TabbedShowProfileActivity extends AppCompatActivity
                 case 0:
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("userData", user);
-                    fragment = new ShowUserInfo();
-                    fragment.setArguments(bundle);
-                    return fragment;
+                    userFragment = new ShowUserInfo();
+                    userFragment.setArguments(bundle);
+                    return userFragment;
                 case 1:
-                    //TODO take to review fragment (da fare in kotlin)
-                    bundle = new Bundle();
-                    bundle.putParcelable("userData", user);
-                    fragment = new ShowUserInfo();
-                    fragment.setArguments(bundle);
-                    return fragment;
+                    //bundle = new Bundle();
+                    //bundle.putParcelable("userData", user);
+                    revFragment = new ProfileReviewsFragment();
+                    //revFragment.setArguments(bundle);
+                    return revFragment;
                 default:
                     return null;
             }

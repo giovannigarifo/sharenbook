@@ -11,4 +11,7 @@
     <item android:id="@+id/contact_owner"
         android:title="@string/contact_owner" />
 
+    <item android:id="@+id/borrow_book"
+        android:title="@string/borrow_book" />
+
 </menu>

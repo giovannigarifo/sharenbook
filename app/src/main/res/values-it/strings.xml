@@ -306,7 +306,11 @@
     <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
     <string name="add_to_favorites">Aggiungi ai preferiti</string>
     <string name="contact_owner">Contatta il proprietario</string>
+    <string name="borrow_book">Richiedi in prestito</string>
     <string name="del_from_favorites">Rimuovi dai preferiti</string>
+    <string name="borrow_book_msg">Vuoi richiedere in prestito questo libro? Il proprietario sarà informato della tua richiesta
+    e potrà decidere di accettare o meno.</string>
+
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>

@@ -2,14 +2,19 @@ package it.polito.mad.sharenbook;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,11 +25,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,11 +51,19 @@ import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import it.polito.mad.sharenbook.fragments.GenericAlertDialog;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
@@ -77,7 +88,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private RecyclerView favoriteBooksRV;
     private RecyclerView closeBooksRV;
 
-    private String user_id;
+    private String user_id, book_owner, username;
     private HashSet<String> favoritesIdList;
 
     @Override
@@ -85,6 +96,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_case);
         shouldExecuteOnResume = false;
+
+        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(getString(R.string.username_copy_key), "");
 
         // Setup navigation tools
         setupNavigationTools();
@@ -574,6 +588,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                             mActivity.startActivity(chatActivity);
                             return true;
 
+                        case R.id.borrow_book:
+                            book_owner = book.getOwner_username();
+                            showDialog();
                         default:
                             return false;
                     }
@@ -583,6 +600,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 if (book.getOwner_uid().equals(user_id)) {
                     popup.getMenu().getItem(0).setEnabled(false);
                     popup.getMenu().getItem(2).setEnabled(false);
+                    popup.getMenu().getItem(3).setEnabled(false);
                 } else if (favoritesIdList.contains(book.getBookId())) {
                     popup.getMenu().getItem(0).setVisible(false);
                     popup.getMenu().getItem(1).setVisible(true);
@@ -598,4 +616,104 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             return mBookList.size();
         }
     }
+
+    void showDialog() {
+        DialogFragment newFragment = GenericAlertDialog.newInstance(
+                R.string.borrow_book);
+        newFragment.show(getSupportFragmentManager(), "dialog");
+    }
+
+    public void doPositiveClick() {
+        Log.i("FragmentAlertDialog", "Positive click!");
+        if(!book_owner.equals("")) {
+
+            sendNotification(book_owner, username);
+        }
+    }
+
+    public void doNegativeClick() {
+        book_owner = "";
+        Log.i("FragmentAlertDialog", "Negative click!");
+    }
+
+    public void sendNotification(String destination, String sender){
+        AsyncTask.execute(() -> {
+            int SDK_INT = Build.VERSION.SDK_INT;
+            if(SDK_INT > 8){
+
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+
+                HttpsURLConnection conn = null;
+                OutputStream outputStream = null;
+
+                try{
+
+                    String jsonResponse;
+
+                    URL url = new URL("https://onesignal.com/api/v1/notifications");
+                    conn = (HttpsURLConnection) url.openConnection();
+                    conn.setUseCaches(false);
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+
+                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    conn.setRequestProperty("Authorization", "Basic ZTc3MjExODEtYmM4Yy00YjU5LWFjNWEtM2VlNGNmYTA0OWU1");
+                    conn.setRequestMethod("POST");
+
+                    String strJsonBody = "{"
+                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
+
+                            + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + sender + "\", \"senderUid\": \"" + user_id + "\"},"
+                            + "\"contents\": {\"en\": \"" + sender + " wants to borrow your book!\", " +
+                            "\"it\": \"" + sender + " vuole in prestito un tuo libro!\"},"
+                            + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
+                            + "}";
+
+                    Log.d("strJsonBody:" , strJsonBody);
+
+                    byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+                    conn.setFixedLengthStreamingMode(sendBytes.length);
+
+                    outputStream = conn.getOutputStream();
+                    outputStream.write(sendBytes);
+
+                    int httpResponse = conn.getResponseCode();
+                    Log.d("httpResponse: " , "" + httpResponse);
+
+                    if (httpResponse >= HttpURLConnection.HTTP_OK
+                            && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+                        Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
+                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                        scanner.close();
+                    } else {
+                        Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8");
+                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                        scanner.close();
+                    }
+                    Log.d("jsonResponse: " , jsonResponse);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+
+                    if(conn!=null)
+                        conn.disconnect();
+
+                    try {
+                        if(outputStream!=null)
+                            outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        });
+    }
+
 }
