@@ -6,7 +6,7 @@
     android:id="@+id/search_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackgroundCardContainer"
+    android:background="@color/bgGrey"
     tools:context=".SearchActivity">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -76,6 +76,8 @@
             android:id="@+id/search_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:paddingTop="10dp"
+            android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/sba_appbar" />
 
 
