@@ -1,14 +1,11 @@
 package it.polito.mad.sharenbook;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
@@ -17,40 +14,27 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.algolia.instantsearch.helpers.InstantSearch;
 import com.algolia.instantsearch.helpers.Searcher;
+import com.algolia.instantsearch.model.SearchResults;
 import com.algolia.search.saas.Query;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -58,27 +42,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import it.polito.mad.sharenbook.fragments.SearchFilterFragment;
+import it.polito.mad.sharenbook.fragments.SearchListFragment;
+import it.polito.mad.sharenbook.fragments.SearchMapFragment;
 import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.model.UserProfile;
-import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
-import it.polito.mad.sharenbook.utils.UserInterface;
 
+//TODO: rimuovere MapsActivity una volta ultimato SearchMapFragment
 
 public class SearchActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
 
-
-    CharSequence searchInputText; //search query received in bundle
+    //activity model
+    public CharSequence searchInputText; //search query received in bundle
     ArrayList<Book> searchResult; //list of book that matched the query
-
 
     /**
      * DRAWER AND SEARCHBAR
@@ -92,31 +73,43 @@ public class SearchActivity extends AppCompatActivity
     private CircularImageView drawer_userPicture;
     private String searchState;
 
-    //search filtres selected by the user
+    //search filters selected by the user
     private static String searchFilters;
 
     //Map, location and range
     private GoogleMap mMap;
     private static Address filterPlace;
     private static int filterRange;
-    DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
-    GeoFire geoFire = new GeoFire(location_ref);
+    private DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
+    private GeoFire geoFire = new GeoFire(location_ref);
 
     //filter button
     private ImageButton sba_btn_filter;
 
     //fab to display map
-    FloatingActionButton search_fab_map;
-
-    //bottom navigation bar
-    BottomNavigationView search_bottom_nav_bar;
-
-    // Recyler View
-    SearchBookAdapter sbAdapter;
+    private FloatingActionButton search_fab_changeFragment;
 
     // Algolia instant search
-    Searcher searcher;
-    InstantSearch helper;
+    private Searcher searcher;
+    private InstantSearch helper;
+
+    //fragments
+    private SearchListFragment searchListFragment;
+    private SearchMapFragment searchMapFragment;
+
+    private int currentFragment;
+    private static final int NO_FRAG = -1;
+    private static final int LIST_FRAG = 0;
+    private static final int MAP_FRAG = 1;
+
+    //filters saved state, containes the already selected filters
+    public ArrayList<String> filterState_selectedConditions;
+    public ArrayList<String> filterState_selectedCategories;
+    public String filterState_tags;
+    public String filterState_author;
+    public int filterState_range;
+    public String filterState_location;
+
 
     /*
      * OnCreate
@@ -127,11 +120,28 @@ public class SearchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        //setup bottom navigation bar
-        UserInterface.setupNavigationBar(this, 0);
+        //istantiate as empty collection
+        this.searchResult = new ArrayList<>();
+
+        //create fragments or restore them
+        if(savedInstanceState == null){
+
+            this.searchListFragment = new SearchListFragment();
+            this.searchMapFragment = new SearchMapFragment();
+
+        } else {
+
+            if(getSupportFragmentManager().findFragmentByTag("searchList") != null)
+                this.searchListFragment = (SearchListFragment) getSupportFragmentManager().findFragmentByTag("searchList");
+            else this.searchListFragment = new SearchListFragment();
+
+            if(getSupportFragmentManager().findFragmentByTag("searchMap") != null)
+                this.searchMapFragment = (SearchMapFragment) getSupportFragmentManager().findFragmentByTag("searchMap");
+            else this.searchMapFragment = new SearchMapFragment();
+        }
 
         //setup map floating action button
-        setMapButton();
+        setChangeFragmentButton();
 
         // setup Drawer and Search Bar
         setDrawerAndSearchBar();
@@ -139,144 +149,247 @@ public class SearchActivity extends AppCompatActivity
         // Check for permissions
         PermissionsHandler.check(this);
 
-        // RecylerView setup
-        searchResult = new ArrayList<>();
-
-        RecyclerView search_rv_result = (RecyclerView) findViewById(R.id.search_rv_result);
-
-        StaggeredGridLayoutManager sglm;
-        LinearLayoutManager llm;
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-            search_rv_result.setLayoutManager(sglm);
-
-        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-            llm = new LinearLayoutManager(SearchActivity.this);
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            search_rv_result.setLayoutManager(llm);
-        }
-
-        sbAdapter = new SearchBookAdapter(this.searchResult, this);
-        search_rv_result.setAdapter(sbAdapter);
-
         //Algolia's InstantSearch setup
-        // searcher = Searcher.create("4DWHVL57AK", "03391b3ea81e4a5c37651a677670bcb8", "books");
         searcher = Searcher.create("K7HV32WVKQ", "04a25396f978e2d22348e5520d70437e", "books");
-
-        /**
-         * Listener for search result received from Algolia
-         */
-        searcher.registerResultListener((results, isLoadingMore) -> {
-
-            if (results.nbHits > 0) {
-
-                searchResult.clear();
-                searchResult.addAll(parseResults(results.hits)); //parse all algolia results and add them into collection
-
-                //if location and distance filter setted, filter the results received from algolia using geoFire
-                if (filterRange != -1 && filterPlace != null){
-                    filterByDistance();
-
-                    //test if filterByDistance removed all books
-                    if (searchResult.isEmpty())
-                        Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
-
-                } else sbAdapter.notifyDataSetChanged(); //update RecyclerView and disable the search
-
-                sba_searchbar.disableSearch();
-
-            } else Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
-        });
-
+        searcher.registerResultListener(this::onSearchResultReceived);
         searcher.registerErrorListener((query, error) -> {
-
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
             Log.d("error", "Unable to retrieve search isValid from Algolia");
         });
+
+        //start alwayis without selected filters
+        this.filterState_selectedConditions = null;
+        this.filterState_selectedCategories = null;
+        this.filterState_tags = null;
+        this.filterState_author = null;
+        this.filterState_range = -1;
+        this.filterState_location = null;
 
 
         //retrieve data form intent or from saved state
         if (savedInstanceState == null)
             startedFromIntent();
         else
-            startedFromSavedState(savedInstanceState);
+            startedFromSavedState(savedInstanceState); // rotation ecc...
     }
 
-    private void searchStatusCheck(Bundle data) {
-        if (data.getString("searchState") != null) {
-            searchState = data.getString("searchState");
-            if (searchState.equals("enabled")) {
-                search_bottom_nav_bar.setVisibility(View.GONE);
-                search_fab_map.setVisibility(View.GONE);
-            } else {
-                search_bottom_nav_bar.setVisibility(View.VISIBLE);
-                search_fab_map.setVisibility(View.VISIBLE);
-            }
-        }
+
+    /**
+     * Saves the state of the activity when dealing with system wide events (e.g. rotation)
+     *
+     * @param outState : the bundle object that contains all the serialized information to be saved
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList("searchResult", this.searchResult);
+        outState.putCharSequence("searchInputText", this.searchInputText);
+        outState.putString("searchState", this.searchState);
+        outState.putInt("currentFragment", this.currentFragment);
     }
 
+
+    /**
+     * The SearchActivity has been started with an intent from another activity
+     * <p>
+     * the searchInputText is retrieved from the bundle
+     */
     private void startedFromIntent() {
 
-        Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getIntent().getExtras(); //retrieve data from the intent
 
-        if (bundle == null)
-            Log.d("debug", "[SearchActivity] no search input text received from calling Activity");
-        else {
-            searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
+        if (bundle != null) {
 
-            ArrayList<Book> previousSearchResults = bundle.getParcelableArrayList("SearchResults");
+            this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
+            if (searchInputText != null)
+                this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
 
-            if (previousSearchResults != null) {
-                searchResult.clear();
-                searchResult.addAll(previousSearchResults);
-                sbAdapter.notifyDataSetChanged();
-            }
+            onSearchConfirmed(null); // Fire the search (async)
 
-            searchStatusCheck(bundle);
+            //no fragment already displayes
+            this.currentFragment = NO_FRAG;
+
+            //add the search list fragment to the view
+            addSearchListFragment();
         }
-
-        // Fire the search (async) if user launched from searchbar in another activity
-        onSearchConfirmed(searchInputText);
     }
 
+    /**
+     * The search activity has been started from a saved state, retrieve all data from Bundle
+     *
+     * @param savedInstanceState : a Bundle which contains the state of the application
+     */
     private void startedFromSavedState(Bundle savedInstanceState) {
 
-        searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
-        // user = savedInstanceState.getParcelable(getString(R.string.user_profile_data_key)); //retrieve user info
+        this.searchInputText = savedInstanceState.getCharSequence("searchInputText"); //retrieve text info from saveInstanceState
+        if (this.searchInputText != null)
+            this.sba_searchbar.setText(this.searchInputText.toString()); //set the searched text in the searchbar
 
         ArrayList<Book> previousSearchResults = savedInstanceState.getParcelableArrayList("searchResult"); //from onSaveInstanceState
+        this.searchResult.clear();
+        this.searchResult.addAll(previousSearchResults);
 
-        searchResult.clear();
-        searchResult.addAll(previousSearchResults);
-        sbAdapter.notifyDataSetChanged();
+        this.currentFragment = savedInstanceState.getInt("currentFragment");
 
-        searchStatusCheck(savedInstanceState);
+        //update fab icon
+        if (this.currentFragment == LIST_FRAG)
+            search_fab_changeFragment.setImageResource(R.drawable.ic_location_black_12dp);
+        else if (this.currentFragment == MAP_FRAG)
+            search_fab_changeFragment.setImageResource(R.drawable.ic_view_list_black_24dp);
     }
 
+
+    /**
+     * Search in Algolia for the books that matched the searchInputText and the Filters
+     *
+     * @param searchInputText : searhcInputtext is null if the callback is called explicitly by FilterFragment, in all other cases it's equal to the input text of the user
+     */
+    @Override
+    public void onSearchConfirmed(CharSequence searchInputText) {
+
+        if (searchInputText != null)
+            this.searchInputText = searchInputText;
+
+        //first search in algolia using the searchFilters
+        Query query = new Query();
+        query.setQuery(searchInputText == null ? "" : searchInputText.toString());
+
+        //set filters for category, authors, conditions: the Place&Distance filters will be applied when Algolia will send his response
+        if (searchFilters != null)
+            if (searchFilters.length() > 0)
+                query.setFilters(searchFilters);
+
+        searcher.setQuery(query);
+        helper = new InstantSearch(searcher);
+        helper.search();
+    }
+
+
+    /**
+     * Search result received from Algolia
+     *
+     * @param results       : the object that contains the results of the search
+     * @param isLoadingMore :
+     */
+    private void onSearchResultReceived(SearchResults results, Boolean isLoadingMore) {
+
+        if (results.nbHits > 0) {
+
+            /*
+             * Retrieve result list and filter it by distance if necessary
+             */
+            this.searchResult.clear();
+            this.searchResult.addAll(parseResults(results.hits)); //parse all algolia results and add them into collection
+
+            if (filterRange > 0 && filterPlace != null)
+                filterByDistance(); //remove from searchResult books that are too far from the selected filter location
+
+            /*
+             * display the fragment with the search results
+             */
+            if (this.searchResult.isEmpty())
+                Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+
+            // notify fragments that a new result is available
+            this.searchListFragment.updateDisplayedSearchResult();
+            this.searchMapFragment.updateDisplayedSearchResult();
+            this.sba_searchbar.disableSearch();
+
+        } else
+            Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
+    }
+
+
+    /**
+     * Material Search Bar onSearchStateChanged
+     */
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+        searchState = enabled ? "enabled" : "disabled";
+        Log.d("debug", "search " + searchState);
+    }
+
+    /**
+     * Load the search LIST fragment into the activity view
+     */
+    private void addSearchListFragment() {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
+        //set fab button to place
+        search_fab_changeFragment.setImageResource(R.drawable.ic_place_black_24dp);
+
+        //add the list fragment
+        if (this.currentFragment == NO_FRAG)
+            fragmentTransaction.add(R.id.search_fragment_container, this.searchListFragment, "searchList")
+                    .commit();
+
+            //or replace the map fragmnet with the list one
+        else if (this.currentFragment == MAP_FRAG)
+            fragmentTransaction.replace(R.id.search_fragment_container, this.searchListFragment, "searchList")
+                    .commit();
+
+        this.currentFragment = LIST_FRAG;
+    }
+
+
+    /**
+     * Load the search MAP fragment into the activity view
+     */
+    private void addSearchMapFragment() {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
+        //set fab button to list
+        search_fab_changeFragment.setImageResource(R.drawable.ic_view_list_black_24dp);
+
+        //add the SearchMapFragment fragment
+        if (this.currentFragment == NO_FRAG)
+            fragmentTransaction.add(R.id.search_fragment_container, this.searchMapFragment, "searchMap")
+                    .commit();
+
+            //or replace the list fragment with the map one
+        else if (this.currentFragment == LIST_FRAG)
+            fragmentTransaction.replace(R.id.search_fragment_container, this.searchMapFragment, "searchMap")
+                    .commit();
+
+        this.currentFragment = MAP_FRAG;
+    }
+
+    /**
+     * Callback for the changeFragment button, toggle fragments between list and map
+     */
+    private void loadListOrMapFragment(View view) {
+
+        if (this.currentFragment == NO_FRAG) //default is search list
+            addSearchListFragment();
+        if (this.currentFragment == LIST_FRAG)
+            addSearchMapFragment();
+        else if (this.currentFragment == MAP_FRAG)
+            addSearchListFragment();
+    }
 
 
     /**
      * Fire the map fragment
      */
-    private void setMapButton() {
+    private void setChangeFragmentButton() {
 
-        search_fab_map = findViewById(R.id.search_fab_map);
+        search_fab_changeFragment = findViewById(R.id.search_fab_changeFragment);
+        search_fab_changeFragment.setVisibility(View.VISIBLE);
 
-        search_fab_map.setVisibility(View.VISIBLE);
+        if (this.currentFragment == MAP_FRAG)
+            search_fab_changeFragment.setImageResource(R.drawable.ic_view_list_black_24dp);
+        else if (this.currentFragment == LIST_FRAG)
+            search_fab_changeFragment.setImageResource(R.drawable.ic_place_black_24dp);
 
-        search_fab_map.setOnClickListener((v) -> {
-            Intent mapSearch = new Intent(getApplicationContext(), MapsActivity.class);
-            if (!searchResult.isEmpty()) {
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("SearchResults", searchResult);
-                mapSearch.putExtras(bundle);
-            }
-            startActivity(mapSearch);
-            finish();
-        });
+        search_fab_changeFragment.setOnClickListener(this::loadListOrMapFragment);
     }
 
     /**
@@ -403,23 +516,6 @@ public class SearchActivity extends AppCompatActivity
 
 
     /**
-     * Saves the state of the activity when dealing with system wide events (e.g. rotation)
-     *
-     * @param outState : the bundle object that contains all the serialized information to be saved
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelableArrayList("searchResult", searchResult);
-        outState.putCharSequence("searchInputText", searchInputText);
-        outState.putString("searchState", searchState);
-        // outState.putParcelable(getString(R.string.user_profile_data_key), user);
-    }
-
-
-    /**
      * Release resources when onDestroy event is catched
      */
     @Override
@@ -448,9 +544,6 @@ public class SearchActivity extends AppCompatActivity
      * setDrawerAndSearchBar
      */
     private void setDrawerAndSearchBar() {
-
-        // Get bottom navbar
-        search_bottom_nav_bar = findViewById(R.id.navigation);
 
         /* DRAWER AND SEARCHBAR */
         drawer = findViewById(R.id.search_drawer_layout);
@@ -486,6 +579,7 @@ public class SearchActivity extends AppCompatActivity
             ft.addToBackStack(null);
 
             // Create and show the new dialog.
+
             DialogFragment filterFragment = SearchFilterFragment.newInstance("Filter Fragment");
 
 
@@ -493,37 +587,6 @@ public class SearchActivity extends AppCompatActivity
         });
 
     }
-
-
-    /**
-     * Search in Algolia for the books that matched the searchInputText and the Filters
-     */
-    @Override
-    public void onSearchConfirmed(CharSequence searchInputText) {
-
-        this.searchInputText = searchInputText;
-        searchWithFilters();
-    }
-
-
-    /**
-     * Material Search Bar onSearchStateChanged
-     */
-    @Override
-    public void onSearchStateChanged(boolean enabled) {
-        searchState = enabled ? "enabled" : "disabled";
-        Log.d("debug", "search " + searchState);
-
-        if (sba_searchbar.isSearchEnabled()) {
-            search_bottom_nav_bar.setVisibility(View.GONE);
-            search_fab_map.setVisibility(View.GONE);
-        } else {
-            search_bottom_nav_bar.setVisibility(View.VISIBLE);
-            search_fab_map.setVisibility(View.VISIBLE);
-        }
-
-    }
-
 
     /**
      * Material Search Bar onButtonClicked
@@ -542,7 +605,6 @@ public class SearchActivity extends AppCompatActivity
 
             case MaterialSearchBar.BUTTON_BACK:
                 sba_searchbar.disableSearch();
-                sbAdapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -584,24 +646,9 @@ public class SearchActivity extends AppCompatActivity
     }
 
 
-    /**
-     * Fire the search on Algolia's index
-     */
-    public void searchWithFilters(){
-
-        //first search in algolia using the searchFilters
-        Query query = new Query();
-        query.setQuery(searchInputText == null ? "" : searchInputText.toString());
-
-        //set filters for category, authors, conditions: the Place&Distance filters will be applied after the Algolia response
-        if (searchFilters != null)
-            if (searchFilters.length() > 0)
-                query.setFilters(searchFilters);
-
-        searcher.setQuery(query);
-        helper = new InstantSearch(searcher);
-        helper.search();
-    }
+    /* ***********************************************/
+    /*                    FILTERS                    */
+    /* ***********************************************/
 
     /**
      * filter the results received from Algolia using the location and range inserted by the user
@@ -628,8 +675,17 @@ public class SearchActivity extends AppCompatActivity
 
                 } else searchResult.clear(); //no books near the place
 
-                //update the recyclerview
-                sbAdapter.notifyDataSetChanged();
+                //update adapters of fragment's recyclerview
+                searchListFragment.updateDisplayedSearchResult();
+                searchMapFragment.updateDisplayedSearchResult();
+
+                //TODO: find a better solution to display the circle also if we are on SearchListFragment
+                //if the map is currently displayed, center into the circle
+                if(getSupportFragmentManager().findFragmentById(R.id.search_fragment_container) instanceof SearchMapFragment){
+                    if(searchResult.isEmpty())
+                        searchMapFragment.showFilterDistanceCircle(filterPlace, filterRange, Color.RED);
+                    else searchMapFragment.showFilterDistanceCircle(filterPlace, filterRange, Color.GREEN);
+                }
             }
 
             @Override
@@ -640,228 +696,79 @@ public class SearchActivity extends AppCompatActivity
             @Override
             public void onKeyExited(String key) {
             }
+
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
             }
+
             @Override
             public void onGeoQueryError(DatabaseError error) {
             }
         });
     }
 
-
+    /* **********************************************************************************
+     * The Methods below are called from SearchFilterFragment to set the search filters
+     */
 
     /**
      * Set the Category, Conditions, Authors filters string
      */
-    public static void setSearchFilters(String userFilter) {
+    public void setSearchFilters(String userFilter) {
         searchFilters = userFilter;
     }
 
     /**
      * Set the place that will be used to filter by distance
      *
-     * @param place
+     * @param place :
      */
-    public static void setFilterPlace(Address place) {
+    public void setFilterPlace(Address place) {
         filterPlace = place;
     }
 
     /**
      * set the range that will be used to filter by distance
      *
-     * @param range
+     * @param range :
      */
-    public static void setFilterRange(int range) {
+    public void setFilterRange(int range) {
         filterRange = range;
     }
 
-}
-
-
-/**
- * SearchBookAdapter class
- */
-
-class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBookViewHolder> {
-
-    private List<Book> searchResult;
-    private Context context;
-    private Activity activity;
-    private UserProfile user;
-
-    //constructor
-    SearchBookAdapter(ArrayList<Book> searchResult, Activity activity) {
-        this.searchResult = searchResult;
-        this.context = activity.getApplicationContext();
-        this.activity = activity;
-        user = NavigationDrawerManager.getUserParcelable(context);
-    }
-
-    //Inner Class that provides a reference to the views for each data item of the collection
-    class SearchBookViewHolder extends RecyclerView.ViewHolder {
-
-        private LinearLayout item_search_result;
-
-        SearchBookViewHolder(LinearLayout ll) {
-            super(ll);
-            this.item_search_result = ll;
-        }
-    }
 
     /**
-     * Create new ViewHolder objects (invoked by the layout manager) and set the view to use to
-     * display it's content
+     * Returns the searchResult, used by fragments to get the collection to display on their recyclerviews
      *
-     * @param parent   :
-     * @param viewType :
-     * @return BookPhotoViewHolder :
+     * @return :
      */
-    @NonNull
-    @Override
-    public SearchBookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        LayoutInflater li = LayoutInflater.from(parent.getContext());
-        LinearLayout ll = null;
-
-        if (parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            ll = (LinearLayout) li.inflate(R.layout.book_item, parent, false);
-
-        } else if (parent.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-            ll = (LinearLayout) li.inflate(R.layout.book_item, parent, false);
-        }
-
-        return new SearchBookViewHolder(ll);
+    public ArrayList<Book> getSearchResult() {
+        return this.searchResult;
     }
+
 
     /**
-     * Replace the contents of a ViewHolder (invoked by the layout manager)
-     *
-     * @param holder   :
-     * @param position :
+     * Set the filter state, this method is fired when the user confirms his filters
      */
-    @Override
-    public void onBindViewHolder(@NonNull SearchBookViewHolder holder, int position) {
+    public void setFiltersState(ArrayList<String> selectedConditions, ArrayList<String> selectedCategories, String tags, String author, int range, String location) {
 
-        //hide card
-        holder.item_search_result.setVisibility(View.INVISIBLE);
-
-        //photo
-        ImageView photo = holder.item_search_result.findViewById(R.id.book_photo);
-        photo.setImageResource(R.drawable.book_photo_placeholder);
-
-        Book book = searchResult.get(position);
-        String fileName = (book.getPhotosName().size() > 1) ? book.getPhotosName().get(1) : book.getPhotosName().get(0);
-        StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + book.getBookId() + "/" + fileName);
-
-        GlideApp.with(context).load(thumbnailOrFirstPhotoRef)
-                .placeholder(R.drawable.book_photo_placeholder)
-                .error(R.drawable.book_photo_placeholder)
-                .transition(DrawableTransitionOptions.withCrossFade(500))
-                .into(photo);
-
-        //title
-        TextView title = holder.item_search_result.findViewById(R.id.book_title);
-        title.setText(this.searchResult.get(position).getTitle());
-
-        //authors
-        TextView authors = holder.item_search_result.findViewById(R.id.book_authors);
-        authors.setText(this.searchResult.get(position).getAuthorsAsString());
-
-        //creationTime
-        TextView creationTime = holder.item_search_result.findViewById(R.id.book_creationTime);
-        creationTime.setText(this.searchResult.get(position).getCreationTimeAsString(context));
-
-        //location
-        TextView location = holder.item_search_result.findViewById(R.id.book_location);
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        List<Address> place = new ArrayList<>();
-        try {
-            place.addAll(geocoder.getFromLocation(searchResult.get(position).getLocation_lat(), searchResult.get(position).getLocation_long(), 1));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (!place.isEmpty())
-            location.setText(place.get(0).getLocality() + ", " + place.get(0).getCountryName());
-        else
-            location.setText(R.string.unknown_place);
-
-
-        //card listeners
-        CardView card = holder.item_search_result.findViewById(R.id.book_item);
-        card.setOnClickListener((v -> {
-            Intent i = new Intent(context, ShowBookActivity.class);
-            i.putExtra("book", searchResult.get(position));
-            activity.startActivity(i); // start activity without finishing in order to return back with back pressed
-
-        }));
-
-        //remove Modify button
-        holder.item_search_result.findViewById(R.id.edit_button).setVisibility(View.INVISIBLE);
-
-        //Set Chiptag data
-        View chiptag = holder.item_search_result.findViewById(R.id.chiptag);
-        TextView tv_chiptag = chiptag.findViewById(R.id.text_user);
-        tv_chiptag.setText(searchResult.get(position).getOwner_username());
-        ImageView iv_chiptag = chiptag.findViewById(R.id.img);
-
-        chiptag.setOnClickListener(view -> {
-            if(!book.getOwner_username().equals(user.getUsername())) {
-                final PopupMenu popup = new PopupMenu(view.getContext(), view);
-                popup.getMenuInflater().inflate(R.menu.chiptag_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(item -> {
-                    switch (item.getItemId()) {
-                        case R.id.contact_user:
-                            Intent chatActivity = new Intent(context, ChatActivity.class);
-                            chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                            context.startActivity(chatActivity);
-                            break;
-                        case R.id.show_profile:
-                            // to show user profile
-                            break;
-                    }
-                    return false;
-                });
-                popup.show();
-            }
-        });
-
-        String username = searchResult.get(position).getOwner_username();
-
-        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
-        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    long picSignature = (long) dataSnapshot.getValue();
-                    UserInterface.showGlideImage(context,
-                            FirebaseStorage.getInstance().getReference().child("/images").child("/"+username+".jpg"),
-                            iv_chiptag,
-                            picSignature);
-                } else {
-                    GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(iv_chiptag);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //show card
-        holder.item_search_result.setVisibility(View.VISIBLE);
+        this.filterState_selectedConditions = selectedConditions;
+        this.filterState_selectedCategories = selectedCategories;
+        this.filterState_tags = tags;
+        this.filterState_author = author;
+        this.filterState_range = range;
+        this.filterState_location = location;
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return this.searchResult.size();
+    public boolean filtersStatesArePresent() {
+
+        return this.filterState_location != null ||
+                this.filterState_range >= 0 ||
+                this.filterState_selectedConditions != null ||
+                this.filterState_selectedCategories != null ||
+                this.filterState_author != null ||
+                this.filterState_tags != null;
     }
 
 }
-

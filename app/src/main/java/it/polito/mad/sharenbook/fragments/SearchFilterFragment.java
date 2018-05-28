@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
@@ -30,6 +31,9 @@ import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 public class SearchFilterFragment extends AppCompatDialogFragment {
 
+    // parent activity
+    private SearchActivity searchActivity;
+
     //address
     private EditText fragment_sf_et_address;
     private SeekBar fragment_sf_sb_range;
@@ -48,7 +52,6 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
     //buttons
     private Button btn_confirm, btn_undo;
-
 
 
     /**
@@ -70,12 +73,19 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_search_filter, container);
 
-        String title = getArguments().getString("title", "Enter Name");
+        String title = null;
+
+        if (getArguments() != null)
+            title = getArguments().getString("title", "Enter Name");
+
         getDialog().setTitle(title);
+
+        //get the parent activity
+        searchActivity = (SearchActivity) getActivity();;
 
         return v;
     }
@@ -90,11 +100,18 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        outState.putStringArrayList("selectedConditions",conditionAdapter.getSelectedStrings());
+        outState.putStringArrayList("selectedCategories",categoryAdapter.getSelectedStrings());
+        outState.putString("address", fragment_sf_et_address.getText().toString());
+        outState.putInt("range", fragment_sf_sb_range.getProgress());
+        outState.putString("author", fragment_sf_et_author.getText().toString());
+        outState.putString("tags", fragment_sf_et_tags.getText().toString());
     }
 
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(view, savedInstanceState);
 
@@ -106,17 +123,51 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-        // Book Condition expandable height grid view
+        //collections of conditions and categories
         String[] book_conditions = getResources().getStringArray(R.array.book_conditions);
-        conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions);
+        String[] book_categories = getResources().getStringArray(R.array.book_categories);
+
+        //load filter state
+        if(savedInstanceState != null){
+
+            //load temporary selection if bundle contains data, e.g. rotation happened
+            conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions,
+                    savedInstanceState.getStringArrayList("selectedConditions"));
+
+            categoryAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_categories,
+                    savedInstanceState.getStringArrayList("selectedCategories"));
+
+            fragment_sf_et_address.setText(savedInstanceState.getString("address"));
+            fragment_sf_sb_range.setProgress(savedInstanceState.getInt("range"));
+            fragment_sf_et_author.setText(savedInstanceState.getString("author"));
+            fragment_sf_et_tags.setText(savedInstanceState.getString("tags"));
+
+        }else if(this.searchActivity.filtersStatesArePresent()){
+
+            //load previously selected filters if they are present, e.g. previous filters setted by user and saved in SearchActivity
+            conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions,
+                    this.searchActivity.filterState_selectedConditions);
+
+            categoryAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_categories,
+                    this.searchActivity.filterState_selectedCategories);
+
+            fragment_sf_et_address.setText(this.searchActivity.filterState_location);
+            fragment_sf_sb_range.setProgress(this.searchActivity.filterState_range);
+            fragment_sf_et_author.setText(this.searchActivity.filterState_author);
+            fragment_sf_et_tags.setText(this.searchActivity.filterState_tags);
+
+        } else {
+
+            conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions);
+            categoryAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_categories);
+        }
+
+        //set conditions adapter for Book Condition expandable height grid view
         fragment_sf_ehgv_conditions.setAdapter(conditionAdapter);
         fragment_sf_ehgv_conditions.setNumColumns(2);
         fragment_sf_ehgv_conditions.setExpanded(true);
-        fragment_sf_ehgv_conditions.setVerticalScrollBarEnabled(false);
 
-        // Book categories expandable height grid view
-        String[] book_categories = getResources().getStringArray(R.array.book_categories);
-        categoryAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_categories);
+        //set categories adapter for Book categories expandable height grid view
         fragment_sf_ehgv_categories.setAdapter(categoryAdapter);
         fragment_sf_ehgv_categories.setNumColumns(2);
         fragment_sf_ehgv_categories.setExpanded(true);
@@ -177,7 +228,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
             getDialog().dismiss();
         });
 
-        /**
+        /*
          * retrieve user input, create the filter string and pass it back to the SearchActivity
          */
         btn_confirm.setOnClickListener(view -> {
@@ -301,36 +352,35 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
                 if (location_error)
                     fragment_sf_et_address.setError(getString(R.string.unknown_place));
                 else {
-
                     //the user inserted a valid location filter
                     getDialog().dismiss();
-                    Activity activity = getActivity();
-                    SearchActivity searchActivity = (SearchActivity) activity;
-
-                    SearchActivity.setSearchFilters(aggregatedFilters);
-                    SearchActivity.setFilterPlace(place.get(0));
-                    SearchActivity.setFilterRange(range);
-                    searchActivity.searchWithFilters();
+                    confirmSearchAndSaveFiltersState(aggregatedFilters, place.get(0), range);
                 }
 
             } else {
                 //the user don't want to use location as filter
-
-                //dismiss the dialog and pass the filters to the SearchActivity
                 if (!location_error) {
-
                     getDialog().dismiss();
-                    Activity activity = getActivity();
-                    SearchActivity searchActivity = (SearchActivity) activity;
-
-                    SearchActivity.setSearchFilters(aggregatedFilters);
-                    SearchActivity.setFilterPlace(null);
-                    SearchActivity.setFilterRange(-1);
-                    searchActivity.searchWithFilters();
+                    confirmSearchAndSaveFiltersState(aggregatedFilters, null, -1);
                 }
             }
+
+            //save filters state
+            this.searchActivity.setFiltersState(selectedConditions, selectedCategories,
+                    fragment_sf_et_tags.getText().toString(), fragment_sf_et_author.getText().toString(),
+                    fragment_sf_sb_range.getProgress(), fragment_sf_et_address.getText().toString());
         });
 
+    }
+
+    public void confirmSearchAndSaveFiltersState(String aggregatedFilters, Address place, int range){
+
+        this.searchActivity.setSearchFilters(aggregatedFilters);
+        this.searchActivity.setFilterPlace(place); //can be null if no place selected
+        this.searchActivity.setFilterRange(range); //can be -1 if no range selected
+
+        //fire search
+        this.searchActivity.onSearchConfirmed(null);
     }
 
 

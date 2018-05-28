@@ -1,6 +1,7 @@
-package it.polito.mad.sharenbook.utils;
+package it.polito.mad.sharenbook.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -15,15 +16,16 @@ import com.google.firebase.storage.StorageReference;
 
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.GlideApp;
 
 /**
  * Created by Davide on 03/05/2018.
  */
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-    private Activity context;
+    private Context context;
 
-    public CustomInfoWindowAdapter(Activity context){
+    public CustomInfoWindowAdapter(Context context){
         this.context = context;
     }
 
@@ -34,7 +36,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        View view = context.getLayoutInflater().inflate(R.layout.customwindow, null);
+        View view = ((Activity) context).getLayoutInflater().inflate(R.layout.customwindow, null);
 
         Book book = (Book) marker.getTag();
 

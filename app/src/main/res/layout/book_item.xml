@@ -107,7 +107,7 @@
                 app:layout_constraintStart_toEndOf="@id/book_photo"
                 app:layout_constraintBottom_toTopOf="@id/edit_button"/>
 
-             <Button
+            <Button
                 android:id="@+id/edit_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
@@ -130,7 +130,7 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginTop="8dp"
                 />
-            
+
 
         </android.support.constraint.ConstraintLayout>
 
