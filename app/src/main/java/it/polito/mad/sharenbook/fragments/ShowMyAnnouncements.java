@@ -51,6 +51,9 @@ public class ShowMyAnnouncements extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         View rootView = inflater.inflate(R.layout.fragment_show_announcements, container, false);
+        rv = rootView.findViewById(R.id.expanded_books);
+
+        setRecyclerView();
 
         return rootView;
     }
@@ -59,10 +62,12 @@ public class ShowMyAnnouncements extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rv = view.findViewById(R.id.expanded_books);
+    }
 
-        setRecyclerView();
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.clearAnnouncements();
         loadAnnouncements();
     }
 

@@ -235,14 +235,15 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
             switch (position) {
                 case 0:
-                    //Bundle bundle = new Bundle();
-                    //bundle.putParcelable("userData", user);
                     announcementsFragment = new ShowMyAnnouncements();
-                    //announcementsFragment.setArguments(bundle);
                     return announcementsFragment;
                 case 1:
                     //bundle = new Bundle();
                     //bundle.putParcelable("userData", user);
+                    revFragment = new ProfileReviewsFragment();
+                    //revFragment.setArguments(bundle);
+                    return revFragment;
+                case 2:
                     revFragment = new ProfileReviewsFragment();
                     //revFragment.setArguments(bundle);
                     return revFragment;

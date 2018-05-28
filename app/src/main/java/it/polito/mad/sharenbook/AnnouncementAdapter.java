@@ -154,6 +154,10 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         notifyItemRemoved(position);
     }
 
+    public void clearAnnouncements(){
+        announcements.clear();
+        notifyDataSetChanged();
+    }
 
 
 

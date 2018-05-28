@@ -323,7 +323,8 @@
     <string name="tab_profile_info">Profilo</string>
     <string name="tab_profile_reviews">Recensioni</string>
     <string name="tab_mybooks_announcements">Miei Annunci</string>
-    <string name="tab_mybooks_pendingRequests">Richieste in sospeso</string>
+    <string name="tab_mybooks_pendingRequests">Richieste per i tuoi libri</string>
+    <string name="tab_mybooks_yourRequests">Le tue richieste</string>
 
 
 </resources>

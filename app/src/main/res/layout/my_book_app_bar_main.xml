@@ -52,10 +52,16 @@
                 android:text="@string/tab_mybooks_announcements" />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItemReviews"
+                android:id="@+id/pendingRequests"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_mybooks_pendingRequests" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/yourRequests"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_mybooks_yourRequests" />
 
         </android.support.design.widget.TabLayout>
 
@@ -64,7 +70,6 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="56dp"
         android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/appbar"
         app:layout_constraintBottom_toTopOf="@id/navigation"
