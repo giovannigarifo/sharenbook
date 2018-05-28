@@ -8,43 +8,75 @@
     tools:context="it.polito.mad.sharenbook.MyBookActivity"
     tools:showIn="@layout/activity_my_book">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/sba_header"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="4dp"
-        android:paddingBottom="4dp"
-        android:paddingEnd="4dp"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        android:paddingStart="4dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/sba_toolbar"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/sba_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:background="@color/colorPrimary"
+            android:paddingBottom="4dp"
+            android:paddingEnd="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingStart="4dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </android.support.constraint.ConstraintLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/sba_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/expanded_books"
-        android:orientation="vertical"
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/myAnnouncements"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_mybooks_announcements" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItemReviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_mybooks_pendingRequests" />
+
+        </android.support.design.widget.TabLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="56dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/appbar"
         app:layout_constraintBottom_toTopOf="@id/navigation"
-        app:layout_constraintTop_toBottomOf="@id/sba_header"
-        android:paddingTop="10dp"
-        android:clipToPadding="false">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    </android.support.v7.widget.RecyclerView>
-
+    </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_addBook"

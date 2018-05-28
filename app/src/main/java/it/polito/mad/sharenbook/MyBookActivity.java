@@ -6,13 +6,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -36,8 +40,9 @@ import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
+import it.polito.mad.sharenbook.fragments.ShowMyAnnouncements;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.MyBooksUtils;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
@@ -47,22 +52,17 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
     private BottomNavigationView navBar;
 
-    /** FireBase objects */
-    private FirebaseUser firebaseUser;
-    private DatabaseReference booksDb;
-    private DatabaseReference userBooksDb;
-    private StorageReference bookImagesStorage;
-    private ArrayList<Book> books = new ArrayList<Book>();
-
     /** new announcement button */
     private FloatingActionButton newAnnoucementFab;
-    private MyAnnounceRVAdapter adapter;
-    //private Book newAnnounce; future modifications
+    private AnnouncementAdapter adapter;
     private LinearLayoutManager llm;
-    //private ValueEventListener valueEventListener;
     private RecyclerView rv;
     private NavigationView navigationView;
+    private TabLayout tabLayout;
 
+    /* TabView vars*/
+    private MyBookActivity.SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
 
     @Override
@@ -70,188 +70,18 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_book);
 
+        mViewPager = findViewById(R.id.container);
+        tabLayout = findViewById(R.id.tabs);
+
+        //Adapter for viewPager
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        tabLayout.setTabTextColors(getResources().getColor(R.color.secondaryText), getResources().getColor(R.color.white));
 
         setupNavigationTools();
         findAndSetNewAnnouncementFab();
-        setRecyclerView(books);
-
-        // Setup FireBase
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-        booksDb = firebaseDatabase.getReference(getString(R.string.books_key));
-        userBooksDb = firebaseDatabase.getReference(getString(R.string.users_key)).child(firebaseUser.getUid()).child(getString(R.string.user_books_key));
-
-
-
-
-        userBooksDb.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue()!=null)
-                if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
-                    AlertDialog.Builder no_books = new AlertDialog.Builder(MyBookActivity.this); //give a context to Dialog
-                    no_books.setTitle(R.string.no_books_alert_title);
-                    no_books.setMessage(R.string.no_books_suggestion);
-                    no_books.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-
-                                Intent i = new Intent (getApplicationContext(), ShareBookActivity.class);
-                                startActivity(i);
-                                finish();
-
-                            }
-                    ).setNegativeButton(android.R.string.cancel,
-                            (dialog, which) -> {
-                                dialog.dismiss();
-
-                            }
-                    );
-
-                    no_books.show();
-                }else{ /** there are announcements */
-
-                    if(books.isEmpty()){
-                        Log.d("debug", "I am in the listener READ FROM DB");
-                        Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
-
-                        final long numberOfannounces = dataSnapshot.getChildrenCount();
-
-                        Log.d("debug","->"+numberOfannounces);
-
-                        for(DataSnapshot announce :announces){
-
-                            booksDb.child((String)announce.getValue()).orderByChild("creationTime").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    Book book = dataSnapshot.getValue(Book.class);
-                                    book.setBookId((String)announce.getValue());
-                                    books.add(book);
-
-                                    if(books.size() == numberOfannounces){
-                                        Log.d("debug",books.size()+"->"+numberOfannounces);
-                                        MyBooksUtils.setMyBooks(books);
-
-                                        adapter = new MyAnnounceRVAdapter(books, MyBookActivity.this, llm, bookImagesStorage);
-                                        rv.setAdapter(adapter);
-
-                                        Log.d("debug", "I am in the listener READ FROM DB: read");
-
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                    Toast.makeText(MyBookActivity.this,getString(R.string.databaseError),Toast.LENGTH_SHORT);
-
-                                }
-                            });
-                        }
-
-                    }
-
-                    /* future implementation
-                    Intent i = getIntent();
-
-                    if (i != null && adapter != null) {
-                        Log.d("NEWHHHHHHHH", "I am in the listener");
-                        newAnnounce = i.getExtras().getParcelable("newAnnounce");
-
-                        if (newAnnounce != null && books.isEmpty()) {//returning from a single addition
-                            Log.d("NEWHHHHHHHH", "I am in listener after new announce");
-                            Log.d("NEWHHHHHHHH", "I am in listener after new announce : "+books.size());
-                            bookImagesStorage.child("/" + newAnnounce.getBookId() + "/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-
-                                    books = MyBooksUtils.getMyBooks(); // take user's books
-                                    Book modifiedAnnounce = MyAnnounceRVAdapter.getUnderModification();
-                                    if(modifiedAnnounce != null) {
-                                        books.remove(MyAnnounceRVAdapter.getPositionUnderModificaiton());
-                                        Log.d("NEWHHHHHHHH", "I am in listener after announce modified");
-                                    }
-                                    adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
-                                    newAnnounce.setThumbnail(uri.toString());
-                                    rv.setAdapter(adapter);
-                                    adapter.addItem(0,newAnnounce);
-                                    MyBooksUtils.setMyBooks((ArrayList<Book>)MyAnnounceRVAdapter.getAnnouncementsModel());
-
-
-                                    Log.d("NEWHHHHHHHH", "added");
-                                    Log.d("NEWHHHH","model"+MyAnnounceRVAdapter.getAnnouncementsModel().size());
-
-                                }
-                            });
-
-
-                        }else
-                            if(books.isEmpty()){ //activity called by other activities
-                            Log.d("NEWHHHHHHHH", "I am in the listener READ FROM DB");
-                            Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
-
-                            final long numberOfannounces = dataSnapshot.getChildrenCount();
-
-                            Log.d("NEWHHH","->"+numberOfannounces);
-
-                            for(DataSnapshot announce :announces){
-
-                                booksDb.child((String)announce.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        //books.add(dataSnapshot.getValue(Book.class));
-
-                                        bookImagesStorage.child("/"+announce.getValue()+"/0.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                Book book = dataSnapshot.getValue(Book.class);
-                                                book.setBookId((String)announce.getValue());
-                                                book.setThumbnail(uri.toString());
-                                                books.add(book);
-
-
-                                                if(books.size() == numberOfannounces){
-                                                    Log.d("NEWHHH",books.size()+"->"+numberOfannounces);
-                                                    MyBooksUtils.setMyBooks(books);
-
-                                                    adapter = new MyAnnounceRVAdapter(books,MyBookActivity.this,llm);
-                                                    rv.setAdapter(adapter);
-
-                                                    Log.d("NEWHHHHHHHH", "I am in the listener READ FROM DB: read");
-
-                                                }
-                                            }
-                                        });
-
-
-
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                        }
-                    }
-                */
-
-
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(MyBookActivity.this,getString(R.string.databaseError),Toast.LENGTH_SHORT);
-
-            }
-        });
 
 
         // Setup toolbar
@@ -317,7 +147,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
 
     }
-
+/*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -330,7 +160,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         Log.d("debug","I am in onRestoreInstanceState");
         books = savedInstanceState.getParcelableArrayList("books");
         setRecyclerView(books);
-    }
+    }*/
 
     private void findAndSetNewAnnouncementFab(){
         newAnnoucementFab = findViewById(R.id.fab_addBook);
@@ -344,17 +174,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         });
     }
 
-    private void setRecyclerView(List<Book> announcements){
-        rv = (RecyclerView)findViewById(R.id.expanded_books);
-        llm = new LinearLayoutManager(MyBookActivity.this, LinearLayoutManager.VERTICAL, false);
-        rv.setLayoutManager(llm);
-        rv.setItemAnimator(new DefaultItemAnimator());
 
-        if (!announcements.isEmpty()) {
-            adapter = new MyAnnounceRVAdapter(announcements, MyBookActivity.this, llm, bookImagesStorage);
-            rv.setAdapter(adapter);
-        }
-    }
 
 
     /**
@@ -398,5 +218,48 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             super.onBackPressed();
         }
         navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
+    }
+
+
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+
+        private ShowMyAnnouncements announcementsFragment;
+        private ProfileReviewsFragment revFragment;
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position) {
+                case 0:
+                    //Bundle bundle = new Bundle();
+                    //bundle.putParcelable("userData", user);
+                    announcementsFragment = new ShowMyAnnouncements();
+                    //announcementsFragment.setArguments(bundle);
+                    return announcementsFragment;
+                case 1:
+                    //bundle = new Bundle();
+                    //bundle.putParcelable("userData", user);
+                    revFragment = new ProfileReviewsFragment();
+                    //revFragment.setArguments(bundle);
+                    return revFragment;
+                default:
+                    return null;
+            }
+
+        }
+
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }

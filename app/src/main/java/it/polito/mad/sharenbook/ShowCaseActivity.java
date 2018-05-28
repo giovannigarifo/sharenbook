@@ -672,16 +672,13 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     }
 
     public void doPositiveClick() {
-        Log.i("FragmentAlertDialog", "Positive click!");
         if (!selectedBookOwner.equals("")) {
-
             firebaseInsertRequest();
         }
     }
 
     public void doNegativeClick() {
         selectedBookOwner = "";
-        Log.i("FragmentAlertDialog", "Negative click!");
     }
 
     private void firebaseInsertRequest() {

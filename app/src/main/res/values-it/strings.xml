@@ -320,4 +320,10 @@
     <string name="desc_img_book">Copertina del libro</string>
     <string name="preferred_categories2">Generi preferiti</string>
 
+    <string name="tab_profile_info">Profilo</string>
+    <string name="tab_profile_reviews">Recensioni</string>
+    <string name="tab_mybooks_announcements">Miei Annunci</string>
+    <string name="tab_mybooks_pendingRequests">Richieste in sospeso</string>
+
+
 </resources>

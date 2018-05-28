@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
@@ -25,12 +26,7 @@ import java.util.Locale;
 
 import it.polito.mad.sharenbook.model.Book;
 
-
-/**
- * Created by claudiosava on 19/04/18.
- */
-
-public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapter.AnnounceViewHolder>{
+public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapter.AnnounceViewHolder>{
 
     private static List<Book> announcements;
     private static Book underModification;
@@ -39,29 +35,28 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     private LinearLayoutManager llm;
     private StorageReference mBookImagesStorage;
 
-    MyAnnounceRVAdapter(List<Book> announcements, Context context, LinearLayoutManager llm, StorageReference bookImagesStorage) {
-        MyAnnounceRVAdapter.announcements = announcements;
+   public AnnouncementAdapter(Context context, LinearLayoutManager llm) {
+        announcements = new ArrayList<>();
         this.context = context;
         this.llm = llm;
-        this.mBookImagesStorage = bookImagesStorage;
+        this.mBookImagesStorage = FirebaseStorage.getInstance().getReference("book_images");
         underModification = null;
     }
 
     @NonNull
     @Override
-    public MyAnnounceRVAdapter.AnnounceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AnnouncementAdapter.AnnounceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_item, parent, false);
         AnnounceViewHolder announceViewHolder = new AnnounceViewHolder(v);
         return announceViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyAnnounceRVAdapter.AnnounceViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AnnouncementAdapter.AnnounceViewHolder holder, int position) {
 
         if(!announcements.isEmpty()) {
-            // UserInterface.TextViewFontResize(announcements.get(position).getTitle().length(),(WindowManager)context.getSystemService(Context.WINDOW_SERVICE) , holder.bookTitle);
-
             // Get Book Image
+
             StorageReference photoRef = mBookImagesStorage.child(announcements.get(position).getBookId() + "/" + announcements.get(position).getPhotosName().get(0));
             Glide.with(context).load(photoRef).into(holder.bookPhoto);
 
@@ -95,11 +90,11 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
                 positionUnderModificaiton = position;
 
             });
+
             holder.cv.setOnClickListener(v -> {
                 Intent i = new Intent(context, ShowBookActivity.class);
                 i.putExtra("book",announcements.get(position));
                 context.startActivity(i); // start activity without finishing in order to return back with back pressed
-
             });
         }
 
@@ -125,7 +120,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     }
 
     public static void setPositionUnderModificaiton(int positionUnderModificaiton) {
-        MyAnnounceRVAdapter.positionUnderModificaiton = positionUnderModificaiton;
+        AnnouncementAdapter.positionUnderModificaiton = positionUnderModificaiton;
     }
 
     public static Book getUnderModification() {
@@ -133,7 +128,7 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
     }
 
     public static void setUnderModification(Book underModification) {
-        MyAnnounceRVAdapter.underModification = underModification;
+        AnnouncementAdapter.underModification = underModification;
     }
 
     public void addMultipleItems(int startPosition, List<Book> announces){
@@ -144,11 +139,12 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
 
     }
 
-    public void addItem(int position, Book announce){
+    public void addItem(Book announce){
 
         if(!announcements.contains(announce))
-            announcements.add(position, announce);
-        this.notifyItemInserted(position);
+            announcements.add(announce);
+
+        this.notifyItemInserted(announcements.size()-1);
 
 
     }
@@ -173,12 +169,12 @@ public class MyAnnounceRVAdapter extends RecyclerView.Adapter<MyAnnounceRVAdapte
 
         AnnounceViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.book_item);
-            bookTitle = (TextView)itemView.findViewById(R.id.book_title);
-            bookAuthors = (TextView)itemView.findViewById(R.id.book_authors);
-            bookCreationTime = (TextView)itemView.findViewById(R.id.book_creationTime);
-            bookLocation = (TextView)itemView.findViewById(R.id.book_location);
-            bookPhoto = (ImageView)itemView.findViewById(R.id.book_photo);
+            cv = itemView.findViewById(R.id.book_item);
+            bookTitle = itemView.findViewById(R.id.book_title);
+            bookAuthors = itemView.findViewById(R.id.book_authors);
+            bookCreationTime = itemView.findViewById(R.id.book_creationTime);
+            bookLocation = itemView.findViewById(R.id.book_location);
+            bookPhoto = itemView.findViewById(R.id.book_photo);
             editButton = itemView.findViewById(R.id.edit_button);
             chiptag = itemView.findViewById(R.id.chiptag);
         }
