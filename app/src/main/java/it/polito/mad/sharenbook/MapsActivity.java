@@ -57,7 +57,7 @@ import java.util.List;
 
 import it.polito.mad.sharenbook.fragments.SearchFilterFragment;
 import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.utils.CustomInfoWindowAdapter;
+import it.polito.mad.sharenbook.adapters.CustomInfoWindowAdapter;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 
 public class MapsActivity extends AppCompatActivity

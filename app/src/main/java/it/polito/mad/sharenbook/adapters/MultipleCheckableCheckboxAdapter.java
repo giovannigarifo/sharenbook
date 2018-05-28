@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,14 +22,29 @@ import it.polito.mad.sharenbook.R;
 public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
 
     private ArrayList<String> selectedStrings;
-    private List<String> checkedCheckboxes;
+    private ArrayList<String> checkedCheckboxes;
 
     //constructor
     public MultipleCheckableCheckboxAdapter(Context context, int textViewResourceId, String[] collection) {
 
         super(context, textViewResourceId, collection);
-        selectedStrings = new ArrayList<>();
-        checkedCheckboxes = new ArrayList<>();
+        this.selectedStrings = new ArrayList<>();
+        this.checkedCheckboxes = new ArrayList<>();
+    }
+
+    /**
+     *
+     * @param context:
+     * @param textViewResourceId:
+     * @param collection : the collection of String to display as checkboxes
+     * @param alreadyChecked : the collection of the already selected string if it's necessary to show a previous state
+     */
+    public MultipleCheckableCheckboxAdapter(Context context, int textViewResourceId, String[] collection, ArrayList<String> alreadyChecked) {
+
+        super(context, textViewResourceId, collection);
+        this.selectedStrings = new ArrayList<>();
+        this.checkedCheckboxes = new ArrayList<>();
+        this.checkedCheckboxes.addAll(alreadyChecked); //add all the already checked checkboxes strings
     }
 
     @Override
@@ -51,10 +67,13 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         //checkbox listeners
         checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-            if (isChecked)
+            if (isChecked){
                 selectedStrings.add(checkbox.getText().toString());
-            else
+            }
+            else{
                 selectedStrings.remove(checkbox.getText().toString());
+            }
+
         });
 
         //set checkbox text
