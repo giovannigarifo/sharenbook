@@ -56,8 +56,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -88,8 +90,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private RecyclerView favoriteBooksRV;
     private RecyclerView closeBooksRV;
 
-    private String user_id, book_owner, username;
-    private HashSet<String> favoritesIdList;
+    private String user_id, username;
+    private String selectedBookOwner, selectedBookId;
+    private HashSet<String> favoritesBookIdList;
+    private HashSet<String> requestedBookIdList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +101,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         setContentView(R.layout.activity_show_case);
         shouldExecuteOnResume = false;
 
+        // Get username
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
 
@@ -118,6 +123,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Get Geofire
         DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
         geoFire = new GeoFire(location_ref);
+
+        // Load borrowRequests sent list
+        loadBorrowRequests();
 
         // Load recycler views
         setupRecyclerViews();
@@ -150,7 +158,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            finishAffinity();
         }
     }
 
@@ -209,6 +217,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     @Override
     public void onSearchConfirmed(CharSequence searchInputText) {
 
+        searchBar.disableSearch();
         startSearchActivity(searchInputText);
     }
 
@@ -251,6 +260,36 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_showcase);
         navBar = findViewById(R.id.navigation);
+    }
+
+    private void loadBorrowRequests() {
+
+        DatabaseReference borrowRequestsDb = FirebaseDatabase.getInstance()
+                .getReference(getString(R.string.usernames_key))
+                .child(username)
+                .child(getString(R.string.borrow_requests_key));
+
+        // Get borrow requested books
+        requestedBookIdList = new HashSet<>();
+        borrowRequestsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getChildrenCount() == 0)
+                    return;
+
+                // Read books for which a loan request has been sent
+                for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
+                    String bookId = bookIdSnapshot.getKey();
+                    requestedBookIdList.add(bookId);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
     }
 
     private void setupRecyclerViews() {
@@ -325,7 +364,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         List<Book> bookList = new ArrayList<>();
-                        favoritesIdList = new HashSet<>();
+                        favoritesBookIdList = new HashSet<>();
                         final long bookCount = dataSnapshot.getChildrenCount();
 
                         if (bookCount == 0) {
@@ -336,7 +375,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         // Read books reference
                         for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
                             String bookId = bookIdSnapshot.getKey();
-                            favoritesIdList.add(bookId);
+                            favoritesBookIdList.add(bookId);
 
                             booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -589,8 +628,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                             return true;
 
                         case R.id.borrow_book:
-                            book_owner = book.getOwner_username();
+                            selectedBookOwner = book.getOwner_username();
+                            selectedBookId = book.getBookId();
                             showDialog();
+
                         default:
                             return false;
                     }
@@ -601,9 +642,16 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     popup.getMenu().getItem(0).setEnabled(false);
                     popup.getMenu().getItem(2).setEnabled(false);
                     popup.getMenu().getItem(3).setEnabled(false);
-                } else if (favoritesIdList.contains(book.getBookId())) {
-                    popup.getMenu().getItem(0).setVisible(false);
-                    popup.getMenu().getItem(1).setVisible(true);
+
+                } else {
+                    if (favoritesBookIdList.contains(book.getBookId())) {
+                        popup.getMenu().getItem(0).setVisible(false);
+                        popup.getMenu().getItem(1).setVisible(true);
+                    }
+                    if (requestedBookIdList.contains(book.getBookId())) {
+                        popup.getMenu().getItem(3).setVisible(false);
+                        popup.getMenu().getItem(4).setVisible(true);
+                    }
                 }
 
                 popup.show();
@@ -625,21 +673,52 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     public void doPositiveClick() {
         Log.i("FragmentAlertDialog", "Positive click!");
-        if(!book_owner.equals("")) {
+        if (!selectedBookOwner.equals("")) {
 
-            sendNotification(book_owner, username);
+            firebaseInsertRequest();
         }
     }
 
     public void doNegativeClick() {
-        book_owner = "";
+        selectedBookOwner = "";
         Log.i("FragmentAlertDialog", "Negative click!");
     }
 
-    public void sendNotification(String destination, String sender){
+    private void firebaseInsertRequest() {
+
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
+
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+
+        // Add user borrow request
+        transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + selectedBookId, ServerValue.TIMESTAMP);
+
+        // Add pending request to owner area
+        transaction.put(selectedBookOwner + "/" + getString(R.string.pending_requests_key) + "/" + selectedBookId + "/" + username, ServerValue.TIMESTAMP);
+
+        // Push entire transaction
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+
+                // Update list that keep track of already requested book
+                requestedBookIdList.add(selectedBookId);
+
+                // Send notification
+                sendNotification(selectedBookOwner, username);
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_done, Toast.LENGTH_LONG).show();
+
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_fail, Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    public void sendNotification(String destination, String sender) {
         AsyncTask.execute(() -> {
             int SDK_INT = Build.VERSION.SDK_INT;
-            if(SDK_INT > 8){
+            if (SDK_INT > 8) {
 
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                         .permitAll().build();
@@ -648,7 +727,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 HttpsURLConnection conn = null;
                 OutputStream outputStream = null;
 
-                try{
+                try {
 
                     String jsonResponse;
 
@@ -673,7 +752,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                             + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
                             + "}";
 
-                    Log.d("strJsonBody:" , strJsonBody);
+                    Log.d("strJsonBody:", strJsonBody);
 
                     byte[] sendBytes = strJsonBody.getBytes("UTF-8");
                     conn.setFixedLengthStreamingMode(sendBytes.length);
@@ -682,7 +761,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     outputStream.write(sendBytes);
 
                     int httpResponse = conn.getResponseCode();
-                    Log.d("httpResponse: " , "" + httpResponse);
+                    Log.d("httpResponse: ", "" + httpResponse);
 
                     if (httpResponse >= HttpURLConnection.HTTP_OK
                             && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -694,17 +773,17 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
                         scanner.close();
                     }
-                    Log.d("jsonResponse: " , jsonResponse);
+                    Log.d("jsonResponse: ", jsonResponse);
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
 
-                    if(conn!=null)
+                    if (conn != null)
                         conn.disconnect();
 
                     try {
-                        if(outputStream!=null)
+                        if (outputStream != null)
                             outputStream.close();
                     } catch (IOException e) {
                         e.printStackTrace();

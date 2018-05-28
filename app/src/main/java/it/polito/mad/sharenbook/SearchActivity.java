@@ -365,8 +365,10 @@ public class SearchActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        boolean shared = jsonObject.optBoolean("shared", false);
+
         return new Book(bookId, owner_uid, owner_username, isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, categories,
-                language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong, photosName);
+                language, thumbnail, numPhotos, bookConditions, tags, creationTime, locationLat, locationLong, photosName, shared);
     }
 
 

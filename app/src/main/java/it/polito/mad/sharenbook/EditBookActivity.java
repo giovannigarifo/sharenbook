@@ -514,6 +514,7 @@ public class EditBookActivity extends AppCompatActivity {
         bookData.put("bookConditions", book.getBookConditions());
         bookData.put("tags", book.getTags());
         bookData.put("numPhotos", book.getBookPhotosUri().size());
+        bookData.put("shared", book.isShared());
 
         if (book.getCreationTime() == 0) {
 
@@ -637,7 +638,8 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("creationTime", book.getCreationTime()) //setted in firebaseSaveBook()
                     .put("location_lat", book.getLocation_lat())
                     .put("location_long", book.getLocation_long())
-                    .put("photosName", new JSONArray(book.getPhotosName()));
+                    .put("photosName", new JSONArray(book.getPhotosName()))
+                    .put("shared", book.isShared());
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)

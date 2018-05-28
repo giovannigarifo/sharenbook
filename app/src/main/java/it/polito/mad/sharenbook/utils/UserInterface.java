@@ -138,7 +138,7 @@ public class UserInterface {
                 case R.id.navigation_showcase:
                     if (!(activity instanceof ShowCaseActivity)) {
                         Intent show_case = new Intent(activity.getApplicationContext(), ShowCaseActivity.class);
-                        show_case.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        show_case.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         activity.startActivity(show_case);
                         if (finishOnNav)
                             activity.finish();

@@ -40,6 +40,7 @@ public class Book implements Parcelable {
     private double location_lat;
     private double location_long;
     private List<String> photosName;
+    private boolean shared;
 
 
     /**
@@ -76,6 +77,7 @@ public class Book implements Parcelable {
         this.location_lat = 0;
         this.location_long = 0;
         this.photosName = new ArrayList<>();
+        this.shared = false;
     }
 
 
@@ -83,8 +85,8 @@ public class Book implements Parcelable {
      * Constructor for the Book Class called Algolia
      */
     public Book(String bookId, String owner_uid, String owner_username, String isbn, String title, String subtitle, List<String> authors, String publisher,
-                String publishedDate, String description, int pageCount, List<Integer> categories, String language, String thumbnail,
-                int numPhotos, int bookConditions, List<String> tags, long creationTime, double location_lat, double location_long, List<String> photosName) {
+                String publishedDate, String description, int pageCount, List<Integer> categories, String language, String thumbnail, int numPhotos,
+                int bookConditions, List<String> tags, long creationTime, double location_lat, double location_long, List<String> photosName, boolean shared) {
 
         this(isbn, title, subtitle, authors, publisher, publishedDate, description, pageCount, language, thumbnail);
         this.bookId = bookId;
@@ -98,6 +100,7 @@ public class Book implements Parcelable {
         this.location_lat = location_lat;
         this.location_long = location_long;
         this.photosName = photosName;
+        this.shared = shared;
     }
 
     /**
@@ -127,6 +130,7 @@ public class Book implements Parcelable {
         this.location_lat = 0;
         this.location_long = 0;
         this.photosName = new ArrayList<>();
+        this.shared = false;
     }
 
 
@@ -282,6 +286,10 @@ public class Book implements Parcelable {
         return photosName;
     }
 
+    public boolean isShared() {
+        return shared;
+    }
+
     public void setBookId(String bookId) {
         this.bookId = bookId;
     }
@@ -370,6 +378,10 @@ public class Book implements Parcelable {
         this.photosName = photosName;
     }
 
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+
     /*******************************
      * Parcelizable implementation
      *
@@ -410,6 +422,7 @@ public class Book implements Parcelable {
         this.location_lat = in.readDouble();
         this.location_long = in.readDouble();
         this.photosName = in.readArrayList(String.class.getClassLoader());
+        this.shared = in.readInt() == 1;
     }
 
     /**
@@ -448,6 +461,7 @@ public class Book implements Parcelable {
         dest.writeDouble(getLocation_lat());
         dest.writeDouble(getLocation_long());
         dest.writeList(getPhotosName());
+        dest.writeInt(isShared() ? 1 : 0);
     }
 
     @Override

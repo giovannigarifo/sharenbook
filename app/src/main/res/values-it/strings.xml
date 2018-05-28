@@ -310,6 +310,9 @@
     <string name="del_from_favorites">Rimuovi dai preferiti</string>
     <string name="borrow_book_msg">Vuoi richiedere in prestito questo libro? Il proprietario sarà informato della tua richiesta
     e potrà decidere di accettare o meno.</string>
+    <string name="borrow_request_done">Richiesta inviata correttamente</string>
+    <string name="borrow_request_fail">La richiesta non può essere inviata in questo momento, riprova più tardi</string>
+    <string name="request_already_sent">Richiesta già inviata</string>
 
 
     <!-- Books Cardview -->

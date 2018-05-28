@@ -297,6 +297,8 @@
     <string name="books_locations" translatable="false">books_locations</string>
     <string name="book_images_key" translatable="false">book_images</string>
     <string name="words_key" translatable="false">words</string>
+    <string name="borrow_requests_key" translatable="false">borrowRequests</string>
+    <string name="pending_requests_key" translatable="false">pendingRequests</string>
 
     <string name="mba_title" translatable="false">My books</string>
     <string name="nav_my_books">My books</string>
@@ -334,6 +336,9 @@
     <string name="borrow_book">Borrow this book</string>
     <string name="borrow_book_msg">Do you want to ask for this book? The owner will be alerted about your request and will decide to accept or not.</string>
     <string name="del_from_favorites">Remove from favorites</string>
+    <string name="borrow_request_done">Request sent correctly</string>
+    <string name="borrow_request_fail">Request cannot be send now, try later</string>
+    <string name="request_already_sent">Request already sent</string>
 
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>
