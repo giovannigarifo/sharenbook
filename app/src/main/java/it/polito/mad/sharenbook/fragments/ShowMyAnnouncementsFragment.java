@@ -32,7 +32,7 @@ import it.polito.mad.sharenbook.ShareBookActivity;
 import it.polito.mad.sharenbook.model.Book;
 
 
-public class ShowMyAnnouncements extends Fragment {
+public class ShowMyAnnouncementsFragment extends Fragment {
 
     /** FireBase objects */
     private FirebaseUser firebaseUser;
@@ -45,8 +45,8 @@ public class ShowMyAnnouncements extends Fragment {
 
     private ArrayList<Book> books = new ArrayList<>();
 
-    public static ShowMyAnnouncements newInstance() {
-        ShowMyAnnouncements fragment = new ShowMyAnnouncements();
+    public static ShowMyAnnouncementsFragment newInstance() {
+        ShowMyAnnouncementsFragment fragment = new ShowMyAnnouncementsFragment();
 
         //Bundle args = new Bundle();
         //args.putInt("someInt", someInt);

@@ -42,7 +42,7 @@
     <string name="title_showcase">Bacheca</string>
     <string name="title_shareBook">Nuovo annuncio</string>
     <string name="title_search">Cerca</string>
-    <string name="title_mybooks">Miei annunci</string>
+    <string name="title_mybooks">Annunci e Scambi</string>
     <string name="title_logout">Esci</string>
 
 
@@ -277,8 +277,8 @@
     <string name="users_books_placeholder">books_empty</string>
     <string name="book_images_key">book_images</string>
 
-    <string name="mba_title">I miei annunci</string>
-    <string name="nav_my_books">Miei annunci</string>
+    <string name="mba_title">Annunci e scambi</string>
+    <string name="nav_my_books">Annunci e scambi</string>
 
     <string name="no_books_alert_title">Nessun annuncio!</string>
     <string name="no_books_suggestion">Ti consigliamo di farne uno! Vuoi farlo ora?</string>
@@ -329,10 +329,10 @@
 
     <string name="tab_profile_info">Profilo</string>
     <string name="tab_profile_reviews">Recensioni</string>
-    <string name="tab_mybooks_announcements">Miei Annunci</string>
-    <string name="tab_mybooks_pendingRequests">Richieste per i tuoi libri</string>
-    <string name="tab_mybooks_yourRequests">Le tue richieste</string>
-    <string name="tab_mybooks_takenBooks">Libri prestati</string>
+    <string name="tab_mybooks_announcements">Miei Libri</string>
+    <string name="tab_mybooks_pendingRequests">Richieste di scambio</string>
+    <string name="tab_mybooks_yourRequests">Richieste effettuate</string>
+    <string name="tab_mybooks_takenBooks">Miei scambi</string>
 
 
 </resources>

@@ -34,7 +34,7 @@ import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
 import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
 import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
-import it.polito.mad.sharenbook.fragments.ShowMyAnnouncements;
+import it.polito.mad.sharenbook.fragments.ShowMyAnnouncementsFragment;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -231,7 +231,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
             switch (position) {
                 case 0:
-                    fragment = new ShowMyAnnouncements();
+                    fragment = new ShowMyAnnouncementsFragment();
                     break;
                 case 1:
                     fragment = new PendingRequestsFragment();

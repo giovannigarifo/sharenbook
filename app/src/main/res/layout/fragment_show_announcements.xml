@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad.sharenbook.fragments.ShowMyAnnouncements">
+    tools:context="it.polito.mad.sharenbook.fragments.ShowMyAnnouncementsFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/expanded_books"
