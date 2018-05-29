@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_height="82dp">
 
     <ImageView
         android:id="@+id/user_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="57dp"
+        android:layout_height="57dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -19,25 +19,28 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
         android:layout_marginLeft="15dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintTop_toTopOf="@id/user_image"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/user_image"
-        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/time_header"
+        android:textSize="18sp"
+        android:text="Fabio Bulgarella"
         android:fontFamily="@font/roboto_medium"
-        android:text="Fabio Bulgarella"/>
+        android:textColor="@color/primaryText"/>
 
     <TextView
         android:id="@+id/time_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/username"
         app:layout_constraintStart_toStartOf="@id/username"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto"
-        android:text="Richiesto il" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="13sp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Richiesto il:" />
 
     <TextView
         android:id="@+id/request_time"
@@ -47,8 +50,8 @@
         android:layout_marginStart="5dp"
         app:layout_constraintStart_toEndOf="@id/time_header"
         app:layout_constraintTop_toTopOf="@id/time_header"
-        android:textSize="12sp"
-        android:fontFamily="@font/roboto" />
+        android:textSize="13sp"
+        android:fontFamily="@font/roboto_medium" />
 
     <ImageView
         android:id="@+id/options_button"
@@ -56,22 +59,41 @@
         android:focusable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_more_vert_black_30dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!--
     <Button
         android:id="@+id/accept_button"
-        style="?android:attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="@string/edit_book"
+        android:layout_height="26dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="ACCETTA"
         android:textColor="@color/colorAccent"
         android:textSize="13sp"
+        android:background="@drawable/button_bg_transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/reject_button"
+        app:layout_constraintEnd_toStartOf="@id/options_button" />
+
+    <Button
+        android:id="@+id/reject_button"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="6dp"
+        android:text="RIFIUTA"
+        android:textColor="@color/redButton"
+        android:textSize="13sp"
+        android:background="@drawable/button_bg_transparent_red"
+        app:layout_constraintTop_toBottomOf="@id/accept_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-    -->
+        app:layout_constraintEnd_toStartOf="@id/options_button" />
 
 </android.support.constraint.ConstraintLayout>

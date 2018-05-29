@@ -113,13 +113,17 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
                 val bundle = Bundle()
                 bundle.putStringArrayList("usernameList", requestKeys)
                 bundle.putLongArray("requestTimeArray", requestValues)
+                bundle.putString("bookId", req.bookId)
+                bundle.putString("bookTitle", req.title)
+                bundle.putString("bookPhoto", req.thumbName)
+                bundle.putString("bookOwner", req.owner)
 
-                var requestFragment = RequestListFragment()
+                val requestFragment = RequestListFragment()
                 requestFragment.arguments = bundle
 
                 fragManager.beginTransaction()
                         .replace(R.id.inner_container, requestFragment, "requestList")
-                        .addToBackStack("test")
+                        .addToBackStack(null)
                         .commit()
 
                 Log.d("CardView Event", "Cardview Pressed")

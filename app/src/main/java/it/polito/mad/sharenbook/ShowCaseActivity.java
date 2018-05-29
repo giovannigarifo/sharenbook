@@ -687,11 +687,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         // Create transaction Map
         Map<String, Object> transaction = new HashMap<>();
-
-        // Add user borrow request
         transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + selectedBookId, ServerValue.TIMESTAMP);
-
-        // Add pending request to owner area
         transaction.put(selectedBookOwner + "/" + getString(R.string.pending_requests_key) + "/" + selectedBookId + "/" + username, ServerValue.TIMESTAMP);
 
         // Push entire transaction

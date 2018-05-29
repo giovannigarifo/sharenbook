@@ -320,6 +320,8 @@
     <string name="borrow_request_fail">La richiesta non può essere inviata in questo momento, riprova più tardi</string>
     <string name="borrow_request_undone_fail">C\'è stato un errore, riprova più tardi</string>
     <string name="request_already_sent">Richiesta già inviata</string>
+    <string name="borrow_request_accepted">Richiesta accettata correttamente</string>
+    <string name="borrow_request_rejected">Richiesta rifiutata, sii più generoso ;)</string>
 
 
     <!-- Books Cardview -->

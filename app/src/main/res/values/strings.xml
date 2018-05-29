@@ -302,6 +302,7 @@
     <string name="pending_requests_key" translatable="false">pendingRequests</string>
     <string name="pic_signature_key" translatable="false">picSignature</string>
     <string name="user_images_key" translatable="false">images</string>
+    <string name="shared_books_key" translatable="false">shared_books</string>
 
     <string name="mba_title" translatable="false">My books</string>
     <string name="nav_my_books">My books</string>
@@ -347,6 +348,8 @@
     <string name="borrow_request_fail">Request cannot be send now, try later</string>
     <string name="borrow_request_undone_fail">There was an error, try later</string>
     <string name="request_already_sent">Request already sent</string>
+    <string name="borrow_request_accepted">Borrow request accepted</string>
+    <string name="borrow_request_rejected">Borrow request rejected</string>
 
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>
