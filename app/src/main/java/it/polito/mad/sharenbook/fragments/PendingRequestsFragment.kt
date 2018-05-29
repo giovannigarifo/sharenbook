@@ -103,11 +103,33 @@ class PendingRequestsFragment : Fragment() {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                //TODO when number of requests changes -> update the element in adapter
+                val numRequests = dataSnapshot.children.count()
+                val bookId = dataSnapshot.key
+                val reqUsers = object : HashMap<String, Long>(){}
+
+                for(child in dataSnapshot.children){
+                    reqUsers.put(child.key, child.value as Long)
+                }
+
+                booksDb.child(bookId).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                        val book = dataSnapshot.getValue(Book::class.java)
+
+                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username)
+
+                        requestAdapter.updateRequest(req)
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show()
+                    }
+                })
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                //TODO when number of requests changes -> update the element in adapter
+                val bookId = dataSnapshot.key
+                requestAdapter.removeBookId(bookId)
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {

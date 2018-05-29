@@ -22,7 +22,7 @@ import it.polito.mad.sharenbook.model.BorrowRequest
 class PendingRequestAdapter(fragManager : FragmentManager) : RecyclerView.Adapter<PendingRequestAdapter.RequestHolder>()  {
 
     private val requests : ArrayList<BorrowRequest> = ArrayList()
-    private val fragManager = fragManager;
+    private val fragManager = fragManager
 
     override fun onBindViewHolder(holder: RequestHolder, position: Int) {
         val itemRequest = requests[position]
@@ -44,6 +44,35 @@ class PendingRequestAdapter(fragManager : FragmentManager) : RecyclerView.Adapte
 
     fun addRequest(req : BorrowRequest, pos : Int){
             requests.add(pos, req)
+    }
+
+    fun updateRequest(req : BorrowRequest){
+        var pos : Int = -1
+        for(r in requests){
+            if(r.bookId.equals(req.bookId)){
+                pos = requests.indexOf(r)
+                break
+            }
+        }
+        if(pos != -1) {
+            notifyItemChanged(pos)
+            requests.removeAt(pos)
+            requests.add(pos, req)
+        }
+    }
+
+    fun removeBookId(bId : String){
+        var pos : Int = -1
+        for(r in requests){
+            if(r.bookId.equals(bId)){
+                pos = requests.indexOf(r)
+                break
+            }
+        }
+        if(pos != -1){
+            requests.removeAt(pos)
+            notifyItemRemoved(pos)
+        }
     }
 
     fun clearRequests(){
