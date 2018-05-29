@@ -17,11 +17,11 @@ import it.polito.mad.sharenbook.model.BorrowRequest
 
 
 
-class BorrowRequestAdapter : RecyclerView.Adapter<BorrowReqHolder>()  {
+class PendingRequestAdapter : RecyclerView.Adapter<PendingReqHolder>()  {
 
     private val requests : ArrayList<BorrowRequest> = ArrayList()
 
-    override fun onBindViewHolder(holder: BorrowReqHolder, position: Int) {
+    override fun onBindViewHolder(holder: PendingReqHolder, position: Int) {
         val itemRequest = requests[position]
         holder.bindReview(itemRequest)
     }
@@ -30,9 +30,9 @@ class BorrowRequestAdapter : RecyclerView.Adapter<BorrowReqHolder>()  {
         return requests.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : BorrowReqHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : PendingReqHolder {
         val inflatedView = parent.inflate(R.layout.request_item, false)
-        return BorrowReqHolder(inflatedView)
+        return PendingReqHolder(inflatedView)
     }
 
     fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
@@ -49,7 +49,7 @@ class BorrowRequestAdapter : RecyclerView.Adapter<BorrowReqHolder>()  {
 
 }
 
-class BorrowReqHolder(v: View) : RecyclerView.ViewHolder(v) {
+class PendingReqHolder(v: View) : RecyclerView.ViewHolder(v) {
 
     private var view : View = v
     private var request : BorrowRequest? = null

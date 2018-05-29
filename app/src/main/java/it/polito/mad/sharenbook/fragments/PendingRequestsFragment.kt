@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +11,13 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import it.polito.mad.sharenbook.App
 import it.polito.mad.sharenbook.R
-import it.polito.mad.sharenbook.adapters.BorrowRequestAdapter
+import it.polito.mad.sharenbook.adapters.PendingRequestAdapter
 import it.polito.mad.sharenbook.model.Book
 import it.polito.mad.sharenbook.model.BorrowRequest
 
-class BorrowRequestsFragment : Fragment() {
+class PendingRequestsFragment : Fragment() {
 
-    private val requestAdapter : BorrowRequestAdapter = BorrowRequestAdapter()
+    private val requestAdapter : PendingRequestAdapter = PendingRequestAdapter()
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var requestsRef : DatabaseReference
     private lateinit var booksDb : DatabaseReference
@@ -27,8 +26,8 @@ class BorrowRequestsFragment : Fragment() {
 
     companion object {
 
-        fun newInstance(): BorrowRequestsFragment {
-            return BorrowRequestsFragment()
+        fun newInstance(): PendingRequestsFragment {
+            return PendingRequestsFragment()
         }
     }
 

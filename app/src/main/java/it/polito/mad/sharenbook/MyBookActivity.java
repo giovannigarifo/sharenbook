@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -31,7 +32,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
-import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
+import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncements;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
@@ -216,10 +217,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ShowMyAnnouncements announcementsFragment;
-        private ProfileReviewsFragment revFragment;
-        private BorrowRequestsFragment bReqsFragment;
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -237,7 +234,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                 case 1:
                     Bundle bundle = new Bundle();
                     bundle.putString(getString(R.string.username_key), username);
-                    fragment = new BorrowRequestsFragment();
+                    fragment = new PendingRequestsFragment();
                     fragment.setArguments(bundle);
                     break;
                     //return bReqsFragment;
@@ -246,7 +243,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     //bundle.putParcelable("userData", user);
                     fragment = new ProfileReviewsFragment();
                     //revFragment.setArguments(bundle);
-                    //return revFragment;
                     break;
             }
             return fragment;
@@ -259,7 +255,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }
