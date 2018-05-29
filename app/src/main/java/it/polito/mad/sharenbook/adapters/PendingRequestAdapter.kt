@@ -48,6 +48,35 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
             requests.add(pos, req)
     }
 
+    fun updateRequest(req : BorrowRequest){
+        var pos : Int = -1
+        for(r in requests){
+            if(r.bookId.equals(req.bookId)){
+                pos = requests.indexOf(r)
+                break
+            }
+        }
+        if(pos != -1) {
+            notifyItemChanged(pos)
+            requests.removeAt(pos)
+            requests.add(pos, req)
+        }
+    }
+
+    fun removeBookId(bId : String){
+        var pos : Int = -1
+        for(r in requests){
+            if(r.bookId.equals(bId)){
+                pos = requests.indexOf(r)
+                break
+            }
+        }
+        if(pos != -1){
+            requests.removeAt(pos)
+            notifyItemRemoved(pos)
+        }
+    }
+
     fun clearRequests(){
         requests.clear()
     }
