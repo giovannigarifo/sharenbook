@@ -17,7 +17,7 @@ import it.polito.mad.sharenbook.model.BorrowRequest
 
 class PendingRequestsFragment : Fragment() {
 
-    private val requestAdapter : PendingRequestAdapter = PendingRequestAdapter()
+    private lateinit var requestAdapter : PendingRequestAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var requestsRef : DatabaseReference
     private lateinit var booksDb : DatabaseReference
@@ -29,6 +29,11 @@ class PendingRequestsFragment : Fragment() {
         fun newInstance(): PendingRequestsFragment {
             return PendingRequestsFragment()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestAdapter = PendingRequestAdapter(activity!!.supportFragmentManager)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -72,10 +77,10 @@ class PendingRequestsFragment : Fragment() {
 
                 val numRequests = dataSnapshot.children.count()
                 val bookId = dataSnapshot.key
-                val reqUsers = object : ArrayList<String>(){}
+                val reqUsers = object : HashMap<String, Long>(){}
 
                 for(child in dataSnapshot.children){
-                    reqUsers.add(child.key)
+                    reqUsers.put(child.key, child.value as Long)
                 }
 
                 booksDb.child(bookId).addListenerForSingleValueEvent(object : ValueEventListener {

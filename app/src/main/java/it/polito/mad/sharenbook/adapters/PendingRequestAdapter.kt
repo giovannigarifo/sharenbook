@@ -1,6 +1,8 @@
 package it.polito.mad.sharenbook.adapters
 
+import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.v4.app.FragmentManager
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -13,15 +15,16 @@ import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import it.polito.mad.sharenbook.App
 import it.polito.mad.sharenbook.R
+import it.polito.mad.sharenbook.fragments.RequestListFragment
 import it.polito.mad.sharenbook.model.BorrowRequest
 
 
-
-class PendingRequestAdapter : RecyclerView.Adapter<PendingReqHolder>()  {
+class PendingRequestAdapter(fragManager : FragmentManager) : RecyclerView.Adapter<PendingRequestAdapter.RequestHolder>()  {
 
     private val requests : ArrayList<BorrowRequest> = ArrayList()
+    private val fragManager = fragManager;
 
-    override fun onBindViewHolder(holder: PendingReqHolder, position: Int) {
+    override fun onBindViewHolder(holder: RequestHolder, position: Int) {
         val itemRequest = requests[position]
         holder.bindReview(itemRequest)
     }
@@ -30,9 +33,9 @@ class PendingRequestAdapter : RecyclerView.Adapter<PendingReqHolder>()  {
         return requests.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : PendingReqHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : RequestHolder {
         val inflatedView = parent.inflate(R.layout.request_item, false)
-        return PendingReqHolder(inflatedView)
+        return RequestHolder(inflatedView)
     }
 
     fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
@@ -47,35 +50,51 @@ class PendingRequestAdapter : RecyclerView.Adapter<PendingReqHolder>()  {
         requests.clear()
     }
 
-}
+    inner class RequestHolder(v: View) : RecyclerView.ViewHolder(v) {
 
-class PendingReqHolder(v: View) : RecyclerView.ViewHolder(v) {
+        private var view : View = v
+        private var request : BorrowRequest? = null
 
-    private var view : View = v
-    private var request : BorrowRequest? = null
+        fun bindReview(req : BorrowRequest) {
+            this.request = req
+            view.findViewById<TextView>(R.id.book_title).text = req.title
+            view.findViewById<TextView>(R.id.book_authors).text = req.authors
+            view.findViewById<TextView>(R.id.book_creationTime).text = req.creationTime
+            val reqNumber = App.getContext().resources.getString(R.string.borrow_req_counter, req.requests)
+            view.findViewById<TextView>(R.id.req_counter).text = reqNumber
 
-    fun bindReview(req : BorrowRequest) {
-        this.request = req
-        view.findViewById<TextView>(R.id.book_title).text = req.title
-        view.findViewById<TextView>(R.id.book_authors).text = req.authors
-        view.findViewById<TextView>(R.id.book_creationTime).text = req.creationTime
-        val reqNumber = App.getContext().resources.getString(R.string.borrow_req_counter, req.requests)
-        view.findViewById<TextView>(R.id.req_counter).text = reqNumber
+            val photoRef = FirebaseStorage.getInstance().getReference("book_images").child(req.bookId + "/" + req.thumbName)
+            Glide.with(App.getContext()).load(photoRef).into(view.findViewById<ImageView>(R.id.book_photo))
 
-        val photoRef = FirebaseStorage.getInstance().getReference("book_images").child(req.bookId + "/" + req.thumbName)
-        Glide.with(App.getContext()).load(photoRef).into(view.findViewById<ImageView>(R.id.book_photo))
+            view.findViewById<CardView>(R.id.book_item).setOnClickListener({
 
-        view.findViewById<CardView>(R.id.book_item).setOnClickListener({
+                val mapSize = req.requestUsers!!.size
+                val requestKeys = ArrayList<String>()
+                val requestValues = LongArray(mapSize)
 
-            //val announcementsFragment = ShowMyAnnouncements()
+                var i = 0
+                for (request in req.requestUsers!!) {
+                    requestKeys.add(i, request.key)
+                    requestValues[i] = request.value
+                    i++
+                }
 
-            /*(BorrowRequestsFragment.newInstance().activity)!!.supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, announcementsFragment)
-                    .commit()*/
+                val bundle = Bundle()
+                bundle.putStringArrayList("usernameList", requestKeys)
+                bundle.putLongArray("requestTimeList", requestValues)
 
-            Log.d("CardView Event", "Cardview Pressed")
-        })
+                var requestFragment = RequestListFragment()
+                requestFragment.arguments = bundle
 
+                fragManager.beginTransaction()
+                        .replace(R.id.container, requestFragment)
+                        .addToBackStack(null)
+                        .commit();
+
+
+                Log.d("CardView Event", "Cardview Pressed")
+            })
+
+        }
     }
-
 }

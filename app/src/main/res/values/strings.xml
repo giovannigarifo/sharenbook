@@ -300,6 +300,8 @@
     <string name="words_key" translatable="false">words</string>
     <string name="borrow_requests_key" translatable="false">borrowRequests</string>
     <string name="pending_requests_key" translatable="false">pendingRequests</string>
+    <string name="pic_signature_key" translatable="false">picSignature</string>
+    <string name="user_images_key" translatable="false">images</string>
 
     <string name="mba_title" translatable="false">My books</string>
     <string name="nav_my_books">My books</string>

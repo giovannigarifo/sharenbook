@@ -122,7 +122,7 @@ public class ShowMyAnnouncements extends Fragment {
                                 }
                         );
 
-                        no_books.show();
+                        //no_books.show();
 
                         Log.d("No books", "I am here");
 

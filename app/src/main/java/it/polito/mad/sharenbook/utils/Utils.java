@@ -1,6 +1,9 @@
 package it.polito.mad.sharenbook.utils;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +37,15 @@ public class Utils {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Convert long timestamp to string time
+     */
+    public static String convertTime(long time, String format){
+        Date date = new Date(time);
+        Format dateFormat = new SimpleDateFormat(format);
+        return dateFormat.format(date);
     }
 
     /**
