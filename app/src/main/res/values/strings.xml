@@ -351,6 +351,7 @@
     <string name="tab_mybooks_announcements">My Announcements</string>
     <string name="tab_mybooks_pendingRequests">Borrow requests for your books</string>
     <string name="tab_mybooks_yourRequests">Borrow requests you did</string>
+    <string name="tab_mybooks_takenBooks">Shared books</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 

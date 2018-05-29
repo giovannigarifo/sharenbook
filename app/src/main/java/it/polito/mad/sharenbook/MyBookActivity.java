@@ -32,6 +32,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
+import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
 import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncements;
@@ -225,24 +226,23 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         public Fragment getItem(int position) {
 
             Fragment fragment = null;
+            Bundle bundle = new Bundle();
+            bundle.putString(getString(R.string.username_key), username);
 
             switch (position) {
                 case 0:
                     fragment = new ShowMyAnnouncements();
                     break;
-                    //return announcementsFragment;
                 case 1:
-                    Bundle bundle = new Bundle();
-                    bundle.putString(getString(R.string.username_key), username);
                     fragment = new PendingRequestsFragment();
                     fragment.setArguments(bundle);
                     break;
-                    //return bReqsFragment;
                 case 2:
-                    //bundle = new Bundle();
-                    //bundle.putParcelable("userData", user);
+                    fragment = new BorrowRequestsFragment();
+                    fragment.setArguments(bundle);
+                    break;
+                case 3:
                     fragment = new ProfileReviewsFragment();
-                    //revFragment.setArguments(bundle);
                     break;
             }
             return fragment;
@@ -255,7 +255,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     }
 }

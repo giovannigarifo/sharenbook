@@ -326,6 +326,7 @@
     <string name="tab_mybooks_announcements">Miei Annunci</string>
     <string name="tab_mybooks_pendingRequests">Richieste per i tuoi libri</string>
     <string name="tab_mybooks_yourRequests">Le tue richieste</string>
+    <string name="tab_mybooks_takenBooks">Libri prestati</string>
 
 
 </resources>

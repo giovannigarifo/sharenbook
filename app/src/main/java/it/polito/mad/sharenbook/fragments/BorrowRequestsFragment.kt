@@ -11,13 +11,13 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import it.polito.mad.sharenbook.App
 import it.polito.mad.sharenbook.R
-import it.polito.mad.sharenbook.adapters.PendingRequestAdapter
+import it.polito.mad.sharenbook.adapters.BorrowRequestAdapter
 import it.polito.mad.sharenbook.model.Book
 import it.polito.mad.sharenbook.model.BorrowRequest
 
-class PendingRequestsFragment : Fragment() {
+class BorrowRequestsFragment : Fragment() {
 
-    private val requestAdapter : PendingRequestAdapter = PendingRequestAdapter()
+    private val requestAdapter : BorrowRequestAdapter = BorrowRequestAdapter()
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var requestsRef : DatabaseReference
     private lateinit var booksDb : DatabaseReference
@@ -26,8 +26,8 @@ class PendingRequestsFragment : Fragment() {
 
     companion object {
 
-        fun newInstance(): PendingRequestsFragment {
-            return PendingRequestsFragment()
+        fun newInstance(): BorrowRequestsFragment {
+            return BorrowRequestsFragment()
         }
     }
 
@@ -42,7 +42,7 @@ class PendingRequestsFragment : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = requestAdapter
 
-        requestsRef = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("pendingRequests")
+        requestsRef = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("borrowRequests")
         booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key))
 
         return rootView
@@ -69,33 +69,29 @@ class PendingRequestsFragment : Fragment() {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
-                val numRequests = dataSnapshot.children.count()
                 val bookId = dataSnapshot.key
-                val reqUsers = object : ArrayList<String>(){}
-
-                for(child in dataSnapshot.children){
-                    reqUsers.add(child.key)
-                }
 
                 booksDb.child(bookId).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0])
+                        val req = BorrowRequest(null, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), 0, book.photosName[0])
 
                         requestAdapter.addRequest(req)
                         requestAdapter.notifyDataSetChanged()
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
+
                         Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show()
+
                     }
                 })
 
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
 
             }
 
@@ -103,7 +99,7 @@ class PendingRequestsFragment : Fragment() {
 
             }
 
-            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
 
             }
 
