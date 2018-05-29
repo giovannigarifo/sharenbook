@@ -98,6 +98,7 @@
     <string name="min_photo_required">There must be at least one photo!</string>
 
     <string name="edit_book">EDIT</string>
+    <string name="undo_borrow_req">CANCEL REQUEST</string>
 
 
     <!-- ============================== -->
@@ -334,11 +335,15 @@
     <string name="add_to_favorites">Add to favorites</string>
     <string name="contact_owner">Contact owner</string>
     <string name="borrow_book">Borrow this book</string>
+    <string name="undo_borrow_book">Cancel borrow request</string>
+    <string name="undo_borrow_book_msg">Do you really want to cancel the request? If yes, the owner will be alerted of your choice.</string>
     <string name="borrow_req_counter">Requests: %1$d</string>
     <string name="borrow_book_msg">Do you want to ask for this book? The owner will be alerted about your request and will decide to accept or not.</string>
     <string name="del_from_favorites">Remove from favorites</string>
     <string name="borrow_request_done">Request sent correctly</string>
+    <string name="borrow_request_undone">Your request has been canceled</string>
     <string name="borrow_request_fail">Request cannot be send now, try later</string>
+    <string name="borrow_request_undone_fail">There was an error, try later</string>
     <string name="request_already_sent">Request already sent</string>
 
     <!-- Books Cardview -->

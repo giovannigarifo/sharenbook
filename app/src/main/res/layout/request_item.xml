@@ -119,6 +119,18 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <Button
+                android:id="@+id/undo_breq_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="@string/undo_borrow_req"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <include
                 android:id="@+id/chiptag"
                 android:visibility="invisible"

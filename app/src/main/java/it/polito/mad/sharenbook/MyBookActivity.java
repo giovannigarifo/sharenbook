@@ -24,6 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +53,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     private TabLayout tabLayout;
 
     /* TabView vars*/
-    private MyBookActivity.SectionsPagerAdapter mSectionsPagerAdapter;
+    public MyBookActivity.SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
     private String username;
@@ -222,10 +223,11 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
             super(fm);
         }
 
+        Fragment fragment = null;
+
         @Override
         public Fragment getItem(int position) {
 
-            Fragment fragment = null;
             Bundle bundle = new Bundle();
             bundle.putString(getString(R.string.username_key), username);
 
@@ -256,6 +258,18 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         @Override
         public int getCount() {
             return 4;
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if (getCurrentFragment() != object) {
+                fragment = ((Fragment) object);
+            }
+            super.setPrimaryItem(container, position, object);
+        }
+
+        public Fragment getCurrentFragment() {
+            return fragment;
         }
     }
 }

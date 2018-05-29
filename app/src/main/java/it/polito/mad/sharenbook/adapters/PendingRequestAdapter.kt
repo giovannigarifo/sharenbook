@@ -39,8 +39,8 @@ class PendingRequestAdapter : RecyclerView.Adapter<PendingReqHolder>()  {
         return LayoutInflater.from(App.getContext()).inflate(layoutRes, this, attachToRoot)
     }
 
-    fun addRequest(req : BorrowRequest){
-            requests.add(req)
+    fun addRequest(req : BorrowRequest, pos : Int){
+            requests.add(pos, req)
     }
 
     fun clearRequests(){

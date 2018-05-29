@@ -19,6 +19,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -260,6 +261,7 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         TextView tv_chiptag = chiptag.findViewById(R.id.text_user);
         tv_chiptag.setText(searchResult.get(position).getOwner_username());
         ImageView iv_chiptag = chiptag.findViewById(R.id.img);
+        holder.item_search_result.findViewById(R.id.edit_button).setVisibility(View.INVISIBLE);
 
         chiptag.setOnClickListener(view -> {
             if (!book.getOwner_username().equals(user.getUsername())) {

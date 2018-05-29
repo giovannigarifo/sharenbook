@@ -667,8 +667,8 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     void showDialog() {
         DialogFragment newFragment = GenericAlertDialog.newInstance(
-                R.string.borrow_book);
-        newFragment.show(getSupportFragmentManager(), "dialog");
+                R.string.borrow_book, getString(R.string.borrow_book_msg));
+        newFragment.show(getSupportFragmentManager(), "borrow_dialog");
     }
 
     public void doPositiveClick() {

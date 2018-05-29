@@ -156,6 +156,8 @@
     <string name="min_photo_required">Devi aggiungere almeno una foto!</string>
 
     <string name="edit_book">MODIFICA</string>
+    <string name="undo_borrow_req">ANNULLA RICHIESTA</string>
+
 
 
     <!-- ============================== -->
@@ -307,12 +309,16 @@
     <string name="add_to_favorites">Aggiungi ai preferiti</string>
     <string name="contact_owner">Contatta il proprietario</string>
     <string name="borrow_book">Richiedi in prestito</string>
+    <string name="undo_borrow_book">Annulla la richiesta di prestito</string>
+    <string name="undo_borrow_book_msg">Vuoi davvero eliminare la richiesta? Se si, il proprietario sarà informato della tua scelta.</string>
     <string name="del_from_favorites">Rimuovi dai preferiti</string>
     <string name="borrow_req_counter">Richieste: %1$d</string>
     <string name="borrow_book_msg">Vuoi richiedere in prestito questo libro? Il proprietario sarà informato della tua richiesta
     e potrà decidere di accettare o meno.</string>
     <string name="borrow_request_done">Richiesta inviata correttamente</string>
+    <string name="borrow_request_undone">La tua richiesta è stata eliminata</string>
     <string name="borrow_request_fail">La richiesta non può essere inviata in questo momento, riprova più tardi</string>
+    <string name="borrow_request_undone_fail">C\'è stato un errore, riprova più tardi</string>
     <string name="request_already_sent">Richiesta già inviata</string>
 
 

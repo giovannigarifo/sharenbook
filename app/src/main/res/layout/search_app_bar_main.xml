@@ -20,7 +20,7 @@
         <android.support.design.widget.AppBarLayout
             android:id="@+id/sba_appbar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/appbar_height"
+            android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <android.support.constraint.ConstraintLayout
@@ -31,7 +31,7 @@
                     android:id="@+id/sba_searchbar"
                     style="@style/MaterialSearchBarLight"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="40dp"
                     android:layout_margin="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

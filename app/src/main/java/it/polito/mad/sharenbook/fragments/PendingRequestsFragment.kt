@@ -35,14 +35,15 @@ class PendingRequestsFragment : Fragment() {
 
         username = arguments!!.getString(getString(R.string.username_key))
 
-        val rootView: View = inflater.inflate(R.layout.fragment_show_user_borrow_requests, container, false)
+        val rootView: View = inflater.inflate(R.layout.fragment_show_user_pending_requests, container, false)
         linearLayoutManager = LinearLayoutManager(App.getContext())
 
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.rv_borrow_requests) as RecyclerView
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.rv_pending_requests) as RecyclerView
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = requestAdapter
 
         requestsRef = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("pendingRequests")
+        requestsRef.keepSynced(true)
         booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key))
 
         return rootView
@@ -82,10 +83,11 @@ class PendingRequestsFragment : Fragment() {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0])
+                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username)
 
-                        requestAdapter.addRequest(req)
-                        requestAdapter.notifyDataSetChanged()
+                        requestAdapter.addRequest(req, 0)
+                        requestAdapter.notifyItemInserted(0)
+                        linearLayoutManager.scrollToPosition(0)
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
@@ -95,15 +97,15 @@ class PendingRequestsFragment : Fragment() {
 
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {
-
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                //TODO when number of requests changes -> update the element in adapter
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
+                //TODO when number of requests changes -> update the element in adapter
             }
 
-            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
 
             }
 

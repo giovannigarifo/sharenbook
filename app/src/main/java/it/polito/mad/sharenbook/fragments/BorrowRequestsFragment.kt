@@ -17,7 +17,7 @@ import it.polito.mad.sharenbook.model.BorrowRequest
 
 class BorrowRequestsFragment : Fragment() {
 
-    private val requestAdapter : BorrowRequestAdapter = BorrowRequestAdapter()
+    internal lateinit var requestAdapter : BorrowRequestAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var requestsRef : DatabaseReference
     private lateinit var booksDb : DatabaseReference
@@ -29,6 +29,11 @@ class BorrowRequestsFragment : Fragment() {
         fun newInstance(): BorrowRequestsFragment {
             return BorrowRequestsFragment()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestAdapter = BorrowRequestAdapter(activity!!.supportFragmentManager)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,7 +81,7 @@ class BorrowRequestsFragment : Fragment() {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(null, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), 0, book.photosName[0])
+                        val req = BorrowRequest(null, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), 0, book.photosName[0], book.owner_username)
 
                         requestAdapter.addRequest(req)
                         requestAdapter.notifyDataSetChanged()
