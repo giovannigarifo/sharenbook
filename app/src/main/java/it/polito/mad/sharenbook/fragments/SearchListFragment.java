@@ -42,6 +42,7 @@ import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.SearchActivity;
 import it.polito.mad.sharenbook.ShowBookActivity;
+import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.GlideApp;
@@ -275,7 +276,9 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
                             context.startActivity(chatActivity);
                             break;
                         case R.id.show_profile:
-                            // to show user profile
+                            Intent showOwnerProfile = new Intent(context, ShowOthersProfile.class);
+                            showOwnerProfile.putExtra("username", book.getOwner_username());
+                            context.startActivity(showOwnerProfile);
                             break;
                     }
                     return false;

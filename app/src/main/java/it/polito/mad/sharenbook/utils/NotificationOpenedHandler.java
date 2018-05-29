@@ -10,6 +10,7 @@ import com.onesignal.OneSignal;
 import org.json.JSONException;
 
 import it.polito.mad.sharenbook.ChatActivity;
+import it.polito.mad.sharenbook.MyBookActivity;
 
 public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
 
@@ -49,6 +50,16 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
                 context.startActivity(chatActivity);
             }
 
+        }
+        else if (notificationType != null && notificationType.equals("bookRequest")){
+
+            //open myBookActivity -> viewPager child "pendingRequests"
+
+            //TODO: move viewPager to pendingRequests
+
+            Intent myBookActivity = new Intent(context, MyBookActivity.class);
+            myBookActivity.putExtra("openedFromNotification", true);
+            context.startActivity(myBookActivity);
 
         }
 
