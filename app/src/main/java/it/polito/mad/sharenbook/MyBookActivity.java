@@ -11,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.firebase.ui.auth.AuthUI;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -54,7 +52,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
     /* TabView vars*/
     public MyBookActivity.SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
+    public ViewPager mViewPager;
 
     private String username;
 

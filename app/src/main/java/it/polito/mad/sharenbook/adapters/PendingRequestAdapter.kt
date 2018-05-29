@@ -1,8 +1,8 @@
 package it.polito.mad.sharenbook.adapters
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.annotation.LayoutRes
-import android.support.v4.app.FragmentManager
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -14,15 +14,17 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import it.polito.mad.sharenbook.App
+import it.polito.mad.sharenbook.MyBookActivity
 import it.polito.mad.sharenbook.R
 import it.polito.mad.sharenbook.fragments.RequestListFragment
 import it.polito.mad.sharenbook.model.BorrowRequest
 
 
-class PendingRequestAdapter(fragManager : FragmentManager) : RecyclerView.Adapter<PendingRequestAdapter.RequestHolder>()  {
+class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingRequestAdapter.RequestHolder>()  {
 
     private val requests : ArrayList<BorrowRequest> = ArrayList()
-    private val fragManager = fragManager;
+    private val activity = activity as MyBookActivity
+    private val fragManager = this.activity.supportFragmentManager
 
     override fun onBindViewHolder(holder: RequestHolder, position: Int) {
         val itemRequest = requests[position]
@@ -81,16 +83,15 @@ class PendingRequestAdapter(fragManager : FragmentManager) : RecyclerView.Adapte
 
                 val bundle = Bundle()
                 bundle.putStringArrayList("usernameList", requestKeys)
-                bundle.putLongArray("requestTimeList", requestValues)
+                bundle.putLongArray("requestTimeArray", requestValues)
 
                 var requestFragment = RequestListFragment()
                 requestFragment.arguments = bundle
 
                 fragManager.beginTransaction()
-                        .replace(R.id.container, requestFragment)
-                        .addToBackStack(null)
+                        .replace(R.id.inner_container, requestFragment, "requestList")
+                        .addToBackStack("test")
                         .commit();
-
 
                 Log.d("CardView Event", "Cardview Pressed")
             })

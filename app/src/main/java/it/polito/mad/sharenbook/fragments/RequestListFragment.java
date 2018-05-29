@@ -35,12 +35,12 @@ public class RequestListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         ArrayList<String> usernameList = getArguments().getStringArrayList("usernameList");
-        long[] creationTimeArray = getArguments().getLongArray("creationTimeList");
+        long[] requestTimeArray = getArguments().getLongArray("requestTimeArray");
 
         View rootView = inflater.inflate(R.layout.fragment_list_request, container, false);
         ListView requestListView = rootView.findViewById(R.id.list_view_requests);
 
-        RequestsAdapter requestAdapter = new RequestsAdapter(getActivity(), usernameList, creationTimeArray);
+        RequestsAdapter requestAdapter = new RequestsAdapter(getActivity(), usernameList, requestTimeArray);
         requestListView.setAdapter(requestAdapter);
 
         return rootView;
@@ -108,7 +108,7 @@ public class RequestListFragment extends Fragment {
 
                         if (dataSnapshot.exists()) {
                             long picSignature = (long) dataSnapshot.getValue();
-                            UserInterface.showGlideImage(mActivity, imagesStorage.child(username), holder.userImage, picSignature);
+                            UserInterface.showGlideImage(mActivity, imagesStorage.child(username + ".jpg"), holder.userImage, picSignature);
 
                         } else {
                             GlideApp.with(mActivity).load(mActivity.getResources().getDrawable(R.drawable.ic_profile)).into(holder.userImage);

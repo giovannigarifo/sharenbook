@@ -33,7 +33,7 @@ class PendingRequestsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestAdapter = PendingRequestAdapter(activity!!.supportFragmentManager)
+        requestAdapter = PendingRequestAdapter(activity!!)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
