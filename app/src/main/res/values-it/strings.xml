@@ -322,7 +322,9 @@
     <string name="request_already_sent">Richiesta già inviata</string>
     <string name="borrow_request_accepted">Richiesta accettata correttamente</string>
     <string name="borrow_request_rejected">Richiesta rifiutata, sii più generoso ;)</string>
-
+    <string name="request_time">Richiesto il:</string>
+    <string name="accept_request">ACCETTA</string>
+    <string name="reject_request">RIFIUTA</string>
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>
@@ -335,6 +337,5 @@
     <string name="tab_mybooks_pendingRequests">Richieste di scambio</string>
     <string name="tab_mybooks_yourRequests">Richieste effettuate</string>
     <string name="tab_mybooks_takenBooks">Miei scambi</string>
-
 
 </resources>

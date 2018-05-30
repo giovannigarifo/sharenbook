@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="82dp">
+    android:layout_height="94dp">
 
     <ImageView
         android:id="@+id/user_image"
-        android:layout_width="57dp"
-        android:layout_height="57dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginStart="12dp"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -19,14 +19,13 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="15dp"
         android:layout_marginStart="15dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/user_image"
         app:layout_constraintBottom_toTopOf="@id/time_header"
         android:textSize="18sp"
-        android:text="Fabio Bulgarella"
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/primaryText"/>
 
@@ -34,13 +33,13 @@
         android:id="@+id/time_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="18dp"
         app:layout_constraintTop_toBottomOf="@id/username"
         app:layout_constraintStart_toStartOf="@id/username"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textSize="13sp"
         android:fontFamily="@font/roboto_medium"
-        android:text="Richiesto il:" />
+        android:text="@string/request_time" />
 
     <TextView
         android:id="@+id/request_time"
@@ -59,8 +58,8 @@
         android:focusable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="6dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginEnd="7dp"
         android:src="@drawable/ic_more_vert_black_30dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -69,14 +68,14 @@
     <Button
         android:id="@+id/accept_button"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginRight="6dp"
-        android:layout_marginEnd="6dp"
-        android:text="ACCETTA"
-        android:textColor="@color/colorAccent"
+        android:layout_height="28dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginEnd="7dp"
+        android:text="@string/accept_request"
+        android:textColor="@color/greenButton"
         android:textSize="13sp"
-        android:background="@drawable/button_bg_transparent"
+        android:background="@drawable/button_bg_transparent_green"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/reject_button"
         app:layout_constraintEnd_toStartOf="@id/options_button" />
@@ -84,16 +83,14 @@
     <Button
         android:id="@+id/reject_button"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
-        android:layout_marginRight="6dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginBottom="6dp"
-        android:text="RIFIUTA"
+        android:layout_height="28dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/reject_request"
         android:textColor="@color/redButton"
         android:textSize="13sp"
         android:background="@drawable/button_bg_transparent_red"
         app:layout_constraintTop_toBottomOf="@id/accept_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/options_button" />
+        app:layout_constraintStart_toStartOf="@id/accept_button" />
 
 </android.support.constraint.ConstraintLayout>

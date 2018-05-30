@@ -350,6 +350,9 @@
     <string name="request_already_sent">Request already sent</string>
     <string name="borrow_request_accepted">Borrow request accepted</string>
     <string name="borrow_request_rejected">Borrow request rejected</string>
+    <string name="request_time">Time of request:</string>
+    <string name="accept_request">ACCEPT</string>
+    <string name="reject_request">REJECT</string>
 
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>

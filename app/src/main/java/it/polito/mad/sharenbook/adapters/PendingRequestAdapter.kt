@@ -123,7 +123,7 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
 
                 fragManager.beginTransaction()
                         .replace(R.id.inner_container, requestFragment, "requestList")
-                        .addToBackStack(null)
+                        .addToBackStack("requestList")
                         .commit()
 
                 Log.d("CardView Event", "Cardview Pressed")
