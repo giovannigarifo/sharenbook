@@ -133,7 +133,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter takenBooksAdapter = new RVAdapter(takenList);
+                        RVAdapter takenBooksAdapter = new RVAdapter(takenList, 0);
                         takenBooksRV.setAdapter(takenBooksAdapter);
                         //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -166,7 +166,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter takenBooksAdapter = new RVAdapter(takenList);
+                        RVAdapter takenBooksAdapter = new RVAdapter(takenList,1);
                         givenBooksRV.setAdapter(takenBooksAdapter);
                         //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -185,6 +185,7 @@ public class ExchangesFragment extends Fragment {
 
         private StorageReference mBookImagesStorage;
         private List<Exchange> exchangeList;
+        private int listType;
 
         class ViewHolder extends RecyclerView.ViewHolder {
             ConstraintLayout mLayout;
@@ -203,9 +204,10 @@ public class ExchangesFragment extends Fragment {
             }
         }
 
-        RVAdapter(List<Exchange> exchanges) {
+        RVAdapter(List<Exchange> exchanges, int listType) {
             mBookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
             exchangeList = exchanges;
+            this.listType = listType;
         }
 
         @NonNull
@@ -270,6 +272,10 @@ public class ExchangesFragment extends Fragment {
                             return false;
                     }
                 });
+
+                if(listType == 1){
+                    popup.getMenu().getItem(2).setVisible(false);
+                }
 
                 popup.show();
             });
