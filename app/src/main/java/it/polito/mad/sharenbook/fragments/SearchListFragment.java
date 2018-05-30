@@ -1,12 +1,10 @@
 package it.polito.mad.sharenbook.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +17,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -211,13 +208,13 @@ class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.SearchBoo
         photo.setImageResource(R.drawable.book_photo_placeholder);
 
         Book book = searchResult.get(position);
-        String fileName = (book.getPhotosName().size() > 1) ? book.getPhotosName().get(1) : book.getPhotosName().get(0);
+        String fileName = book.getPhotosName().get(0);
         StorageReference thumbnailOrFirstPhotoRef = FirebaseStorage.getInstance().getReference().child("book_images/" + book.getBookId() + "/" + fileName);
 
         GlideApp.with(context).load(thumbnailOrFirstPhotoRef)
                 .placeholder(R.drawable.book_photo_placeholder)
                 .error(R.drawable.book_photo_placeholder)
-                .transition(DrawableTransitionOptions.withCrossFade(500))
+                .transition(DrawableTransitionOptions.withCrossFade(250))
                 .into(photo);
 
         //title
