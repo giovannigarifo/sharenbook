@@ -246,21 +246,18 @@ public class RequestListFragment extends Fragment {
             transaction.put(getString(R.string.books_key) + "/" + bookId + "/shared", true);
 
             // Execute transaction
-            rootRef.updateChildren(transaction, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    if (databaseError == null) {
+            rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
 
-                        // Send notification
-                        //sendNotification(selectedBookOwner, username);
-                        Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
-                        if (getFragmentManager() != null) {
-                            getFragmentManager().popBackStack();
-                        }
-
-                    } else {
-                        Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                    // Send notification
+                    //sendNotification(selectedBookOwner, username);
+                    Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
+                    if (getFragmentManager() != null) {
+                        getFragmentManager().popBackStack();
                     }
+
+                } else {
+                    Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
                 }
             });
         }

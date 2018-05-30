@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -32,18 +30,17 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
-import it.polito.mad.sharenbook.ShowCaseActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
-import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GlideApp;
-import it.polito.mad.sharenbook.utils.Utils;
 
 
 public class ExchangesFragment extends Fragment {
@@ -280,7 +277,7 @@ public class ExchangesFragment extends Fragment {
                             return true;
 
                         case R.id.return_book:
-                            //TODO return book
+                            returnBook(exchange);
                             return true;
 
                         default:
@@ -302,6 +299,52 @@ public class ExchangesFragment extends Fragment {
         @Override
         public int getItemCount() {
             return exchangeList.size();
+        }
+
+        private void returnBook(Exchange ex) {
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            // Create borrower returned book map
+            Map<String, Object> borrowerReturnedBookMap = new HashMap<>();
+            borrowerReturnedBookMap.put("counterpart", ex.getCounterpart());
+            borrowerReturnedBookMap.put("bookId", ex.getBookId());
+            borrowerReturnedBookMap.put("bookTitle", ex.getBookTitle());
+            borrowerReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
+            borrowerReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
+            borrowerReturnedBookMap.put("given", false);
+
+            // Create lender returned book map
+            Map<String, Object> lenderReturnedBookMap = new HashMap<>();
+            lenderReturnedBookMap.put("counterpart", username);
+            lenderReturnedBookMap.put("bookId", ex.getBookId());
+            lenderReturnedBookMap.put("bookTitle", ex.getBookTitle());
+            lenderReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
+            lenderReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
+            lenderReturnedBookMap.put("given", true);
+
+            // Create transaction Map
+            Map<String, Object> transaction = new HashMap<>();
+            transaction.put(getString(R.string.shared_books_key) + "/" + ex.getCounterpart() + "/" + getString(R.string.given_books_key) + "/" + ex.getExchangeId(), null);
+            transaction.put(getString(R.string.shared_books_key) + "/" + username + "/" + getString(R.string.taken_books_key) + "/" + ex.getExchangeId(), null);
+            transaction.put(getString(R.string.shared_books_key) + "/" + ex.getCounterpart() + "/" + getString(R.string.archive_books_key) + "/" + ex.getExchangeId(), lenderReturnedBookMap);
+            transaction.put(getString(R.string.shared_books_key) + "/" + username + "/" + getString(R.string.archive_books_key) + "/" + ex.getExchangeId(), borrowerReturnedBookMap);
+
+            // Set book as not shared (available again)
+            transaction.put(getString(R.string.books_key) + "/" + ex.getBookId() + "/shared", false);
+
+            // Execute transaction
+            rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
+                if (databaseError == null) {
+
+                    // Send notification
+                    //sendNotification(selectedBookOwner, username);
+                    Toast.makeText(getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
+
+                } else {
+                    Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 

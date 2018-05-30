@@ -326,6 +326,7 @@
     <string name="request_time">Richiesto il:</string>
     <string name="accept_request">ACCETTA</string>
     <string name="reject_request">RIFIUTA</string>
+    <string name="book_returned_correctly">Libro restituito con successo! Ricordati di lasciare una recensione, grazie.</string>
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>

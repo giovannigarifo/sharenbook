@@ -4,6 +4,7 @@ public class Exchange {
 
     private String exchangeId, bookId, bookPhoto, bookTitle, counterpart;
     private long creationTime;
+    private boolean given;
 
 
     public Exchange(){}
@@ -57,7 +58,11 @@ public class Exchange {
         this.creationTime = creationTime;
     }
 
+    public boolean isGiven() {
+        return given;
+    }
 
-
-
+    public void setGiven(boolean given) {
+        this.given = given;
+    }
 }
