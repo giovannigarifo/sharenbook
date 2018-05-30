@@ -180,7 +180,6 @@ public class ExchangesFragment extends Fragment {
                         // Specify an adapter
                         RVAdapter takenBooksAdapter = new RVAdapter(takenList,1);
                         givenBooksRV.setAdapter(takenBooksAdapter);
-                        //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
 
                     @Override

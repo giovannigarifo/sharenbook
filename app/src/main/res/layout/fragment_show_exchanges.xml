@@ -42,6 +42,7 @@
                     android:paddingBottom="12dp">
 
                     <TextView
+                        android:id="@+id/takenBooksTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="20sp"
                         android:layout_marginStart="12dp"
@@ -72,15 +73,21 @@
 
                     <TextView
                         android:id="@+id/noTakenBooksMsg"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:visibility="invisible"
-                        android:layout_margin="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginRight="12dp"
                         android:textColor="@color/primaryText"
                         android:textSize="14sp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="@string/no_taken_books"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        android:justificationMode="inter_word"
+                        app:layout_constraintStart_toStartOf="@id/takenBooksTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/takenBooksTitle" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/takenBooksRV"
@@ -117,6 +124,7 @@
                     android:paddingBottom="12dp">
 
                     <TextView
+                        android:id="@+id/givenBooksTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="20sp"
                         android:layout_marginStart="12dp"
@@ -147,15 +155,21 @@
 
                     <TextView
                         android:id="@+id/noGivenBooksMsg"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:visibility="invisible"
-                        android:layout_margin="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginBottom="16dp"
                         android:textColor="@color/primaryText"
                         android:textSize="14sp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="@string/no_given_books"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        android:justificationMode="inter_word"
+                        app:layout_constraintStart_toStartOf="@id/givenBooksTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/givenBooksTitle" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/givenBooksRV"
