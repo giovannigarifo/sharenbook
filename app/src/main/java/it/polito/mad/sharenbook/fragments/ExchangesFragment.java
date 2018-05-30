@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ public class ExchangesFragment extends Fragment {
     private DatabaseReference givenBooksRef;
 
     private RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
+    private TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV;
 
     private String username;
 
@@ -71,6 +73,11 @@ public class ExchangesFragment extends Fragment {
         username = userData.getString(getString(R.string.username_copy_key), "");
         takenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/taken_books");
         givenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/given_books");
+
+        noTakenTV = rootView.findViewById(R.id.noTakenBooksMsg);
+        noGivenTV = rootView.findViewById(R.id.noGivenBooksMsg);
+        takenMoreTV = rootView.findViewById(R.id.takenMoreButton);
+        givenMoreTV = rootView.findViewById(R.id.givenMoreButton);
 
         loadTakenBooks();
         loadGivenBooks();
@@ -122,8 +129,12 @@ public class ExchangesFragment extends Fragment {
 
                         List<Exchange> takenList = new ArrayList<>();
 
-                        if (dataSnapshot.getChildrenCount() == 0)
+                        if (dataSnapshot.getChildrenCount() == 0) {
+                            takenBooksRV.setVisibility(View.GONE);
+                            noTakenTV.setVisibility(View.VISIBLE);
+                            takenMoreTV.setVisibility(View.INVISIBLE);
                             return;
+                        }
 
                         // Read exchanges
                         for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
@@ -155,8 +166,12 @@ public class ExchangesFragment extends Fragment {
 
                         List<Exchange> takenList = new ArrayList<>();
 
-                        if (dataSnapshot.getChildrenCount() == 0)
+                        if (dataSnapshot.getChildrenCount() == 0) {
+                            givenBooksRV.setVisibility(View.GONE);
+                            noGivenTV.setVisibility(View.VISIBLE);
+                            givenMoreTV.setVisibility(View.INVISIBLE);
                             return;
+                        }
 
                         // Read exchanges
                         for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
@@ -275,6 +290,8 @@ public class ExchangesFragment extends Fragment {
 
                 if(listType == 1){
                     popup.getMenu().getItem(2).setVisible(false);
+                    String popupItemTitle = getString(R.string.contact_borrower, exchange.getCounterpart());
+                    popup.getMenu().getItem(0).setTitle(popupItemTitle);
                 }
 
                 popup.show();

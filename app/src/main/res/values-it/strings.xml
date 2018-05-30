@@ -343,5 +343,9 @@
     <string name="exchanges_taken">Presi in prestito</string>
     <string name="exchanges_given">Dati in prestito</string>
     <string name="exchanges_archive">Archivio scambi</string>
+    <string name="no_taken_books">Non hai libri presi in presito. Dovresti fare una richiesta per un libro di tuo interesse e attendere che questa venga accettata dal proprietario. </string>
+    <string name="no_given_books">Non hai libri dati in prestito. Attendi che qualcuno esprima interesse per un tuo libro e accetta la sua richiesta di prestito.</string>
+    <string name="contact_borrower">Contatta %1$s</string>
+
 
 </resources>

@@ -70,6 +70,18 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <TextView
+                        android:id="@+id/noTakenBooksMsg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:layout_margin="16dp"
+                        android:textColor="@color/primaryText"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:text="@string/no_taken_books"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/takenBooksRV"
                         android:layout_width="match_parent"
@@ -132,6 +144,18 @@
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/noGivenBooksMsg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="invisible"
+                        android:layout_margin="16dp"
+                        android:textColor="@color/primaryText"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:text="@string/no_given_books"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/givenBooksRV"
