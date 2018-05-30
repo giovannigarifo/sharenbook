@@ -32,6 +32,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
 import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
+import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncementsFragment;
@@ -242,7 +243,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     fragment.setArguments(bundle);
                     break;
                 case 3:
-                    fragment = new ProfileReviewsFragment();
+                    fragment = new ExchangesFragment();
                     break;
             }
             return fragment;

@@ -34,6 +34,7 @@
     <string name="confirm">Conferma</string>
     <string name="contact_user">Contatta utente</string>
     <string name="show_profile">Mostra profilo</string>
+    <string name="return_book">Restituisci libro</string>
     <string name="personal_info">INFORMAZIONI PERSONALI</string>
     <string name="preferred_categories">GENERI PREFERITI</string>
 
@@ -337,5 +338,10 @@
     <string name="tab_mybooks_pendingRequests">Richieste di scambio</string>
     <string name="tab_mybooks_yourRequests">Richieste effettuate</string>
     <string name="tab_mybooks_takenBooks">Miei scambi</string>
+
+    <!-- Exchange Fragment -->
+    <string name="exchanges_taken">Presi in prestito</string>
+    <string name="exchanges_given">Dati in prestito</string>
+    <string name="exchanges_archive">Archivio scambi</string>
 
 </resources>

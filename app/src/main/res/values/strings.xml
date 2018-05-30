@@ -50,6 +50,7 @@
     <string name="confirm">Confirm</string>
     <string name="contact_user">Contact user</string>
     <string name="show_profile">Show profile</string>
+    <string name="return_book">Return book</string>
     <string name="personal_info">PERSONAL INFO</string>
     <string name="preferred_categories">PREFERRED GENRES</string>
     <string name="preferred_categories2">Preferred genres</string>
@@ -370,7 +371,9 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Exchange Fragment -->
+    <string name="exchanges_taken">Taken books</string>
+    <string name="exchanges_given">Given books</string>
+    <string name="exchanges_archive">Exchange history</string>
 
 </resources>

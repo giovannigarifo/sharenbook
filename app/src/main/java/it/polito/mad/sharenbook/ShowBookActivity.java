@@ -86,10 +86,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             }
         }
 
-        // Get current user info
-        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-        username = userData.getString(getString(R.string.username_copy_key), "");
+
     }
 
     @Override
@@ -140,6 +137,11 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     }
 
     private void initActivity() {
+
+        // Get current user info
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(getString(R.string.username_copy_key), "");
 
         // Setup firebase
         DatabaseReference favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
