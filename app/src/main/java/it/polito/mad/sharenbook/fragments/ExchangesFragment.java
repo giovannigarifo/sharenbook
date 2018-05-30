@@ -312,6 +312,7 @@ public class ExchangesFragment extends Fragment {
             borrowerReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
             borrowerReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
             borrowerReturnedBookMap.put("given", false);
+            borrowerReturnedBookMap.put("reviewed", false);
 
             // Create lender returned book map
             Map<String, Object> lenderReturnedBookMap = new HashMap<>();
@@ -321,6 +322,7 @@ public class ExchangesFragment extends Fragment {
             lenderReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
             lenderReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
             lenderReturnedBookMap.put("given", true);
+            lenderReturnedBookMap.put("reviewed", false);
 
             // Create transaction Map
             Map<String, Object> transaction = new HashMap<>();
