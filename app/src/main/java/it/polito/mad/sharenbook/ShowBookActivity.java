@@ -81,6 +81,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             if (book == null) {
                 String bookId = bundle.getString("bookId");
                 getBookData(bookId);
+            } else {
+                initActivity();
             }
         }
 
@@ -88,31 +90,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
-
-        // Setup firebase
-        DatabaseReference favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
-        favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
-
-        // Setup favorite button
-        setupFavoriteButton();
-
-        // Setup RecyclerView
-        RecyclerView mRecyclerView = findViewById(R.id.showbook_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-
-        // Use a zoom linear layout manager
-        RecyclerView.LayoutManager mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // Specify an adapter
-        RecyclerView.Adapter mAdapter = new MyAdapter(book, this);
-        mRecyclerView.setAdapter(mAdapter);
-
-        // Load book data into view
-        loadViewWithBookData();
-
-        // Setup fab button for message with user
-        setupFabContactUser();
     }
 
     @Override
@@ -162,6 +139,34 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         outState.putBoolean("photoLoaded", true);
     }
 
+    private void initActivity() {
+
+        // Setup firebase
+        DatabaseReference favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
+
+        // Setup favorite button
+        setupFavoriteButton();
+
+        // Setup RecyclerView
+        RecyclerView mRecyclerView = findViewById(R.id.showbook_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        // Use a zoom linear layout manager
+        RecyclerView.LayoutManager mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // Specify an adapter
+        RecyclerView.Adapter mAdapter = new MyAdapter(book, this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        // Load book data into view
+        loadViewWithBookData();
+
+        // Setup fab button for message with user
+        setupFabContactUser();
+    }
+
     private void getBookData(String bookId) {
 
         DatabaseReference bookRef = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key)).child(bookId);
@@ -172,6 +177,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
                     book = dataSnapshot.getValue(Book.class);
                     book.setBookId(dataSnapshot.getKey());
+                    initActivity();
+
                 } else {
                     Log.d("ERROR", "No book found with this id -> " + bookId);
                 }
