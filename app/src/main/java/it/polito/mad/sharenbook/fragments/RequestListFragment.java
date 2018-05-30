@@ -215,20 +215,28 @@ public class RequestListFragment extends Fragment {
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
             // Get shared book id
-            String sharingId = rootRef.child(getString(R.string.users_key)).child(userId).child(getString(R.string.shared_books_key)).push().getKey();
+            String exchangeId = rootRef.child(getString(R.string.shared_books_key)).push().getKey();
 
-            // Create shared book map
-            Map<String, Object> sharedBookMap = new HashMap<>();
-            sharedBookMap.put("borrower", username);
-            sharedBookMap.put("bookId", bookId);
-            sharedBookMap.put("bookTitle", bookTitle);
-            sharedBookMap.put("bookPhoto", bookPhoto);
-            sharedBookMap.put("creationTime", ServerValue.TIMESTAMP);
-            sharedBookMap.put("returned", false);
+            // Create given book map
+            Map<String, Object> givenBookMap = new HashMap<>();
+            givenBookMap.put("counterpart", username);
+            givenBookMap.put("bookId", bookId);
+            givenBookMap.put("bookTitle", bookTitle);
+            givenBookMap.put("bookPhoto", bookPhoto);
+            givenBookMap.put("creationTime", ServerValue.TIMESTAMP);
+
+            // Create given book map
+            Map<String, Object> takenBookMap = new HashMap<>();
+            takenBookMap.put("counterpart", bookOwner);
+            takenBookMap.put("bookId", bookId);
+            takenBookMap.put("bookTitle", bookTitle);
+            takenBookMap.put("bookPhoto", bookPhoto);
+            takenBookMap.put("creationTime", ServerValue.TIMESTAMP);
 
             // Create transaction Map
             Map<String, Object> transaction = new HashMap<>();
-            transaction.put(getString(R.string.users_key) + "/" + userId + "/" + getString(R.string.shared_books_key) + "/" + sharingId, sharedBookMap);
+            transaction.put(getString(R.string.shared_books_key) + "/" + bookOwner + "/" + getString(R.string.given_books_key) + "/" + exchangeId, givenBookMap);
+            transaction.put(getString(R.string.shared_books_key) + "/" + username + "/" + getString(R.string.taken_books_key) + "/" + exchangeId, takenBookMap);
 
             // Part of transaction to remove request data
             transaction.put(getString(R.string.usernames_key) + "/" + username + "/" + getString(R.string.borrow_requests_key) + "/" + bookId, null);

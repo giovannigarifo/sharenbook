@@ -303,6 +303,8 @@
     <string name="pic_signature_key" translatable="false">picSignature</string>
     <string name="user_images_key" translatable="false">images</string>
     <string name="shared_books_key" translatable="false">shared_books</string>
+    <string name="given_books_key" translatable="false">given_books</string>
+    <string name="taken_books_key" translatable="false">taken_books</string>
 
     <string name="mba_title" translatable="false">My books</string>
     <string name="nav_my_books">My books</string>
