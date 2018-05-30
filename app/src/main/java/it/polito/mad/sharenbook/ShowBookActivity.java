@@ -75,7 +75,13 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         // Get book info
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
+
             book = bundle.getParcelable("book");
+
+            if (book == null) {
+                String bookId = bundle.getString("bookId");
+                getBookData(bookId);
+            }
         }
 
         // Get current user info
@@ -154,6 +160,27 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("photoLoaded", true);
+    }
+
+    private void getBookData(String bookId) {
+
+        DatabaseReference bookRef = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key)).child(bookId);
+        bookRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    book = dataSnapshot.getValue(Book.class);
+                    book.setBookId(dataSnapshot.getKey());
+                } else {
+                    Log.d("ERROR", "No book found with this id -> " + bookId);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void setupFavoriteButton() {
