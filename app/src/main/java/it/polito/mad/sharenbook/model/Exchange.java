@@ -5,10 +5,18 @@ public class Exchange {
     private String exchangeId, bookId, bookPhoto, bookTitle, counterpart;
     private long creationTime;
     private boolean given;
-
+    private boolean reviewed;
 
     public Exchange(){}
 
+
+    public boolean isReviewed() {
+        return reviewed;
+    }
+
+    public void setReviewed(boolean reviewed) {
+        this.reviewed = reviewed;
+    }
 
     public String getExchangeId() {
         return exchangeId;

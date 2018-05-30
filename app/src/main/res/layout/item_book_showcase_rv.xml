@@ -69,11 +69,30 @@
         android:paddingLeft="-2dp"
         android:paddingStart="-2dp"
         android:textSize="12sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_title" />
+
+    <TextView
+        android:id="@+id/exchange_review_state"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="2dp"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:textColor="@color/greenButton"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_location" />
 
 </android.support.constraint.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -48,9 +49,11 @@ public class ExchangesFragment extends Fragment {
     /** FireBase objects */
     private DatabaseReference takenBooksRef;
     private DatabaseReference givenBooksRef;
+    private DatabaseReference archiveBooksRef;
 
     private RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
     private TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV;
+    private CardView archiveCV;
 
     private String username;
 
@@ -70,14 +73,18 @@ public class ExchangesFragment extends Fragment {
         username = userData.getString(getString(R.string.username_copy_key), "");
         takenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/taken_books");
         givenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/given_books");
+        archiveBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/archive_books");
 
         noTakenTV = rootView.findViewById(R.id.noTakenBooksMsg);
         noGivenTV = rootView.findViewById(R.id.noGivenBooksMsg);
         takenMoreTV = rootView.findViewById(R.id.takenMoreButton);
         givenMoreTV = rootView.findViewById(R.id.givenMoreButton);
 
+        archiveCV = rootView.findViewById(R.id.exchangeArchive);
+
         loadTakenBooks();
         loadGivenBooks();
+        loadArchiveBooks();
 
         return rootView;
     }
@@ -189,6 +196,40 @@ public class ExchangesFragment extends Fragment {
                 });
     }
 
+    private void loadArchiveBooks() {
+
+        // Load Archive Book RV
+        archiveBooksRef.orderByChild("creationTime")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        List<Exchange> archiveList = new ArrayList<>();
+
+                        if (dataSnapshot.getChildrenCount() == 0)
+                            return;
+
+                        // Read exchanges
+                        for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
+                            Exchange exchange = exchangeSnapshot.getValue(Exchange.class);
+                            exchange.setExchangeId(exchangeSnapshot.getKey());
+                            archiveList.add(0, exchange);
+                        }
+
+                        // Specify an adapter
+                        RVAdapter archiveBooksAdapter = new RVAdapter(archiveList, 2);
+                        archiveBooksRV.setAdapter(archiveBooksAdapter);
+                        archiveCV.setVisibility(View.VISIBLE);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("ERROR", "There was an error while fetching taken books list");
+                    }
+                });
+    }
+
     /**
      * Recycler View Adapter Class
      */
@@ -204,6 +245,7 @@ public class ExchangesFragment extends Fragment {
             TextView bookTitle;
             TextView bookDistance;
             ImageView bookOptions;
+            TextView bookReviewState;
 
             ViewHolder(ConstraintLayout layout) {
                 super(layout);
@@ -212,6 +254,7 @@ public class ExchangesFragment extends Fragment {
                 bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
                 bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
                 bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
+                bookReviewState = layout.findViewById(R.id.exchange_review_state);
             }
         }
 
@@ -254,6 +297,21 @@ public class ExchangesFragment extends Fragment {
                 App.getContext().startActivity(i);
             });
 
+            if(listType == 2){
+                holder.bookReviewState.setVisibility(View.VISIBLE);
+
+                if(!exchange.isReviewed()){
+                    holder.bookReviewState.setText(R.string.not_reviewed);
+                    holder.bookReviewState.setTextColor(getResources().getColor(R.color.colorPrimary));
+
+                    holder.bookReviewState.setOnClickListener(view -> Toast.makeText(getContext(), "To be implemented.", Toast.LENGTH_SHORT).show());
+
+                } else {
+                    holder.bookReviewState.setText(R.string.exchange_reviewed);
+                }
+
+            }
+
             // Setup options menu
             holder.bookOptions.setOnClickListener(v -> {
 
@@ -284,7 +342,7 @@ public class ExchangesFragment extends Fragment {
                     }
                 });
 
-                if(listType == 1){
+                if(listType != 0){
                     popup.getMenu().getItem(2).setVisible(false);
                     String popupItemTitle = getString(R.string.contact_borrower, exchange.getCounterpart());
                     popup.getMenu().getItem(0).setTitle(popupItemTitle);

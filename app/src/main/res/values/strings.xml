@@ -380,6 +380,8 @@
     <string name="no_taken_books">You have no borrowed books. You should make a request for a book of your interest and wait for it to be accepted by the owner. </string>
     <string name="no_given_books">You did not lend any of your books. Wait for someone to do a borrow request for one of your books and accept it.</string>
     <string name="contact_borrower">Contact %1$s</string>
+    <string name="not_reviewed">LEAVE A REVIEW</string>
+    <string name="exchange_reviewed">REVIEWED</string>
 
 
 </resources>
