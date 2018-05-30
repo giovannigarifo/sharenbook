@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -25,12 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShareBookActivity;
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.Utils;
 
 
 public class ShowMyAnnouncementsFragment extends Fragment {
@@ -117,36 +121,19 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
                     if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
 
-                        /*AlertDialog.Builder no_books = new AlertDialog.Builder(App.getContext()); //give a context to Dialog
-                        no_books.setTitle(R.string.no_books_alert_title);
-                        no_books.setMessage(R.string.no_books_suggestion);
-                        no_books.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-
-                                    Intent i = new Intent (App.getContext(), ShareBookActivity.class);
-                                    startActivity(i);
-                                    getActivity().finish();
-
-                                }
-                        ).setNegativeButton(android.R.string.cancel,
-                                (dialog, which) -> {
-                                    dialog.dismiss();
-
-                                }
-                        );*/
-
-                        //no_books.show();
-
-                        Log.d("No books", "I am here");
+                        //TODO this one
+                        showNoBooksDialog();
 
                     }else{ /** there are announcements */
 
                         if(books.isEmpty()){
 
                             Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
+                            List<DataSnapshot> announcesReverse = Utils.toReverseList(announces);
 
-                            for(DataSnapshot announce : announces){
+                            for(DataSnapshot announce : announcesReverse){
 
-                                booksDb.child((String)announce.getValue()).orderByChild("creationTime").addListenerForSingleValueEvent(new ValueEventListener() {
+                                booksDb.child((String)announce.getValue()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -178,6 +165,18 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
             }
         });
+    }
+
+    void showNoBooksDialog() {
+        DialogFragment newFragment = GenericAlertDialog.newInstance(
+                R.string.no_books_alert_title, getString(R.string.no_books_suggestion));
+        newFragment.show(getFragmentManager(), "no_books_dialog");
+    }
+
+    void showShareBook(){
+        Intent i = new Intent (App.getContext(), ShareBookActivity.class);
+        startActivity(i);
+        getActivity().finish();
     }
 
 }

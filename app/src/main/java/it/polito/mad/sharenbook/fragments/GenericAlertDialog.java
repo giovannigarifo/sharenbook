@@ -39,6 +39,9 @@ public class GenericAlertDialog extends DialogFragment {
                             Activity activity = getActivity();
                             if(activity instanceof ShowCaseActivity && tag.equals("borrow_dialog"))
                                 ((ShowCaseActivity)activity).doPositiveClick();
+                            else if(activity instanceof MyBookActivity && tag.equals("no_books_dialog")){
+                                ((ShowMyAnnouncementsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).showShareBook();
+                            }
                             else if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
                                 ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.requestAccepted(username);
                             }

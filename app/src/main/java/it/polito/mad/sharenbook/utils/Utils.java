@@ -12,6 +12,7 @@ import java.net.URL;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -82,6 +83,22 @@ public class Utils {
     private static double haversin(double val) {
         return Math.pow(Math.sin(val / 2), 2);
     }
+
+
+    public static <E> List<E> toReverseList(Iterable<E> iterable) {
+        if(iterable instanceof List) {
+            return (List<E>) iterable;
+        }
+        ArrayList<E> list = new ArrayList<E>();
+        if(iterable != null) {
+            for(E e: iterable) {
+                list.add(e);
+            }
+        }
+        Collections.reverse(list);
+        return list;
+    }
+
 
     public static void sendNotification(String jsonBody){
         AsyncTask.execute(() -> {

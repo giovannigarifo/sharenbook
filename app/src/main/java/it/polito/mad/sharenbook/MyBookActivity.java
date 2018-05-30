@@ -77,20 +77,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userPreferences.getString(getString(R.string.username_copy_key), "void");
 
-        // Setup toolbar
-        /*
-        Toolbar sbaToolbar = findViewById(R.id.sba_toolbar);
-        setSupportActionBar(sbaToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.mba_title);
+        if(getIntent().getBooleanExtra("openedFromNotification", false)){
+            mViewPager.setCurrentItem(getIntent().getIntExtra("showPageNum", 0));
+        }
 
-
-
-
-        // Setup navbar
-        setupNavbar();
-        */
     }
 
     @Override

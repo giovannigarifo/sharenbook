@@ -145,11 +145,9 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     public void addItem(Book announce){
 
         if(!announcements.contains(announce))
-            announcements.add(announce);
+            announcements.add(getItemCount(), announce);
 
-        this.notifyItemInserted(announcements.size()-1);
-
-
+        this.notifyItemInserted(getItemCount());
     }
 
     public void removeItem(int position){

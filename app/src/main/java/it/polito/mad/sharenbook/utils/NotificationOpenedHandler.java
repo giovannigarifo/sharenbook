@@ -53,12 +53,19 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
         }
         else if (notificationType != null && notificationType.equals("bookRequest")){
 
-            //open myBookActivity -> viewPager child "pendingRequests"
+            Intent myBookActivity = new Intent(context, MyBookActivity.class);
+            myBookActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            myBookActivity.putExtra("openedFromNotification", true);
+            myBookActivity.putExtra("showPageNum", 1);
+            context.startActivity(myBookActivity);
 
-            //TODO: move viewPager to pendingRequests
+        }
+        else if (notificationType != null && notificationType.equals("AcceptedRequest")){
 
             Intent myBookActivity = new Intent(context, MyBookActivity.class);
+            myBookActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             myBookActivity.putExtra("openedFromNotification", true);
+            myBookActivity.putExtra("showPageNum", 3);
             context.startActivity(myBookActivity);
 
         }
