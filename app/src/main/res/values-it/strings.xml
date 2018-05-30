@@ -326,6 +326,10 @@
     <string name="request_time">Richiesto il:</string>
     <string name="accept_request">ACCETTA</string>
     <string name="reject_request">RIFIUTA</string>
+    <string name="accept_req_dialog">Accetta una richiesta di prestito per un tuo libro</string>
+    <string name="accept_req_dialog_msg">Vuoi accettare la richiesta di prestito di %1$s?</string>
+    <string name="reject_req_dialog">Rifuta una richiesta di prestito per un tuo libro</string>
+    <string name="reject_req_dialog_msg">Vuoi davvero rifiutare la richiesta di prestito di %1$s?</string>
     <string name="book_returned_correctly">Libro restituito con successo! Ricordati di lasciare una recensione, grazie.</string>
 
     <!-- Books Cardview -->

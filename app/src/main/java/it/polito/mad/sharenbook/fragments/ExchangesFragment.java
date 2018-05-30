@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -245,7 +246,8 @@ public class ExchangesFragment extends Fragment {
             TextView bookTitle;
             TextView bookDistance;
             ImageView bookOptions;
-            TextView bookReviewState;
+            TextView tvReviewDone;
+            Button btnNotReviewed;
 
             ViewHolder(ConstraintLayout layout) {
                 super(layout);
@@ -254,7 +256,9 @@ public class ExchangesFragment extends Fragment {
                 bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
                 bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
                 bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
-                bookReviewState = layout.findViewById(R.id.exchange_review_state);
+                tvReviewDone = layout.findViewById(R.id.exchange_reviewed);
+                btnNotReviewed = layout.findViewById(R.id.exchange_not_reviewed);
+
             }
         }
 
@@ -298,16 +302,15 @@ public class ExchangesFragment extends Fragment {
             });
 
             if(listType == 2){
-                holder.bookReviewState.setVisibility(View.VISIBLE);
 
                 if(!exchange.isReviewed()){
-                    holder.bookReviewState.setText(R.string.not_reviewed);
-                    holder.bookReviewState.setTextColor(getResources().getColor(R.color.colorPrimary));
 
-                    holder.bookReviewState.setOnClickListener(view -> Toast.makeText(getContext(), "To be implemented.", Toast.LENGTH_SHORT).show());
+                    holder.btnNotReviewed.setVisibility(View.VISIBLE);
+                    //TODO connect to create Review activity -> pass from here what is needed for the activity
+                    holder.btnNotReviewed.setOnClickListener(view -> Toast.makeText(getContext(), "To be implemented.", Toast.LENGTH_SHORT).show());
 
                 } else {
-                    holder.bookReviewState.setText(R.string.exchange_reviewed);
+                    holder.tvReviewDone.setVisibility(View.VISIBLE);
                 }
 
             }

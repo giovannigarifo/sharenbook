@@ -43,6 +43,7 @@ import it.polito.mad.sharenbook.adapters.MessageAdapter;
 import it.polito.mad.sharenbook.model.Message;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
+import it.polito.mad.sharenbook.utils.Utils;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -236,7 +237,20 @@ public class ChatActivity extends AppCompatActivity {
                 map.put("user", username);
                 map.put("date_time", ServerValue.TIMESTAMP);
                 map.put("viewed", true);
-                sendNotification(recipientUsername, username);
+
+                String strJsonBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + recipientUsername + "\"}],"
+
+                        + "\"data\": {\"notificationType\": \"message\", \"senderName\": \"" + username + "\", \"senderUid\": \"" + userID + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " sent you a message!\", " +
+                        "\"it\": \"" + username + " ti ha inviato un messaggio!\"},"
+                        + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"
+                        + "}";
+
+                Utils.sendNotification(strJsonBody);
+
                 chatToOthersReference.push().setValue(map);
                 Map<String,Object> map2 = new HashMap<>();
                 map2.put("message", messageText);
@@ -276,88 +290,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         chatOpened = false;
-    }
-
-
-
-    public void sendNotification(String destination, String sender){
-        AsyncTask.execute(() -> {
-            int SDK_INT = Build.VERSION.SDK_INT;
-            if(SDK_INT > 8){
-
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                        .permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-
-                HttpsURLConnection conn = null;
-                OutputStream outputStream = null;
-
-                try{
-
-                    String jsonResponse;
-
-                    URL url = new URL("https://onesignal.com/api/v1/notifications");
-                    conn = (HttpsURLConnection) url.openConnection();
-                    conn.setUseCaches(false);
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-
-                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                    conn.setRequestProperty("Authorization", "Basic ZTc3MjExODEtYmM4Yy00YjU5LWFjNWEtM2VlNGNmYTA0OWU1");
-                    conn.setRequestMethod("POST");
-
-                    String strJsonBody = "{"
-                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
-
-                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
-
-                            + "\"data\": {\"notificationType\": \"message\", \"senderName\": \"" + sender + "\", \"senderUid\": \"" + userID + "\"},"
-                            + "\"contents\": {\"en\": \"" + sender + " sent you a message!\", " +
-                                             "\"it\": \"" + sender + " ti ha inviato un messaggio!\"},"
-                            + "\"headings\": {\"en\": \"New message!\", \"it\": \"Nuovo messaggio!\"}"
-                            + "}";
-
-                    Log.d("strJsonBody:" , strJsonBody);
-
-                    byte[] sendBytes = strJsonBody.getBytes("UTF-8");
-                    conn.setFixedLengthStreamingMode(sendBytes.length);
-
-                    outputStream = conn.getOutputStream();
-                    outputStream.write(sendBytes);
-
-                    int httpResponse = conn.getResponseCode();
-                    Log.d("httpResponse: " , "" + httpResponse);
-
-                    if (httpResponse >= HttpURLConnection.HTTP_OK
-                            && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
-                        Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
-                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                        scanner.close();
-                    } else {
-                        Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8");
-                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                        scanner.close();
-                    }
-                    Log.d("jsonResponse: " , jsonResponse);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-
-                    if(conn!=null)
-                        conn.disconnect();
-
-                    try {
-                        if(outputStream!=null)
-                            outputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-            }
-        });
     }
 
     @Override

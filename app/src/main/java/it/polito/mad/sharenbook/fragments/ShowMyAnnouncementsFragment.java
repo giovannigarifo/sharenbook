@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -42,6 +43,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
     private AnnouncementAdapter adapter;
     private LinearLayoutManager llm;
     private RecyclerView rv;
+    private FloatingActionButton newAnnoucementFab;
 
     private ArrayList<Book> books = new ArrayList<>();
 
@@ -60,7 +62,9 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_show_announcements, container, false);
         rv = rootView.findViewById(R.id.expanded_books);
+        newAnnoucementFab = rootView.findViewById(R.id.fab_addBook);
 
+        SetNewAnnouncementFab();
         setRecyclerView();
 
         return rootView;
@@ -90,6 +94,14 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
     }
 
+    private void SetNewAnnouncementFab(){
+
+        newAnnoucementFab.setOnClickListener(v -> {
+            Intent i = new Intent(getContext(), ShareBookActivity.class);
+            startActivity(i);
+        });
+    }
+
     private void loadAnnouncements(){
 
         // Setup FireBase
@@ -105,7 +117,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
                     if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
 
-                        AlertDialog.Builder no_books = new AlertDialog.Builder(App.getContext()); //give a context to Dialog
+                        /*AlertDialog.Builder no_books = new AlertDialog.Builder(App.getContext()); //give a context to Dialog
                         no_books.setTitle(R.string.no_books_alert_title);
                         no_books.setMessage(R.string.no_books_suggestion);
                         no_books.setPositiveButton(android.R.string.ok, (dialog, which) -> {
@@ -120,7 +132,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
                                     dialog.dismiss();
 
                                 }
-                        );
+                        );*/
 
                         //no_books.show();
 

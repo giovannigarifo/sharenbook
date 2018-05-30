@@ -27,6 +27,8 @@ public class GenericAlertDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int title = getArguments().getInt("title");
         String fragMessage = getArguments().getString("fragMessage");
+        String username = getArguments().getString("username");
+        String tag = getTag();
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_warning_black_24dp)
@@ -35,9 +37,15 @@ public class GenericAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.confirm,
                         (dialog, whichButton) -> {
                             Activity activity = getActivity();
-                            if(activity instanceof ShowCaseActivity)
+                            if(activity instanceof ShowCaseActivity && tag.equals("borrow_dialog"))
                                 ((ShowCaseActivity)activity).doPositiveClick();
-                            else if(activity instanceof MyBookActivity)
+                            else if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
+                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.requestAccepted(username);
+                            }
+                            else if(activity instanceof MyBookActivity && tag.equals("reqReject_dialog")){
+                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.requestRejected(username);
+                            }
+                            else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog"))
                                 ((BorrowRequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).requestAdapter.doPositiveClick();
                         }
                 )

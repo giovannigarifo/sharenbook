@@ -81,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@id/appbar"
         app:layout_constraintBottom_toTopOf="@id/navigation"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_addBook"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
         android:src="@drawable/ic_add_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/navigation"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"/> -->
 
 
     <android.support.design.widget.BottomNavigationView

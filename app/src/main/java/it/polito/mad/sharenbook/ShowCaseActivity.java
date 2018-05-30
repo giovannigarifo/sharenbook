@@ -697,8 +697,19 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 // Update list that keep track of already requested book
                 requestedBookIdList.add(selectedBookId);
 
+                String requestBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + selectedBookOwner + "\"}],"
+
+                        + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + username + "\", \"senderUid\": \"" + user_id + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " wants to borrow your book!\", " +
+                        "\"it\": \"" + username + " vuole in prestito un tuo libro!\"},"
+                        + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
+                        + "}";
+
                 // Send notification
-                sendNotification(selectedBookOwner, username);
+                Utils.sendNotification(requestBody);
                 Toast.makeText(getApplicationContext(), R.string.borrow_request_done, Toast.LENGTH_LONG).show();
 
             } else {
@@ -706,86 +717,6 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             }
         });
 
-    }
-
-    public void sendNotification(String destination, String sender) {
-        AsyncTask.execute(() -> {
-            int SDK_INT = Build.VERSION.SDK_INT;
-            if (SDK_INT > 8) {
-
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                        .permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-
-                HttpsURLConnection conn = null;
-                OutputStream outputStream = null;
-
-                try {
-
-                    String jsonResponse;
-
-                    URL url = new URL("https://onesignal.com/api/v1/notifications");
-                    conn = (HttpsURLConnection) url.openConnection();
-                    conn.setUseCaches(false);
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-
-                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                    conn.setRequestProperty("Authorization", "Basic ZTc3MjExODEtYmM4Yy00YjU5LWFjNWEtM2VlNGNmYTA0OWU1");
-                    conn.setRequestMethod("POST");
-
-                    String strJsonBody = "{"
-                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
-
-                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + destination + "\"}],"
-
-                            + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + sender + "\", \"senderUid\": \"" + user_id + "\"},"
-                            + "\"contents\": {\"en\": \"" + sender + " wants to borrow your book!\", " +
-                            "\"it\": \"" + sender + " vuole in prestito un tuo libro!\"},"
-                            + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
-                            + "}";
-
-                    Log.d("strJsonBody:", strJsonBody);
-
-                    byte[] sendBytes = strJsonBody.getBytes("UTF-8");
-                    conn.setFixedLengthStreamingMode(sendBytes.length);
-
-                    outputStream = conn.getOutputStream();
-                    outputStream.write(sendBytes);
-
-                    int httpResponse = conn.getResponseCode();
-                    Log.d("httpResponse: ", "" + httpResponse);
-
-                    if (httpResponse >= HttpURLConnection.HTTP_OK
-                            && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
-                        Scanner scanner = new Scanner(conn.getInputStream(), "UTF-8");
-                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                        scanner.close();
-                    } else {
-                        Scanner scanner = new Scanner(conn.getErrorStream(), "UTF-8");
-                        jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                        scanner.close();
-                    }
-                    Log.d("jsonResponse: ", jsonResponse);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-
-                    if (conn != null)
-                        conn.disconnect();
-
-                    try {
-                        if (outputStream != null)
-                            outputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-            }
-        });
     }
 
 }

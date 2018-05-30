@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ public class RequestListFragment extends Fragment {
     private long[] requestTimeArray;
     private String bookId, bookTitle, bookPhoto, bookOwner;
     private String userId;
+    public RequestsAdapter requestAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +70,7 @@ public class RequestListFragment extends Fragment {
         bookTitleText.setText(bookTitle);
 
         ListView requestListView = rootView.findViewById(R.id.list_view_requests);
-        RequestsAdapter requestAdapter = new RequestsAdapter(getActivity(), usernameList, requestTimeArray);
+        requestAdapter = new RequestsAdapter(getActivity(), usernameList, requestTimeArray);
         requestListView.setAdapter(requestAdapter);
 
         ImageView backButton = rootView.findViewById(R.id.back_button);
@@ -149,13 +151,10 @@ public class RequestListFragment extends Fragment {
 
                 // Assign click listeners
                 holder.acceptButton.setOnClickListener(v -> {
-                    acceptRequest(username);
+                    showAcceptDialog(username);
                 });
-                holder.rejectButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        rejectRequest(username);
-                    }
+                holder.rejectButton.setOnClickListener(v -> {
+                    showRejectDialog(username);
                 });
                 holder.optionsButton.setOnClickListener(v -> {
 
@@ -210,6 +209,32 @@ public class RequestListFragment extends Fragment {
             });
         }
 
+        void showAcceptDialog(String username) {
+            DialogFragment newFragment = GenericAlertDialog.newInstance(
+                    R.string.accept_req_dialog, getString(R.string.accept_req_dialog_msg, username));
+            Bundle bundle = newFragment.getArguments();
+            bundle.putString("username", username);
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "reqAccept_dialog");
+        }
+
+        void showRejectDialog(String username) {
+            DialogFragment newFragment = GenericAlertDialog.newInstance(
+                    R.string.reject_req_dialog, getString(R.string.reject_req_dialog_msg, username));
+            Bundle bundle = newFragment.getArguments();
+            bundle.putString("username", username);
+            newFragment.setArguments(bundle);
+            newFragment.show(getFragmentManager(), "reqReject_dialog");
+        }
+
+        public void requestAccepted(String username){
+            acceptRequest(username);
+        }
+
+        public void requestRejected(String username){
+            rejectRequest(username);
+        }
+
         private void acceptRequest(String username) {
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -249,8 +274,20 @@ public class RequestListFragment extends Fragment {
             rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
 
+                    String requestBody = "{"
+                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + username + "\"}],"
+
+                            + "\"data\": {\"notificationType\": \"AcceptedRequest\", \"senderName\": \"" + bookOwner + "\"},"
+                            + "\"contents\": {\"en\": \"" + bookOwner + " has accepted your borrow request for the book: " + bookTitle +".\", " +
+                            "\"it\": \"" + bookOwner + " ha accettato la tua richiesta di prestito per il libro: "+ bookTitle +".\"},"
+                            + "\"headings\": {\"en\": \"Your borrow request has been accepted!\", \"it\": \"La tua richiesta di prestito è stata accettata!\"}"
+                            + "}";
+
                     // Send notification
-                    //sendNotification(selectedBookOwner, username);
+                    Utils.sendNotification(requestBody);
+
                     Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
                     if (getFragmentManager() != null) {
                         getFragmentManager().popBackStack();
@@ -274,8 +311,20 @@ public class RequestListFragment extends Fragment {
             usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
 
+                    String requestBody = "{"
+                            + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                            + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + username + "\"}],"
+
+                            + "\"data\": {\"notificationType\": \"RejectedRequest\", \"senderName\": \"" + bookOwner + "\"},"
+                            + "\"contents\": {\"en\": \"" + bookOwner + " has rejected your borrow request for the book: " + bookTitle +".\", " +
+                            "\"it\": \"" + bookOwner + " ha rifiutato la tua richiesta di prestito per il libro: "+ bookTitle +".\"},"
+                            + "\"headings\": {\"en\": \"Your borrow request has been rejected!\", \"it\": \"La tua richiesta di prestito è stata rifiutata!\"}"
+                            + "}";
+
                     // Send notification
-                    //sendNotification(selectedBookOwner, username);
+                    Utils.sendNotification(requestBody);
+
                     Toast.makeText(getContext(), R.string.borrow_request_rejected, Toast.LENGTH_LONG).show();
                     if (getFragmentManager() != null) {
                         getFragmentManager().popBackStack();

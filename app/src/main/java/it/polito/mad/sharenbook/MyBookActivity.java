@@ -44,7 +44,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     private BottomNavigationView navBar;
 
     /** new announcement button */
-    private FloatingActionButton newAnnoucementFab;
     private AnnouncementAdapter adapter;
     private LinearLayoutManager llm;
     private RecyclerView rv;
@@ -74,7 +73,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         tabLayout.setTabTextColors(getResources().getColor(R.color.secondaryText), getResources().getColor(R.color.white));
 
         setupNavigationTools();
-        findAndSetNewAnnouncementFab();
 
         SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userPreferences.getString(getString(R.string.username_copy_key), "void");
@@ -156,20 +154,6 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         books = savedInstanceState.getParcelableArrayList("books");
         setRecyclerView(books);
     }*/
-
-    private void findAndSetNewAnnouncementFab(){
-        newAnnoucementFab = findViewById(R.id.fab_addBook);
-
-        newAnnoucementFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(),ShareBookActivity.class);
-                startActivity(i);
-            }
-        });
-    }
-
-
 
 
     /**
