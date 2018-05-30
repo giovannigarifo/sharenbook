@@ -11,7 +11,7 @@ public class Exchange {
 
 
     public String getExchangeId() {
-        return bookId;
+        return exchangeId;
     }
 
     public void setExchangeId(String exchangeId) {
