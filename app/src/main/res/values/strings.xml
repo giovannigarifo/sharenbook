@@ -391,6 +391,8 @@
 
     <!-- ======================== -->
     <!--    WriteReviewActivity   -->
+    <string name="writereview_review_given">You gave on loan to </string>
+    <string name="writereview_review_loaned"> loaned you</string>
     <string name="writereview_review_heading">Your review</string>
     <string name="writereview_review_headingMessage">Write below your review</string>
     <string name="writereview_reviewTitle_heading">Review title</string>
@@ -399,6 +401,7 @@
     <string name="writereview_reviewBody_hint">Write here the body of your review</string>
     <string name="writereview_reviewVote_heading">Your vote</string>
     <string name="writereview_reviewVote_message">Rate the user with a vote between 0 and 5</string>
+    <string name="reviews_key">reviews</string>
 
 
 </resources>

@@ -41,13 +41,16 @@ import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
+import it.polito.mad.sharenbook.WriteReviewActivity;
 import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GlideApp;
 
 
 public class ExchangesFragment extends Fragment {
 
-    /** FireBase objects */
+    /**
+     * FireBase objects
+     */
     private DatabaseReference takenBooksRef;
     private DatabaseReference givenBooksRef;
     private DatabaseReference archiveBooksRef;
@@ -64,7 +67,7 @@ public class ExchangesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_show_exchanges, container, false);
 
@@ -118,7 +121,7 @@ public class ExchangesFragment extends Fragment {
         archiveBooksRV = view.findViewById(R.id.archiveBooksRV);
         archiveBooksRV.setHasFixedSize(true);
         LinearLayoutManager archiveBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        archiveBooksRV.setLayoutManager(archiveBooksLM );
+        archiveBooksRV.setLayoutManager(archiveBooksLM);
         LinearSnapHelper archiveLinearSnapHelper = new LinearSnapHelper();
         archiveLinearSnapHelper.attachToRecyclerView(archiveBooksRV);
 
@@ -161,7 +164,7 @@ public class ExchangesFragment extends Fragment {
                 });
     }
 
-    private void loadGivenBooks(){
+    private void loadGivenBooks() {
 
         // Load Given Book RV
         givenBooksRef.orderByChild("creationTime")
@@ -186,7 +189,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter takenBooksAdapter = new RVAdapter(takenList,1);
+                        RVAdapter takenBooksAdapter = new RVAdapter(takenList, 1);
                         givenBooksRV.setAdapter(takenBooksAdapter);
                     }
 
@@ -301,13 +304,24 @@ public class ExchangesFragment extends Fragment {
                 App.getContext().startActivity(i);
             });
 
-            if(listType == 2){
+            if (listType == 2) {
 
-                if(!exchange.isReviewed()){
+                if (!exchange.isReviewed()) {
 
                     holder.btnNotReviewed.setVisibility(View.VISIBLE);
-                    //TODO connect to create Review activity -> pass from here what is needed for the activity
-                    holder.btnNotReviewed.setOnClickListener(view -> Toast.makeText(getContext(), "To be implemented.", Toast.LENGTH_SHORT).show());
+
+                    holder.btnNotReviewed.setOnClickListener(v -> {
+
+                        Intent startWriteReviewActivity = new Intent(App.getContext(), WriteReviewActivity.class);
+                        startWriteReviewActivity.putExtra("bookId", exchange.getBookId());
+                        startWriteReviewActivity.putExtra("bookTitle", exchange.getBookTitle());
+                        startWriteReviewActivity.putExtra("creationTime", exchange.getCreationTime());
+                        startWriteReviewActivity.putExtra("userNickName", exchange.getCounterpart());
+                        startWriteReviewActivity.putExtra("isGiven", exchange.isGiven());
+
+
+                        App.getContext().startActivity(startWriteReviewActivity);
+                    });
 
                 } else {
                     holder.tvReviewDone.setVisibility(View.VISIBLE);
@@ -345,7 +359,7 @@ public class ExchangesFragment extends Fragment {
                     }
                 });
 
-                if(listType != 0){
+                if (listType != 0) {
                     popup.getMenu().getItem(2).setVisible(false);
                     String popupItemTitle = getString(R.string.contact_borrower, exchange.getCounterpart());
                     popup.getMenu().getItem(0).setTitle(popupItemTitle);

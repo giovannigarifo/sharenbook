@@ -34,7 +34,7 @@
                     <ImageView
                         android:id="@+id/writereview_topbar_background"
                         android:layout_width="wrap_content"
-                        android:layout_height="400dp"
+                        android:layout_height="240dp"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentRight="true"
@@ -43,56 +43,6 @@
                         android:background="@drawable/gradient"
                         android:elevation="10dp" />
 
-
-                    <!-- user profile picture -->
-                    <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/writereview_userPicture"
-
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="8dp"
-                        android:clickable="true"
-                        android:elevation="10dp"
-                        android:src="@drawable/ic_person_black_135dp"
-                        android:tint="@color/darkGrey"
-                        app:civ_border_color="@color/lightGrey"
-                        app:civ_border_width="1dp"
-                        app:civ_shadow="true"
-                        app:civ_shadow_color="@color/lightGrey"
-                        app:civ_shadow_radius="10"
-                        app:layout_collapseMode="parallax" />
-
-                    <!-- user full name -->
-                    <TextView
-                        android:id="@+id/writereview_userFullName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/writereview_userPicture"
-                        android:layout_centerHorizontal="true"
-                        android:elevation="10dp"
-                        android:maxLines="1"
-                        android:text="@string/placeholder"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <!-- user nick name-->
-                    <TextView
-                        android:id="@+id/writereview_userNickName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/writereview_userFullName"
-                        android:layout_centerHorizontal="true"
-                        android:alpha="0.7"
-                        android:elevation="10dp"
-                        android:text="@string/placeholder"
-                        android:textColor="@color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-
                     <!-- information about the given/loaned book -->
 
                     <!-- given or loaned -->
@@ -100,13 +50,12 @@
                         android:id="@+id/writereview_givenloaned"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/writereview_userNickName"
                         android:layout_centerHorizontal="true"
                         android:layout_marginBottom="16dp"
                         android:layout_marginTop="16dp"
                         android:elevation="10dp"
                         android:maxLines="1"
-                        android:text="- Ti ha dato in prestito/Hai dato in prestito -"
+                        android:text="@string/placeholder"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -132,8 +81,9 @@
                         android:elevation="10dp"
                         android:maxLines="1"
                         android:text="@string/placeholder"
+                        android:layout_marginTop="4dp"
                         android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/title"
                         android:textStyle="bold" />
 
                     <!-- date -->
@@ -242,10 +192,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="80dp"
                     android:max="5"
                     android:min="0"
                     android:progress="3" />
@@ -257,17 +207,17 @@
 
     </ScrollView>
 
-    <!-- save button
+    <!-- save button -->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/writereview_fab_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="25dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:src="@drawable/ic_check_black_24dp"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@id/writereview_coordinator"
-        app:layout_anchorGravity="end" />-->
+        app:layout_anchor="@id/writereview_scrollview"
+        app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>
