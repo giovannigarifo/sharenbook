@@ -2,8 +2,11 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -21,11 +24,19 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.GlideApp;
+import it.polito.mad.sharenbook.utils.InputValidator;
+import it.polito.mad.sharenbook.utils.UserInterface;
+
+import static it.polito.mad.sharenbook.EditBookActivity.MIN_REQUIRED_BOOK_PHOTO;
 
 public class WriteReviewActivity extends AppCompatActivity {
 
@@ -45,6 +56,9 @@ public class WriteReviewActivity extends AppCompatActivity {
 
     FloatingActionButton writereview_fab_save;
 
+    //back button
+    ImageView writereview_back_button;
+
     //attributes
     private String bookId;
     private String exchangeId;
@@ -54,6 +68,7 @@ public class WriteReviewActivity extends AppCompatActivity {
     private String userNickName;
     private boolean isGiven;
 
+    //the username of the user who write the review
     String username;
 
     //firebase
@@ -153,6 +168,7 @@ public class WriteReviewActivity extends AppCompatActivity {
         this.writereview_rb_reviewVote = findViewById(R.id.writereview_rb_reviewVote);
         this.writereview_fab_save = findViewById(R.id.writereview_fab_save);
         this.writereview_tv_reviewHeadingMessage = findViewById(R.id.writereview_tv_reviewHeadingMessage);
+        this.writereview_back_button = findViewById(R.id.writereview_back_button);
     }
 
 
@@ -166,13 +182,13 @@ public class WriteReviewActivity extends AppCompatActivity {
 
         //given or loaned: heading
         if (isGiven == true)
-            this.writereview_givenloaned.setText(getResources().getString(R.string.writereview_review_given) + " " + this.userNickName + ":");
+            this.writereview_givenloaned.setText(getResources().getString(R.string.writereview_review_given) + " " + this.userNickName);
         else
-            this.writereview_givenloaned.setText(this.userNickName + " " + getResources().getString(R.string.writereview_review_loaned) + ":");
+            this.writereview_givenloaned.setText(this.userNickName + " " + getResources().getString(R.string.writereview_review_loaned));
 
         //book creation time
         if (this.creationTime != null)
-            this.writereview_creationTime.setText(DateUtils.formatDateTime(context, this.creationTime,
+            this.writereview_creationTime.setText(getResources().getString(R.string.writereview_creationTime_incipit) + " " + DateUtils.formatDateTime(context, this.creationTime,
                     DateUtils.FORMAT_SHOW_DATE
                             | DateUtils.FORMAT_NUMERIC_DATE
                             | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR));
@@ -189,8 +205,13 @@ public class WriteReviewActivity extends AppCompatActivity {
         // review heading message
         this.writereview_tv_reviewHeadingMessage.setText(getResources().getString(R.string.writereview_review_headingMessage) + " " + userNickName);
 
+        //back button
+        this.writereview_back_button.setOnClickListener(v -> onBackPressed());
+
         //fab
-        this.writereview_fab_save.setOnClickListener(v -> saveReviewToFirebase());
+        this.writereview_fab_save.setOnClickListener(v -> {
+            if (validateInputFields()) saveReviewToFirebase();
+        });
 
     }
 
@@ -278,5 +299,58 @@ public class WriteReviewActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    /**
+     * Validate user inputs
+     */
+    private boolean validateInputFields() {
+
+        boolean isValid = true;
+        boolean alreadyFocused = false;
+
+        //test title
+        if (writereview_et_reviewTitle.getText().toString().isEmpty()) {
+            writereview_et_reviewTitle.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyFocused) {
+                writereview_et_reviewTitle.requestFocus();
+                alreadyFocused = true;
+            }
+        }
+
+        //test body
+        if (writereview_et_reviewBody.getText().toString().isEmpty()) {
+            writereview_et_reviewBody.setError(getText(R.string.field_required));
+            isValid = false;
+            if (!alreadyFocused) {
+                writereview_et_reviewBody.requestFocus();
+                alreadyFocused = true;
+            }
+        }
+
+        return isValid;
+    }
+
+    /**
+     * onBackPressed method
+     */
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder exitRequest = new AlertDialog.Builder(WriteReviewActivity.this); //give a context to Dialog
+        exitRequest.setTitle(R.string.exit_request_title);
+        exitRequest.setMessage(R.string.exit_rationale);
+        exitRequest.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    finish();
+                }
+        ).setNegativeButton(android.R.string.cancel,
+                (dialog, which) -> dialog.dismiss()
+        );
+
+        exitRequest.show();
+    }
+
+
 
 }

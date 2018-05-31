@@ -405,6 +405,7 @@
     <string name="writereview_reviewVote_message">Rate the user with a vote between 0 and 5</string>
     <string name="review_correctly_submitted">Review correctly submitted</string>
     <string name="review_error">An error occour while uploading the review</string>
+    <string name="writereview_creationTime_incipit">on date</string>
 
 
 </resources>
