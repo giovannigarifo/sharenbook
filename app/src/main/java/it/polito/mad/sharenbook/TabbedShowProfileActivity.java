@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +67,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
     private TextView drawer_fullname;
     private TextView drawer_email;
     private CircularImageView drawer_userPicture;
-
+    private RatingBar ratingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,10 @@ public class TabbedShowProfileActivity extends AppCompatActivity
 
     }
 
+    public void setRating(float floatRating){
+        ratingBar.setRating(floatRating);
+    }
+
     /** get references to UI elements */
     private void getViews(){
         tv_userFullName = findViewById(R.id.tv_userFullName);
@@ -129,6 +134,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
         searchBar =  findViewById(R.id.searchBar);
         mViewPager = findViewById(R.id.container);
         tabLayout = findViewById(R.id.tabs);
+        ratingBar = findViewById(R.id.userRatingBar);
     }
 
     /** Set profile data information */

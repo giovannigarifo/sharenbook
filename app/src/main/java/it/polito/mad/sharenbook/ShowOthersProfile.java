@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,7 @@ public class ShowOthersProfile extends AppCompatActivity {
     private TextView tv_username;
     private ImageView back_btn;
     private FloatingActionButton open_chat_fab;
+    private RatingBar ratingBar;
 
 
     @Override
@@ -43,6 +45,7 @@ public class ShowOthersProfile extends AppCompatActivity {
         open_chat_fab = findViewById(R.id.openChat);
         iv_profile = findViewById(R.id.userPicture);
         tv_username = findViewById(R.id.tv_userNickName);
+        ratingBar = findViewById(R.id.ratingBar);
         tv_username.setText(ownerUsername);
 
         DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(ownerUsername).child("picSignature");
@@ -86,4 +89,9 @@ public class ShowOthersProfile extends AppCompatActivity {
 
 
     }
+
+    public void setRating(float floatRating){
+        ratingBar.setRating(floatRating);
+    }
+
 }

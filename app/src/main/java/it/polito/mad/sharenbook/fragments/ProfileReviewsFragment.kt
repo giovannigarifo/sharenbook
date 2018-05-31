@@ -12,12 +12,17 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import it.polito.mad.sharenbook.App
 import it.polito.mad.sharenbook.R
+import it.polito.mad.sharenbook.ShowOthersProfile
+import it.polito.mad.sharenbook.TabbedShowProfileActivity
 import it.polito.mad.sharenbook.adapters.ReviewsAdapter
 import it.polito.mad.sharenbook.model.Review
 import it.polito.mad.sharenbook.utils.Utils
 import java.util.ArrayList
 
 class ProfileReviewsFragment : Fragment() {
+
+    private var numReviews : Float = 0.0f
+    private var sumReviews : Float = 0.0f
 
     private val reviewAdapter : ReviewsAdapter = ReviewsAdapter()
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -49,11 +54,6 @@ class ProfileReviewsFragment : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
 
         recyclerView.adapter = reviewAdapter
-
-        /*val r = Review(2, "Tutto bene con lo scambio", "il libro faceva schifo ma tutto ok. Poteva andare peggio",
-                "Daviiid", "27/05/2018, 20:00")
-        reviewAdapter.addReview(r)
-        reviewAdapter.notifyDataSetChanged()*/
 
         loadReviews(arguments!!.getString("username", "void"))
 
@@ -88,8 +88,16 @@ class ProfileReviewsFragment : Fragment() {
 
                             val rev: Review = review.getValue(Review::class.java)!!
 
-                            Log.d("reeeev", "here: " + rev.getrTitle())
+                            numReviews++
+                            sumReviews+= rev.rating
+
                             reviewAdapter.addReview(rev!!)
+                        }
+
+                        if(activity is TabbedShowProfileActivity){
+                            if(numReviews!=0.0f) (activity as TabbedShowProfileActivity).setRating( (sumReviews/numReviews)/2.0f )
+                        } else if (activity is ShowOthersProfile){
+                            if(numReviews!=0.0f) (activity as ShowOthersProfile).setRating( (sumReviews/numReviews)/2.0f)
                         }
 
                     }

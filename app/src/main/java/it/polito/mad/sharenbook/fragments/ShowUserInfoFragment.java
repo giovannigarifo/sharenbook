@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -50,6 +51,7 @@ public class ShowUserInfoFragment extends Fragment {
         tv_userBioContent = view.findViewById(R.id.tv_userBioContent);
         tv_userEmailContent = view.findViewById(R.id.tv_userEmailContent);
         grid = view.findViewById(R.id.gridview);
+
     }
 
     private void setPrefCategories(){
