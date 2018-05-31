@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:paddingBottom="80dp"
+        android:paddingBottom="90dp"
         android:clipToPadding="false"/>
 
     <android.support.design.widget.FloatingActionButton

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -64,7 +65,7 @@ public class CategoriesAdapter extends BaseAdapter {
 
         holder.chiptag_shape = view.findViewById(R.id.chiptag);
         GradientDrawable drawable = (GradientDrawable) context.getResources().getDrawable(R.drawable.chiptag_shape);
-        drawable.setColor(UserInterface.cat_colors.get(category));
+        drawable.setColor(App.getContext().getResources().getColor(R.color.white));
         holder.chiptag_shape.setBackground(drawable);
 
         holder.avatar = view.findViewById(R.id.img);

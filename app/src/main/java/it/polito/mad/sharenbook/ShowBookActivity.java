@@ -39,6 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,6 +121,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                     .addOnCompleteListener(task -> {
                         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                         startActivity(i);
+                        OneSignal.setSubscription(false);
                         Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                         finish();
                     });

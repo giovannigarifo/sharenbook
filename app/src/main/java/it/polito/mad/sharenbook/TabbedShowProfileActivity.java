@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.ShowUserInfoFragment;
@@ -383,6 +384,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
                     .addOnCompleteListener(task -> {
                         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                         startActivity(i);
+                        OneSignal.setSubscription(false);
                         Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                         finish();
                     });

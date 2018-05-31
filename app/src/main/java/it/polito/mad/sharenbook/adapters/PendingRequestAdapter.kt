@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -121,12 +120,19 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
                 val requestFragment = RequestListFragment()
                 requestFragment.arguments = bundle
 
-                fragManager.beginTransaction()
-                        .replace(R.id.inner_container, requestFragment, "requestList")
-                        .addToBackStack("requestList")
-                        .commit()
+                // Remove old fragment
+                val fragment = fragManager.findFragmentByTag("requestList")
+                if (fragment != null) {
 
-                Log.d("CardView Event", "Cardview Pressed")
+                    fragManager.beginTransaction().remove(fragment).commit()
+                    fragManager.popBackStack()
+                }
+
+                // Add new fragment
+                fragManager.beginTransaction()
+                        .add(R.id.inner_container, requestFragment, "requestList")
+                        .addToBackStack(null)
+                        .commit()
             })
 
         }

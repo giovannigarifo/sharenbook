@@ -240,6 +240,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                     user.setUserID(firebaseUser.getUid());
 
                                     OneSignal.sendTag("User_ID", user.getUsername());  //let this user be identified on oneSignal
+                                    OneSignal.setSubscription(true);
 
                                     goShowCase();
 

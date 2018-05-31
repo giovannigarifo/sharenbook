@@ -32,6 +32,16 @@
         app:layout_constraintTop_toTopOf="@id/showcase_rv_book_photo"
         app:layout_constraintEnd_toEndOf="@id/showcase_rv_book_photo"/>
 
+    <ImageView
+        android:id="@+id/showcase_rv_unavailable_bg"
+        android:layout_width="112dp"
+        android:layout_height="168dp"
+        android:background="#99666666"
+        android:visibility="gone"
+        android:src="@drawable/non_disponibile"
+        app:layout_constraintTop_toTopOf="@id/showcase_rv_book_photo"
+        app:layout_constraintStart_toStartOf="@id/showcase_rv_book_photo" />
+
     <TextView
         android:id="@+id/showcase_rv_book_title"
         android:layout_width="0dp"

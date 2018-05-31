@@ -27,6 +27,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.BookDetails;
@@ -153,6 +154,7 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
                     .addOnCompleteListener(task -> {
                         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                         startActivity(i);
+                        OneSignal.setSubscription(false);
                         Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                         finish();
                     });

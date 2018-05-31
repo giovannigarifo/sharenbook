@@ -171,6 +171,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
         DialogFragment newFragment = GenericAlertDialog.newInstance(
                 R.string.no_books_alert_title, getString(R.string.no_books_suggestion));
         newFragment.show(getFragmentManager(), "no_books_dialog");
+        newFragment.setRetainInstance(true);
     }
 
     void showShareBook(){
