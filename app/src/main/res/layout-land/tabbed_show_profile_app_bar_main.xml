@@ -16,27 +16,34 @@
         android:background="@drawable/gradient">
 
         <!-- Search Bar -->
-        <com.mancj.materialsearchbar.MaterialSearchBar
-            android:id="@+id/searchBar"
-            style="@style/MaterialSearchBarLight"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_gravity="center_horizontal"
-            app:mt_hint="@string/search_hint"
-            app:mt_maxSuggestionsCount="10"
-            app:mt_navIconEnabled="true"
-            app:mt_placeholder="Share'nBook"
-            app:mt_searchBarColor="@android:color/white"
-            app:mt_speechMode="false"
-            app:mt_textCursorTint="@color/colorPrimary" />
+            app:layout_scrollFlags="scroll">
+
+            <com.mancj.materialsearchbar.MaterialSearchBar
+                android:id="@+id/searchBar"
+                style="@style/MaterialSearchBarLight"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_horizontal"
+                app:mt_hint="@string/search_hint"
+                app:mt_maxSuggestionsCount="0"
+                app:mt_navIconEnabled="true"
+                app:mt_placeholder="Share'nBook"
+                app:mt_searchBarColor="@android:color/white"
+                app:mt_speechMode="false"
+                app:mt_textCursorTint="@color/colorPrimary" />
+
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll">
 
             <!-- user profile picture -->
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -134,8 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabIndicatorColor="@color/white"
-            app:tabIndicatorHeight="4dp"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:tabIndicatorHeight="4dp">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItemProfile"

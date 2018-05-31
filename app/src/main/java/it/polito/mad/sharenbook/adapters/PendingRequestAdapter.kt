@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook.adapters
 import android.app.Activity
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.v4.app.FragmentTransaction
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -96,45 +97,47 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
             val photoRef = FirebaseStorage.getInstance().getReference("book_images").child(req.bookId + "/" + req.thumbName)
             Glide.with(App.getContext()).load(photoRef).into(view.findViewById<ImageView>(R.id.book_photo))
 
-            view.findViewById<CardView>(R.id.book_item).setOnClickListener({
+            if (!req.bookShared) {
 
-                val mapSize = req.requestUsers!!.size
-                val requestKeys = ArrayList<String>()
-                val requestValues = LongArray(mapSize)
+                view.findViewById<CardView>(R.id.book_item).setOnClickListener({
 
-                var i = 0
-                for (request in req.requestUsers!!) {
-                    requestKeys.add(i, request.key)
-                    requestValues[i] = request.value
-                    i++
-                }
+                    val mapSize = req.requestUsers!!.size
+                    val requestKeys = ArrayList<String>()
+                    val requestValues = LongArray(mapSize)
 
-                val bundle = Bundle()
-                bundle.putStringArrayList("usernameList", requestKeys)
-                bundle.putLongArray("requestTimeArray", requestValues)
-                bundle.putString("bookId", req.bookId)
-                bundle.putString("bookTitle", req.title)
-                bundle.putString("bookPhoto", req.thumbName)
-                bundle.putString("bookOwner", req.owner)
+                    var i = 0
+                    for (request in req.requestUsers!!) {
+                        requestKeys.add(i, request.key)
+                        requestValues[i] = request.value
+                        i++
+                    }
 
-                val requestFragment = RequestListFragment()
-                requestFragment.arguments = bundle
+                    val bundle = Bundle()
+                    bundle.putStringArrayList("usernameList", requestKeys)
+                    bundle.putLongArray("requestTimeArray", requestValues)
+                    bundle.putString("bookId", req.bookId)
+                    bundle.putString("bookTitle", req.title)
+                    bundle.putString("bookPhoto", req.thumbName)
+                    bundle.putString("bookOwner", req.owner)
 
-                // Remove old fragment
-                val fragment = fragManager.findFragmentByTag("requestList")
-                if (fragment != null) {
+                    val requestFragment = RequestListFragment()
+                    requestFragment.arguments = bundle
 
-                    fragManager.beginTransaction().remove(fragment).commit()
-                    fragManager.popBackStack()
-                }
+                    // Remove old fragment
+                    val fragment = fragManager.findFragmentByTag("requestList")
+                    if (fragment != null) {
+                        fragManager.beginTransaction().remove(fragment).commit()
+                        fragManager.popBackStack()
+                    }
 
-                // Add new fragment
-                fragManager.beginTransaction()
-                        .add(R.id.inner_container, requestFragment, "requestList")
-                        .addToBackStack(null)
-                        .commit()
-            })
-
+                    // Add new fragment
+                    fragManager.beginTransaction()
+                            .replace(R.id.inner_container, requestFragment, "requestList")
+                            .addToBackStack(null)
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                            .commit()
+                })
+            }
         }
     }
 }

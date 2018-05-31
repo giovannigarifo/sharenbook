@@ -41,16 +41,23 @@ import it.polito.mad.sharenbook.utils.Utils;
 public class RequestListFragment extends Fragment {
 
     private ArrayList<String> usernameList;
-    private long[] requestTimeArray;
+    private ArrayList<Long> requestTimeList;
     private String bookId, bookTitle, bookPhoto, bookOwner;
-    public RequestsAdapter requestAdapter;
+
+    private ListView requestListView;
+    RequestsAdapter requestAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         usernameList = getArguments().getStringArrayList("usernameList");
-        requestTimeArray = getArguments().getLongArray("requestTimeArray");
+        requestTimeList = new ArrayList<>();
+
+        long[] requestTimeArray = getArguments().getLongArray("requestTimeArray");
+        for (long aRequestTimeArray : requestTimeArray)
+            requestTimeList.add(aRequestTimeArray);
+
         bookId = getArguments().getString("bookId");
         bookTitle = getArguments().getString("bookTitle");
         bookPhoto = getArguments().getString("bookPhoto");
@@ -66,8 +73,8 @@ public class RequestListFragment extends Fragment {
         TextView bookTitleText = rootView.findViewById(R.id.book_title);
         bookTitleText.setText(bookTitle);
 
-        ListView requestListView = rootView.findViewById(R.id.list_view_requests);
-        requestAdapter = new RequestsAdapter(getActivity(), usernameList, requestTimeArray);
+        requestListView = rootView.findViewById(R.id.list_view_requests);
+        requestAdapter = new RequestsAdapter(getActivity(), usernameList, requestTimeList);
         requestListView.setAdapter(requestAdapter);
 
         ImageView backButton = rootView.findViewById(R.id.back_button);
@@ -86,7 +93,7 @@ public class RequestListFragment extends Fragment {
 
         private Activity mActivity;
         private ArrayList<String> mUsernameList;
-        private long[] mRequestTimeArray;
+        private ArrayList<Long> mRequestTimeArray;
 
         private DatabaseReference usernamesDb;
         private StorageReference imagesStorage;
@@ -106,7 +113,7 @@ public class RequestListFragment extends Fragment {
             }
         }
 
-        RequestsAdapter(Activity activity, ArrayList<String> usernameList, long[] requestTimeArray) {
+        RequestsAdapter(Activity activity, ArrayList<String> usernameList, ArrayList<Long> requestTimeArray) {
             mActivity = activity;
             mUsernameList = usernameList;
             mRequestTimeArray = requestTimeArray;
@@ -132,39 +139,40 @@ public class RequestListFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
+            String username = mUsernameList.get(position);
+            long requestTime = mRequestTimeArray.get(position);
+
             if (convertView == null) {
-
-                String username = mUsernameList.get(position);
-                long requestTime = mRequestTimeArray[position];
-
-                ViewHolder holder = new ViewHolder();
-
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.request_list_item, parent, false);
-                holder.userImage = convertView.findViewById(R.id.user_image);
-                holder.usernameText = convertView.findViewById(R.id.username);
-                holder.requestTimeText = convertView.findViewById(R.id.request_time);
-                holder.optionsButton = convertView.findViewById(R.id.options_button);
-                holder.acceptButton = convertView.findViewById(R.id.accept_button);
-                holder.rejectButton = convertView.findViewById(R.id.reject_button);
-
-                // Get user picSignature
-                showUserPhoto(username, holder);
-
-                // Bind item values
-                holder.usernameText.setText(username);
-                holder.requestTimeText.setText(Utils.convertTime(requestTime, "dd MMM, HH:mm"));
-
-                // Assign click listeners
-                holder.acceptButton.setOnClickListener(v -> {
-                    showAcceptDialog(username);
-                });
-                holder.rejectButton.setOnClickListener(v -> {
-                    showRejectDialog(username);
-                });
-                holder.optionsButton.setOnClickListener(v -> {
-                    showOptionsPopupMenu(v, username);
-                });
             }
+
+            ViewHolder holder = new ViewHolder();
+            holder.userImage = convertView.findViewById(R.id.user_image);
+            holder.usernameText = convertView.findViewById(R.id.username);
+            holder.requestTimeText = convertView.findViewById(R.id.request_time);
+            holder.optionsButton = convertView.findViewById(R.id.options_button);
+            holder.acceptButton = convertView.findViewById(R.id.accept_button);
+            holder.rejectButton = convertView.findViewById(R.id.reject_button);
+
+            // Get user picSignature
+            showUserPhoto(username, holder);
+
+            // Bind item values
+            holder.usernameText.setText(username);
+            holder.requestTimeText.setText(Utils.convertTime(requestTime, "dd MMM, HH:mm"));
+
+            // Assign click listeners
+            holder.acceptButton.setOnClickListener(v -> {
+                requestListView.setClickable(false); // Avoid double click
+                showAcceptDialog(username);
+            });
+            holder.rejectButton.setOnClickListener(v -> {
+                requestListView.setClickable(false); // // Avoid double click
+                showRejectDialog(username);
+            });
+            holder.optionsButton.setOnClickListener(v -> {
+                showOptionsPopupMenu(v, username);
+            });
 
             return  convertView;
         }
@@ -236,15 +244,7 @@ public class RequestListFragment extends Fragment {
             newFragment.show(getFragmentManager(), "reqReject_dialog");
         }
 
-        public void requestAccepted(String username){
-            acceptRequest(username);
-        }
-
-        public void requestRejected(String username){
-            rejectRequest(username);
-        }
-
-        private void acceptRequest(String username) {
+        void acceptRequest(String username) {
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -296,19 +296,21 @@ public class RequestListFragment extends Fragment {
 
                     // Send notification
                     Utils.sendNotification(requestBody);
-
                     Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
+
+                    requestListView.setClickable(true);
                     if (getFragmentManager() != null) {
                         getFragmentManager().popBackStack();
                     }
 
                 } else {
                     Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                    requestListView.setClickable(true);
                 }
             });
         }
 
-        private void rejectRequest(String username) {
+        void rejectRequest(String username) {
 
             // Create transaction Map
             Map<String, Object> transaction = new HashMap<>();
@@ -320,6 +322,13 @@ public class RequestListFragment extends Fragment {
             usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
 
+                    // Remove listview entry
+                    int indexOfUsername = usernameList.indexOf(username);
+                    usernameList.remove(indexOfUsername);
+                    requestTimeList.remove(indexOfUsername);
+                    notifyDataSetChanged();
+
+                    // Notification body
                     String requestBody = "{"
                             + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
 
@@ -333,16 +342,16 @@ public class RequestListFragment extends Fragment {
 
                     // Send notification
                     Utils.sendNotification(requestBody);
-
                     Toast.makeText(getContext(), R.string.borrow_request_rejected, Toast.LENGTH_LONG).show();
-                    if (getFragmentManager() != null) {
-                        getFragmentManager().popBackStack();
-                    }
+                    requestListView.setClickable(true);
 
                 } else {
                     Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                    requestListView.setClickable(true);
                 }
             });
         }
+
+
     }
 }

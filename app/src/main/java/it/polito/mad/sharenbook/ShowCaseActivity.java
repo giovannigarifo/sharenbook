@@ -460,7 +460,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     Book book = dataSnapshot.getValue(Book.class);
                     book.setBookId(dataSnapshot.getKey());
 
-                    if (book.getOwner_uid().equals(user_id)) {
+                    if (book.getOwner_uid().equals(user_id) || book.isShared()) {
                         bookCount.decrementAndGet();
                     } else {
                         bookList.add(book);

@@ -88,7 +88,7 @@ class PendingRequestsFragment : Fragment() {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username)
+                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username, book.isShared)
 
                         requestAdapter.addRequest(req, 0)
                         requestAdapter.notifyItemInserted(0)
@@ -116,7 +116,7 @@ class PendingRequestsFragment : Fragment() {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username)
+                        val req = BorrowRequest(reqUsers, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), numRequests, book.photosName[0], book.owner_username, book.isShared)
 
                         requestAdapter.updateRequest(req)
                     }
