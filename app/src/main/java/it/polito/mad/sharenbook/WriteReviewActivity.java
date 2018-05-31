@@ -146,15 +146,18 @@ public class WriteReviewActivity extends AppCompatActivity {
         Integer score = this.writereview_sb_reviewVote.getProgress();
         reviewData.put("reviewScore", score);
 
-        //creation time
-        reviewData.put("creationTime", ServerValue.TIMESTAMP);
+        //creation time of the review
+        reviewData.put("reviewCreationTime", ServerValue.TIMESTAMP);
+
+        //isGiven
+        reviewData.put("isGiven", this.isGiven);
 
         //the userId of who writes the review
         SharedPreferences userData = context.getSharedPreferences(context.getString(R.string.userData_preferences), Context.MODE_PRIVATE);
         String username = userData.getString(context.getString(R.string.username_pref), "void");
 
         if(!username.equals("void"))
-            reviewData.put("username", username);
+            reviewData.put("writerUsername", username);
         else Toast.makeText(context, "error in username", Toast.LENGTH_LONG).show();
         //TODO: to be changed
 
@@ -169,13 +172,11 @@ public class WriteReviewActivity extends AppCompatActivity {
         //retrieve data from view and create review object
         HashMap<String, Object> reviewData = retrieveDataAndCreateReview();
 
-        //reference to usernames of firebase
-        DatabaseReference usernamesRef = FirebaseDatabase.getInstance().getReference("usernames");
+        //reference to the reviews of the users in firebase
+        DatabaseReference reviewsRef = FirebaseDatabase.getInstance().getReference("usernames/" + userNickName + "/" + getString(R.string.reviews_key));
 
         //get new review key
-        String reviewKey = usernamesRef.child(userNickName)
-                .child(getString(R.string.reviews_key))
-                .push().getKey();
+        String reviewKey = reviewsRef.push().getKey();
 
         //create transaction map
         Map<String, Object> transaction = new HashMap<>();
@@ -183,9 +184,16 @@ public class WriteReviewActivity extends AppCompatActivity {
         transaction.put(reviewKey, reviewData);
 
         // Push the review to firebase
-        usernamesRef.updateChildren(transaction, (databaseError, databaseReference) -> {
+        reviewsRef.updateChildren(transaction, (databaseError, databaseReference) -> {
+
             if (databaseError != null) {
-                Toast.makeText(getApplicationContext(), "An error occurred, try later.", Toast.LENGTH_LONG).show();
+
+                Toast.makeText(getApplicationContext(), R.string.review_error, Toast.LENGTH_LONG).show();
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), R.string.review_correctly_submitted, Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }

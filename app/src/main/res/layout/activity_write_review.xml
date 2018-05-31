@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/writereview_reviewBody_hint"
                     android:inputType="text"
-                    android:maxLength="300" />
+                    android:maxLength="300"/>
 
                 <!-- review vote -->
                 <TextView

@@ -307,6 +307,8 @@
     <string name="given_books_key" translatable="false">given_books</string>
     <string name="taken_books_key" translatable="false">taken_books</string>
     <string name="archive_books_key" translatable="false">archive_books</string>
+    <string name="reviews_key">reviews</string>
+
 
     <string name="mba_title" translatable="false">My books</string>
     <string name="nav_my_books">My books</string>
@@ -401,7 +403,8 @@
     <string name="writereview_reviewBody_hint">Write here the body of your review</string>
     <string name="writereview_reviewVote_heading">Your vote</string>
     <string name="writereview_reviewVote_message">Rate the user with a vote between 0 and 5</string>
-    <string name="reviews_key">reviews</string>
+    <string name="review_correctly_submitted">Review correctly submitted</string>
+    <string name="review_error">An error occour while uploading the review</string>
 
 
 </resources>
