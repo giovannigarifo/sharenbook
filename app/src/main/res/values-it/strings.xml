@@ -369,6 +369,9 @@
     <string name="writereview_reviewVote_message">Esprimi un voto da 0 a 5 sull\'utente</string>
     <string name="review_correctly_submitted">Recensione inviata correttamente</string>
     <string name="review_error">Si è verificato un errore durante il caricamento della recensione</string>
+    <string name="published_by">Pubblicato da: %1$s</string>
+    <string name="announce_info">Informazioni sull\'annuncio</string>
+
     <string name="writereview_creationTime_incipit">in data</string>
 
 </resources>

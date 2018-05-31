@@ -81,7 +81,7 @@ class BorrowRequestsFragment : Fragment() {
 
                         val book = dataSnapshot.getValue(Book::class.java)
 
-                        val req = BorrowRequest(null, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), 0, book.photosName[0], book.owner_username)
+                        val req = BorrowRequest(null, bookId, book!!.title, book.authorsAsString, book.getCreationTimeAsString(App.getContext()), 0, book.photosName[0], book.owner_username, book.isShared)
 
                         requestAdapter.addRequest(req)
                         requestAdapter.notifyDataSetChanged()

@@ -11,6 +11,7 @@
     <color name="divider">#BDBDBD</color>
 
     <color name="darkGrey">#424242</color>
+    <color name="blockGrey">#9e9fa3</color>
     <color name="lightGrey">#E0DFF0</color>
     <color name="bgGrey">#EBEBEB</color>
     <color name="bdazzledBlue">#235789</color>

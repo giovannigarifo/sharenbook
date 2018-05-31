@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
@@ -43,10 +42,10 @@ public class GenericAlertDialog extends DialogFragment {
                                 ((ShowMyAnnouncementsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).showShareBook();
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
-                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.requestAccepted(username);
+                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.acceptRequest(username);
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("reqReject_dialog")){
-                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.requestRejected(username);
+                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.rejectRequest(username);
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog"))
                                 ((BorrowRequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).requestAdapter.doPositiveClick();

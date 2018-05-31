@@ -157,7 +157,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mRecyclerView.setHasFixedSize(true);
 
         // Use a zoom linear layout manager
-        RecyclerView.LayoutManager mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(150));
+        RecyclerView.LayoutManager mLayoutManager = new ZoomLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false, UserInterface.convertDpToPixel(120));
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Specify an adapter
@@ -297,9 +297,11 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         TextView location = findViewById(R.id.showbook_tvc_location);
         TextView bookConditions = findViewById(R.id.showbook_tvc_bookConditions);
         TextView tags = findViewById(R.id.showbook_tvc_tags);
+        TextView owner = findViewById(R.id.published_by_tv);
 
         isbn.setText(book.getIsbn());
         title.setText(book.getTitle());
+        owner.setText(App.getContext().getResources().getString(R.string.published_by,book.getOwner_username()));
 
         if (book.getSubtitle().equals("")) {
             subtitleHeader.setVisibility(View.GONE);

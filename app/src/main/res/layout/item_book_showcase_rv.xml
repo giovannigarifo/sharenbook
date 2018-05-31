@@ -36,9 +36,12 @@
         android:id="@+id/showcase_rv_unavailable_bg"
         android:layout_width="112dp"
         android:layout_height="168dp"
-        android:background="#99666666"
+        android:background="#DD353638"
         android:visibility="gone"
-        android:src="@drawable/non_disponibile"
+        android:src="@drawable/ic_block_black_70dp"
+        android:scaleType="center"
+        android:tint="@color/blockGrey"
+        android:alpha="0.8"
         app:layout_constraintTop_toTopOf="@id/showcase_rv_book_photo"
         app:layout_constraintStart_toStartOf="@id/showcase_rv_book_photo" />
 
