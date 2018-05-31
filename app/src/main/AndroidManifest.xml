@@ -111,7 +111,8 @@
             android:name=".TabbedShowProfileActivity"
             android:label="@string/title_activity_tabbed_show_profile"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ShowOthersProfile"></activity>
+        <activity android:name=".ShowOthersProfile" />
+        <activity android:name=".WriteReviewActivity"></activity>
     </application>
 
 </manifest>
