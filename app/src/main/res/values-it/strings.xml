@@ -360,7 +360,7 @@
     <string name="writereview_review_given">Hai dato in prestito a </string>
     <string name="writereview_review_loaned"> ti ha dato in prestito</string>
     <string name="writereview_review_heading">La tua recensione</string>
-    <string name="writereview_review_headingMessage">Scrivi qui sotto la tua recensione</string>
+    <string name="writereview_review_headingMessage">Scrivi una recensione sull\'utente</string>
     <string name="writereview_reviewTitle_heading">Titolo della recensione</string>
     <string name="writereview_reviewTitle_hint">Scrivi qui il titolo della tua recensione</string>
     <string name="writereview_reviewBody_heading">Testo della recensione</string>

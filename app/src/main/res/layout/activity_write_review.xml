@@ -81,14 +81,13 @@
                         android:elevation="10dp"
                         android:maxLines="1"
                         android:text="@string/placeholder"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="8dp"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/title"
-                        android:textStyle="bold" />
+                        android:textSize="@dimen/title" />
 
                     <!-- date -->
                     <TextView
-                        android:id="@+id/writereview_archivingDate"
+                        android:id="@+id/writereview_creationTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/writereview_bookTitle"

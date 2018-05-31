@@ -318,7 +318,8 @@ public class ExchangesFragment extends Fragment {
                         startWriteReviewActivity.putExtra("creationTime", exchange.getCreationTime());
                         startWriteReviewActivity.putExtra("userNickName", exchange.getCounterpart());
                         startWriteReviewActivity.putExtra("isGiven", exchange.isGiven());
-
+                        startWriteReviewActivity.putExtra("bookPhoto", exchange.getBookPhoto());
+                        startWriteReviewActivity.putExtra("exchangeId", exchange.getExchangeId());
 
                         App.getContext().startActivity(startWriteReviewActivity);
                     });
