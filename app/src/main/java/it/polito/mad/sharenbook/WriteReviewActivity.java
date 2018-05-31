@@ -54,9 +54,7 @@ public class WriteReviewActivity extends AppCompatActivity {
     private String userNickName;
     private boolean isGiven;
 
-
-    //user profile
-    private UserProfile user;
+    String username;
 
     //firebase
     private FirebaseUser firebaseUser;
@@ -191,9 +189,6 @@ public class WriteReviewActivity extends AppCompatActivity {
         // review heading message
         this.writereview_tv_reviewHeadingMessage.setText(getResources().getString(R.string.writereview_review_headingMessage) + " " + userNickName);
 
-        //rating bar
-        this.writereview_rb_reviewVote.setOnRatingBarChangeListener(this::onRatingChanged);
-
         //fab
         this.writereview_fab_save.setOnClickListener(v -> saveReviewToFirebase());
 
@@ -230,7 +225,7 @@ public class WriteReviewActivity extends AppCompatActivity {
 
         //the userId of who writes the review
         SharedPreferences userData = context.getSharedPreferences(context.getString(R.string.userData_preferences), Context.MODE_PRIVATE);
-        String username = userData.getString(context.getString(R.string.username_pref), "void");
+        username = userData.getString(context.getString(R.string.username_pref), "void");
 
         if (!username.equals("void"))
             reviewData.put("creator", username);
@@ -257,7 +252,7 @@ public class WriteReviewActivity extends AppCompatActivity {
                 .push().getKey();
 
         //archive path of the user who released the review
-        String archivePath = "shared_books/" + user.getUsername() + "/archive_books/" + this.exchangeId + "/reviewed";
+        String archivePath = "shared_books/" + username + "/archive_books/" + this.exchangeId + "/reviewed";
 
         //review path
         String reviewPath = "usernames/" + userNickName + "/reviews/" + reviewKey;
@@ -282,14 +277,6 @@ public class WriteReviewActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-
-    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromTouch) {
-
-        final int numStars = ratingBar.getNumStars();
-
-        this.writereview_rb_reviewVote.setRating(rating);
     }
 
 }
