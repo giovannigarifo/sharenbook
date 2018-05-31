@@ -256,8 +256,8 @@ public class WriteReviewActivity extends AppCompatActivity {
                 .child("usernames/" + userNickName + "/" + getString(R.string.reviews_key))
                 .push().getKey();
 
-        //archive path
-        String archivePath = "shared_books/" + userNickName + "/archive_books/" + this.exchangeId + "/reviewed";
+        //archive path of the user who released the review
+        String archivePath = "shared_books/" + user.getUsername() + "/archive_books/" + this.exchangeId + "/reviewed";
 
         //review path
         String reviewPath = "usernames/" + userNickName + "/reviews/" + reviewKey;
