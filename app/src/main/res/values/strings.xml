@@ -403,6 +403,8 @@
     <string name="writereview_reviewBody_hint">Write here the body of your review</string>
     <string name="writereview_reviewVote_heading">Your vote</string>
     <string name="writereview_reviewVote_message">Rate the user with a vote between 0 and 5</string>
+    <string name="published_by">Published by: %1$s</string>
+    <string name="announce_info">Announcement Info</string>
     <string name="review_correctly_submitted">Review correctly submitted</string>
     <string name="review_error">An error occour while uploading the review</string>
     <string name="writereview_creationTime_incipit">on date</string>

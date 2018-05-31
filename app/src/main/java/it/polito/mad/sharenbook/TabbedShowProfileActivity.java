@@ -174,10 +174,10 @@ public class TabbedShowProfileActivity extends AppCompatActivity
                     userFragment.setArguments(bundle);
                     return userFragment;
                 case 1:
-                    //bundle = new Bundle();
-                    //bundle.putParcelable("userData", user);
+                    bundle = new Bundle();
+                    bundle.putString("username", user.getUsername());
                     revFragment = new ProfileReviewsFragment();
-                    //revFragment.setArguments(bundle);
+                    revFragment.setArguments(bundle);
                     return revFragment;
                 default:
                     return null;

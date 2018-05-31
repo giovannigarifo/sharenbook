@@ -63,7 +63,6 @@ import java.util.Map;
 import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.adapters.SingleCheckableCheckboxAdapter;
 import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;

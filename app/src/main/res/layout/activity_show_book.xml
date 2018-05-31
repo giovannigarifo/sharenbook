@@ -13,6 +13,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bgGrey"
         tools:context=".ShowBookActivity">
 
         <android.support.design.widget.AppBarLayout
@@ -29,14 +30,14 @@
 
                 <ImageView
                     android:id="@+id/show_book_btn_favorite"
-                    android:clickable="true"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:layout_gravity="right"
                     android:layout_marginEnd="14dp"
                     android:layout_marginRight="14dp"
+                    android:clickable="true"
                     android:src="@drawable/ic_favorite_border_black_24dp"
-                    android:tint="@android:color/holo_red_dark"
-                    android:layout_gravity="right" />
+                    android:tint="@android:color/holo_red_dark" />
 
             </android.support.v7.widget.Toolbar>
 
@@ -58,16 +59,18 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/navigation">
+                android:clipToPadding="false"
+                android:paddingBottom="90dp"
+                app:layout_constraintBottom_toTopOf="@id/navigation"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
                     <!-- BOOK PHOTO -->
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="280dp"
                         android:background="@color/colorPrimary"
@@ -77,190 +80,301 @@
                             android:id="@+id/showbook_recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:layout_marginTop="16dp" />
 
-                    </LinearLayout>
+                        <Button
+                            android:id="@+id/request_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_below="@id/showbook_recycler_view"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginTop="16dp"
+                            android:padding="8dp"
+                            android:text="@string/borrow_book"
+                            android:textColor="@color/greenButton"
+                            android:textSize="14sp"
+                            android:background="@drawable/button_bg_transparent_green" />
 
+                        <Button
+                            android:id="@+id/contact_owner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:layout_below="@id/showbook_recycler_view"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="16dp"
+                            android:padding="8dp"
+                            android:text="@string/contact_owner"
+                            android:textColor="@color/greenButton"
+                            android:textSize="14sp"
+                            android:background="@drawable/button_bg_transparent_green" />
+
+                    </RelativeLayout>
+
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/announceInfoCV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="2dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/announce_info"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/announce_info"
+                                android:layout_marginBottom="16dp"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"/>
+
+                            <TextView
+                                android:id="@+id/published_by_tv"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/published_by"
+                                android:layout_below="@id/announce_info"
+                                android:layout_marginStart="24dp"
+                                android:layout_marginLeft="24dp"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:textColor="@color/darkGrey"
+                                />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_location"
+                                android:drawableStart="@drawable/ic_place_black_24dp"
+                                android:drawableLeft="@drawable/ic_place_black_24dp"
+                                android:drawablePadding="8dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_below="@id/announce_info"
+                                android:maxEms="20"
+                                android:ellipsize="end"
+                                android:textSize="16sp"
+                                />
+
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
                     <!-- BOOK DATA -->
-                    <LinearLayout
+                    <!--<LinearLayout
                         android:id="@+id/showbook_content_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="16dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"> -->
 
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/bookInfoCV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="2dp">
 
-                        <!-- isbn-->
-                        <TextView
-                            android:id="@+id/showbook_tvh_isbn"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_isbn_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_isbn"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- title -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_title"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_title_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_title"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- sub title -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_subtitle"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_subtitle_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_subtitle"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- authors -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_authors"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_authors_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_authors"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- publisher -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_publisher"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_publisher_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_publisher"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- published date -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_publishedDate"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_published_date_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_publishedDate"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- description -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_description"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_description_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_description"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- page count -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_pageCount"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_page_count_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_pageCount"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- categories -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_categories"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_categories_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_categories"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- language -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_language"
-                            style="@style/TextViewHeading"
-                            android:text="@string/default_language_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_language"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- location -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_location"
-                            style="@style/TextViewHeading"
-
-                            android:text="@string/default_location_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_location"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <!-- book conditions -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_bookConditions"
-                            style="@style/TextViewHeading"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="0dp"
-                            android:background="@color/colorPrimary"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/default_book_condition_heading" />
-
-                        <TextView
-                            android:id="@+id/showbook_tvc_bookConditions"
-                            style="@style/TextViewContent"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp" />
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                        <!-- additional tags -->
-                        <TextView
-                            android:id="@+id/showbook_tvh_tags"
-                            style="@style/TextViewHeading"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="0dp"
-                            android:background="@color/colorPrimary"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="@string/default_tags_heading" />
+                            <TextView
+                                android:id="@+id/book_details"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="@string/showbook_toolbar_title"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"/>
 
-                        <TextView
-                            android:id="@+id/showbook_tvc_tags"
-                            style="@style/TextViewContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp" />
+                            <!-- title -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_title"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_title_heading" />
 
-                    </LinearLayout>
+                            <TextView
+                                android:id="@+id/showbook_tvc_title"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- sub title -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_subtitle"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_subtitle_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_subtitle"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- authors -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_authors"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_authors_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_authors"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- isbn-->
+                            <TextView
+                                android:id="@+id/showbook_tvh_isbn"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_isbn_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_isbn"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- publisher -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_publisher"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_publisher_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_publisher"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- published date -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_publishedDate"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_published_date_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_publishedDate"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- description -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_description"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_description_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_description"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- page count -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_pageCount"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_page_count_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_pageCount"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- categories -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_categories"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_categories_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_categories"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- language -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_language"
+                                style="@style/TextViewHeading"
+                                android:text="@string/default_language_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_language"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- book conditions -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_bookConditions"
+                                style="@style/TextViewHeading"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_marginTop="16dp"
+                                android:background="@color/colorPrimary"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:text="@string/default_book_condition_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_bookConditions"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp" />
+
+                            <!-- additional tags -->
+                            <TextView
+                                android:id="@+id/showbook_tvh_tags"
+                                style="@style/TextViewHeading"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:background="@color/colorPrimary"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:text="@string/default_tags_heading" />
+
+                            <TextView
+                                android:id="@+id/showbook_tvc_tags"
+                                style="@style/TextViewContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp" />
+
+                        </LinearLayout>
+
+                    </android.support.v7.widget.CardView>
+
+
+                    <!--</LinearLayout> -->
 
                 </LinearLayout>
 
@@ -283,11 +397,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/darkGrey"
+                app:itemBackground="@drawable/nav_bar_bg_selector"
                 app:itemIconTint="@drawable/nav_bar_selector"
                 app:itemTextColor="@drawable/nav_bar_selector"
-                app:itemBackground="@drawable/nav_bar_bg_selector"
-                app:menu="@menu/navigation"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/navigation" />
 
         </android.support.constraint.ConstraintLayout>
 
