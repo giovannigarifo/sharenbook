@@ -638,6 +638,12 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         mActivity.startActivity(chatActivity);
                         return true;
 
+                    case R.id.show_profile:
+                        Intent showOwnerProfile = new Intent(mActivity, ShowOthersProfile.class);
+                        showOwnerProfile.putExtra("username", book.getOwner_username());
+                        mActivity.startActivity(showOwnerProfile);
+                        return true;
+
                     case R.id.borrow_book:
                         selectedBookOwner = book.getOwner_username();
                         selectedBookId = book.getBookId();
@@ -653,6 +659,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 popup.getMenu().getItem(0).setEnabled(false);
                 popup.getMenu().getItem(2).setEnabled(false);
                 popup.getMenu().getItem(3).setEnabled(false);
+                popup.getMenu().getItem(4).setEnabled(false);
 
             } else {
                 if (favoritesBookIdList.contains(book.getBookId())) {
@@ -660,10 +667,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     popup.getMenu().getItem(1).setVisible(true);
                 }
                 if (book.isShared()) {
-                    popup.getMenu().getItem(3).setTitle(R.string.book_unavailable).setEnabled(false);
+                    popup.getMenu().getItem(4).setTitle(R.string.book_unavailable).setEnabled(false);
                 } else if (requestedBookIdList.contains(book.getBookId())) {
-                    popup.getMenu().getItem(3).setVisible(false);
-                    popup.getMenu().getItem(4).setVisible(true);
+                    popup.getMenu().getItem(4).setVisible(false);
+                    popup.getMenu().getItem(5).setVisible(true);
                 }
             }
 

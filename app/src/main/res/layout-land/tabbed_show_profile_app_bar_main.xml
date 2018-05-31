@@ -97,6 +97,19 @@
                 android:textStyle="bold"
                 android:alpha="0.7" />
 
+            <!-- user rating stars-->
+            <RatingBar
+                android:id="@+id/userRatingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_userNickName"
+                android:layout_centerHorizontal="true"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="0.5" />
+
             <!-- user rating stars -->
             <!-- <RatingBar
                 android:id="@+id/userRatingBar"

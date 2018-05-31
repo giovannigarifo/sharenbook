@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
 
@@ -86,12 +88,26 @@ public class ShowOthersProfile extends AppCompatActivity {
             context.startActivity(chatActivity);
         });
 
+        showProfileReviewsFragment();
 
 
     }
 
     public void setRating(float floatRating){
         ratingBar.setRating(floatRating);
+    }
+
+    private void showProfileReviewsFragment(){
+
+        ProfileReviewsFragment frag = new ProfileReviewsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("username", ownerUsername);
+        frag.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.reviewsContainer, frag, "profileReviews")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
     }
 
 }
