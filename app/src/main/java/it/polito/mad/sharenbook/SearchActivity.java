@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -635,6 +636,7 @@ public class SearchActivity extends AppCompatActivity
                     .addOnCompleteListener(task -> {
                         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                         startActivity(i);
+                        OneSignal.setSubscription(false);
                         Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                         finish();
                     });

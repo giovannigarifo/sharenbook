@@ -44,6 +44,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 import com.robertlevonyan.views.chip.Chip;
 import com.robertlevonyan.views.chip.OnChipClickListener;
 
@@ -215,6 +216,7 @@ public class MapsActivity extends AppCompatActivity
                     .addOnCompleteListener(task -> {
                         Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
                         startActivity(i);
+                        OneSignal.setSubscription(false);
                         Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
                         finish();
                     });
