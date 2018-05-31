@@ -186,7 +186,7 @@
                     android:textColor="@color/darkGrey"
                     android:textSize="@dimen/paragraph" />
 
-                <SeekBar
+                <!--<SeekBar
                     android:id="@+id/writereview_sb_reviewVote"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -197,7 +197,22 @@
                     android:layout_marginBottom="80dp"
                     android:max="5"
                     android:min="0"
-                    android:progress="3" />
+                    android:progress="3" />-->
+
+                <android.support.v7.widget.AppCompatRatingBar
+                    android:id="@+id/writereview_rb_reviewVote"
+                    android:isIndicator="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="80dp"
+                    android:layout_gravity="center_horizontal"
+                    android:rating="4"
+                    android:numStars="5"
+                    android:stepSize="0.5"
+                    />
 
             </LinearLayout>
 

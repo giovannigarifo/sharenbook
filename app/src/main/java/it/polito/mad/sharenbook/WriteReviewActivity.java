@@ -2,12 +2,14 @@ package it.polito.mad.sharenbook;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +41,7 @@ public class WriteReviewActivity extends AppCompatActivity {
     TextView writereview_tv_reviewHeadingMessage;
     EditText writereview_et_reviewTitle;
     EditText writereview_et_reviewBody;
-    SeekBar writereview_sb_reviewVote;
+    RatingBar writereview_rb_reviewVote;
 
     FloatingActionButton writereview_fab_save;
 
@@ -73,7 +75,7 @@ public class WriteReviewActivity extends AppCompatActivity {
 
         if (savedInstanceState == null)
             startedFromIntent();
-        else startedFromSavedState();
+        else startedFromSavedState(savedInstanceState);
 
         //get views
         getViews();
@@ -114,10 +116,30 @@ public class WriteReviewActivity extends AppCompatActivity {
     /**
      * Activity is restoring from a preivous instance state, e.g. rotation happened
      */
-    private void startedFromSavedState() {
+    private void startedFromSavedState(Bundle savedState) {
 
+        this.userNickName = savedState.getString("userNickName");
+        this.isGiven = savedState.getBoolean("isGiven");
+        this.bookTitle = savedState.getString("bookTitle");
+        this.creationTime = savedState.getLong("creationTime");
+        this.bookId = savedState.getString("bookId");
+        this.bookPhoto = savedState.getString("bookPhoto");
+        this.exchangeId = savedState.getString("exchangeId");
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+
+        outState.putString("userNickName", this.userNickName);
+        outState.putBoolean("isGiven", this.isGiven);
+        outState.putString("bookTitle", this.bookTitle);
+        outState.putLong("creationTime", this.creationTime);
+        outState.putString("bookId", this.bookId);
+        outState.putString("bookPhoto", this.bookPhoto);
+        outState.putString("exchangeId", this.exchangeId);
+    }
 
     /**
      * get views from layout
@@ -130,7 +152,7 @@ public class WriteReviewActivity extends AppCompatActivity {
         this.writereview_creationTime = findViewById(R.id.writereview_creationTime);
         this.writereview_et_reviewTitle = findViewById(R.id.writereview_et_reviewTitle);
         this.writereview_et_reviewBody = findViewById(R.id.writereview_et_reviewBody);
-        this.writereview_sb_reviewVote = findViewById(R.id.writereview_sb_reviewVote);
+        this.writereview_rb_reviewVote = findViewById(R.id.writereview_rb_reviewVote);
         this.writereview_fab_save = findViewById(R.id.writereview_fab_save);
         this.writereview_tv_reviewHeadingMessage = findViewById(R.id.writereview_tv_reviewHeadingMessage);
     }
@@ -169,6 +191,9 @@ public class WriteReviewActivity extends AppCompatActivity {
         // review heading message
         this.writereview_tv_reviewHeadingMessage.setText(getResources().getString(R.string.writereview_review_headingMessage) + " " + userNickName);
 
+        //rating bar
+        this.writereview_rb_reviewVote.setOnRatingBarChangeListener(this::onRatingChanged);
+
         //fab
         this.writereview_fab_save.setOnClickListener(v -> saveReviewToFirebase());
 
@@ -187,28 +212,28 @@ public class WriteReviewActivity extends AppCompatActivity {
 
         //title
         String title = this.writereview_et_reviewTitle.getText().toString().trim().replace("\"\'\\", "");
-        reviewData.put("reviewTitle", title);
+        reviewData.put("rTitle", title);
 
         //body
         String body = this.writereview_et_reviewBody.getText().toString().trim().replace("\"\'\\", "");
-        reviewData.put("reviewBody", body);
+        reviewData.put("rText", body);
 
         //score
-        Integer score = this.writereview_sb_reviewVote.getProgress();
-        reviewData.put("reviewScore", score);
+        Integer score = this.writereview_rb_reviewVote.getProgress();
+        reviewData.put("rating", score);
 
         //creation time of the review
-        reviewData.put("reviewCreationTime", ServerValue.TIMESTAMP);
+        reviewData.put("date", ServerValue.TIMESTAMP);
 
         //isGiven
-        reviewData.put("isGiven", this.isGiven);
+        reviewData.put("given", this.isGiven);
 
         //the userId of who writes the review
         SharedPreferences userData = context.getSharedPreferences(context.getString(R.string.userData_preferences), Context.MODE_PRIVATE);
         String username = userData.getString(context.getString(R.string.username_pref), "void");
 
         if (!username.equals("void"))
-            reviewData.put("writerUsername", username);
+            reviewData.put("creator", username);
         else Toast.makeText(context, "error in username", Toast.LENGTH_LONG).show();
         //TODO: to be changed
 
@@ -257,6 +282,14 @@ public class WriteReviewActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+
+    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromTouch) {
+
+        final int numStars = ratingBar.getNumStars();
+
+        this.writereview_rb_reviewVote.setRating(rating);
     }
 
 }
