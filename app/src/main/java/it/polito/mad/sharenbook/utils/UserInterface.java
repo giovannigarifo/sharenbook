@@ -32,7 +32,7 @@ public class UserInterface {
 
     private static String[] bookCategories = App.getContext().getResources().getStringArray(R.array.book_categories);
 
-    public static HashMap<String, Integer> cat_colors = new HashMap<String, Integer>() {{
+    /*public static HashMap<String, Integer> cat_colors = new HashMap<String, Integer>() {{
         put(Arrays.asList(bookCategories).get(0),Color.argb(0,172,193 ,1));  // art, music, cinema
         put(Arrays.asList(bookCategories).get(1), Color.argb(142,36,170 ,1)); // biography
         put(Arrays.asList(bookCategories).get(2), Color.argb(67,160,71 ,1));  // Comics
@@ -59,7 +59,7 @@ public class UserInterface {
         put(Arrays.asList(bookCategories).get(23), Color.argb(255,213,79 ,1));  // Sport
         put(Arrays.asList(bookCategories).get(24), Color.argb(77,208,225 ,1));  // Travel
         put(Arrays.asList(bookCategories).get(25), Color.argb(207,216,220 ,1));  // Other
-    }};
+    }};*/
 
     private static final int widthT = 700;
 
