@@ -18,7 +18,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +43,6 @@ public class RequestListFragment extends Fragment {
     private ArrayList<String> usernameList;
     private long[] requestTimeArray;
     private String bookId, bookTitle, bookPhoto, bookOwner;
-    private String userId;
     public RequestsAdapter requestAdapter;
 
     @Override
@@ -57,7 +55,6 @@ public class RequestListFragment extends Fragment {
         bookTitle = getArguments().getString("bookTitle");
         bookPhoto = getArguments().getString("bookPhoto");
         bookOwner = getArguments().getString("bookOwner");
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @Nullable
@@ -99,6 +96,12 @@ public class RequestListFragment extends Fragment {
             ImageView optionsButton;
             Button acceptButton;
             Button rejectButton;
+
+            void setButtonsEnabled(boolean status) {
+                acceptButton.setEnabled(status);
+                rejectButton.setEnabled(status);
+                optionsButton.setClickable(status);
+            }
         }
 
         RequestsAdapter(Activity activity, ArrayList<String> usernameList, long[] requestTimeArray) {
@@ -157,31 +160,7 @@ public class RequestListFragment extends Fragment {
                     showRejectDialog(username);
                 });
                 holder.optionsButton.setOnClickListener(v -> {
-
-                    final PopupMenu popup = new PopupMenu(mActivity, v);
-                    popup.inflate(R.menu.chiptag_menu);
-                    popup.setOnMenuItemClickListener(item -> {
-
-                        switch (item.getItemId()) {
-
-                            case R.id.contact_user:
-                                Intent chatActivity = new Intent(mActivity, ChatActivity.class);
-                                chatActivity.putExtra("recipientUsername", username);
-                                mActivity.startActivity(chatActivity);
-                                return true;
-
-                            case R.id.show_profile:
-                                Intent showOwnerProfile = new Intent(mActivity, ShowOthersProfile.class);
-                                showOwnerProfile.putExtra("username", username);
-                                mActivity.startActivity(showOwnerProfile);
-                                return true;
-
-                            default:
-                                return false;
-                        }
-                    });
-
-                    popup.show();
+                    showOptionsPopupMenu(v, username);
                 });
             }
 
@@ -207,6 +186,34 @@ public class RequestListFragment extends Fragment {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
+        }
+
+        private void showOptionsPopupMenu(View v, String username) {
+
+            final PopupMenu popup = new PopupMenu(mActivity, v);
+            popup.inflate(R.menu.chiptag_menu);
+            popup.setOnMenuItemClickListener(item -> {
+
+                switch (item.getItemId()) {
+
+                    case R.id.contact_user:
+                        Intent chatActivity = new Intent(mActivity, ChatActivity.class);
+                        chatActivity.putExtra("recipientUsername", username);
+                        mActivity.startActivity(chatActivity);
+                        return true;
+
+                    case R.id.show_profile:
+                        Intent showOwnerProfile = new Intent(mActivity, ShowOthersProfile.class);
+                        showOwnerProfile.putExtra("username", username);
+                        mActivity.startActivity(showOwnerProfile);
+                        return true;
+
+                    default:
+                        return false;
+                }
+            });
+
+            popup.show();
         }
 
         void showAcceptDialog(String username) {

@@ -40,6 +40,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -270,10 +271,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 .child(getString(R.string.borrow_requests_key));
 
         // Get borrow requested books
-        requestedBookIdList = new HashSet<>();
-        borrowRequestsDb.addListenerForSingleValueEvent(new ValueEventListener() {
+        borrowRequestsDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                requestedBookIdList = new HashSet<>();
 
                 if (dataSnapshot.getChildrenCount() == 0)
                     return;
@@ -287,9 +289,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+                if (requestedBookIdList == null)
+                    requestedBookIdList = new HashSet<>();
             }
         });
-
     }
 
     private void setupRecyclerViews() {
@@ -508,16 +512,14 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         private StorageReference mBookImagesStorage;
         private List<Book> mBookList;
 
-        // Provide a reference to the views for each data item
-        // Complex data items may need more than one view per item, and
-        // you provide access to all the views for a data item in a view holder
         class ViewHolder extends RecyclerView.ViewHolder {
-            // each data item is just a string in this case
+
             ConstraintLayout mLayout;
             ImageView bookPhoto;
             TextView bookTitle;
             TextView bookDistance;
             ImageView bookOptions;
+            ImageView bookmarkIcon;
 
             ViewHolder(ConstraintLayout layout) {
                 super(layout);
@@ -526,10 +528,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
                 bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
                 bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
+                bookmarkIcon = layout.findViewById(R.id.showcase_rv_book_shared);
             }
         }
 
-        // Provide a suitable constructor (depends on the kind of dataset)
         MyAdapter(List<Book> bookList) {
             mActivity = ShowCaseActivity.this;
             mBookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
@@ -550,8 +552,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Replace the contents of a view (invoked by the layout manager)
         @Override
         public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
-            // - get element from your dataset at this position
-            // - replace the contents of the view with that element
+
             Book book = mBookList.get(position);
             String fileName = book.getPhotosName().get(0);
             StorageReference photoRef = mBookImagesStorage.child(book.getBookId()).child(fileName);
@@ -561,6 +562,12 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                     .load(photoRef)
                     .placeholder(R.drawable.book_cover_portrait)
                     .into(holder.bookPhoto);
+
+            // Put bookmark icon if already shared
+            /*
+            if (book.isShared())
+                holder.bookmarkIcon.setVisibility(View.VISIBLE);
+            */
 
             // Set title
             holder.bookTitle.setText(book.getTitle());
@@ -588,73 +595,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
             // Setup options menu
             holder.bookOptions.setOnClickListener(v -> {
-
-                final PopupMenu popup = new PopupMenu(mActivity, v);
-                popup.inflate(R.menu.showcase_rv_options_menu);
-                popup.setOnMenuItemClickListener(item -> {
-
-                    DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
-                            .getReference(getString(R.string.users_key))
-                            .child(user_id)
-                            .child(getString(R.string.user_favorites_key))
-                            .child(book.getBookId());
-
-                    switch (item.getItemId()) {
-
-                        case R.id.add_to_favorites:
-                            favoriteBooksRef.setValue(ServerValue.TIMESTAMP, (databaseError, databaseReference) -> {
-                                if (databaseError == null) {
-                                    loadFavoriteBooksRecylerView();
-                                    Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
-                                } else
-                                    Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
-                            });
-                            return true;
-
-                        case R.id.del_from_favorites:
-                            favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
-                                if (databaseError == null) {
-                                    loadFavoriteBooksRecylerView();
-                                    Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
-                                } else
-                                    Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
-                            });
-                            return true;
-
-                        case R.id.contact_owner:
-                            Intent chatActivity = new Intent(mActivity, ChatActivity.class);
-                            chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                            mActivity.startActivity(chatActivity);
-                            return true;
-
-                        case R.id.borrow_book:
-                            selectedBookOwner = book.getOwner_username();
-                            selectedBookId = book.getBookId();
-                            showDialog();
-
-                        default:
-                            return false;
-                    }
-                });
-
-                // Disable contact owner menu entry if is an user's book
-                if (book.getOwner_uid().equals(user_id)) {
-                    popup.getMenu().getItem(0).setEnabled(false);
-                    popup.getMenu().getItem(2).setEnabled(false);
-                    popup.getMenu().getItem(3).setEnabled(false);
-
-                } else {
-                    if (favoritesBookIdList.contains(book.getBookId())) {
-                        popup.getMenu().getItem(0).setVisible(false);
-                        popup.getMenu().getItem(1).setVisible(true);
-                    }
-                    if (requestedBookIdList.contains(book.getBookId())) {
-                        popup.getMenu().getItem(3).setVisible(false);
-                        popup.getMenu().getItem(4).setVisible(true);
-                    }
-                }
-
-                popup.show();
+                showOptionsPopupMenu(v, book);
             });
         }
 
@@ -663,22 +604,78 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         public int getItemCount() {
             return mBookList.size();
         }
-    }
 
-    void showDialog() {
-        DialogFragment newFragment = GenericAlertDialog.newInstance(
-                R.string.borrow_book, getString(R.string.borrow_book_msg));
-        newFragment.show(getSupportFragmentManager(), "borrow_dialog");
-    }
+        private void showOptionsPopupMenu(View v, Book book) {
 
-    public void doPositiveClick() {
-        if (!selectedBookOwner.equals("")) {
-            firebaseInsertRequest();
+            final PopupMenu popup = new PopupMenu(mActivity, v);
+            popup.inflate(R.menu.showcase_rv_options_menu);
+            popup.setOnMenuItemClickListener(item -> {
+
+                DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
+                        .getReference(getString(R.string.users_key))
+                        .child(user_id)
+                        .child(getString(R.string.user_favorites_key))
+                        .child(book.getBookId());
+
+                switch (item.getItemId()) {
+
+                    case R.id.add_to_favorites:
+                        favoriteBooksRef.setValue(ServerValue.TIMESTAMP, (databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                loadFavoriteBooksRecylerView();
+                                Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
+                            } else
+                                Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                        });
+                        return true;
+
+                    case R.id.del_from_favorites:
+                        favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
+                            if (databaseError == null) {
+                                loadFavoriteBooksRecylerView();
+                                Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
+                            } else
+                                Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
+                        });
+                        return true;
+
+                    case R.id.contact_owner:
+                        Intent chatActivity = new Intent(mActivity, ChatActivity.class);
+                        chatActivity.putExtra("recipientUsername", book.getOwner_username());
+                        mActivity.startActivity(chatActivity);
+                        return true;
+
+                    case R.id.borrow_book:
+                        selectedBookOwner = book.getOwner_username();
+                        selectedBookId = book.getBookId();
+                        showDialog();
+
+                    default:
+                        return false;
+                }
+            });
+
+            // Disable contact owner menu entry if is an user's book
+            if (book.getOwner_uid().equals(user_id)) {
+                popup.getMenu().getItem(0).setEnabled(false);
+                popup.getMenu().getItem(2).setEnabled(false);
+                popup.getMenu().getItem(3).setEnabled(false);
+
+            } else {
+                if (favoritesBookIdList.contains(book.getBookId())) {
+                    popup.getMenu().getItem(0).setVisible(false);
+                    popup.getMenu().getItem(1).setVisible(true);
+                }
+                if (book.isShared()) {
+                    popup.getMenu().getItem(3).setTitle(R.string.book_unavailable).setEnabled(false);
+                } else if (requestedBookIdList.contains(book.getBookId())) {
+                    popup.getMenu().getItem(3).setVisible(false);
+                    popup.getMenu().getItem(4).setVisible(true);
+                }
+            }
+
+            popup.show();
         }
-    }
-
-    public void doNegativeClick() {
-        selectedBookOwner = "";
     }
 
     private void firebaseInsertRequest() {
@@ -693,9 +690,6 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Push entire transaction
         usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
             if (databaseError == null) {
-
-                // Update list that keep track of already requested book
-                requestedBookIdList.add(selectedBookId);
 
                 String requestBody = "{"
                         + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
@@ -716,7 +710,22 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 Toast.makeText(getApplicationContext(), R.string.borrow_request_fail, Toast.LENGTH_LONG).show();
             }
         });
+    }
 
+    void showDialog() {
+        DialogFragment newFragment = GenericAlertDialog.newInstance(
+                R.string.borrow_book, getString(R.string.borrow_book_msg));
+        newFragment.show(getSupportFragmentManager(), "borrow_dialog");
+    }
+
+    public void doPositiveClick() {
+        if (!selectedBookOwner.equals("")) {
+            firebaseInsertRequest();
+        }
+    }
+
+    public void doNegativeClick() {
+        selectedBookOwner = "";
     }
 
 }

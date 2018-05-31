@@ -362,6 +362,7 @@
     <string name="reject_req_dialog_msg">Do you really want to reject the borrow request of %1$s?</string>
     <string name="reject_request">REJECT</string>
     <string name="book_returned_correctly">Book has been given back with success! Remember to leave a review, thanks.</string>
+    <string name="book_unavailable">Book unavailable</string>
 
     <!-- Books Cardview -->
     <string name="authors">Authors: %1$s </string>

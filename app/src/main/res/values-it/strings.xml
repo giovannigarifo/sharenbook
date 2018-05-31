@@ -331,6 +331,7 @@
     <string name="reject_req_dialog">Rifuta una richiesta di prestito per un tuo libro</string>
     <string name="reject_req_dialog_msg">Vuoi davvero rifiutare la richiesta di prestito di %1$s?</string>
     <string name="book_returned_correctly">Libro restituito con successo! Ricordati di lasciare una recensione, grazie.</string>
+    <string name="book_unavailable">Libro non disponibile</string>
 
     <!-- Books Cardview -->
     <string name="authors">Autori: %1$s </string>

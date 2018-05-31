@@ -20,6 +20,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <ImageView
+        android:id="@+id/showcase_rv_book_shared"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="1dp"
+        android:layout_marginEnd="1dp"
+        android:src="@drawable/ic_bookmark"
+        android:tint="@color/redButton"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/showcase_rv_book_photo"
+        app:layout_constraintEnd_toEndOf="@id/showcase_rv_book_photo"/>
+
     <TextView
         android:id="@+id/showcase_rv_book_title"
         android:layout_width="0dp"
@@ -27,6 +39,8 @@
         android:layout_marginTop="6dp"
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginRight="22dp"
         android:lines="2"
         android:maxLines="2"
         android:ellipsize="end"
@@ -35,22 +49,23 @@
         app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_photo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/showcase_rv_book_options"
-        app:layout_constraintRight_toLeftOf="@id/showcase_rv_book_options" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <ImageView
         android:id="@+id/showcase_rv_book_options"
         android:clickable="true"
         android:focusable="true"
-        android:layout_width="22dp"
-        android:layout_height="36dp"
-        android:paddingStart="8dp"
-        android:paddingLeft="8dp"
-        android:paddingBottom="6dp"
-        android:src="@drawable/ic_more_vert_black_20dp"
+        android:layout_width="40dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="150dp"
+        android:paddingTop="15dp"
+        android:paddingStart="25dp"
+        android:paddingLeft="25dp"
+        android:src="@drawable/ic_more_vert_black_24dp"
         android:scaleType="center"
         android:tint="@color/secondaryText"
-        app:layout_constraintTop_toBottomOf="@id/showcase_rv_book_photo"
+        app:layout_constraintTop_toTopOf="@id/showcase_rv_book_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
