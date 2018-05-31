@@ -510,6 +510,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
             TextView bookDistance;
             ImageView bookOptions;
             ImageView bookmarkIcon;
+            ImageView bookUnavailable;
 
             ViewHolder(ConstraintLayout layout) {
                 super(layout);
@@ -519,6 +520,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
                 bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
                 bookmarkIcon = layout.findViewById(R.id.showcase_rv_book_shared);
+                bookUnavailable = layout.findViewById(R.id.showcase_rv_unavailable_bg);
             }
         }
 
@@ -555,9 +557,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
             // Put bookmark icon if already shared
             if (book.isShared())
-                holder.bookmarkIcon.setVisibility(View.VISIBLE);
+                holder.bookUnavailable.setVisibility(View.VISIBLE);
             else
-                holder.bookmarkIcon.setVisibility(View.GONE);
+                holder.bookUnavailable.setVisibility(View.GONE);
 
 
             // Set title
