@@ -80,6 +80,8 @@ public class RequestListFragment extends Fragment {
         return rootView;
     }
 
+
+
     class RequestsAdapter extends BaseAdapter {
 
         private Activity mActivity;

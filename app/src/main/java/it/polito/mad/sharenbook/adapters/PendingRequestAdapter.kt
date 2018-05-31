@@ -121,9 +121,18 @@ class PendingRequestAdapter(activity : Activity) : RecyclerView.Adapter<PendingR
                 val requestFragment = RequestListFragment()
                 requestFragment.arguments = bundle
 
+                val fragment = fragManager.findFragmentByTag("requestList")
+                if (fragment != null) {
+
+                    Log.d("TEST", "Fragment already exist, show it")
+                    fragManager.beginTransaction().remove(fragment).commit()
+                    fragManager.popBackStack()
+
+                }
+
                 fragManager.beginTransaction()
-                        .replace(R.id.inner_container, requestFragment, "requestList")
-                        .addToBackStack("requestList")
+                        .add(R.id.inner_container, requestFragment, "requestList")
+                        .addToBackStack(null)
                         .commit()
 
                 Log.d("CardView Event", "Cardview Pressed")
