@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,8 +44,10 @@ import com.onesignal.OneSignal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.GlideApp;
@@ -61,9 +64,13 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     private String username;
 
     private DatabaseReference favoriteBooksRef;
+    private DatabaseReference borrowRequestRef;
 
     private ImageView favoriteBtn;
     private boolean favoriteClicked;
+
+
+    private ValueEventListener requestedBookListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +93,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 initActivity();
             }
         }
-
-
     }
 
     @Override
@@ -133,9 +138,19 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("photoLoaded", true);
+    protected void onResume() {
+        super.onResume();
+
+        // Setup book buttons
+        setupBookActionsButton();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (requestedBookListener != null)
+            borrowRequestRef.removeEventListener(requestedBookListener);
     }
 
     private void initActivity() {
@@ -148,6 +163,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         // Setup firebase
         DatabaseReference favoriteBooksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoriteBooksRef = favoriteBooksDb.child(book.getBookId());
+        borrowRequestRef = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("borrowRequests").child(book.getBookId());
 
         // Setup favorite button
         setupFavoriteButton();
@@ -169,6 +185,105 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         // Setup fab button for message with user
         setupFabContactUser();
+    }
+
+    private void setupBookActionsButton() {
+
+        Button requestButton = findViewById(R.id.request_btn);
+        Button contactButton = findViewById(R.id.contact_owner);
+
+        if (book.getOwner_username().equals(username)) {
+            findViewById(R.id.buttons_layout).setVisibility(View.GONE);
+            return;
+        } else if (book.isShared()) {
+            requestButton.setEnabled(false);
+            requestButton.setText(R.string.book_unavailable);
+            requestButton.setAlpha(.7F);
+        } else {
+            setRequestButton(requestButton);
+        }
+
+        // Setup contact button listener
+        contactButton.setOnClickListener(v -> {
+            Intent chatActivity = new Intent(this, ChatActivity.class);
+            chatActivity.putExtra("recipientUsername", book.getOwner_username());
+            startActivity(chatActivity);
+        });
+    }
+
+    private void setRequestButton(Button requestButton) {
+
+        requestedBookListener = borrowRequestRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    requestButton.setText(R.string.undo_borrow_book);
+                    requestButton.setOnClickListener(v -> cancelBookRequest());
+                } else {
+                    requestButton.setText(R.string.borrow_book);
+                    requestButton.setOnClickListener(v -> requestBook());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                requestButton.setEnabled(false);
+            }
+        });
+    }
+
+    private void requestBook() {
+
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
+
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + book.getBookId(), ServerValue.TIMESTAMP);
+        transaction.put(book.getOwner_username() + "/" + getString(R.string.pending_requests_key) + "/" + book.getBookId() + "/" + username, ServerValue.TIMESTAMP);
+
+        // Push entire transaction
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+
+                String requestBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + book.getOwner_username() + "\"}],"
+
+                        + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + username + "\", \"senderUid\": \"" + user_id + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " wants to borrow your book!\", " +
+                        "\"it\": \"" + username + " vuole in prestito un tuo libro!\"},"
+                        + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
+                        + "}";
+
+                // Send notification
+                Utils.sendNotification(requestBody);
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_done, Toast.LENGTH_LONG).show();
+
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_fail, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void cancelBookRequest() {
+
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
+
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + book.getBookId(), null);
+        transaction.put(book.getOwner_username() + "/" + getString(R.string.pending_requests_key) + "/" + book.getBookId() + "/" + username, null);
+
+        // Push entire transaction
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_undone, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void getBookData(String bookId) {

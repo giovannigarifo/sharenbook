@@ -59,18 +59,17 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:clipToPadding="false"
-                android:paddingBottom="90dp"
                 app:layout_constraintBottom_toTopOf="@id/navigation"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:paddingBottom="97dp"
                     android:orientation="vertical">
 
                     <!-- BOOK PHOTO -->
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
@@ -84,41 +83,39 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginBottom="20dp"/>
 
-                        <!--
+                    </LinearLayout>
+
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/buttons_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingStart="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingRight="5dp">
+
                         <Button
                             android:id="@+id/request_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:layout_below="@id/showbook_recycler_view"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginTop="16dp"
-                            android:padding="8dp"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/borrow_book"
-                            android:textColor="@color/greenButton"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
-                            android:background="@drawable/button_bg_transparent_green" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/contact_owner" />
 
                         <Button
                             android:id="@+id/contact_owner"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:layout_below="@id/showbook_recycler_view"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginRight="8dp"
-                            android:layout_marginTop="16dp"
-                            android:padding="8dp"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/contact_owner"
-                            android:textColor="@color/greenButton"
+                            android:textColor="@color/white"
                             android:textSize="14sp"
-                            android:background="@drawable/button_bg_transparent_green" />
-                        -->
+                            app:layout_constraintStart_toEndOf="@id/request_btn"
+                            app:layout_constraintEnd_toEndOf="parent" />
 
-                    </RelativeLayout>
+                    </android.support.constraint.ConstraintLayout>
 
 
                     <android.support.v7.widget.CardView
@@ -130,8 +127,7 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="2dp">
+                        app:cardCornerRadius="4dp">
 
                         <RelativeLayout
                             android:layout_width="match_parent"
@@ -191,13 +187,8 @@
                         android:id="@+id/bookInfoCV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="2dp">
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="4dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"

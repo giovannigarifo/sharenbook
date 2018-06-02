@@ -310,7 +310,7 @@
     <string name="add_to_favorites">Aggiungi ai preferiti</string>
     <string name="contact_owner">Contatta il proprietario</string>
     <string name="borrow_book">Richiedi in prestito</string>
-    <string name="undo_borrow_book">Annulla la richiesta di prestito</string>
+    <string name="undo_borrow_book">Annulla richiesta</string>
     <string name="undo_borrow_book_msg">Vuoi davvero eliminare la richiesta? Se si, il proprietario sarà informato della tua scelta.</string>
     <string name="del_from_favorites">Rimuovi dai preferiti</string>
     <string name="borrow_req_counter">Richieste: %1$d</string>
