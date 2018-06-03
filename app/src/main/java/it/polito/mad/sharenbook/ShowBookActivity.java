@@ -141,8 +141,8 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     protected void onResume() {
         super.onResume();
 
-        // Setup book buttons
-        setupBookActionsButton();
+        if (requestedBookListener != null)
+            borrowRequestRef.addValueEventListener(requestedBookListener);
     }
 
     @Override
@@ -185,6 +185,9 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         // Setup fab button for message with user
         setupFabContactUser();
+
+        // Setup book buttons
+        setupBookActionsButton();
     }
 
     private void setupBookActionsButton() {
