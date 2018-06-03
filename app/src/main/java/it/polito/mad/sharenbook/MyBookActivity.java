@@ -36,6 +36,7 @@ import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
+import it.polito.mad.sharenbook.fragments.RequestsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncementsFragment;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -220,14 +221,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
                     fragment = new ShowMyAnnouncementsFragment();
                     break;
                 case 1:
-                    fragment = new PendingRequestsFragment();
+                    fragment = new RequestsFragment();
                     fragment.setArguments(bundle);
                     break;
                 case 2:
-                    fragment = new BorrowRequestsFragment();
-                    fragment.setArguments(bundle);
-                    break;
-                case 3:
                     fragment = new ExchangesFragment();
                     break;
             }
@@ -241,7 +238,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         @Override
         public int getCount() {
-            return 4;
+            return 3;
         }
 
         @Override

@@ -60,12 +60,6 @@
                 android:text="@string/tab_mybooks_pendingRequests" />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/yourRequests"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_mybooks_yourRequests" />
-
-            <android.support.design.widget.TabItem
             android:id="@+id/takenBooks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

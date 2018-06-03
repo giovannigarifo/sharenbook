@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgGrey"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".fragments.RequestsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/inner_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <!-- Incoming requests -->
+                <android.support.v7.widget.CardView
+                    android:id="@+id/giveRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:visibility="visible">
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="10dp">
+
+                        <TextView
+                            android:id="@+id/giveBooksTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20sp"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="@string/request_give"
+                            android:textColor="@color/primaryText"
+                            android:textSize="16sp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/giveMoreButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="22sp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginRight="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:fontFamily="@font/roboto_medium"
+                            android:gravity="center"
+                            android:text="@string/showcase_more_button"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/noGiveRequestsMsg"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginRight="12dp"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:justificationMode="inter_word"
+                            android:text="@string/no_give_requests"
+                            android:textColor="@color/primaryText"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/giveBooksTitle"
+                            app:layout_constraintTop_toBottomOf="@id/giveBooksTitle" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/giveBooksRV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:clipToPadding="false"
+                            android:paddingEnd="7dp"
+                            android:paddingLeft="7dp"
+                            android:paddingRight="7dp"
+                            android:paddingStart="7dp"
+                            app:layout_constraintTop_toBottomOf="@id/giveMoreButton" />
+
+                    </android.support.constraint.ConstraintLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <!-- Outgoing Requests -->
+                <android.support.v7.widget.CardView
+                    android:id="@+id/takeRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:visibility="visible">
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="10dp">
+
+                        <TextView
+                            android:id="@+id/takeBooksTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20sp"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="@string/request_take"
+                            android:textColor="@color/primaryText"
+                            android:textSize="16sp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/takeMoreButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="22sp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginRight="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:fontFamily="@font/roboto_medium"
+                            android:gravity="center"
+                            android:text="@string/showcase_more_button"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/noTakeRequestsMsg"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginRight="12dp"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/roboto_regular"
+                            android:justificationMode="inter_word"
+                            android:text="@string/no_take_requests"
+                            android:textColor="@color/primaryText"
+                            android:textSize="14sp"
+                            android:visibility="invisible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/takeBooksTitle"
+                            app:layout_constraintTop_toBottomOf="@id/takeBooksTitle" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/takeBooksRV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:clipToPadding="false"
+                            android:paddingEnd="7dp"
+                            android:paddingLeft="7dp"
+                            android:paddingRight="7dp"
+                            android:paddingStart="7dp"
+                            app:layout_constraintTop_toBottomOf="@id/takeMoreButton" />
+
+                    </android.support.constraint.ConstraintLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

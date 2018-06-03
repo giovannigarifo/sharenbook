@@ -48,7 +48,7 @@ public class GenericAlertDialog extends DialogFragment {
                                 ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.rejectRequest(username);
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog"))
-                                ((BorrowRequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).requestAdapter.doPositiveClick();
+                                ((RequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).undoRequest();
                         }
                 )
                 .setNegativeButton(R.string.undo,

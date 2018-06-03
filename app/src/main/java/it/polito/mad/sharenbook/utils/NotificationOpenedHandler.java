@@ -65,7 +65,7 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
             Intent myBookActivity = new Intent(context, MyBookActivity.class);
             myBookActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             myBookActivity.putExtra("openedFromNotification", true);
-            myBookActivity.putExtra("showPageNum", 3);
+            myBookActivity.putExtra("showPageNum", 2);
             context.startActivity(myBookActivity);
 
         }
