@@ -98,28 +98,13 @@
                 style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_below="@+id/tv_userNickName"
                 android:layout_centerHorizontal="true"
                 android:isIndicator="true"
                 android:numStars="5"
                 android:rating="0"
                 android:stepSize="0.5" />
-
-            <!-- user rating info-->
-            <!-- <TextView
-                android:id="@+id/tv_userRatingInfo"
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_below="@id/editbook_topbar_background"
-                android:layout_marginLeft="8dp"
-
-                android:layout_marginTop="7dp"
-                android:layout_toRightOf="@+id/userRatingBar"
-                android:text="Feedback: 75,2%"
-                android:textColor="@color/darkGrey" /> -->
-
 
         </RelativeLayout>
 

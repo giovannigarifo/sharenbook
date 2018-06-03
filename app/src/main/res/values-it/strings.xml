@@ -308,7 +308,7 @@
     <string name="showcase_add_favorite">Aggiunto ai Preferiti</string>
     <string name="showcase_del_favorite">Rimosso dai Preferiti</string>
     <string name="add_to_favorites">Aggiungi ai preferiti</string>
-    <string name="contact_owner">Contatta il proprietario</string>
+    <string name="contact_owner">Contatta proprietario</string>
     <string name="borrow_book">Richiedi in prestito</string>
     <string name="undo_borrow_book">Annulla richiesta</string>
     <string name="undo_borrow_book_msg">Vuoi davvero eliminare la richiesta? Se si, il proprietario sarà informato della tua scelta.</string>
@@ -376,5 +376,6 @@
     <string name="request_take">Libri da te richiesti</string>
     <string name="no_give_requests">Nessuna richiesta in sospeso per i tuoi libri.</string>
     <string name="no_take_requests">Non hai ancora richiesto libri! Dai uno sguardo alla bacheca o ricerca qualcosa di tuo interesse.</string>
+    <string name="no_reviews">Questo utente non ha ancora alcuna recensione.</string>
 
 </resources>

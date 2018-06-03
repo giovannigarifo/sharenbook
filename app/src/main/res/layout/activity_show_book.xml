@@ -139,7 +139,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/announce_info"
-                                android:layout_marginBottom="16dp"
+                                android:layout_marginBottom="8dp"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/colorPrimary"/>
@@ -150,8 +150,6 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/published_by"
                                 android:layout_below="@id/announce_info"
-                                android:layout_marginStart="24dp"
-                                android:layout_marginLeft="24dp"
                                 android:textStyle="bold"
                                 android:textSize="16sp"
                                 android:textColor="@color/darkGrey"
@@ -172,16 +170,22 @@
                                 android:textSize="16sp"
                                 />
 
+                            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                                xmlns:map="http://schemas.android.com/apk/res-auto"
+                                xmlns:tools="http://schemas.android.com/tools"
+                                android:id="@+id/mapContainer"
+                                android:name="com.google.android.gms.maps.SupportMapFragment"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                tools:context="it.polito.mad.sharenbook.ShowBookActivity"
+                                android:layout_below="@id/published_by_tv"
+                                android:layout_marginTop="8dp"/>
+
                         </RelativeLayout>
 
                     </android.support.v7.widget.CardView>
+
                     <!-- BOOK DATA -->
-                    <!--<LinearLayout
-                        android:id="@+id/showbook_content_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="16dp"
-                        android:orientation="vertical"> -->
 
                     <android.support.v7.widget.CardView
                         android:id="@+id/bookInfoCV"
@@ -200,7 +204,7 @@
                                 android:id="@+id/book_details"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="16dp"
+                                android:layout_marginBottom="8dp"
                                 android:text="@string/showbook_toolbar_title"
                                 android:textSize="16sp"
                                 android:textStyle="bold"

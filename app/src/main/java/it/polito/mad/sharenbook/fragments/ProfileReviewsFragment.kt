@@ -2,6 +2,7 @@ package it.polito.mad.sharenbook.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -29,6 +30,8 @@ class ProfileReviewsFragment : Fragment() {
 
     private val reviewsList = ArrayList<Review>()
 
+    private lateinit var cv_no_reviews : CardView
+
     /** FireBase objects  */
     private lateinit var reviewsDb: DatabaseReference
 
@@ -50,6 +53,8 @@ class ProfileReviewsFragment : Fragment() {
         val reviewList: View = inflater.inflate(R.layout.fragment_show_user_reviews, container, false)
         linearLayoutManager = LinearLayoutManager(App.getContext())
 
+        cv_no_reviews = reviewList.findViewById(R.id.card_no_reviews)
+
         val recyclerView = reviewList.findViewById<RecyclerView>(R.id.reviews) as RecyclerView
         recyclerView.layoutManager = linearLayoutManager
 
@@ -70,15 +75,6 @@ class ProfileReviewsFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value != null) {
 
-                    /*if (dataSnapshot.value == getString(R.string.users_books_placeholder)) {
-                        /** no reviews  */
-
-                        //TODO this one
-                        Toast.makeText(context, "No Reviews available", Toast.LENGTH_SHORT).show()
-
-                    } else {*/
-                    /** there are reviews  */
-
                     if (reviewsList.isEmpty()) {
 
                         val reviews = dataSnapshot.children
@@ -91,7 +87,7 @@ class ProfileReviewsFragment : Fragment() {
                             numReviews++
                             sumReviews+= rev.rating
 
-                            reviewAdapter.addReview(rev!!)
+                            reviewAdapter.addReview(rev)
                         }
 
                         if(activity is TabbedShowProfileActivity){
@@ -101,6 +97,8 @@ class ProfileReviewsFragment : Fragment() {
                         }
 
                     }
+                } else {
+                    cv_no_reviews.visibility = View.VISIBLE
                 }
 
             }

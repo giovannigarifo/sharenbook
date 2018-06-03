@@ -66,6 +66,7 @@ class ReviewsHolder(v: View) : RecyclerView.ViewHolder(v) {
                         or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_24HOUR)
         view.findViewById<RatingBar>(R.id.ratingBar).rating = (r.rating)/2.0f
         view.findViewById<TextView>(R.id.text_user).setText(r.creator)
+        view.findViewById<ImageView>(R.id.img_popup_menu).visibility = View.INVISIBLE
         val imgView = view.findViewById<ImageView>(R.id.img)
 
         val recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(r.creator).child("picSignature")

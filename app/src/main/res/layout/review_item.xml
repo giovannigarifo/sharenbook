@@ -2,7 +2,6 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -49,7 +48,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/ratingBar"
-                android:text="Il libro era bello ma non mi ha salutato quando ci siamo visti!"
                 />
 
             <View
@@ -61,17 +59,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/review_title" />
 
-            <!-- <ImageView
-                android:id="@+id/user_photo"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:scaleType="fitXY"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@string/desc_img_book"/> -->
-
-
             <TextView
                 android:id="@+id/review_text"
                 style="@style/item_searchresult_creationTime"
@@ -81,7 +68,6 @@
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:textSize="12sp"
-                android:text="Sei un coglione! Appena ho visto sto tizio ho pensato fosse un coglione. Il libro era bello però.. ciao a tutti!"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/review_title" />
 
@@ -95,7 +81,6 @@
                 android:drawablePadding="2dp"
                 android:layout_marginTop="8dp"
                 android:textSize="12sp"
-                android:text="27/05/2018, 18:25"
                 app:layout_constraintTop_toBottomOf="@id/review_text"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>

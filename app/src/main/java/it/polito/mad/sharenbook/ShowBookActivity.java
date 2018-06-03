@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -30,6 +32,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,9 +65,11 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.utils.Utils;
 import it.polito.mad.sharenbook.utils.ZoomLinearLayoutManager;
 
-public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ShowBookActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private Book book;
+
+    private GoogleMap mMap;
 
     private String user_id;
     private String username;
@@ -93,6 +104,11 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
                 initActivity();
             }
         }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapContainer);
+        mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -153,6 +169,18 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             borrowRequestRef.removeEventListener(requestedBookListener);
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        LatLng loc = new LatLng(book.getLocation_lat(), book.getLocation_long());
+        Marker m = mMap.addMarker(new MarkerOptions()
+                .position(loc));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+
+    }
+
     private void initActivity() {
 
         // Get current user info
@@ -188,6 +216,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
         // Setup book buttons
         setupBookActionsButton();
+
     }
 
     private void setupBookActionsButton() {
@@ -212,6 +241,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             chatActivity.putExtra("recipientUsername", book.getOwner_username());
             startActivity(chatActivity);
         });
+
     }
 
     private void setRequestButton(Button requestButton) {
