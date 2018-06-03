@@ -278,6 +278,9 @@ public class TabbedShowProfileActivity extends AppCompatActivity
                 //Update the User Info Fragment
                 mSectionsPagerAdapter.notifyDataSetChanged();
 
+                NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                        getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,NavigationDrawerManager.getNavigationDrawerProfile());
+
             }
         }
     }

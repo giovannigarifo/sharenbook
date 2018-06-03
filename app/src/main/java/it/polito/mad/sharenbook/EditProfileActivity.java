@@ -796,14 +796,19 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
                         i.putExtra(getString(R.string.user_profile_data_key), user);
+
+
+
                         if (getCallingActivity() != null) {  //if it was a StartActivityForResult then -> null
                             setResult(RESULT_OK, i);
                         } else {
                             startActivity(i);
                         }
+
                         /* save the new Data for NavigationDrawerProfile */
 
                         NavigationDrawerManager.setNavigationDrawerProfileByUser(user);
+
 
                         finish();
 

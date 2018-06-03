@@ -173,6 +173,7 @@ public class ConversationAdapter extends BaseAdapter {
         recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("PictureListener:","lunched"); 
                 if(dataSnapshot.exists()){
                     long picSignature = (long) dataSnapshot.getValue();
                     UserInterface.showGlideImage(context,
