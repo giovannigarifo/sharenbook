@@ -57,6 +57,10 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
     private String username;
 
+    private CircularImageView drawer_userPicture;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,9 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         if(getIntent().getBooleanExtra("openedFromNotification", false)){
             mViewPager.setCurrentItem(getIntent().getIntExtra("showPageNum", 0));
         }
+        if(getIntent().getBooleanExtra("openedFromDrawer",false)){
+            mViewPager.setCurrentItem(getIntent().getIntExtra("showPageNumFromDrawer", 0));
+        }
 
     }
 
@@ -88,6 +95,9 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     protected void onResume() {
         super.onResume();
         navBar.setSelectedItemId(R.id.navigation_myBook);
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
+                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+        UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
     }
 
     private void setupNavigationTools() {
@@ -112,12 +122,11 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         // Update drawer with user info
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
-        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
-        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
-        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
-                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);

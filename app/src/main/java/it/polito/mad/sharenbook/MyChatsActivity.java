@@ -51,6 +51,10 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     private ConversationAdapter adapter;
     private DatabaseReference mychatsDB;
 
+    private CircularImageView drawer_userPicture;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,12 +227,11 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
 
         // Update drawer with user info
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
-        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
-        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
-        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
-                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this,R.id.navigation_chat);
@@ -290,6 +293,8 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     protected void onResume() {
         super.onResume();
         OneSignal.clearOneSignalNotifications();
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
+                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
         navBar.setSelectedItemId(R.id.navigation_chat);
     }
 }

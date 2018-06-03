@@ -191,6 +191,13 @@ public class SearchActivity extends AppCompatActivity
         outState.putInt("currentFragment", this.currentFragment);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(), drawer_fullname, drawer_email, drawer_userPicture,
+                NavigationDrawerManager.getNavigationDrawerProfile());
+    }
 
     /**
      * The SearchActivity has been started with an intent from another activity
@@ -560,10 +567,6 @@ public class SearchActivity extends AppCompatActivity
         drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
-
-        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
-                getWindowManager(), drawer_fullname, drawer_email, drawer_userPicture,
-                NavigationDrawerManager.getNavigationDrawerProfile());
 
 
         //set also the filter button
