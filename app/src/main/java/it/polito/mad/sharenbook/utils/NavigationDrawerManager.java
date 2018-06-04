@@ -185,9 +185,9 @@ public class NavigationDrawerManager {
                         context.startActivity(i);
                         OneSignal.setSubscription(false);
                         Toast.makeText(context, context.getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-
+                        activity.finish();
                     });
-            activity.finish();
+
         }
 
 
