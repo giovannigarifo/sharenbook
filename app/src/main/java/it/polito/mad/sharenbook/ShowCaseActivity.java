@@ -336,7 +336,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 });
 
         // Set MORE button listener
-        findViewById(R.id.last_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+        findViewById(R.id.last_more_button).setOnClickListener(v -> {
+            Intent i = new Intent(this, ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.LAST_BOOKS);
+            startActivity(i);
+        });
     }
 
     private void loadFavoriteBooksRecylerView() {
@@ -389,7 +393,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 });
 
         // Set MORE button listener
-        findViewById(R.id.favorites_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+        findViewById(R.id.favorites_more_button).setOnClickListener(v -> {
+            Intent i = new Intent(this, ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.FAVORITES_BOOKS);
+            startActivity(i);
+        });
     }
 
     private void loadCloseBooksRecyclerView() {
@@ -419,7 +427,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
             @Override
             public void onGeoQueryReady() {
-                loadCloseBooksAdapter(queryResults, closeBooksRV);
+                loadCloseBooksAdapter(queryResults);
             }
 
             @Override
@@ -428,10 +436,14 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         });
 
         // Set MORE button listener
-        findViewById(R.id.closebooks_more_button).setOnClickListener(v -> Toast.makeText(getApplicationContext(), R.string.to_be_implemented, Toast.LENGTH_SHORT).show());
+        findViewById(R.id.closebooks_more_button).setOnClickListener(v -> {
+            Intent i = new Intent(this, ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.CLOSE_BOOKS);
+            startActivity(i);
+        });
     }
 
-    private void loadCloseBooksAdapter(List<String> geofireResults, RecyclerView closeBooksRV) {
+    private void loadCloseBooksAdapter(List<String> geofireResults) {
 
         List<Book> bookList = new ArrayList<>();
         AtomicLong bookCount = new AtomicLong(geofireResults.size());
@@ -460,7 +472,9 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         // Set RV adapter
                         MyAdapter closeBooksAdapter = new MyAdapter(bookList);
                         closeBooksRV.setAdapter(closeBooksAdapter);
-                        findViewById(R.id.showcase_cw_closebooks).setVisibility(View.VISIBLE);
+
+                        if (bookCount.get() > 0)
+                            findViewById(R.id.showcase_cw_closebooks).setVisibility(View.VISIBLE);
                     }
                 }
 
