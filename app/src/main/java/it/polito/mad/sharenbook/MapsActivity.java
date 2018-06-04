@@ -70,7 +70,7 @@ public class MapsActivity extends AppCompatActivity
 
     private MaterialSearchBar sba_searchbar;
 
-    private DrawerLayout drawer;
+
     //fab to display map
     FloatingActionButton search_fab_list;
 
@@ -87,6 +87,12 @@ public class MapsActivity extends AppCompatActivity
     // Algolia instant search
     Searcher searcher;
     InstantSearch helper;
+
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
+    private CircularImageView drawer_userPicture;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
 
 
     @Override
@@ -159,7 +165,7 @@ public class MapsActivity extends AppCompatActivity
         /** DRAWER AND SEARCHBAR **/
 
         drawer = findViewById(R.id.map_search_drawer_layout);
-        NavigationView navigationView = findViewById(R.id.map_search_nav_view);
+        navigationView = findViewById(R.id.map_search_nav_view);
         sba_searchbar = findViewById(R.id.sba_searchbar);
 
         navigationView.setNavigationItemSelectedListener(MapsActivity.this);
@@ -172,13 +178,11 @@ public class MapsActivity extends AppCompatActivity
         else sba_searchbar.disableSearch();
 
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
-        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
-        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
-        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
-                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,
-                NavigationDrawerManager.getNavigationDrawerProfile());
+
     }
     @Override
     public void onBackPressed() {
@@ -196,34 +200,18 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        return NavigationDrawerManager.onNavigationItemSelected(this,null,item,getApplicationContext(),drawer,R.id.drawer_navigation_search);
 
-        if(id ==R.id.drawer_navigation_profile){
-            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
-            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(i);
 
-        } else if (id == R.id.drawer_navigation_shareBook) {
-            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
-            startActivity(i);
-        } else if (id == R.id.drawer_navigation_myBook) {
-            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-            startActivity(my_books);
-        } else if (id == R.id.drawer_navigation_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
+    }
 
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(),
+                getWindowManager(),drawer_fullname,drawer_email,drawer_userPicture,
+                NavigationDrawerManager.getNavigationDrawerProfile());
+        navigationView.setCheckedItem(R.id.drawer_navigation_search);
     }
 
     /**

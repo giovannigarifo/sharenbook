@@ -53,6 +53,13 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
     // ProgressDialog
     ProgressDialog progressDialog;
 
+    //drawer
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
+    private CircularImageView drawer_userPicture;
+    private TextView drawer_fullname;
+    private TextView drawer_email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,30 +146,9 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        return NavigationDrawerManager.onNavigationItemSelected(this,null,item,getApplicationContext(),drawer,R.id.drawer_navigation_shareBook);
 
-        if (id == R.id.drawer_navigation_profile) {
-            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
-            startActivity(i);
-        } else if (id == R.id.drawer_navigation_myBook) {
-            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-            startActivity(my_books);
-        } else if (id == R.id.drawer_navigation_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
 
-        DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
@@ -182,27 +168,34 @@ public class ShareBookActivity extends AppCompatActivity implements NavigationVi
         }
 
         // Setup navigation drawer
-        DrawerLayout drawer = findViewById(R.id.share_book_drawer_layout);
+        drawer = findViewById(R.id.share_book_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.share_book_nav_view);
+        navigationView = findViewById(R.id.share_book_nav_view);
         navigationView.setCheckedItem(R.id.drawer_navigation_shareBook);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Update drawer with user info
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
-        CircularImageView drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
-        TextView drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
-        TextView drawer_email = nav.findViewById(R.id.drawer_user_email);
+        drawer_userPicture = nav.findViewById(R.id.drawer_userPicture);
+        drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
+        drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
-                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+
 
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook, true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
+                drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+        navigationView.setCheckedItem(R.id.drawer_navigation_shareBook);
     }
 
     private class GetBookDetailsTask extends AsyncTask<String, Integer, BookDetails> {

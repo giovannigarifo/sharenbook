@@ -1,19 +1,33 @@
 package it.polito.mad.sharenbook.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.onesignal.OneSignal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
+import it.polito.mad.sharenbook.SearchActivity;
+import it.polito.mad.sharenbook.ShareBookActivity;
+import it.polito.mad.sharenbook.SplashScreenActivity;
+import it.polito.mad.sharenbook.TabbedShowProfileActivity;
 import it.polito.mad.sharenbook.model.UserProfile;
 
 public class NavigationDrawerManager {
@@ -110,6 +124,76 @@ public class NavigationDrawerManager {
 
         return user;
 
+    }
+
+    public static boolean onNavigationItemSelected(Activity activity, ViewPager viewPager, MenuItem item, Context context, DrawerLayout drawer, int callingActivity){
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if(id == callingActivity){
+            //Toast.makeText(context,"DO NOTHING",Toast.LENGTH_SHORT).show();
+            return true; // do nothing
+        }
+
+        if (id == R.id.drawer_navigation_profile) {
+            Intent i = new Intent(context, TabbedShowProfileActivity.class);
+            i.putExtra(context.getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(context));
+            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            context.startActivity(i);
+        }
+        else if (id == R.id.drawer_navigation_shareBook) {
+
+            Intent i = new Intent(context, ShareBookActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            context.startActivity(i);
+        } else if (id == R.id.drawer_navigation_myBookPendingRequest && !(activity instanceof MyBookActivity)) {
+
+            Intent my_books = new Intent(context, MyBookActivity.class);
+            my_books.putExtra("openedFromDrawer",true);
+            my_books.putExtra("showPageNumFromDrawer",1);
+            my_books.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            context.startActivity(my_books);
+
+        }else if (id == R.id.drawer_navigation_myBookPendingRequest && (activity instanceof MyBookActivity)) {
+
+            viewPager.setCurrentItem(1);
+
+        }else if (id == R.id.drawer_navigation_myBookExchanges && !(activity instanceof MyBookActivity)) {
+
+            Intent my_books = new Intent(context, MyBookActivity.class);
+            my_books.putExtra("openedFromDrawer",true);
+            my_books.putExtra("showPageNumFromDrawer",2);
+            my_books.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            context.startActivity(my_books);
+
+        }else if (id == R.id.drawer_navigation_myBookExchanges && (activity instanceof MyBookActivity)) {
+
+            viewPager.setCurrentItem(2);
+
+        } else if (id == R.id.drawer_navigation_search) {
+
+            Intent search = new Intent(context, SearchActivity.class);
+            search.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            context.startActivity(search);
+
+        }else if (id == R.id.drawer_navigation_logout) {
+
+            AuthUI.getInstance()
+                    .signOut(context)
+                    .addOnCompleteListener(task -> {
+                        Intent i = new Intent(context, SplashScreenActivity.class);
+                        context.startActivity(i);
+                        OneSignal.setSubscription(false);
+                        Toast.makeText(context, context.getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+
+                    });
+            activity.finish();
+        }
+
+
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
     }
 
 }

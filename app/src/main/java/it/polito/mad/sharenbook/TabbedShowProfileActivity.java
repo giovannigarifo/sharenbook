@@ -376,33 +376,10 @@ public class TabbedShowProfileActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        return NavigationDrawerManager.onNavigationItemSelected(this,null,
+                item,getApplicationContext(),drawer,R.id.drawer_navigation_profile);
 
-        if (id == R.id.drawer_navigation_shareBook) {
 
-            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
-            startActivity(i);
-        } else if (id == R.id.drawer_navigation_myBook) {
-
-            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-            startActivity(my_books);
-        } else if (id == R.id.drawer_navigation_logout) {
-
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
-
-        DrawerLayout drawer = findViewById(R.id.tabbed_show_profile_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
-        return true;
     }
 
     @Override

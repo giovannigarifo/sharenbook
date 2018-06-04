@@ -13,11 +13,19 @@
             android:id="@+id/drawer_navigation_shareBook"
             android:icon="@drawable/ic_add_black_24dp"
             android:title="@string/title_shareBook" />
-
         <item
-            android:id="@+id/drawer_navigation_myBook"
-            android:icon="@drawable/ic_book_64dp"
-            android:title="@string/nav_my_books" />
+            android:id="@+id/drawer_navigation_search"
+            android:icon="@drawable/ic_search_black_24dp"
+            android:title="@string/title_search" />
+        <item
+            android:id="@+id/drawer_navigation_myBookPendingRequest"
+            android:icon="@drawable/ic_pending_requests"
+            android:title="@string/tab_mybooks_pendingRequests" />
+        <item
+            android:id="@+id/drawer_navigation_myBookExchanges"
+            android:icon="@drawable/ic_book_exchanges"
+            android:title="@string/tab_mybooks_takenBooks" />
+
 
         <item
             android:id="@+id/drawer_navigation_logout"

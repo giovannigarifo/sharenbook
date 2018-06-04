@@ -173,13 +173,16 @@ public class ConversationAdapter extends BaseAdapter {
         recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("PictureListener:","lunched"); 
+
                 if(dataSnapshot.exists()){
+
                     long picSignature = (long) dataSnapshot.getValue();
                     UserInterface.showGlideImage(context,
                             conversation.getProfilePicRef(),
                             holder.avatar,
                             picSignature);
+
+                    Log.d("PictureListener:","user:"+username+" signature:"+picSignature+ "picture ref:"+conversation.getProfilePicRef());
                 } else {
                     GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(holder.avatar);
                 }

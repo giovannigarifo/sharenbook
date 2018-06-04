@@ -88,6 +88,8 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private HashSet<String> favoritesBookIdList;
     private HashSet<String> requestedBookIdList;
 
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
     private CircularImageView drawer_userPicture;
     private TextView drawer_fullname;
     private TextView drawer_email;
@@ -145,6 +147,8 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
         NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+        navigationView.setCheckedItem(R.id.drawer_navigation_none);
+
     }
 
     @Override
@@ -168,34 +172,13 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        return NavigationDrawerManager.onNavigationItemSelected(this,null,item,getApplicationContext(),drawer,0);
 
-        if (id == R.id.drawer_navigation_profile) {
-            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
-            startActivity(i);
-        } else if (id == R.id.drawer_navigation_shareBook) {
-            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
-            startActivity(i);
-        } else if (id == R.id.drawer_navigation_myBook) {
-            Intent my_books = new Intent(getApplicationContext(), MyBookActivity.class);
-            startActivity(my_books);
-        } else if (id == R.id.drawer_navigation_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
 
-        DrawerLayout drawer = findViewById(R.id.show_case_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+
+
     }
 
     @Override
@@ -249,9 +232,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         searchBar.setOnSearchActionListener(this);
 
         // Setup navigation drawer
-        NavigationView navigationView = findViewById(R.id.show_case_nav_view);
+        navigationView = findViewById(R.id.show_case_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.drawer_navigation_none);
+        drawer = findViewById(R.id.show_case_drawer_layout);
 
         // Update drawer with user info
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);

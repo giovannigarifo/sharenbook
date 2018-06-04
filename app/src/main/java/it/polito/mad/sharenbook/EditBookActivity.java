@@ -294,7 +294,7 @@ public class EditBookActivity extends AppCompatActivity {
         super.onResume();
 
         //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.drawer_navigation_myBook);
+        navBar.setSelectedItemId(R.id.navigation_myBook);
     }
 
 

@@ -44,13 +44,15 @@ import it.polito.mad.sharenbook.utils.UserInterface;
 
 public class MyChatsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private NavigationView navigationView;
+
     private BottomNavigationView navBar;
     private SharedPreferences userPreferences;
     private ListView chatsListView;
     private ConversationAdapter adapter;
     private DatabaseReference mychatsDB;
 
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
     private CircularImageView drawer_userPicture;
     private TextView drawer_fullname;
     private TextView drawer_email;
@@ -216,7 +218,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         }
 
         // Setup navigation drawer
-        DrawerLayout drawer = findViewById(R.id.my_chats_drawer_layout);
+        drawer = findViewById(R.id.my_chats_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -245,37 +247,9 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        return NavigationDrawerManager.onNavigationItemSelected(this,null,item,getApplicationContext(),drawer,0);
 
-        if(id == R.id.drawer_navigation_profile){
-            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
-            startActivity(i);
-
-        } else if (id == R.id.drawer_navigation_shareBook) {
-            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
-            startActivity(i);
-
-        } else if (id == R.id.drawer_navigation_myBook) {
-            Intent i = new Intent(getApplicationContext(), MyBookActivity.class);
-            startActivity(i);
-
-        } else if (id == R.id.drawer_navigation_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
         }
-
-        DrawerLayout drawer = findViewById(R.id.my_chats_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
 
     @Override
@@ -296,6 +270,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
         navBar.setSelectedItemId(R.id.navigation_chat);
+        navigationView.setCheckedItem(R.id.drawer_navigation_none);
     }
 }
 

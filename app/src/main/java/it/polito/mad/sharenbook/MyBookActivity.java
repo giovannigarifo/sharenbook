@@ -58,6 +58,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
     private String username;
 
+    private DrawerLayout drawer;
     private CircularImageView drawer_userPicture;
     private TextView drawer_fullname;
     private TextView drawer_email;
@@ -95,10 +96,18 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     @Override
     protected void onResume() {
         super.onResume();
+
         navBar.setSelectedItemId(R.id.navigation_myBook);
         NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
+
+        if(mViewPager.getCurrentItem()==1)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookPendingRequest);
+        else if(mViewPager.getCurrentItem()==2)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookExchanges);
+        else
+            navigationView.setCheckedItem(R.id.drawer_navigation_none);
     }
 
     private void setupNavigationTools() {
@@ -111,7 +120,7 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         }
 
         // Setup navigation drawer
-        DrawerLayout drawer = findViewById(R.id.my_book_drawer_layout);
+        drawer = findViewById(R.id.my_book_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -119,7 +128,12 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
 
         navigationView = findViewById(R.id.my_book_nav_view);
         navigationView.setNavigationItemSelectedListener(MyBookActivity.this);
-        navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
+        if(mViewPager.getCurrentItem()==1)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookPendingRequest);
+        else if(mViewPager.getCurrentItem()==2)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookExchanges);
+        else
+            navigationView.setCheckedItem(R.id.drawer_navigation_none);
 
         // Update drawer with user info
         View nav = getLayoutInflater().inflate(R.layout.nav_header_main, navigationView);
@@ -163,32 +177,17 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        int fragmentSelected = mViewPager.getCurrentItem();
 
-        if(id == R.id.drawer_navigation_profile){
-            Intent i = new Intent(getApplicationContext(), TabbedShowProfileActivity.class);
-            i.putExtra(getString(R.string.user_profile_data_key), NavigationDrawerManager.getUserParcelable(getApplicationContext()));
-            startActivity(i);
+        int id;
 
-        } else if (id == R.id.drawer_navigation_shareBook) {
-            Intent i = new Intent(getApplicationContext(), ShareBookActivity.class);
-            startActivity(i);
+        if(fragmentSelected == 1)
+            return NavigationDrawerManager.onNavigationItemSelected(this,mViewPager,item,getApplicationContext(),drawer,R.id.drawer_navigation_myBookPendingRequest);
+        else if(fragmentSelected == 2)
+            return NavigationDrawerManager.onNavigationItemSelected(this,mViewPager,item,getApplicationContext(),drawer,R.id.drawer_navigation_myBookExchanges);
+        else
+            return NavigationDrawerManager.onNavigationItemSelected(this,mViewPager,item,getApplicationContext(),drawer,0);
 
-        } else if (id == R.id.drawer_navigation_logout) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        Intent i = new Intent(getApplicationContext(), SplashScreenActivity.class);
-                        startActivity(i);
-                        OneSignal.setSubscription(false);
-                        Toast.makeText(getApplicationContext(), getString(R.string.log_out), Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-        }
-
-        DrawerLayout drawer = findViewById(R.id.my_book_drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
     @Override
     public void onBackPressed() {
@@ -198,7 +197,12 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         } else {
             super.onBackPressed();
         }
-        navigationView.setCheckedItem(R.id.drawer_navigation_myBook);
+        if(mViewPager.getCurrentItem()==1)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookPendingRequest);
+        else if(mViewPager.getCurrentItem()==2)
+            navigationView.setCheckedItem(R.id.drawer_navigation_myBookExchanges);
+        else
+            navigationView.setCheckedItem(R.id.drawer_navigation_none);
     }
 
 
