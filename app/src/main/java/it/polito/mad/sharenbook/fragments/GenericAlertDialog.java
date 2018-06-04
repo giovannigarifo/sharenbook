@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowCaseActivity;
+import it.polito.mad.sharenbook.ShowMoreActivity;
 
 
 public class GenericAlertDialog extends DialogFragment {
@@ -36,8 +37,12 @@ public class GenericAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.confirm,
                         (dialog, whichButton) -> {
                             Activity activity = getActivity();
-                            if(activity instanceof ShowCaseActivity && tag.equals("borrow_dialog"))
+                            if(activity instanceof ShowCaseActivity && tag.equals("borrow_dialog")) {
                                 ((ShowCaseActivity)activity).doPositiveClick();
+                            }
+                            else if(activity instanceof ShowMoreActivity && tag.equals("borrow_dialog")) {
+                                ((ShowMoreActivity)activity).doPositiveClick();
+                            }
                             else if(activity instanceof MyBookActivity && tag.equals("no_books_dialog")){
                                 ((ShowMyAnnouncementsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).showShareBook();
                             }
@@ -47,8 +52,9 @@ public class GenericAlertDialog extends DialogFragment {
                             else if(activity instanceof MyBookActivity && tag.equals("reqReject_dialog")){
                                 ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.rejectRequest(username);
                             }
-                            else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog"))
+                            else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog")) {
                                 ((RequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).undoRequest();
+                            }
                         }
                 )
                 .setNegativeButton(R.string.undo,
@@ -56,6 +62,8 @@ public class GenericAlertDialog extends DialogFragment {
                             Activity activity = getActivity();
                             if(activity instanceof ShowCaseActivity)
                                 ((ShowCaseActivity)activity).doNegativeClick();
+                            else if(activity instanceof ShowMoreActivity)
+                                ((ShowMoreActivity)activity).doNegativeClick();
                             else
                                 dialog.dismiss();
                         }

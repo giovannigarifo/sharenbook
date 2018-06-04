@@ -3,27 +3,18 @@ package it.polito.mad.sharenbook;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -39,16 +30,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import it.polito.mad.sharenbook.adapters.ShowBooksAdapter;
+import it.polito.mad.sharenbook.fragments.GenericAlertDialog;
 import it.polito.mad.sharenbook.model.Book;
-import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.Utils;
 
@@ -58,6 +51,7 @@ public class ShowMoreActivity extends AppCompatActivity {
     public static final int FAVORITES_BOOKS = 1;
     public static final int CLOSE_BOOKS = 2;
 
+    private Activity thisActivity;
     private int moreType;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -71,15 +65,18 @@ public class ShowMoreActivity extends AppCompatActivity {
     private ValueEventListener favoriteBooksListener;
 
     private String user_id, username;
-    private HashSet<String> favoritesBookIdList;
+    private LinkedHashSet<String> favoritesBookIdList;
     private HashSet<String> requestedBookIdList;
 
     private RecyclerView moreBooksRV;
+
+    public String selectedBookOwner, selectedBookId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_more);
+        thisActivity = this;
 
         // Get bundle info
         Bundle bundle = getIntent().getExtras();
@@ -123,7 +120,7 @@ public class ShowMoreActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         checkLocation();
 
-        // Popolate recyclerview
+        // Load books
         loadBooks();
     }
 
@@ -138,7 +135,7 @@ public class ShowMoreActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         borrowRequestsDb.addValueEventListener(requestedBooksListener);
-        favoritesDb.addValueEventListener(favoriteBooksListener);
+        favoritesDb.orderByValue().addValueEventListener(favoriteBooksListener);
     }
 
     @Override
@@ -164,12 +161,15 @@ public class ShowMoreActivity extends AppCompatActivity {
 
     private void createListeners() {
 
+        requestedBookIdList = new HashSet<>();
+        favoritesBookIdList = new LinkedHashSet<>();
+
         // Create borrow requested books listener
         requestedBooksListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                requestedBookIdList = new HashSet<>();
+                requestedBookIdList.clear();
 
                 if (dataSnapshot.getChildrenCount() == 0)
                     return;
@@ -183,9 +183,6 @@ public class ShowMoreActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
-                if (requestedBookIdList == null)
-                    requestedBookIdList = new HashSet<>();
             }
         };
 
@@ -194,10 +191,7 @@ public class ShowMoreActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                favoritesBookIdList = new HashSet<>();
-
-                if (dataSnapshot.getChildrenCount() == 0)
-                    return;
+                favoritesBookIdList.clear();
 
                 // Read books for which a loan request has been sent
                 for (DataSnapshot bookIdSnapshot : dataSnapshot.getChildren()) {
@@ -211,9 +205,6 @@ public class ShowMoreActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
-                if (favoritesBookIdList == null)
-                    favoritesBookIdList = new HashSet<>();
             }
         };
     }
@@ -274,7 +265,7 @@ public class ShowMoreActivity extends AppCompatActivity {
                 }
 
                 // Specify an adapter
-                MyAdapter booksAdapter = new MyAdapter(bookList);
+                ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                 moreBooksRV.setAdapter(booksAdapter);
             }
 
@@ -291,6 +282,7 @@ public class ShowMoreActivity extends AppCompatActivity {
         final long bookCount = favoritesBookIdList.size();
 
         if (bookCount == 0) {
+            finish();
             return;
         }
 
@@ -306,7 +298,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount) {
                         // Set RV adapter
-                        MyAdapter booksAdapter = new MyAdapter(bookList);
+                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }
@@ -378,7 +370,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount.get()) {
                         // Set RV adapter
-                        MyAdapter booksAdapter = new MyAdapter(bookList);
+                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }
@@ -390,191 +382,53 @@ public class ShowMoreActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Recycler View Adapter Class
-     */
-    private class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private void firebaseInsertRequest() {
 
-        private Activity mActivity;
-        private StorageReference mBookImagesStorage;
-        private List<Book> mBookList;
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + selectedBookId, ServerValue.TIMESTAMP);
+        transaction.put(selectedBookOwner + "/" + getString(R.string.pending_requests_key) + "/" + selectedBookId + "/" + username, ServerValue.TIMESTAMP);
 
-            ConstraintLayout mLayout;
-            ImageView bookPhoto;
-            TextView bookTitle;
-            TextView bookDistance;
-            ImageView bookOptions;
-            ImageView bookmarkIcon;
-            ImageView bookUnavailable;
+        // Push entire transaction
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
 
-            ViewHolder(ConstraintLayout layout) {
-                super(layout);
-                mLayout = layout;
-                bookPhoto = layout.findViewById(R.id.showcase_rv_book_photo);
-                bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
-                bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
-                bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
-                bookmarkIcon = layout.findViewById(R.id.showcase_rv_book_shared);
-                bookUnavailable = layout.findViewById(R.id.showcase_rv_unavailable_bg);
-            }
-        }
+                String requestBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
 
-        MyAdapter(List<Book> bookList) {
-            mActivity = ShowMoreActivity.this;
-            mBookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-            mBookList = bookList;
-        }
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + selectedBookOwner + "\"}],"
 
-        // Create new views (invoked by the layout manager)
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            // create a new view
-            ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_book_showmore_rv, parent, false);
+                        + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + username + "\", \"senderUid\": \"" + user_id + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " wants to borrow your book!\", " +
+                        "\"it\": \"" + username + " vuole in prestito un tuo libro!\"},"
+                        + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
+                        + "}";
 
-            return new ViewHolder(layout);
-        }
-
-        // Replace the contents of a view (invoked by the layout manager)
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-            Book book = mBookList.get(position);
-            String fileName = book.getPhotosName().get(0);
-            StorageReference photoRef = mBookImagesStorage.child(book.getBookId()).child(fileName);
-
-            // Load book photo
-            GlideApp.with(mActivity)
-                    .load(photoRef)
-                    .placeholder(R.drawable.book_cover_portrait)
-                    .into(holder.bookPhoto);
-
-            // Put bookmark icon if already shared
-            if (book.isShared())
-                holder.bookUnavailable.setVisibility(View.VISIBLE);
-            else
-                holder.bookUnavailable.setVisibility(View.GONE);
-
-
-            // Set title
-            holder.bookTitle.setText(book.getTitle());
-
-            // Set distance
-            if (mLocation != null) {
-                String distance = Utils.distanceBetweenLocations(
-                        mLocation.getLatitude(),
-                        mLocation.getLongitude(),
-                        book.getLocation_lat(),
-                        book.getLocation_long());
-                holder.bookDistance.setText(distance);
-                holder.bookDistance.setVisibility(View.VISIBLE);
+                // Send notification
+                Utils.sendNotification(requestBody);
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_done, Toast.LENGTH_LONG).show();
 
             } else {
-                holder.bookDistance.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), R.string.borrow_request_fail, Toast.LENGTH_LONG).show();
             }
+        });
+    }
 
-            // Set listener
-            holder.mLayout.setOnClickListener(v -> {
-                Intent i = new Intent(mActivity, ShowBookActivity.class);
-                i.putExtra("book", book);
-                mActivity.startActivity(i);
-            });
+    public void showDialog() {
+        DialogFragment newFragment = GenericAlertDialog.newInstance(
+                R.string.borrow_book, getString(R.string.borrow_book_msg));
+        newFragment.show(getSupportFragmentManager(), "borrow_dialog");
+    }
 
-            // Setup options menu
-            holder.bookOptions.setOnClickListener(v -> {
-                showOptionsPopupMenu(v, book);
-            });
+    public void doPositiveClick() {
+        if (!selectedBookOwner.equals("")) {
+            firebaseInsertRequest();
         }
+    }
 
-        // Return the size of your dataset (invoked by the layout manager)
-        @Override
-        public int getItemCount() {
-            return mBookList.size();
-        }
-
-        private void showOptionsPopupMenu(View v, Book book) {
-
-            final PopupMenu popup = new PopupMenu(mActivity, v);
-            popup.inflate(R.menu.showcase_rv_options_menu);
-            popup.setOnMenuItemClickListener(item -> {
-
-                DatabaseReference favoriteBooksRef = FirebaseDatabase.getInstance()
-                        .getReference(getString(R.string.users_key))
-                        .child(user_id)
-                        .child(getString(R.string.user_favorites_key))
-                        .child(book.getBookId());
-
-                switch (item.getItemId()) {
-
-                    case R.id.add_to_favorites:
-                        favoriteBooksRef.setValue(ServerValue.TIMESTAMP, (databaseError, databaseReference) -> {
-                            if (databaseError == null) {
-                                Toast.makeText(getApplicationContext(), R.string.showcase_add_favorite, Toast.LENGTH_SHORT).show();
-                            } else
-                                Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
-                        });
-                        return true;
-
-                    case R.id.del_from_favorites:
-                        favoriteBooksRef.removeValue((databaseError, databaseReference) -> {
-                            if (databaseError == null) {
-
-                                if (moreType == FAVORITES_BOOKS && mBookList.size() == 1) {
-                                    finish();
-                                }
-                                Toast.makeText(getApplicationContext(), R.string.showcase_del_favorite, Toast.LENGTH_SHORT).show();
-                            } else
-                                Log.d("FIREBASE ERROR", "Favorite -> " + databaseError.getMessage());
-                        });
-                        return true;
-
-                    case R.id.contact_owner:
-                        Intent chatActivity = new Intent(mActivity, ChatActivity.class);
-                        chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                        mActivity.startActivity(chatActivity);
-                        return true;
-
-                    case R.id.show_profile:
-                        Intent showOwnerProfile = new Intent(mActivity, ShowOthersProfile.class);
-                        showOwnerProfile.putExtra("username", book.getOwner_username());
-                        mActivity.startActivity(showOwnerProfile);
-                        return true;
-
-                    case R.id.borrow_book:
-                        //selectedBookOwner = book.getOwner_username();
-                        //selectedBookId = book.getBookId();
-                        //showDialog();
-                        return true;
-
-                    default:
-                        return false;
-                }
-            });
-
-            // Disable contact owner menu entry if is an user's book
-            if (book.getOwner_uid().equals(user_id)) {
-                popup.getMenu().getItem(0).setEnabled(false);
-                popup.getMenu().getItem(2).setEnabled(false);
-                popup.getMenu().getItem(3).setEnabled(false);
-                popup.getMenu().getItem(4).setEnabled(false);
-
-            } else {
-                if (favoritesBookIdList.contains(book.getBookId())) {
-                    popup.getMenu().getItem(0).setVisible(false);
-                    popup.getMenu().getItem(1).setVisible(true);
-                }
-                if (book.isShared()) {
-                    popup.getMenu().getItem(4).setTitle(R.string.book_unavailable).setEnabled(false);
-                } else if (requestedBookIdList.contains(book.getBookId())) {
-                    popup.getMenu().getItem(4).setVisible(false);
-                    popup.getMenu().getItem(5).setVisible(true);
-                }
-            }
-
-            popup.show();
-        }
+    public void doNegativeClick() {
+        selectedBookOwner = "";
     }
 }
