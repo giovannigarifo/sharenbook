@@ -217,6 +217,8 @@
     <string name="searchbar_placeholder">Cerca un libro…</string>
 
     <!-- Search filters -->
+    <string name="sba_btn_filters">FILTRA</string>
+    <string name="sba_btn_order">ORDINA</string>
     <string name="fragment_sf_title">Filtri di ricerca</string>
     <string name="fragmen_sf_msg">Qui puoi applicare dei filtri alla tua ricerca</string>
     <string name="fragment_sf_address_hint">Scrivi un indirizzo e seleziona un raggio</string>

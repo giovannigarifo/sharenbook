@@ -158,6 +158,8 @@
 
 
     <!--Search filters and other -->
+    <string name="sba_btn_filters">FILTERS</string>
+    <string name="sba_btn_order">ORDER</string>
     <string name="fragment_sf_title">Search filters</string>
     <string name="fragmen_sf_msg">Here you can apply filters to your search</string>
 

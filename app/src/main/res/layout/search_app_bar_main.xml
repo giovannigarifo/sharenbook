@@ -25,12 +25,12 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <com.mancj.materialsearchbar.MaterialSearchBar
                     android:id="@+id/sba_searchbar"
                     style="@style/MaterialSearchBarLight"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_margin="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -39,7 +39,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
-                    app:mt_clearIconTint="@color/white"
                     app:mt_hint="@string/search_hint"
                     app:mt_maxSuggestionsCount="0"
                     app:mt_navIconEnabled="true"
@@ -48,26 +47,47 @@
                     app:mt_speechMode="false"
                     app:mt_textCursorTint="@android:color/darker_gray" />
 
-                <ImageButton
-                    android:id="@+id/sba_btn_filter"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginRight="24dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/ic_tune_black_24dp"
-                    android:backgroundTint="@color/darkGrey"
-                    app:layout_constraintBottom_toBottomOf="@+id/sba_searchbar"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/sba_searchbar" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintTop_toBottomOf="@id/sba_searchbar">
+
+                    <Button
+                        android:id="@+id/sba_btn_filter"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:background="@color/colorAccent"
+                        android:text="@string/sba_btn_filters"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:id="@+id/sba_btn_order"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:background="@color/colorAccent"
+                        android:text="@string/sba_btn_order"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
 
             </android.support.constraint.ConstraintLayout>
-
-
         </android.support.design.widget.AppBarLayout>
 
 
@@ -76,9 +96,8 @@
             android:id="@+id/search_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingTop="10dp"
-            android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/sba_appbar" />
+            app:layout_constraintTop_toBottomOf="@id/sba_appbar">
+        </FrameLayout>
 
 
     </android.support.constraint.ConstraintLayout>
