@@ -18,7 +18,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,7 +85,7 @@ public class SearchActivity extends AppCompatActivity
     private GeoFire geoFire = new GeoFire(location_ref);
 
     //filter button
-    private ImageButton sba_btn_filter;
+    private Button sba_btn_filter;
 
     //fab to display map
     private FloatingActionButton search_fab_changeFragment;
@@ -212,10 +212,10 @@ public class SearchActivity extends AppCompatActivity
         if (bundle != null) {
 
             this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
-            if (searchInputText != null)
+            if (searchInputText != null){
                 this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
-
-            onSearchConfirmed(null); // Fire the search (async)
+                onSearchConfirmed(this.searchInputText.toString()); // Fire the search (async)
+            }
 
             //no fragment already displayes
             this.currentFragment = NO_FRAG;
