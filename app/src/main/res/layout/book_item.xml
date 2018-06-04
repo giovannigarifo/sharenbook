@@ -109,14 +109,17 @@
 
             <Button
                 android:id="@+id/edit_button"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="24dp"
+                android:layout_marginBottom="12dp"
                 android:text="@string/edit_book"
                 android:textColor="@color/colorAccent"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/button_bg_transparent_accent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- style="?android:attr/borderlessButtonStyle"-->
 
             <include
                 android:id="@+id/chiptag"

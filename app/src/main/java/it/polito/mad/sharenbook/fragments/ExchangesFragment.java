@@ -47,6 +47,7 @@ import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.WriteReviewActivity;
+import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
 import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GlideApp;
 
@@ -80,6 +81,7 @@ public class ExchangesFragment extends Fragment {
 
         SharedPreferences userData = App.getContext().getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
+
         takenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/taken_books");
         givenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/given_books");
         archiveBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/archive_books");
@@ -157,7 +159,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter takenBooksAdapter = new RVAdapter(takenList, 0);
+                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 0, username);
                         takenBooksRV.setAdapter(takenBooksAdapter);
                         //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -194,7 +196,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter takenBooksAdapter = new RVAdapter(takenList, 1);
+                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 1, username);
                         givenBooksRV.setAdapter(takenBooksAdapter);
                     }
 
@@ -226,7 +228,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        RVAdapter archiveBooksAdapter = new RVAdapter(archiveList, 2);
+                        ExchangesAdapter archiveBooksAdapter = new ExchangesAdapter(archiveList, 2, username);
                         archiveBooksRV.setAdapter(archiveBooksAdapter);
                         archiveCV.setVisibility(View.VISIBLE);
 
@@ -237,216 +239,6 @@ public class ExchangesFragment extends Fragment {
                         Log.d("ERROR", "There was an error while fetching taken books list");
                     }
                 });
-    }
-
-    /**
-     * Recycler View Adapter Class
-     */
-    private class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder> {
-
-        private StorageReference mBookImagesStorage;
-        private List<Exchange> exchangeList;
-        private int listType;
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            ConstraintLayout mLayout;
-            ImageView bookPhoto;
-            TextView bookTitle;
-            TextView bookDistance;
-            ImageView bookOptions;
-            TextView tvReviewDone;
-            Button btnNotReviewed;
-
-            ViewHolder(ConstraintLayout layout) {
-                super(layout);
-                mLayout = layout;
-                bookPhoto = layout.findViewById(R.id.showcase_rv_book_photo);
-                bookTitle = layout.findViewById(R.id.showcase_rv_book_title);
-                bookDistance = layout.findViewById(R.id.showcase_rv_book_location);
-                bookOptions = layout.findViewById(R.id.showcase_rv_book_options);
-                tvReviewDone = layout.findViewById(R.id.exchange_reviewed);
-                btnNotReviewed = layout.findViewById(R.id.exchange_not_reviewed);
-
-            }
-        }
-
-        RVAdapter(List<Exchange> exchanges, int listType) {
-            mBookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-            exchangeList = exchanges;
-            this.listType = listType;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_book_showcase_rv, parent, false);
-
-            return new ViewHolder(layout);
-        }
-
-        // Replace the contents of a view (invoked by the layout manager)
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Exchange exchange = exchangeList.get(position);
-            String fileName = exchange.getBookPhoto();
-            StorageReference photoRef = mBookImagesStorage.child(exchange.getBookId()).child(fileName);
-
-            // Load book photo
-            GlideApp.with(App.getContext())
-                    .load(photoRef)
-                    .placeholder(R.drawable.book_cover_portrait)
-                    .into(holder.bookPhoto);
-
-            // Set title
-            holder.bookTitle.setText(exchange.getBookTitle());
-            holder.bookDistance.setVisibility(View.GONE);
-
-            // Set listener
-            holder.mLayout.setOnClickListener(v -> {
-                Intent i = new Intent(App.getContext(), ShowBookActivity.class);
-                i.putExtra("bookId", exchange.getBookId());
-                App.getContext().startActivity(i);
-            });
-
-            if (listType == 2) {
-
-                if (!exchange.isReviewed()) {
-
-                    holder.btnNotReviewed.setVisibility(View.VISIBLE);
-
-                    holder.btnNotReviewed.setOnClickListener(v -> {
-
-                        Intent startWriteReviewActivity = new Intent(App.getContext(), WriteReviewActivity.class);
-                        startWriteReviewActivity.putExtra("bookId", exchange.getBookId());
-                        startWriteReviewActivity.putExtra("bookTitle", exchange.getBookTitle());
-                        startWriteReviewActivity.putExtra("creationTime", exchange.getCreationTime());
-                        startWriteReviewActivity.putExtra("userNickName", exchange.getCounterpart());
-                        startWriteReviewActivity.putExtra("isGiven", exchange.isGiven());
-                        startWriteReviewActivity.putExtra("bookPhoto", exchange.getBookPhoto());
-                        startWriteReviewActivity.putExtra("exchangeId", exchange.getExchangeId());
-
-                        App.getContext().startActivity(startWriteReviewActivity);
-                    });
-
-                } else {
-                    holder.tvReviewDone.setVisibility(View.VISIBLE);
-                }
-
-            }
-
-            // Setup options menu
-            holder.bookOptions.setOnClickListener(v -> {
-
-                final PopupMenu popup = new PopupMenu(getContext(), v);
-                popup.inflate(R.menu.exchanges_taken_rv_options_menu);
-                popup.setOnMenuItemClickListener(item -> {
-
-                    switch (item.getItemId()) {
-
-                        case R.id.contact_owner:
-                            Intent chatActivity = new Intent(getContext(), ChatActivity.class);
-                            chatActivity.putExtra("recipientUsername", exchange.getCounterpart());
-                            getContext().startActivity(chatActivity);
-                            return true;
-
-                        case R.id.show_profile:
-                            Intent showOwnerProfile = new Intent(getContext(), ShowOthersProfile.class);
-                            showOwnerProfile.putExtra("username", exchange.getCounterpart());
-                            getContext().startActivity(showOwnerProfile);
-                            return true;
-
-                        case R.id.return_book:
-                            returnBook(exchange);
-                            return true;
-
-                        default:
-                            return false;
-                    }
-                });
-
-                if (listType != 0) {
-                    popup.getMenu().getItem(2).setVisible(false);
-                    String popupItemTitle = getString(R.string.contact_borrower, exchange.getCounterpart());
-                    popup.getMenu().getItem(0).setTitle(popupItemTitle);
-                }
-
-                popup.show();
-            });
-        }
-
-        // Return the size of your dataset (invoked by the layout manager)
-        @Override
-        public int getItemCount() {
-            return exchangeList.size();
-        }
-
-        private void returnBook(Exchange ex) {
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-            // Create borrower returned book map
-            Map<String, Object> borrowerReturnedBookMap = new HashMap<>();
-            borrowerReturnedBookMap.put("counterpart", ex.getCounterpart());
-            borrowerReturnedBookMap.put("bookId", ex.getBookId());
-            borrowerReturnedBookMap.put("bookTitle", ex.getBookTitle());
-            borrowerReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
-            borrowerReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
-            borrowerReturnedBookMap.put("given", false);
-            borrowerReturnedBookMap.put("reviewed", false);
-
-            // Create lender returned book map
-            Map<String, Object> lenderReturnedBookMap = new HashMap<>();
-            lenderReturnedBookMap.put("counterpart", username);
-            lenderReturnedBookMap.put("bookId", ex.getBookId());
-            lenderReturnedBookMap.put("bookTitle", ex.getBookTitle());
-            lenderReturnedBookMap.put("bookPhoto", ex.getBookPhoto());
-            lenderReturnedBookMap.put("creationTime", ServerValue.TIMESTAMP);
-            lenderReturnedBookMap.put("given", true);
-            lenderReturnedBookMap.put("reviewed", false);
-
-            // Create transaction Map
-            Map<String, Object> transaction = new HashMap<>();
-            transaction.put(getString(R.string.shared_books_key) + "/" + ex.getCounterpart() + "/" + getString(R.string.given_books_key) + "/" + ex.getExchangeId(), null);
-            transaction.put(getString(R.string.shared_books_key) + "/" + username + "/" + getString(R.string.taken_books_key) + "/" + ex.getExchangeId(), null);
-            transaction.put(getString(R.string.shared_books_key) + "/" + ex.getCounterpart() + "/" + getString(R.string.archive_books_key) + "/" + ex.getExchangeId(), lenderReturnedBookMap);
-            transaction.put(getString(R.string.shared_books_key) + "/" + username + "/" + getString(R.string.archive_books_key) + "/" + ex.getExchangeId(), borrowerReturnedBookMap);
-
-            // Set book as not shared (available again)
-            transaction.put(getString(R.string.books_key) + "/" + ex.getBookId() + "/shared", false);
-
-            // Execute transaction
-            rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
-                if (databaseError == null) {
-
-                    // Update Algolia
-                    algoliaSetBookAsNotShared(ex.getBookId());
-
-                    // Send notification
-                    //sendNotification(selectedBookOwner, username);
-                    Toast.makeText(getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
-
-                } else {
-                    Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-
-        private void algoliaSetBookAsNotShared(String bookKey) {
-
-            try {
-                Client algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
-                Index index = algoliaClient.getIndex("books");
-
-                JSONObject ob = new JSONObject().put("shared", false);
-
-                index.partialUpdateObjectAsync(ob, bookKey, true, (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("error", "Unable to update Algolia index.");
-            }
-        }
     }
 
 }

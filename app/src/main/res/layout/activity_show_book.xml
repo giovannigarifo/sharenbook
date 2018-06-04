@@ -65,7 +65,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingBottom="97dp"
                     android:orientation="vertical">
 
                     <!-- BOOK PHOTO -->
@@ -377,18 +376,6 @@
                 </LinearLayout>
 
             </ScrollView>
-
-            <!-- Contact user Floating Action Button-->
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/message_user"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="25dp"
-                android:src="@drawable/ic_chat_black_24dp"
-                app:backgroundTint="@color/colorPrimary"
-                app:fabSize="normal"
-                app:layout_constraintBottom_toTopOf="@id/navigation"
-                app:layout_constraintEnd_toEndOf="parent" />
 
             <android.support.design.widget.BottomNavigationView
                 android:id="@+id/navigation"

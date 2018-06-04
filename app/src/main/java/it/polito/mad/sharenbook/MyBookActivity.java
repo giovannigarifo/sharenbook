@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -25,17 +24,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.onesignal.OneSignal;
 
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
-import it.polito.mad.sharenbook.fragments.BorrowRequestsFragment;
 import it.polito.mad.sharenbook.fragments.ExchangesFragment;
-import it.polito.mad.sharenbook.fragments.PendingRequestsFragment;
-import it.polito.mad.sharenbook.fragments.ProfileReviewsFragment;
 import it.polito.mad.sharenbook.fragments.RequestsFragment;
 import it.polito.mad.sharenbook.fragments.ShowMyAnnouncementsFragment;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;

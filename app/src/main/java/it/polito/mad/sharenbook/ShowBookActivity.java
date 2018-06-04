@@ -89,11 +89,17 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
     private TextView drawer_fullname;
     private TextView drawer_email;
 
+    private boolean locationSet = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_book);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapContainer);
+        mapFragment.getMapAsync(this);
 
         // Setup navigation tools
         setupNavigationTools();
@@ -112,9 +118,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             }
         }
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.mapContainer);
-        mapFragment.getMapAsync(this);
 
     }
 
@@ -159,10 +162,13 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        LatLng loc = new LatLng(book.getLocation_lat(), book.getLocation_long());
-        Marker m = mMap.addMarker(new MarkerOptions()
-                .position(loc));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+        if(book != null && !locationSet) {
+            locationSet = true;
+            LatLng loc = new LatLng(book.getLocation_lat(), book.getLocation_long());
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(loc));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+        }
 
     }
 
@@ -196,8 +202,13 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         // Load book data into view
         loadViewWithBookData();
 
-        // Setup fab button for message with user
-        setupFabContactUser();
+        if(mMap != null && !locationSet) {
+            locationSet = true;
+            LatLng loc = new LatLng(book.getLocation_lat(), book.getLocation_long());
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(loc));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 14));
+        }
 
         // Setup book buttons
         setupBookActionsButton();
@@ -381,29 +392,6 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
         });
     }
 
-    private void setupFabContactUser() {
-        //setup the chat fab
-        FloatingActionButton fabContactUser = findViewById(R.id.message_user);
-
-        if (!book.getOwner_username().equals(username)) {
-
-            fabContactUser.setVisibility(View.VISIBLE);
-
-            fabContactUser.setOnClickListener(view -> {
-                Intent chatActivity = new Intent(getApplicationContext(), ChatActivity.class);
-                chatActivity.putExtra("recipientUsername", book.getOwner_username());
-                /*SharedPreferences userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
-                userPreferences.edit().putString("recipientUsername", book.getOwner_username()).commit();*/
-                //chatActivity.putExtra("recipientUID", book.getOwner_uid());
-                startActivity(chatActivity);
-                finish();
-            });
-
-        } else {
-            fabContactUser.setVisibility(View.GONE);
-        }
-
-    }
 
     @SuppressLint("SetTextI18n")
     private void loadViewWithBookData() {
