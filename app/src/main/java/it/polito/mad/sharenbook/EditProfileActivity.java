@@ -447,7 +447,7 @@ public class EditProfileActivity extends AppCompatActivity {
             userData.put(getString(R.string.fullname_key), et_userFullName.getText().toString());
             user.setFullname(et_userFullName.getText().toString());
         }
-        if (creatingProfile && et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
+        if (et_userNickName.getText().length() != 0 && !et_userNickName.getText().equals(default_username)) {
             userData.put(getString(R.string.username_key), et_userNickName.getText().toString());
             user.setUsername(et_userNickName.getText().toString());
         }
