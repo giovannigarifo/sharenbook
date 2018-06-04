@@ -37,13 +37,7 @@ public class GenericAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.confirm,
                         (dialog, whichButton) -> {
                             Activity activity = getActivity();
-                            if(activity instanceof ShowCaseActivity && tag.equals("borrow_dialog")) {
-                                ((ShowCaseActivity)activity).doPositiveClick();
-                            }
-                            else if(activity instanceof ShowMoreActivity && tag.equals("borrow_dialog")) {
-                                ((ShowMoreActivity)activity).doPositiveClick();
-                            }
-                            else if(activity instanceof MyBookActivity && tag.equals("no_books_dialog")){
+                            if(activity instanceof MyBookActivity && tag.equals("no_books_dialog")){
                                 ((ShowMyAnnouncementsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).showShareBook();
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
@@ -57,18 +51,7 @@ public class GenericAlertDialog extends DialogFragment {
                             }
                         }
                 )
-                .setNegativeButton(R.string.undo,
-                        (dialog, whichButton) -> {
-                            Activity activity = getActivity();
-                            if(activity instanceof ShowCaseActivity)
-                                ((ShowCaseActivity)activity).doNegativeClick();
-                            else if(activity instanceof ShowMoreActivity)
-                                ((ShowMoreActivity)activity).doNegativeClick();
-                            else
-                                dialog.dismiss();
-                        }
-                )
+                .setNegativeButton(R.string.undo, (dialog, whichButton) -> dialog.dismiss())
                 .create();
     }
-
 }

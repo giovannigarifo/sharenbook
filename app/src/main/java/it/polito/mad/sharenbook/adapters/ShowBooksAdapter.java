@@ -3,9 +3,11 @@ package it.polito.mad.sharenbook.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,17 +25,19 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.ShowCaseActivity;
-import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.Utils;
 
@@ -44,7 +48,7 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
     private StorageReference mBookImagesStorage;
     private List<Book> mBookList;
     private Location mLocation;
-    private String user_id;
+    private String user_id, username;
     private LinkedHashSet<String> favoritesBookIdList;
     private HashSet<String> requestedBookIdList;
 
@@ -76,9 +80,13 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
         mBookImagesStorage = FirebaseStorage.getInstance().getReference(mActivity.getString(R.string.book_images_key));
         mBookList = bookList;
         mLocation = location;
-        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
         favoritesBookIdList = favorites;
         requestedBookIdList = requested;
+
+        // Get username and user_id
+        SharedPreferences userData = activity.getSharedPreferences(activity.getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(activity.getString(R.string.username_copy_key), "");
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     // Create new views (invoked by the layout manager)
@@ -194,17 +202,19 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
                     return true;
 
                 case R.id.borrow_book:
-                    if (mActivity instanceof ShowCaseActivity) {
-                        ShowCaseActivity act = (ShowCaseActivity)mActivity;
-                        act.selectedBookOwner = book.getOwner_username();
-                        act.selectedBookId = book.getBookId();
-                        act.showDialog();
-                    } else if (mActivity instanceof ShowMoreActivity) {
-                        ShowMoreActivity act = (ShowMoreActivity)mActivity;
-                        act.selectedBookOwner = book.getOwner_username();
-                        act.selectedBookId = book.getBookId();
-                        act.showDialog();
-                    }
+                    String title = mActivity.getString(R.string.borrow_book);
+                    String message = mActivity.getString(R.string.borrow_book_msg);
+
+                    GenericFragmentDialog.show((FragmentActivity) mActivity, title, message, new GenericFragmentDialog.ClickListener() {
+                        @Override
+                        public void onPositiveClick() {
+                            firebaseInsertRequest(book.getBookId(), book.getOwner_username());
+                        }
+
+                        @Override
+                        public void onNegativeClick() {
+                        }
+                    });
                     return true;
 
                 default:
@@ -233,5 +243,39 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
         }
 
         popup.show();
+    }
+
+    private void firebaseInsertRequest(String selectedBookId, String selectedBookOwner) {
+
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(mActivity.getString(R.string.usernames_key));
+
+        // Create transaction Map
+        Map<String, Object> transaction = new HashMap<>();
+        transaction.put(username + "/" + mActivity.getString(R.string.borrow_requests_key) + "/" + selectedBookId, ServerValue.TIMESTAMP);
+        transaction.put(selectedBookOwner + "/" + mActivity.getString(R.string.pending_requests_key) + "/" + selectedBookId + "/" + username, ServerValue.TIMESTAMP);
+
+        // Push entire transaction
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+
+                String requestBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + selectedBookOwner + "\"}],"
+
+                        + "\"data\": {\"notificationType\": \"bookRequest\", \"senderName\": \"" + username + "\", \"senderUid\": \"" + user_id + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " wants to borrow your book!\", " +
+                        "\"it\": \"" + username + " vuole in prestito un tuo libro!\"},"
+                        + "\"headings\": {\"en\": \"Someone wants one of your books!\", \"it\": \"Qualcuno è interessato a un tuo libro!\"}"
+                        + "}";
+
+                // Send notification
+                Utils.sendNotification(requestBody);
+                Toast.makeText(mAppContext, R.string.borrow_request_done, Toast.LENGTH_LONG).show();
+
+            } else {
+                Toast.makeText(mAppContext, R.string.borrow_request_fail, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
