@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +49,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
     private LinearLayoutManager llm;
     private RecyclerView rv;
     private FloatingActionButton newAnnoucementFab;
+    private CardView no_book_cv;
 
     private ArrayList<Book> books = new ArrayList<>();
 
@@ -67,6 +69,7 @@ public class ShowMyAnnouncementsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_show_announcements, container, false);
         rv = rootView.findViewById(R.id.expanded_books);
         newAnnoucementFab = rootView.findViewById(R.id.fab_addBook);
+        no_book_cv = rootView.findViewById(R.id.card_no_books);
 
         SetNewAnnouncementFab();
         setRecyclerView();
@@ -121,8 +124,8 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
                     if (dataSnapshot.getValue().equals(getString(R.string.users_books_placeholder))){ /** no announcemnts */
 
-                        //TODO this one
-                        showNoBooksDialog();
+                        no_book_cv.setVisibility(View.VISIBLE);
+                        rv.setVisibility(View.GONE);
 
                     }else{ /** there are announcements */
 
@@ -165,19 +168,6 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
             }
         });
-    }
-
-    void showNoBooksDialog() {
-        DialogFragment newFragment = GenericAlertDialog.newInstance(
-                R.string.no_books_alert_title, getString(R.string.no_books_suggestion));
-        newFragment.show(getFragmentManager(), "no_books_dialog");
-        newFragment.setRetainInstance(true);
-    }
-
-    void showShareBook(){
-        Intent i = new Intent (App.getContext(), ShareBookActivity.class);
-        startActivity(i);
-        getActivity().finish();
     }
 
 }

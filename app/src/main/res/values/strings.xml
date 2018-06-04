@@ -115,7 +115,7 @@
 
     <!--        BOOK CATEGORIES         -->
     <string-array name="book_categories">
-        <item name="book_category_art">Art, music, cinema</item>
+        <item name="book_category_art">Art/Music/Cinema</item>
         <item name="book_category_biography">Biography</item>
         <item name="book_category_comics">Comics</item>
         <item name="book_category_economy">Economy</item>
@@ -316,7 +316,7 @@
     <string name="nav_my_books">My books</string>
 
     <string name="no_books_alert_title">No books yet!</string>
-    <string name="no_books_suggestion">We suggest you to make an announcement! Do you want to do it now?</string>
+    <string name="no_books_suggestion">We suggest you to create an announcement for a new book! Press on the \'plus\' below to make it now!</string>
 
     <string name="error_save_camera_photo">There was an error while saving your photo, please retry.</string>
     <string name="title_activity_maps">Map</string>
@@ -332,7 +332,7 @@
     <string name="mychats_title">My chats</string>
     <string name="navigation_mychats">Messages</string>
     <string name="no_chats_alert_title">No chats yet!</string>
-    <string name="no_chats_suggestion">We suggest you to search for a book and contact the owner! Do you want to do it now?</string>
+    <string name="no_chats_suggestion">You do not have open chats! We suggest you to search for a book and contact the owner!</string>
     <string name="NEW" translatable="false">NEW</string>
 
     <!-- ShowCase -->

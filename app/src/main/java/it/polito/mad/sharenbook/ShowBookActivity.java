@@ -573,20 +573,25 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             return new ViewHolder(v);
         }
 
-        // Replace the contents of a view (invoked by the layout manager)
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            // - get element from your dataset at this position
-            // - replace the contents of the view with that element
+
             String fileName = mPhotosName.get(position);
             StorageReference photoRef = mBookImagesStorage.child(mBook.getBookId() + "/" + fileName);
 
             GlideApp.with(mActivity)
                     .load(photoRef)
                     .into(holder.mImageView);
+
+            holder.mImageView.setOnClickListener(view -> {
+                Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
+                i.putExtra("PictureSignature", 0);
+                i.putExtra("pathPortion", mBook.getBookId() + "/" + fileName);
+                i.putExtra("mode", 2);
+                startActivity(i);
+            });
         }
 
-        // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
             return mPhotosName.size();

@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -56,6 +57,7 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
     private CircularImageView drawer_userPicture;
     private TextView drawer_fullname;
     private TextView drawer_email;
+    private CardView no_chats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +65,10 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         setContentView(R.layout.activity_my_chats);
         setupNavigationTools();
         chatsListView = findViewById(R.id.my_chats_lv);
+        no_chats = findViewById(R.id.card_no_chats);
 
         adapter = new ConversationAdapter(MyChatsActivity.this);
         chatsListView.setAdapter(adapter);
-
 
         userPreferences = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         String username = userPreferences.getString(getString(R.string.username_copy_key), "void");
@@ -83,9 +85,8 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
                     long actualChats = dataSnapshot.getChildrenCount();
 
                     if(actualChats == 0)
-                        noChatsDialog();
+                        no_chats.setVisibility(View.VISIBLE);
 
-                  //  Log.d("Conversation:","actual chats size:"+actualChats);
                     adapter.setWithoutIncomingMessagesCounter(actualChats);
                 }
 
@@ -98,15 +99,15 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
         mychatsDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-              //  Log.d("conversations added:", "->" + dataSnapshot.getKey() + "and" + s);
-                /** Verificare getkey come una stringa concatenata di tutti gli utenti **/
-                /** Altrimenti vedere se l'iterable ritornato da getChildren è sincrono
-                 * e salvare tu**/
 
                 dataSnapshot.getRef().orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                     //   Log.d("conversation add lmsg", dataSnapshot.toString());
+
+                        if(adapter.getCount() == 0){
+                            no_chats.setVisibility(View.GONE);
+                        }
+
                         setConversationAndApapter(dataSnapshot, true);
 
 
@@ -185,27 +186,6 @@ public class MyChatsActivity extends AppCompatActivity implements NavigationView
             adapter.modifyConversation(conversation);
             Log.d("chatpicture","mod recipient->"+dataSnapshot.getKey()+" path->"+"images/" + dataSnapshot.getKey() +".jpg");
         }
-    }
-
-    private void noChatsDialog(){
-        AlertDialog.Builder no_chats = new AlertDialog.Builder(MyChatsActivity.this); //give a context to Dialog
-        no_chats.setTitle(R.string.no_chats_alert_title);
-        no_chats.setMessage(R.string.no_chats_suggestion);
-        no_chats.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-
-                    Intent i = new Intent (getApplicationContext(), ShowCaseActivity.class);
-                    startActivity(i);
-
-
-                }
-        ).setNegativeButton(android.R.string.cancel,
-                (dialog, which) -> {
-                    dialog.dismiss();
-                    
-                }
-        );
-
-        no_chats.show();
     }
 
     private void setupNavigationTools() {

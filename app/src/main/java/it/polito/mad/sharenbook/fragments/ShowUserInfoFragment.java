@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,11 @@ public class ShowUserInfoFragment extends Fragment {
     private void setPrefCategories(){
 
         String[] bookCategories = getResources().getStringArray(R.array.book_categories);
+
+        Log.d("cat", "id: " + user.getCategories().get(1));
+
         for(Integer cat : user.getCategories()) {
+
             categoriesAdapter.addCategory(Arrays.asList(bookCategories).get(cat));
         }
 

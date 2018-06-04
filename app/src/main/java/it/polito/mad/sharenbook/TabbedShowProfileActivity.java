@@ -154,7 +154,7 @@ public class TabbedShowProfileActivity extends AppCompatActivity
             userPicture.setOnClickListener(v -> {
                 Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                 i.putExtra("PictureSignature", profile_picture_signature);
-                i.putExtra("username", user.getUsername());
+                i.putExtra("pathPortion", user.getUsername());
                 startActivity(i);
             });
         }

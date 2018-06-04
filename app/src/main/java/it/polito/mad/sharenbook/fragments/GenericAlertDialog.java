@@ -37,10 +37,7 @@ public class GenericAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.confirm,
                         (dialog, whichButton) -> {
                             Activity activity = getActivity();
-                            if(activity instanceof MyBookActivity && tag.equals("no_books_dialog")){
-                                ((ShowMyAnnouncementsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).showShareBook();
-                            }
-                            else if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
+                            if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
                                 ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.acceptRequest(username);
                             }
                             else if(activity instanceof MyBookActivity && tag.equals("reqReject_dialog")){
@@ -54,4 +51,5 @@ public class GenericAlertDialog extends DialogFragment {
                 .setNegativeButton(R.string.undo, (dialog, whichButton) -> dialog.dismiss())
                 .create();
     }
+
 }

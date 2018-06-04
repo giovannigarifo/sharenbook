@@ -119,7 +119,6 @@ public class NavigationDrawerManager {
         for (int i = 0; i < selectedCategories.size(); i++)
             pref_categories_Int.add(Arrays.asList(book_categories).indexOf(selectedCategories.get(i)));
 
-
         user.setCategories(pref_categories_Int);
 
         return user;

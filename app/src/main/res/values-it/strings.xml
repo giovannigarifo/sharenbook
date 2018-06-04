@@ -182,7 +182,7 @@
 
     <!--        BOOK CATEGORIES         -->
     <string-array name="book_categories">
-        <item name="book_category_art">Arte, musica, cinema</item>
+        <item name="book_category_art">Arte/Musica/Cinema</item>
         <item name="book_category_biography">Biografia</item>
         <item name="book_category_comics">Fumetti</item>
         <item name="book_category_economy">Economia</item>
@@ -284,7 +284,7 @@
     <string name="nav_my_books">Annunci e scambi</string>
 
     <string name="no_books_alert_title">Nessun annuncio!</string>
-    <string name="no_books_suggestion">Ti consigliamo di farne uno! Vuoi farlo ora?</string>
+    <string name="no_books_suggestion">Ti consigliamo di creare un annuncio! Premi sul \'più\' in basso per crearne uno ora!</string>
 
     <string name="error_save_camera_photo">Si è verificato un errore durante il salvataggio della foto, riprova.</string>
 
@@ -299,7 +299,7 @@
     <string name="mychats_title" >Le mie conversazioni</string>
     <string name="navigation_mychats">Messaggi</string>
     <string name="no_chats_alert_title">Nessuna conversazione!</string>
-    <string name="no_chats_suggestion">Ti consigliamo di cercare un libro e contattare il proprietario! Vuoi farlo ora?</string>
+    <string name="no_chats_suggestion">Non hai conversazioni! Ti consigliamo di cercare un libro e contattare il proprietario!</string>
 
     <!-- ShowCase -->
     <string name="showcase_lastbook">Ultimi annunci</string>
