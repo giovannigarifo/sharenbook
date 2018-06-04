@@ -399,13 +399,8 @@ public class MapsActivity extends AppCompatActivity
             try {
 
                 JSONObject hit = hits.getJSONObject(i);
-
-                Iterator<String> keyList = hit.keys();
-
-                //first key (bookData): book object
-                String bookData = keyList.next();
-                Book b = BookJsonParser(hit.getJSONObject(bookData));
-                //b.setBookId(bookData); //save also the FireBase unique ID, is used to retrieve the photos from firebase storage
+                Book b = BookJsonParser(hit.getJSONObject("bookData"));
+                b.setShared(hit.optBoolean("shared", false));
                 books.add(b);
 
                 //second key: objectId == bookId

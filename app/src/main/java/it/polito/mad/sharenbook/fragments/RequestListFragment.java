@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +29,9 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -283,6 +289,9 @@ public class RequestListFragment extends Fragment {
             rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
 
+                    // Update algolia
+                    algoliaSetBookAsShared(bookId);
+
                     String requestBody = "{"
                             + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
 
@@ -352,6 +361,20 @@ public class RequestListFragment extends Fragment {
             });
         }
 
+        private void algoliaSetBookAsShared(String bookKey) {
 
+            try {
+                Client algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
+                Index index = algoliaClient.getIndex("books");
+
+                JSONObject ob = new JSONObject().put("shared", true);
+
+                index.partialUpdateObjectAsync(ob, bookKey, true, (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("error", "Unable to update Algolia index.");
+            }
+        }
     }
 }

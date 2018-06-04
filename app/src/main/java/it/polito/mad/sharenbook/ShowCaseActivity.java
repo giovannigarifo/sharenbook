@@ -67,10 +67,13 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     private MaterialSearchBar searchBar;
     private BottomNavigationView navBar;
-    private boolean shouldExecuteOnResume;
 
     private DatabaseReference booksDb;
     private DatabaseReference favoritesDb;
+    private DatabaseReference borrowRequestsDb;
+
+    private ValueEventListener requestedBooksListener;
+    private ValueEventListener favoriteBooksListener;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private Location mLocation;
@@ -93,23 +96,22 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_case);
-        shouldExecuteOnResume = false;
 
-        // Get username
+        // Get username and user_id
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
         username = userData.getString(getString(R.string.username_copy_key), "");
+        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         // Setup navigation tools
         setupNavigationTools();
 
-        // Get bookDb reference
-        booksDb = FirebaseDatabase.getInstance().getReference(getString(R.string.books_key));
+        // Get Firebase reference
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        booksDb = db.getReference(getString(R.string.books_key));
         booksDb.keepSynced(true);
-
-        // Get favoriteBooks reference
-        user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        favoritesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
+        favoritesDb = db.getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoritesDb.keepSynced(true);
+        borrowRequestsDb = db.getReference(getString(R.string.usernames_key)).child(username).child(getString(R.string.borrow_requests_key));
 
         //Setup location client
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -118,14 +120,11 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         DatabaseReference location_ref = FirebaseDatabase.getInstance().getReference("books_locations");
         geoFire = new GeoFire(location_ref);
 
-        // Load borrowRequests sent list
-        loadBorrowRequests();
+        // Prepare for borrowRequests sent list creation
+        createBorrowRequestsListener();
 
-        // Load recycler views
+        // Prepare recycler views
         setupRecyclerViews();
-        checkLocationThenLoadCloseBooks();
-        loadLastBooksRecyclerView();
-        loadFavoriteBooksRecylerView();
     }
 
     @Override
@@ -135,17 +134,26 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         if (searchBar.isSearchEnabled())
             searchBar.disableSearch();
 
-        if (shouldExecuteOnResume) {
-            //Reload recycler views
-            checkLocationThenLoadCloseBooks();
-            loadLastBooksRecyclerView();
-            loadFavoriteBooksRecylerView();
+        // Add listeners
+        if (requestedBooksListener != null)
+            borrowRequestsDb.addValueEventListener(requestedBooksListener);
 
-        } else {
-            shouldExecuteOnResume = true;
-        }
+        // Load/Reload recycler views
+        checkLocationThenLoadCloseBooks();
+        loadLastBooksRecyclerView();
+        loadFavoriteBooksRecylerView();
+
         NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Remove listeners
+        if (requestedBooksListener != null)
+            borrowRequestsDb.removeEventListener(requestedBooksListener);
     }
 
     @Override
@@ -251,21 +259,15 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         drawer_fullname = nav.findViewById(R.id.drawer_user_fullname);
         drawer_email = nav.findViewById(R.id.drawer_user_email);
 
-
         // Setup bottom navbar
         UserInterface.setupNavigationBar(this, R.id.navigation_showcase);
         navBar = findViewById(R.id.navigation);
     }
 
-    private void loadBorrowRequests() {
+    private void createBorrowRequestsListener() {
 
-        DatabaseReference borrowRequestsDb = FirebaseDatabase.getInstance()
-                .getReference(getString(R.string.usernames_key))
-                .child(username)
-                .child(getString(R.string.borrow_requests_key));
-
-        // Get borrow requested books
-        borrowRequestsDb.addValueEventListener(new ValueEventListener() {
+        // Create borrow requested books listener
+        requestedBooksListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -287,7 +289,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                 if (requestedBookIdList == null)
                     requestedBookIdList = new HashSet<>();
             }
-        });
+        };
     }
 
     private void setupRecyclerViews() {

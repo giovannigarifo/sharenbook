@@ -22,6 +22,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +32,9 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -414,6 +419,9 @@ public class ExchangesFragment extends Fragment {
             rootRef.updateChildren(transaction, (databaseError, databaseReference) -> {
                 if (databaseError == null) {
 
+                    // Update Algolia
+                    algoliaSetBookAsNotShared(ex.getBookId());
+
                     // Send notification
                     //sendNotification(selectedBookOwner, username);
                     Toast.makeText(getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
@@ -422,6 +430,22 @@ public class ExchangesFragment extends Fragment {
                     Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
                 }
             });
+        }
+
+        private void algoliaSetBookAsNotShared(String bookKey) {
+
+            try {
+                Client algoliaClient = new Client("K7HV32WVKQ", "80c98eabf83684293f3b8b330ca2486e");
+                Index index = algoliaClient.getIndex("books");
+
+                JSONObject ob = new JSONObject().put("shared", false);
+
+                index.partialUpdateObjectAsync(ob, bookKey, true, (jsonObject, e) -> Log.d("DEBUG", "Algolia UPDATE request completed."));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("error", "Unable to update Algolia index.");
+            }
         }
     }
 

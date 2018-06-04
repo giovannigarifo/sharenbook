@@ -638,11 +638,11 @@ public class EditBookActivity extends AppCompatActivity {
                     .put("creationTime", book.getCreationTime()) //setted in firebaseSaveBook()
                     .put("location_lat", book.getLocation_lat())
                     .put("location_long", book.getLocation_long())
-                    .put("photosName", new JSONArray(book.getPhotosName()))
-                    .put("shared", book.isShared());
+                    .put("photosName", new JSONArray(book.getPhotosName()));
 
             JSONObject ob = new JSONObject()
                     .put("bookData", bookData)
+                    .put("shared", book.isShared())
                     .put("objectID", bookKey);
 
             if (isNewBook) {

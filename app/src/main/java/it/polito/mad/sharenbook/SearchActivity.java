@@ -509,6 +509,7 @@ public class SearchActivity extends AppCompatActivity
 
                 JSONObject hit = hits.getJSONObject(i);
                 Book b = BookJsonParser(hit.getJSONObject("bookData"));
+                b.setShared(hit.optBoolean("shared", false));
                 books.add(b);
 
                 //second key: objectId == bookId
@@ -519,6 +520,7 @@ public class SearchActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         }
+
         return books;
     }
 
