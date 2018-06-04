@@ -286,16 +286,6 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * onResume callback
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //set correct navigation as selected item
-        navBar.setSelectedItemId(R.id.navigation_myBook);
-    }
 
 
     /**
