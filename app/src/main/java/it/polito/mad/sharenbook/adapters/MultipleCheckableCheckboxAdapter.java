@@ -61,13 +61,14 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
 
         if(checkedCheckboxes.contains(getItem(position))){
             checkbox.setChecked(true);
-            selectedStrings.add(getItem(position));
+            if(!selectedStrings.contains(getItem(position)))
+                selectedStrings.add(getItem(position));
         }
 
         //checkbox listeners
         checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-            if (isChecked){
+            if (isChecked && !selectedStrings.contains(checkbox.getText().toString())){
                 selectedStrings.add(checkbox.getText().toString());
             }
             else{
@@ -87,6 +88,10 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         return selectedStrings;
     }
 
+    public ArrayList<String> getCheckedItems() {
+        return checkedCheckboxes;
+    }
+
     public void clearSelectedStrings(){
         this.selectedStrings.clear();
         this.checkedCheckboxes.clear();
@@ -94,6 +99,6 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
     }
 
     public void setCheckboxCheck(String cat){
-        checkedCheckboxes.add(cat);
+        this.checkedCheckboxes.add(cat);
     }
 }

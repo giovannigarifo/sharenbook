@@ -35,8 +35,10 @@ import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
+import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.WriteReviewActivity;
+import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GlideApp;
 
@@ -229,7 +231,8 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
 
                 // Update Algolia
                 algoliaSetBookAsNotShared(ex.getBookId());
-                
+
+                this.removeExchange(ex);
                 Toast.makeText(App.getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
 
             } else {
@@ -257,5 +260,30 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
     public void clear(){
         exchangeList.clear();
         notifyDataSetChanged();
+    }
+
+    private void removeExchange(Exchange exchange){
+        int pos = exchangeList.indexOf(exchange);
+        exchangeList.remove(exchange);
+        notifyItemRemoved(pos);
+
+        if(exchangeList.size() == 0){
+            if(mActivity instanceof MyBookActivity){
+                ExchangesFragment fragment = ((ExchangesFragment)((MyBookActivity) mActivity).mSectionsPagerAdapter.getCurrentFragment());
+
+                switch (listType){
+                    case 0:
+                        fragment.takenBooksRV.setVisibility(View.GONE);
+                        fragment.noTakenTV.setVisibility(View.VISIBLE);
+                        fragment.takenMoreTV.setVisibility(View.INVISIBLE);
+                        break;
+                    default:
+                }
+
+            } else if (mActivity instanceof ShowMoreActivity){
+                mActivity.finish();
+            }
+
+        }
     }
 }

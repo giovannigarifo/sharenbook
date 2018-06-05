@@ -62,8 +62,8 @@ public class ExchangesFragment extends Fragment {
     private DatabaseReference givenBooksRef;
     private DatabaseReference archiveBooksRef;
 
-    private RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
-    private TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV, archiveMoreTV;
+    public RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
+    public TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV, archiveMoreTV;
     private CardView archiveCV;
 
     private ExchangesAdapter takenBooksAdapter, givenBooksAdapter, archiveBooksAdapter;
@@ -186,7 +186,7 @@ public class ExchangesFragment extends Fragment {
                         // Specify an adapter
                         takenBooksAdapter = new ExchangesAdapter(takenList, 0, username, getActivity());
                         takenBooksRV.setAdapter(takenBooksAdapter);
-                        //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
+
                     }
 
                     @Override

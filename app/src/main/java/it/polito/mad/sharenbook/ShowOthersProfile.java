@@ -64,7 +64,7 @@ public class ShowOthersProfile extends AppCompatActivity {
                     iv_profile.setOnClickListener(v -> {
                         Intent i = new Intent(getApplicationContext(), ShowPictureActivity.class);
                         i.putExtra("PictureSignature", String.valueOf(picSignature));
-                        i.putExtra("username", ownerUsername);
+                        i.putExtra("pathPortion", ownerUsername);
                         startActivity(i);
                     });
 

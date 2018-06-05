@@ -64,6 +64,7 @@
                     android:layout_alignBottom="@+id/userPicture_edit"
                     android:layout_alignEnd="@+id/userPicture_edit"
                     android:layout_alignRight="@+id/userPicture_edit"
+                    android:background="@color/colorPrimary"
                     android:clickable="true"
                     android:src="@android:drawable/ic_menu_camera" />
 

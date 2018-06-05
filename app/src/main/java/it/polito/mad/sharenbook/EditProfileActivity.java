@@ -610,6 +610,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         /* Validate categories */
+        Log.d("num cat", "here: " + categoryAdapter.getSelectedStrings().size());
         if (categoryAdapter.getSelectedStrings().size() == 0 || categoryAdapter.getSelectedStrings().size()>5) {
             tv_categories.requestFocus();
             if(categoryAdapter.getSelectedStrings().size() == 0)
