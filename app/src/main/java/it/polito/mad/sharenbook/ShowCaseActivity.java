@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +20,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -34,30 +32,23 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import it.polito.mad.sharenbook.adapters.ShowBooksAdapter;
-import it.polito.mad.sharenbook.fragments.GenericAlertDialog;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 import it.polito.mad.sharenbook.utils.UserInterface;
-import it.polito.mad.sharenbook.utils.Utils;
 
 public class ShowCaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener {
-
-    private Activity thisActivity;
 
     private MaterialSearchBar searchBar;
     private BottomNavigationView navBar;
@@ -93,7 +84,6 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_case);
-        thisActivity = this;
 
         // Get username and user_id
         SharedPreferences userData = getSharedPreferences(getString(R.string.username_preferences), Context.MODE_PRIVATE);
@@ -216,6 +206,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
+    private Activity getActivityContext() {
+        return this;
+    }
+
     private void setupNavigationTools() {
 
         // Setup material serach bar
@@ -330,7 +324,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         }
 
                         // Specify an adapter
-                        ShowBooksAdapter lastBooksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        ShowBooksAdapter lastBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         lastBooksRV.setAdapter(lastBooksAdapter);
                         findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -372,7 +366,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
                     if (bookList.size() == bookCount) {
                         // Set RV adapter
-                        ShowBooksAdapter favoriteBooksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        ShowBooksAdapter favoriteBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         favoriteBooksRV.setAdapter(favoriteBooksAdapter);
                         findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
                     }
@@ -462,7 +456,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
                     if (bookList.size() == bookCount.get()) {
                         // Set RV adapter
-                        ShowBooksAdapter closeBooksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        ShowBooksAdapter closeBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         closeBooksRV.setAdapter(closeBooksAdapter);
 
                         if (bookCount.get() > 0)

@@ -8,8 +8,6 @@ import android.support.v7.app.AlertDialog;
 
 import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
-import it.polito.mad.sharenbook.ShowCaseActivity;
-import it.polito.mad.sharenbook.ShowMoreActivity;
 
 
 public class GenericAlertDialog extends DialogFragment {
@@ -37,13 +35,7 @@ public class GenericAlertDialog extends DialogFragment {
                 .setPositiveButton(R.string.confirm,
                         (dialog, whichButton) -> {
                             Activity activity = getActivity();
-                            if(activity instanceof MyBookActivity && tag.equals("reqAccept_dialog")){
-                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.acceptRequest(username);
-                            }
-                            else if(activity instanceof MyBookActivity && tag.equals("reqReject_dialog")){
-                                ((RequestListFragment)((MyBookActivity)activity).getSupportFragmentManager().findFragmentByTag("requestList")).requestAdapter.rejectRequest(username);
-                            }
-                            else if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog")) {
+                            if(activity instanceof MyBookActivity && tag.equals("undo_borrow_dialog")) {
                                 ((RequestsFragment)((MyBookActivity)activity).mSectionsPagerAdapter.getCurrentFragment()).undoRequest();
                             }
                         }

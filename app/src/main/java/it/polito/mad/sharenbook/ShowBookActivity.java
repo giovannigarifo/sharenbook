@@ -5,14 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -31,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -49,7 +45,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.onesignal.OneSignal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +54,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -172,6 +168,10 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
 
     }
 
+    private Activity getActivityContext() {
+        return this;
+    }
+
     private void initActivity() {
 
         // Get current user info
@@ -248,10 +248,18 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     requestButton.setText(R.string.undo_borrow_book);
-                    requestButton.setOnClickListener(v -> cancelBookRequest());
+                    requestButton.setOnClickListener(v -> {
+                        String title = getString(R.string.undo_borrow_book);
+                        String message = getString(R.string.undo_borrow_book_msg);
+                        GenericFragmentDialog.show(getActivityContext(), title, message, () -> cancelBookRequest());
+                    });
                 } else {
                     requestButton.setText(R.string.borrow_book);
-                    requestButton.setOnClickListener(v -> requestBook());
+                    requestButton.setOnClickListener(v -> {
+                        String title = getString(R.string.borrow_book);
+                        String message = getString(R.string.borrow_book_msg);
+                        GenericFragmentDialog.show(getActivityContext(), title, message, () -> requestBook());
+                    });
                 }
             }
 
