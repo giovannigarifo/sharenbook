@@ -3,6 +3,10 @@ package it.polito.mad.sharenbook.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +16,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +43,6 @@ public class ConversationAdapter extends BaseAdapter {
     private List<Conversation> conversations = new ArrayList<>();
     private long withoutIncomingMessagesCounter = 0;
     private Context context;
-
 
 
     public long getWithoutIncomingMessagesCounter() {
@@ -68,8 +77,10 @@ public class ConversationAdapter extends BaseAdapter {
                 Log.d("Conversation","sorting->added counter because message is not viewed"+conversation.getNewInboxMessageCounter());
             }
             this.conversations.add(conversation);
-            setPictureSignatureFromScratch(conversation,conversations,withoutIncomingMessagesCounter);
-
+            sortAfterInsertNewElement();
+            // Log.d("Conversation during:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
+            if (this.conversations.size() == this.withoutIncomingMessagesCounter)
+                notifyDataSetChanged();
         }
 
     }
@@ -79,19 +90,15 @@ public class ConversationAdapter extends BaseAdapter {
         // position
 
         Conversation swap;
-            for (int pos = conversations.size() - 1; pos > 0
-                    && conversations.get(pos).compareTo(conversations.get(pos - 1)) > 0; pos--) {
-                Collections.swap(conversations,pos,pos-1);
-            }
+        for (int pos = conversations.size() - 1; pos > 0
+                && conversations.get(pos).compareTo(conversations.get(pos - 1)) > 0; pos--) {
+            Collections.swap(conversations,pos,pos-1);
+        }
 
     }
 
-
     public void modifyConversation(Conversation conversation){
 
-        modifyPictureSignature(conversation,conversations);
-
-        /*
         Conversation upFront = null;
         int index = 0;
         for(Conversation conv : conversations){
@@ -119,101 +126,6 @@ public class ConversationAdapter extends BaseAdapter {
             addConversation(upFront);
         }
         notifyDataSetChanged();
-        */
-    }
-
-    private void modifyPictureSignature(Conversation conversation, List<Conversation> conversations){
-
-        String username = conversation.getConversationCounterpart();
-
-        Log.d("PictureListener","start creating convert view for"+username);
-
-        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
-        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.exists()){
-
-                    long picSignature = (long) dataSnapshot.getValue();
-                    conversation.setPictureSignature(picSignature);
-
-                    Conversation upFront = null;
-                    int index = 0;
-                    for(Conversation conv : conversations){
-                        if(conv.getConversationCounterpart().equals(conversation.getConversationCounterpart())) {
-                            conv.setMessageReceived(conversation.getMessageReceived());
-                            conv.setProfilePicRef(conversation.getProfilePicRef());
-                            conv.setPictureSignature(picSignature);
-                            if(conversation.getMessageReceived().getUsername().equals(conversation.getConversationCounterpart())
-                                    &&!conversation.getMessageReceived().isViewed()) {
-                                conv.setNewInboxMessageCounter(1);
-                                Log.d("Conversation","received message counter->"+conv.getNewInboxMessageCounter());
-                            }
-                            else {
-                                conv.setNewInboxMessageCounter(0);
-                                Log.d("Conversation","sent message counter ->"+conv.getNewInboxMessageCounter());
-                            }
-
-                            index = conversations.indexOf(conv);
-                            upFront = new Conversation(conversation);
-                            break;
-                        }
-
-                    }
-
-                    if(upFront!=null && index!=0){
-                        conversations.remove(index);
-                        addConversation(upFront);
-                    }
-                    notifyDataSetChanged();
-
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void setPictureSignatureFromScratch(Conversation conversation, List<Conversation> conversations, long withoutIncomingMessagesCounter){
-
-        String username = conversation.getConversationCounterpart();
-
-        Log.d("PictureListener","start creating convert view for"+username);
-
-        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
-        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.exists()){
-
-                    long picSignature = (long) dataSnapshot.getValue();
-                    conversation.setPictureSignature(picSignature);
-                    sortAfterInsertNewElement();
-                    // Log.d("Conversation during:","size:"+conversations.size()+"chats"+withoutIncomingMessagesCounter);
-                    if (conversations.size() == withoutIncomingMessagesCounter)
-                        notifyDataSetChanged();
-
-                    Log.d("PictureListener:","user:"+username+" signature:"+picSignature+ "picture ref:"+conversation.getProfilePicRef());
-                } else {
-                    conversation.setPictureSignature(0);
-                    if (conversations.size() == withoutIncomingMessagesCounter)
-                        notifyDataSetChanged();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -252,13 +164,33 @@ public class ConversationAdapter extends BaseAdapter {
         holder.conversation = convertView.findViewById(R.id.conversation);
 
 
-        if(conversation.getProfilePicRef()!=null)
-            UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, conversation.getPictureSignature());
-        else {
-            GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(holder.avatar);
-        }
+        // if(conversation.getProfilePicRef()!=null)
+        //   UserInterface.showGlideImage(context, conversation.getProfilePicRef(), holder.avatar, 0);
 
+        String username = conversation.getConversationCounterpart();
 
+        DatabaseReference recipientPicSignature = FirebaseDatabase.getInstance().getReference("usernames").child(username).child("picSignature");
+        recipientPicSignature.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("PictureListener:","lunched");
+                if(dataSnapshot.exists()){
+                    long picSignature = (long) dataSnapshot.getValue();
+                    UserInterface.showGlideImage(context,
+                            conversation.getProfilePicRef(),
+                            holder.avatar,
+                            picSignature);
+                } else {
+                    GlideApp.with(context).load(context.getResources().getDrawable(R.drawable.ic_profile)).into(holder.avatar);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         holder.username.setText(conversation.getConversationCounterpart());
         holder.lastMessageBody.setText(conversation.getMessageReceived().getMessage());
