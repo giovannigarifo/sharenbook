@@ -52,17 +52,13 @@ public class ShowUserInfoFragment extends Fragment {
         tv_userBioContent = view.findViewById(R.id.tv_userBioContent);
         tv_userEmailContent = view.findViewById(R.id.tv_userEmailContent);
         grid = view.findViewById(R.id.gridview);
-
     }
 
     private void setPrefCategories(){
 
         String[] bookCategories = getResources().getStringArray(R.array.book_categories);
 
-        Log.d("cat", "id: " + user.getCategories().get(1));
-
         for(Integer cat : user.getCategories()) {
-
             categoriesAdapter.addCategory(Arrays.asList(bookCategories).get(cat));
         }
 

@@ -1,6 +1,9 @@
 package it.polito.mad.sharenbook.adapters;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -14,21 +17,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.App;
+import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
-import it.polito.mad.sharenbook.fragments.GenericAlertDialog;
 import it.polito.mad.sharenbook.fragments.RequestListFragment;
-import it.polito.mad.sharenbook.fragments.RequestsFragment;
 import it.polito.mad.sharenbook.model.BorrowRequest;
+import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 
 /**
@@ -36,6 +43,8 @@ import it.polito.mad.sharenbook.utils.GlideApp;
  */
 public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequestsAdapter.ViewHolder> {
 
+    private final Activity mActivity;
+    private final String username;
     private StorageReference mBookImagesStorage;
     private List<BorrowRequest> requests = new ArrayList<>();
     private int listType;
@@ -66,17 +75,24 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
         }
     }
 
-    public PendingRequestsAdapter(int listType, FragmentManager fragMan) {
+    public PendingRequestsAdapter(int listType, FragmentManager fragMan, Activity activity) {
         mBookImagesStorage = FirebaseStorage.getInstance().getReference(App.getContext().getString(R.string.book_images_key));
         this.listType = listType;
         this.fragManager = fragMan;
+        this.mActivity = activity;
+
+        SharedPreferences userData = activity.getSharedPreferences(activity.getString(R.string.username_preferences), Context.MODE_PRIVATE);
+        username = userData.getString(activity.getString(R.string.username_copy_key), "");
     }
 
     @NonNull
     @Override
     public PendingRequestsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        int layoutCode = (mActivity instanceof MyBookActivity) ? R.layout.item_book_showcase_rv : R.layout.item_book_showmore_rv;
+
         ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_book_showcase_rv, parent, false);
+                .inflate(layoutCode, parent, false);
 
         return new PendingRequestsAdapter.ViewHolder(layout);
     }
@@ -114,6 +130,12 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
             requests.remove(pos);
             notifyItemRemoved(pos);
         }
+    }
+
+    public void clear(){
+        int size = requests.size();
+        requests.clear();
+        notifyItemRangeRemoved(0, size);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -185,8 +207,9 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
             });
 
             holder.undo_req.setOnClickListener(v -> {
-                RequestsFragment.currSelectedRequest = req;
-                showDialog();
+                String title = mActivity.getString(R.string.undo_borrow_book);
+                String message = mActivity.getString(R.string.undo_borrow_book_msg);
+                GenericFragmentDialog.show(mActivity, title, message, () -> undoRequest(req));
             });
 
         }
@@ -201,11 +224,26 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
         return requests.size();
     }
 
-    public void showDialog() {
-        GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-                R.string.undo_borrow_book, App.getContext().getString(R.string.undo_borrow_book_msg));
+    public void undoRequest(BorrowRequest currSelectedRequest) {
 
-        dialog.show(fragManager, "undo_borrow_dialog");
+        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(mActivity.getString(R.string.usernames_key));
+
+        // Create transaction Map
+        HashMap<String, Object> transaction = new HashMap<>();
+        transaction.put(username + "/" + mActivity.getString(R.string.borrow_requests_key) + "/" + currSelectedRequest.getBookId(), null);
+        transaction.put(currSelectedRequest.getOwner() + "/" + mActivity.getString(R.string.pending_requests_key) + "/" + currSelectedRequest.getBookId() + "/" + username, null);
+
+        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
+
+            if(databaseError == null){
+                //takeReqsAdapter.removeBookId(currSelectedRequest.getBookId());
+                Toast.makeText(App.getContext(), R.string.borrow_request_undone, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(App.getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+            }
+
+        });
+
     }
 
 }

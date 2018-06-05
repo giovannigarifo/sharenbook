@@ -45,6 +45,7 @@ import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
+import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.WriteReviewActivity;
 import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
@@ -62,8 +63,10 @@ public class ExchangesFragment extends Fragment {
     private DatabaseReference archiveBooksRef;
 
     private RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
-    private TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV;
+    private TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV, archiveMoreTV;
     private CardView archiveCV;
+
+    private ExchangesAdapter takenBooksAdapter, givenBooksAdapter, archiveBooksAdapter;
 
     private String username;
 
@@ -86,16 +89,38 @@ public class ExchangesFragment extends Fragment {
         givenBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/given_books");
         archiveBooksRef = FirebaseDatabase.getInstance().getReference("shared_books").child(username + "/archive_books");
 
+        takenBooksRef.keepSynced(true);
+        givenBooksRef.keepSynced(true);
+        archiveBooksRef.keepSynced(true);
+
         noTakenTV = rootView.findViewById(R.id.noTakenBooksMsg);
         noGivenTV = rootView.findViewById(R.id.noGivenBooksMsg);
         takenMoreTV = rootView.findViewById(R.id.takenMoreButton);
         givenMoreTV = rootView.findViewById(R.id.givenMoreButton);
+        archiveMoreTV = rootView.findViewById(R.id.archiveMoreButton);
+
+        // Set MORE button listener
+        takenMoreTV.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.TAKEN_BOOKS);
+            startActivity(i);
+        });
+
+        // Set MORE button listener
+        givenMoreTV.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.GIVEN_BOOKS);
+            startActivity(i);
+        });
+
+        // Set MORE button listener
+        archiveMoreTV.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.ARCHIVE_BOOKS);
+            startActivity(i);
+        });
 
         archiveCV = rootView.findViewById(R.id.exchangeArchive);
-
-        loadTakenBooks();
-        loadGivenBooks();
-        loadArchiveBooks();
 
         return rootView;
     }
@@ -159,7 +184,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 0, username);
+                        takenBooksAdapter = new ExchangesAdapter(takenList, 0, username, getActivity());
                         takenBooksRV.setAdapter(takenBooksAdapter);
                         //findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -196,8 +221,8 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 1, username);
-                        givenBooksRV.setAdapter(takenBooksAdapter);
+                        givenBooksAdapter = new ExchangesAdapter(takenList, 1, username, getActivity());
+                        givenBooksRV.setAdapter(givenBooksAdapter);
                     }
 
                     @Override
@@ -228,7 +253,7 @@ public class ExchangesFragment extends Fragment {
                         }
 
                         // Specify an adapter
-                        ExchangesAdapter archiveBooksAdapter = new ExchangesAdapter(archiveList, 2, username);
+                        archiveBooksAdapter = new ExchangesAdapter(archiveList, 2, username, getActivity());
                         archiveBooksRV.setAdapter(archiveBooksAdapter);
                         archiveCV.setVisibility(View.VISIBLE);
 
@@ -241,4 +266,21 @@ public class ExchangesFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(takenBooksAdapter != null)
+            takenBooksAdapter.clear();
+
+        if(givenBooksAdapter != null)
+            givenBooksAdapter.clear();
+
+        if(archiveBooksAdapter != null)
+            archiveBooksAdapter.clear();
+
+        loadTakenBooks();
+        loadGivenBooks();
+        loadArchiveBooks();
+    }
 }

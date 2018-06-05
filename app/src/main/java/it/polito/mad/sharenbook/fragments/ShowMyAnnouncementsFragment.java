@@ -131,6 +131,9 @@ public class ShowMyAnnouncementsFragment extends Fragment {
 
                         if(books.isEmpty()){
 
+                            no_book_cv.setVisibility(View.GONE);
+                            rv.setVisibility(View.VISIBLE);
+
                             Iterable<DataSnapshot> announces = dataSnapshot.getChildren();
                             List<DataSnapshot> announcesReverse = Utils.toReverseList(announces);
 

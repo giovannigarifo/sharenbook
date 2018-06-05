@@ -416,6 +416,7 @@
     <string name="no_give_requests">No pending requests for your books.</string>
     <string name="no_take_requests">You did not ask for a book! Give a look at the showcase or search for something of your interest.</string>
     <string name="no_reviews">This user has no reviews yet.</string>
+    <string name="no_requests">All requests have been removed.</string>
 
 
 </resources>

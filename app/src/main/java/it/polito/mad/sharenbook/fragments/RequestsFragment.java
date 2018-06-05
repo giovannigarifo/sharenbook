@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.R;
+import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.adapters.PendingRequestsAdapter;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.BorrowRequest;
@@ -42,8 +44,6 @@ public class RequestsFragment extends Fragment{
     private PendingRequestsAdapter giveReqsAdapter, takeReqsAdapter;
 
     private ChildEventListener childEventListener, childEventListener2;
-
-    public static BorrowRequest currSelectedRequest;
 
     private FragmentManager fragManager;
 
@@ -73,6 +73,20 @@ public class RequestsFragment extends Fragment{
         giveReqMore = rootView.findViewById(R.id.giveMoreButton);
         takeReqMore = rootView.findViewById(R.id.takeMoreButton);
 
+        // Set MORE button listener
+        takeReqMore.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.TAKE_REQUESTS);
+            startActivity(i);
+        });
+
+        // Set MORE button listener
+        giveReqMore.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), ShowMoreActivity.class);
+            i.putExtra("moreType", ShowMoreActivity.GIVE_REQUESTS);
+            startActivity(i);
+        });
+
         return rootView;
     }
 
@@ -100,7 +114,7 @@ public class RequestsFragment extends Fragment{
     private void loadGiveRequests() {
 
         // Specify an adapter
-        giveReqsAdapter = new PendingRequestsAdapter(0, fragManager);
+        giveReqsAdapter = new PendingRequestsAdapter(0, fragManager, getActivity());
         giveReqRV.setAdapter(giveReqsAdapter);
 
         childEventListener = new ChildEventListener() {
@@ -206,7 +220,7 @@ public class RequestsFragment extends Fragment{
     private void loadTakeRequests() {
 
         // Specify an adapter
-        takeReqsAdapter = new PendingRequestsAdapter(1, fragManager);
+        takeReqsAdapter = new PendingRequestsAdapter(1, fragManager, getActivity());
         takeReqRV.setAdapter(takeReqsAdapter);
 
         childEventListener2 = new ChildEventListener() {
@@ -372,35 +386,6 @@ public class RequestsFragment extends Fragment{
         takeReqRV.setLayoutManager(takeReqLM);
         LinearSnapHelper givenLinearSnapHelper = new LinearSnapHelper();
         givenLinearSnapHelper.attachToRecyclerView(takeReqRV);
-
-    }
-
-    public void showDialog() {
-        GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-                R.string.undo_borrow_book, getString(R.string.undo_borrow_book_msg));
-
-        dialog.show(fragManager, "undo_borrow_dialog");
-    }
-
-    public void undoRequest() {
-
-        DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(getString(R.string.usernames_key));
-
-        // Create transaction Map
-        HashMap<String, Object> transaction = new HashMap<>();
-        transaction.put(username + "/" + getString(R.string.borrow_requests_key) + "/" + currSelectedRequest.getBookId(), null);
-        transaction.put(currSelectedRequest.getOwner() + "/" + getString(R.string.pending_requests_key) + "/" + currSelectedRequest.getBookId() + "/" + username, null);
-
-        usernamesDb.updateChildren(transaction, (databaseError, databaseReference) -> {
-
-            if(databaseError == null){
-                takeReqsAdapter.removeBookId(currSelectedRequest.getBookId());
-                Toast.makeText(App.getContext(), R.string.borrow_request_undone, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(App.getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
-            }
-
-        });
 
     }
 

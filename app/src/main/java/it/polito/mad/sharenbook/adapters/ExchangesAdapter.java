@@ -1,5 +1,6 @@
 package it.polito.mad.sharenbook.adapters;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import it.polito.mad.sharenbook.App;
 import it.polito.mad.sharenbook.ChatActivity;
+import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
@@ -43,6 +45,7 @@ import it.polito.mad.sharenbook.utils.GlideApp;
  */
 public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.ViewHolder> {
 
+    private final Activity mActivity;
     private StorageReference mBookImagesStorage;
     private List<Exchange> exchangeList;
     private int listType;
@@ -70,18 +73,22 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
         }
     }
 
-    public ExchangesAdapter(List<Exchange> exchanges, int listType, String user) {
+    public ExchangesAdapter(List<Exchange> exchanges, int listType, String user, Activity activity) {
         mBookImagesStorage = FirebaseStorage.getInstance().getReference(App.getContext().getString(R.string.book_images_key));
         exchangeList = exchanges;
         this.listType = listType;
         this.username = user;
+        this.mActivity = activity;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        
+        int layoutCode = (mActivity instanceof MyBookActivity) ? R.layout.item_book_showcase_rv : R.layout.item_book_showmore_rv;
+        
         ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_book_showcase_rv, parent, false);
+                .inflate(layoutCode, parent, false);
 
         return new ViewHolder(layout);
     }
@@ -222,9 +229,7 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
 
                 // Update Algolia
                 algoliaSetBookAsNotShared(ex.getBookId());
-
-                // Send notification
-                //sendNotification(selectedBookOwner, username);
+                
                 Toast.makeText(App.getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
 
             } else {
@@ -247,5 +252,10 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
             e.printStackTrace();
             Log.e("error", "Unable to update Algolia index.");
         }
+    }
+
+    public void clear(){
+        exchangeList.clear();
+        notifyDataSetChanged();
     }
 }

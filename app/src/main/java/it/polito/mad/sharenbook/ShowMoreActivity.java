@@ -14,6 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -22,6 +24,7 @@ import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,13 +32,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
+import it.polito.mad.sharenbook.adapters.PendingRequestsAdapter;
 import it.polito.mad.sharenbook.adapters.ShowBooksAdapter;
 import it.polito.mad.sharenbook.model.Book;
+import it.polito.mad.sharenbook.model.BorrowRequest;
+import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
 
 public class ShowMoreActivity extends AppCompatActivity {
@@ -43,6 +51,11 @@ public class ShowMoreActivity extends AppCompatActivity {
     public static final int LAST_BOOKS = 0;
     public static final int FAVORITES_BOOKS = 1;
     public static final int CLOSE_BOOKS = 2;
+    public static final int GIVE_REQUESTS = 3;
+    public static final int TAKE_REQUESTS = 4;
+    public static final int GIVEN_BOOKS = 5;
+    public static final int TAKEN_BOOKS = 6;
+    public static final int ARCHIVE_BOOKS = 7;
 
     private int moreType;
 
@@ -52,17 +65,18 @@ public class ShowMoreActivity extends AppCompatActivity {
     private DatabaseReference booksDb;
     private DatabaseReference favoritesDb;
     private DatabaseReference borrowRequestsDb;
+    private DatabaseReference giveRequestsRef, takeRequestsRef, takenBooksRef, givenBooksRef, archiveBooksRef;
 
-    private ValueEventListener requestedBooksListener;
-    private ValueEventListener favoriteBooksListener;
+    private ValueEventListener requestedBooksListener, favoriteBooksListener;
+    private ChildEventListener giveRequestsListener, takeRequestsListener;
+
+    private PendingRequestsAdapter giveReqsAdapter, takeReqsAdapter;
 
     private String user_id, username;
     private LinkedHashSet<String> favoritesBookIdList;
     private HashSet<String> requestedBookIdList;
 
     private RecyclerView moreBooksRV;
-
-    public String selectedBookOwner, selectedBookId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +111,11 @@ public class ShowMoreActivity extends AppCompatActivity {
         favoritesDb = db.getReference(getString(R.string.users_key)).child(user_id).child(getString(R.string.user_favorites_key));
         favoritesDb.keepSynced(true);
         borrowRequestsDb = db.getReference(getString(R.string.usernames_key)).child(username).child(getString(R.string.borrow_requests_key));
+        giveRequestsRef = db.getReference("usernames").child(username).child("pendingRequests");
+        takeRequestsRef = db.getReference("usernames").child(username).child("borrowRequests");
+        takenBooksRef = db.getReference("shared_books").child(username + "/taken_books");
+        givenBooksRef = db.getReference("shared_books").child(username + "/given_books");
+        archiveBooksRef = db.getReference("shared_books").child(username + "/archive_books");
 
         // Create requested and favorite books listeners
         createListeners();
@@ -118,15 +137,29 @@ public class ShowMoreActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        borrowRequestsDb.removeEventListener(requestedBooksListener);
-        favoritesDb.removeEventListener(favoriteBooksListener);
+        if(moreType < GIVE_REQUESTS) {
+            borrowRequestsDb.removeEventListener(requestedBooksListener);
+            favoritesDb.removeEventListener(favoriteBooksListener);
+        } else if (moreType == GIVE_REQUESTS) {
+            giveRequestsRef.removeEventListener(giveRequestsListener);
+        } else if (moreType == TAKE_REQUESTS) {
+            takeRequestsRef.removeEventListener(takeRequestsListener);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        borrowRequestsDb.addValueEventListener(requestedBooksListener);
-        favoritesDb.orderByValue().addValueEventListener(favoriteBooksListener);
+        if(moreType < GIVE_REQUESTS) {
+            borrowRequestsDb.addValueEventListener(requestedBooksListener);
+            favoritesDb.orderByValue().addValueEventListener(favoriteBooksListener);
+        } else if (moreType == GIVE_REQUESTS) {
+            giveReqsAdapter.clear();
+            giveRequestsRef.addChildEventListener(giveRequestsListener);
+        } else if (moreType == TAKE_REQUESTS) {
+            takeReqsAdapter.clear();
+            takeRequestsRef.addChildEventListener(takeRequestsListener);
+        }
     }
 
     @Override
@@ -149,6 +182,16 @@ public class ShowMoreActivity extends AppCompatActivity {
                 return getString(R.string.showcase_favorites);
             case CLOSE_BOOKS:
                 return getString(R.string.showcase_closebooks);
+            case GIVE_REQUESTS:
+                return getString(R.string.request_give);
+            case TAKE_REQUESTS:
+                return getString(R.string.request_take);
+            case GIVEN_BOOKS:
+                return getString(R.string.exchanges_given);
+            case TAKEN_BOOKS:
+                return getString(R.string.exchanges_taken);
+            case ARCHIVE_BOOKS:
+                return getString(R.string.exchanges_archive);
             default:
                 return "";
         }
@@ -238,8 +281,213 @@ public class ShowMoreActivity extends AppCompatActivity {
 
         if (moreType == LAST_BOOKS) {
             loadLastBooks();
+        } else if (moreType == GIVE_REQUESTS) {
+            loadGiveRequests();
+        } else if (moreType == TAKE_REQUESTS) {
+            loadTakeRequests();
+        } else if (moreType == GIVEN_BOOKS) {
+            loadGivenBooks();
+        } else if (moreType == TAKEN_BOOKS) {
+            loadTakenBooks();
+        } else if (moreType == ARCHIVE_BOOKS) {
+            loadArchiveBooks();
         }
     }
+
+    private void loadGiveRequests() {
+
+        // Specify an adapter
+        giveReqsAdapter = new PendingRequestsAdapter(0, getSupportFragmentManager(), this);
+        moreBooksRV.setAdapter(giveReqsAdapter);
+
+        giveRequestsListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot requestSnapshot, String s) {
+
+                int numRequests = (int) requestSnapshot.getChildrenCount();
+                String bookId = requestSnapshot.getKey();
+                HashMap<String, Long> reqUsers = new HashMap<>();
+
+                // Read requests
+                for (DataSnapshot user : requestSnapshot.getChildren()) {
+                    reqUsers.put(user.getKey(), (Long) user.getValue());
+                }
+
+                booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        Book book = dataSnapshot.getValue(Book.class);
+                        BorrowRequest req = new BorrowRequest(reqUsers, bookId, book.getTitle(), book.getAuthorsAsString(), book.getCreationTimeAsString(getActivityContext()), numRequests, book.getPhotosName().get(0), book.getOwner_username(), book.isShared());
+
+                        giveReqsAdapter.addRequest(req);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot requestSnapshot, String s) {
+
+                int numRequests = (int) requestSnapshot.getChildrenCount();
+                String bookId = requestSnapshot.getKey();
+                HashMap<String, Long> reqUsers = new HashMap<>();
+
+                // Read requests
+                for (DataSnapshot user : requestSnapshot.getChildren()) {
+                    reqUsers.put(user.getKey(), (Long) user.getValue());
+                }
+
+                booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        Book book = dataSnapshot.getValue(Book.class);
+                        BorrowRequest req = new BorrowRequest(reqUsers, bookId, book.getTitle(), book.getAuthorsAsString(), book.getCreationTimeAsString(getActivityContext()), numRequests, book.getPhotosName().get(0), book.getOwner_username(), book.isShared());
+
+                        giveReqsAdapter.updateRequest(req);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                String bookId = dataSnapshot.getKey();
+                giveReqsAdapter.removeBookId(bookId);
+
+                if (giveReqsAdapter.getItemCount() == 0) {
+                    Toast.makeText(App.getContext(), getString(R.string.no_requests), Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+    }
+
+
+    private void loadTakeRequests() {
+
+        // Specify an adapter
+        takeReqsAdapter = new PendingRequestsAdapter(1, getSupportFragmentManager(), this);
+        moreBooksRV.setAdapter(takeReqsAdapter);
+
+        takeRequestsListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot requestSnapshot, String s) {
+
+                int numRequests = (int) requestSnapshot.getChildrenCount();
+                String bookId = requestSnapshot.getKey();
+                HashMap<String, Long> reqUsers = new HashMap<>();
+
+                // Read requests
+                for (DataSnapshot user : requestSnapshot.getChildren()) {
+                    reqUsers.put(user.getKey(), (Long) user.getValue());
+                }
+
+                booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        Book book = dataSnapshot.getValue(Book.class);
+                        BorrowRequest req = new BorrowRequest(reqUsers, bookId, book.getTitle(), book.getAuthorsAsString(), book.getCreationTimeAsString(getActivityContext()), numRequests, book.getPhotosName().get(0), book.getOwner_username(), book.isShared());
+
+                        takeReqsAdapter.addRequest(req);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot requestSnapshot, String s) {
+
+                int numRequests = (int) requestSnapshot.getChildrenCount();
+                String bookId = requestSnapshot.getKey();
+                HashMap<String, Long> reqUsers = new HashMap<>();
+
+                // Read requests
+                for (DataSnapshot user : requestSnapshot.getChildren()) {
+                    reqUsers.put(user.getKey(), (Long) user.getValue());
+                }
+
+                booksDb.child(bookId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        Book book = dataSnapshot.getValue(Book.class);
+                        BorrowRequest req = new BorrowRequest(reqUsers, bookId, book.getTitle(), book.getAuthorsAsString(), book.getCreationTimeAsString(getActivityContext()), numRequests, book.getPhotosName().get(0), book.getOwner_username(), book.isShared());
+
+                        takeReqsAdapter.updateRequest(req);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(App.getContext(), getString(R.string.databaseError), Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                String bookId = dataSnapshot.getKey();
+                takeReqsAdapter.removeBookId(bookId);
+
+                if (takeReqsAdapter.getItemCount() == 0) {
+                    Toast.makeText(App.getContext(), getString(R.string.no_requests), Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+    }
+
+
 
     private void loadLastBooks() {
 
@@ -377,4 +625,97 @@ public class ShowMoreActivity extends AppCompatActivity {
             });
         }
     }
+
+    private void loadTakenBooks() {
+
+        // Load Taken Book RV
+        takenBooksRef.orderByChild("creationTime")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        List<Exchange> takenList = new ArrayList<>();
+
+                        // Read exchanges
+                        for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
+                            Exchange exchange = exchangeSnapshot.getValue(Exchange.class);
+                            exchange.setExchangeId(exchangeSnapshot.getKey());
+                            takenList.add(0, exchange);
+                        }
+
+                        // Specify an adapter
+                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 0, username, getActivityContext());
+                        moreBooksRV.setAdapter(takenBooksAdapter);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("ERROR", "There was an error while fetching taken books list");
+                    }
+                });
+    }
+
+    private void loadGivenBooks() {
+
+        // Load Given Book RV
+        givenBooksRef.orderByChild("creationTime")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        List<Exchange> takenList = new ArrayList<>();
+
+                        // Read exchanges
+                        for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
+                            Exchange exchange = exchangeSnapshot.getValue(Exchange.class);
+                            exchange.setExchangeId(exchangeSnapshot.getKey());
+                            takenList.add(0, exchange);
+                        }
+
+                        // Specify an adapter
+                        ExchangesAdapter givenBooksAdapter = new ExchangesAdapter(takenList, 1, username, getActivityContext());
+                        moreBooksRV.setAdapter(givenBooksAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("ERROR", "There was an error while fetching taken books list");
+                    }
+                });
+    }
+
+    private void loadArchiveBooks() {
+
+        // Load Archive Book RV
+        archiveBooksRef.orderByChild("creationTime")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        List<Exchange> archiveList = new ArrayList<>();
+
+                        if (dataSnapshot.getChildrenCount() == 0)
+                            return;
+
+                        // Read exchanges
+                        for (DataSnapshot exchangeSnapshot : dataSnapshot.getChildren()) {
+                            Exchange exchange = exchangeSnapshot.getValue(Exchange.class);
+                            exchange.setExchangeId(exchangeSnapshot.getKey());
+                            archiveList.add(0, exchange);
+                        }
+
+                        // Specify an adapter
+                        ExchangesAdapter archiveBooksAdapter = new ExchangesAdapter(archiveList, 2, username, getActivityContext());
+                        moreBooksRV.setAdapter(archiveBooksAdapter);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("ERROR", "There was an error while fetching taken books list");
+                    }
+                });
+    }
+
 }

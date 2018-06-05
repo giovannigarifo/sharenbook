@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShowMoreActivity"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".ShowMoreActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/showmore_appbar"
@@ -23,17 +23,24 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/showcase_rv_more"
+    <FrameLayout
+        android:id="@+id/inner_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingStart="6dp"
-        android:paddingLeft="6dp"
-        android:paddingEnd="6dp"
-        android:paddingRight="6dp"
-        android:paddingTop="18dp"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/showmore_appbar"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/showmore_appbar">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/showcase_rv_more"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingEnd="6dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingStart="6dp"
+            android:paddingTop="18dp" />
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
