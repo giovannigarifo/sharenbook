@@ -214,6 +214,9 @@ public class SearchActivity extends AppCompatActivity
             this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
             if (searchInputText != null){
                 this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
+
+                //remove previous filters if present
+                clearFiltersState();
                 onSearchConfirmed(this.searchInputText.toString()); // Fire the search (async)
             }
 
@@ -758,6 +761,7 @@ public class SearchActivity extends AppCompatActivity
      */
     public void clearFiltersState() {
 
+        this.setSearchFilters("");
         this.filterState_selectedConditions = null;
         this.filterState_selectedCategories = null;
         this.filterState_tags = null;
