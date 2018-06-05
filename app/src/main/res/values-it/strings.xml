@@ -31,6 +31,7 @@
     <string name="search">Cerca</string>
     <string name="settings">Impostazioni</string>
     <string name="undo">Annulla</string>
+    <string name="clear">Pulisci</string>
     <string name="confirm">Conferma</string>
     <string name="contact_user">Contatta utente</string>
     <string name="show_profile">Mostra profilo</string>

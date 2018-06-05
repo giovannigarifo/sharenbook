@@ -47,6 +47,7 @@
     <string name="search">Search</string>
     <string name="settings">Settings</string>
     <string name="undo">Cancel</string>
+    <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
     <string name="contact_user">Contact user</string>
     <string name="show_profile">Show profile</string>

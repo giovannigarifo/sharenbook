@@ -87,6 +87,12 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         return selectedStrings;
     }
 
+    public void clearSelectedStrings(){
+        this.selectedStrings.clear();
+        this.checkedCheckboxes.clear();
+        this.notifyDataSetChanged();
+    }
+
     public void setCheckboxCheck(String cat){
         checkedCheckboxes.add(cat);
     }

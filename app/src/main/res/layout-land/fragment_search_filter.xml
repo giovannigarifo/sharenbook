@@ -155,21 +155,32 @@
 
 
         <!-- buttons -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
-            android:orientation="horizontal">
-
+            android:layout_marginTop="36dp">
 
             <Button
                 android:id="@+id/undo_button"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:text="@string/undo"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+
+            <Button
+                android:id="@+id/clear_filters_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="@string/clear"
+                android:layout_toRightOf="@id/undo_button"
+                android:layout_toEndOf="@id/undo_button"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp" />
 
@@ -180,9 +191,11 @@
                 android:layout_height="40dp"
                 android:text="@string/confirm"
                 android:textColor="@color/colorAccent"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
 
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 

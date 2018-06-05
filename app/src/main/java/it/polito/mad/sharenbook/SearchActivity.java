@@ -753,4 +753,18 @@ public class SearchActivity extends AppCompatActivity
                 this.filterState_tags != null;
     }
 
+    /**
+     * Clear filter state, fired by the Clear button in the dialog fragment
+     */
+    public void clearFiltersState() {
+
+        this.filterState_selectedConditions = null;
+        this.filterState_selectedCategories = null;
+        this.filterState_tags = null;
+        this.filterState_author = null;
+        this.filterState_range = -1;
+        this.filterState_location = null;
+    }
+
+
 }

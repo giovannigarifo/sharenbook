@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -34,6 +35,9 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     // parent activity
     private SearchActivity searchActivity;
 
+    //scrollview
+    private ScrollView fragment_sf_scrollview;
+
     //address
     private EditText fragment_sf_et_address;
     private SeekBar fragment_sf_sb_range;
@@ -51,7 +55,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     private EditText fragment_sf_et_tags;
 
     //buttons
-    private Button btn_confirm, btn_undo;
+    private Button btn_confirm, btn_undo, btn_clear;
 
 
     /**
@@ -176,6 +180,8 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
     private void getViews(View view) {
 
+        fragment_sf_scrollview = view.findViewById(R.id.fragment_sf_scrollview);
+
         fragment_sf_et_address = view.findViewById(R.id.fragment_sf_et_address);
         fragment_sf_sb_range = view.findViewById(R.id.fragment_sf_sb_range);
         fragment_sf_tv_range = view.findViewById(R.id.fragment_sf_tv_range);
@@ -190,6 +196,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
         btn_confirm = view.findViewById(R.id.confirm_button);
         btn_undo = view.findViewById(R.id.undo_button);
+        btn_clear = view.findViewById(R.id.clear_filters_button);
     }
 
 
@@ -222,10 +229,30 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
         });
     }
 
+    /**
+     * Set listeners for the dialog buttons
+     */
     private void setButtonListeners() {
 
-        btn_undo.setOnClickListener(view -> {
-            getDialog().dismiss();
+        btn_undo.setOnClickListener(view -> getDialog().dismiss());
+
+        btn_clear.setOnClickListener(view -> {
+
+            //clear all inserted input
+            fragment_sf_et_address.setText("");
+            fragment_sf_sb_range.setProgress(5);
+            conditionAdapter.clearSelectedStrings();
+            categoryAdapter.clearSelectedStrings();
+            fragment_sf_et_author.setText("");
+            fragment_sf_et_tags.setText("");
+
+            //clear the filters state saved in the search activity
+            this.searchActivity.clearFiltersState();
+
+            //remove focus from edittexts
+            fragment_sf_et_address.clearFocus();
+            fragment_sf_et_author.clearFocus();
+            fragment_sf_et_tags.clearFocus();
         });
 
         /*
