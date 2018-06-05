@@ -10,6 +10,7 @@ public class Conversation implements Comparable<Conversation>{
     private Message messageReceived;
     private int newInboxMessageCounter;
     private StorageReference profilePicRef;
+    private long pictureSignature = 0;
 
     public Conversation(Conversation conversation){
         this.conversationCounterpart = conversation.getConversationCounterpart();
@@ -56,6 +57,13 @@ public class Conversation implements Comparable<Conversation>{
 
     public void setProfilePicRef(StorageReference profilePicRef) {
         this.profilePicRef = profilePicRef;
+    }
+    public long getPictureSignature() {
+        return pictureSignature;
+    }
+
+    public void setPictureSignature(long pictureSignature) {
+        this.pictureSignature = pictureSignature;
     }
 
 
