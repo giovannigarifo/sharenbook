@@ -610,9 +610,12 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         /* Validate categories */
-        if (categoryAdapter.getSelectedStrings().size() == 0) {
+        if (categoryAdapter.getSelectedStrings().size() == 0 || categoryAdapter.getSelectedStrings().size()>5) {
             tv_categories.requestFocus();
-            tv_categories.setError(getString(R.string.select_one_category));
+            if(categoryAdapter.getSelectedStrings().size() == 0)
+                tv_categories.setError(getString(R.string.select_one_category));
+            else
+                tv_categories.setError(getString(R.string.select_max_category));
             isValid = false;
         } else {
             tv_categories.setError(null);

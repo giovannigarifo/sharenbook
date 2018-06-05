@@ -90,17 +90,19 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
     protected void onResume() {
         super.onResume();
 
-        navBar.setSelectedItemId(R.id.navigation_myBook);
+        //navBar.setSelectedItemId(R.id.navigation_myBook);
         NavigationDrawerManager.setDrawerViews(getApplicationContext(), getWindowManager(), drawer_fullname,
                 drawer_email, drawer_userPicture, NavigationDrawerManager.getNavigationDrawerProfile());
         UserInterface.setupNavigationBar(this, R.id.navigation_myBook);
+
+        navigationView.setCheckedItem(R.id.drawer_navigation_none);
 
         if(mViewPager.getCurrentItem()==1)
             navigationView.setCheckedItem(R.id.drawer_navigation_myBookPendingRequest);
         else if(mViewPager.getCurrentItem()==2)
             navigationView.setCheckedItem(R.id.drawer_navigation_myBookExchanges);
-        else
-            navigationView.setCheckedItem(R.id.drawer_navigation_none);
+
+
     }
 
     private void setupNavigationTools() {
@@ -190,12 +192,15 @@ public class MyBookActivity extends AppCompatActivity implements NavigationView.
         } else {
             super.onBackPressed();
         }
+
+        navigationView.setCheckedItem(R.id.drawer_navigation_none);
+
         if(mViewPager.getCurrentItem()==1)
             navigationView.setCheckedItem(R.id.drawer_navigation_myBookPendingRequest);
         else if(mViewPager.getCurrentItem()==2)
             navigationView.setCheckedItem(R.id.drawer_navigation_myBookExchanges);
-        else
-            navigationView.setCheckedItem(R.id.drawer_navigation_none);
+
+
     }
 
 

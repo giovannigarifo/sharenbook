@@ -239,6 +239,7 @@
     <string name="isbn_bad_format">ISBN not valid</string>
     <string name="field_required">Field required</string>
     <string name="select_one_category">You must select at least one genre.</string>
+    <string name="select_max_category">You must select at most five genre.</string>
 
     <!-- permissions -->
     <string name="permission_already_granted">Let\'s start!</string>

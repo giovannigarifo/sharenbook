@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -204,17 +203,7 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
                 case R.id.borrow_book:
                     String title = mActivity.getString(R.string.borrow_book);
                     String message = mActivity.getString(R.string.borrow_book_msg);
-
-                    GenericFragmentDialog.show((FragmentActivity) mActivity, title, message, new GenericFragmentDialog.ClickListener() {
-                        @Override
-                        public void onPositiveClick() {
-                            firebaseInsertRequest(book.getBookId(), book.getOwner_username());
-                        }
-
-                        @Override
-                        public void onNegativeClick() {
-                        }
-                    });
+                    GenericFragmentDialog.show(mActivity, title, message, () -> firebaseInsertRequest(book.getBookId(), book.getOwner_username()));
                     return true;
 
                 default:

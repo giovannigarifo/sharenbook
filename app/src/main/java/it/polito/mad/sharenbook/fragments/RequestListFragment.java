@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +39,7 @@ import java.util.Map;
 import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
 import it.polito.mad.sharenbook.ShowOthersProfile;
+import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.utils.Utils;
@@ -170,11 +170,15 @@ public class RequestListFragment extends Fragment {
             // Assign click listeners
             holder.acceptButton.setOnClickListener(v -> {
                 requestListView.setClickable(false); // Avoid double click
-                showAcceptDialog(username);
+                String title = mActivity.getString(R.string.accept_req_dialog);
+                String message = mActivity.getString(R.string.accept_req_dialog_msg, username);
+                GenericFragmentDialog.show(mActivity, title, message, () -> acceptRequest(username));
             });
             holder.rejectButton.setOnClickListener(v -> {
                 requestListView.setClickable(false); // // Avoid double click
-                showRejectDialog(username);
+                String title = mActivity.getString(R.string.reject_req_dialog);
+                String message = mActivity.getString(R.string.reject_req_dialog_msg, username);
+                GenericFragmentDialog.show(mActivity, title, message, () -> rejectRequest(username));
             });
             holder.optionsButton.setOnClickListener(v -> {
                 showOptionsPopupMenu(v, username);
@@ -232,25 +236,7 @@ public class RequestListFragment extends Fragment {
             popup.show();
         }
 
-        void showAcceptDialog(String username) {
-            DialogFragment newFragment = GenericAlertDialog.newInstance(
-                    R.string.accept_req_dialog, getString(R.string.accept_req_dialog_msg, username));
-            Bundle bundle = newFragment.getArguments();
-            bundle.putString("username", username);
-            newFragment.setArguments(bundle);
-            newFragment.show(getFragmentManager(), "reqAccept_dialog");
-        }
-
-        void showRejectDialog(String username) {
-            DialogFragment newFragment = GenericAlertDialog.newInstance(
-                    R.string.reject_req_dialog, getString(R.string.reject_req_dialog_msg, username));
-            Bundle bundle = newFragment.getArguments();
-            bundle.putString("username", username);
-            newFragment.setArguments(bundle);
-            newFragment.show(getFragmentManager(), "reqReject_dialog");
-        }
-
-        void acceptRequest(String username) {
+        private void acceptRequest(String username) {
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -319,7 +305,7 @@ public class RequestListFragment extends Fragment {
             });
         }
 
-        void rejectRequest(String username) {
+        private void rejectRequest(String username) {
 
             // Create transaction Map
             Map<String, Object> transaction = new HashMap<>();
@@ -335,6 +321,13 @@ public class RequestListFragment extends Fragment {
                     int indexOfUsername = usernameList.indexOf(username);
                     usernameList.remove(indexOfUsername);
                     requestTimeList.remove(indexOfUsername);
+
+                    if (usernameList.size() == 0) {
+                        if (getFragmentManager() != null) {
+                            getFragmentManager().popBackStack();
+                        }
+                    }
+
                     notifyDataSetChanged();
 
                     // Notification body

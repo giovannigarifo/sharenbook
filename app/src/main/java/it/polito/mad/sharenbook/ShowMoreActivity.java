@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -28,22 +26,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import it.polito.mad.sharenbook.adapters.ShowBooksAdapter;
-import it.polito.mad.sharenbook.fragments.GenericAlertDialog;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
-import it.polito.mad.sharenbook.utils.Utils;
 
 public class ShowMoreActivity extends AppCompatActivity {
 
@@ -51,7 +44,6 @@ public class ShowMoreActivity extends AppCompatActivity {
     public static final int FAVORITES_BOOKS = 1;
     public static final int CLOSE_BOOKS = 2;
 
-    private Activity thisActivity;
     private int moreType;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -76,7 +68,6 @@ public class ShowMoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_more);
-        thisActivity = this;
 
         // Get bundle info
         Bundle bundle = getIntent().getExtras();
@@ -143,6 +134,10 @@ public class ShowMoreActivity extends AppCompatActivity {
     {
         finish();
         return true;
+    }
+
+    private Activity getActivityContext() {
+        return this;
     }
 
     private String getToolbarTitle() {
@@ -228,14 +223,15 @@ public class ShowMoreActivity extends AppCompatActivity {
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int wInches = metrics.widthPixels / metrics.densityDpi;
+        double wInches = (double) metrics.widthPixels / metrics.densityDpi;
 
-        if (wInches <= 3) return 3;
-        else if (wInches <= 4) return 4;
-        else if (wInches <= 5) return 5;
-        else if (wInches <= 6) return 6;
-        else if (wInches <= 7) return 7;
-        else return 8;
+        if (wInches <= 3.0) return 3;
+        else if (wInches <= 3.8) return 4;
+        else if (wInches <= 4.6) return 5;
+        else if (wInches <= 5.4) return 6;
+        else if (wInches <= 6.2) return 7;
+        else if (wInches <= 7.0) return 8;
+        else return 9;
     }
 
     private void loadBooks() {
@@ -265,7 +261,7 @@ public class ShowMoreActivity extends AppCompatActivity {
                 }
 
                 // Specify an adapter
-                ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                 moreBooksRV.setAdapter(booksAdapter);
             }
 
@@ -298,7 +294,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount) {
                         // Set RV adapter
-                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }
@@ -370,7 +366,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount.get()) {
                         // Set RV adapter
-                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(thisActivity, bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }
