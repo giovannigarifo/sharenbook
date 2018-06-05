@@ -173,19 +173,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </android.support.v4.widget.NestedScrollView>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -206,9 +199,8 @@
         android:layout_marginBottom="75dp"
         android:layout_marginRight="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_gravity="end|bottom"
         android:src="@drawable/ic_create_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="end" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -49,6 +49,7 @@ public class RequestListFragment extends Fragment {
     private ArrayList<String> usernameList;
     private ArrayList<Long> requestTimeList;
     private String bookId, bookTitle, bookPhoto, bookOwner;
+    private boolean isBookShared;
 
     private ListView requestListView;
     RequestsAdapter requestAdapter;
@@ -68,6 +69,7 @@ public class RequestListFragment extends Fragment {
         bookTitle = getArguments().getString("bookTitle");
         bookPhoto = getArguments().getString("bookPhoto");
         bookOwner = getArguments().getString("bookOwner");
+        isBookShared = getArguments().getBoolean("isBookShared");
     }
 
     @Nullable
@@ -168,18 +170,24 @@ public class RequestListFragment extends Fragment {
             holder.requestTimeText.setText(Utils.convertTime(requestTime, "dd MMM, HH:mm"));
 
             // Assign click listeners
-            holder.acceptButton.setOnClickListener(v -> {
-                requestListView.setClickable(false); // Avoid double click
-                String title = mActivity.getString(R.string.accept_req_dialog);
-                String message = mActivity.getString(R.string.accept_req_dialog_msg, username);
-                GenericFragmentDialog.show(mActivity, title, message, () -> acceptRequest(username));
-            });
+            if (isBookShared) {
+                holder.acceptButton.setEnabled(false);
+            } else {
+                holder.acceptButton.setOnClickListener(v -> {
+                    requestListView.setClickable(false); // Avoid double click
+                    String title = mActivity.getString(R.string.accept_req_dialog);
+                    String message = mActivity.getString(R.string.accept_req_dialog_msg, username);
+                    GenericFragmentDialog.show(mActivity, title, message, () -> acceptRequest(username));
+                });
+            }
+
             holder.rejectButton.setOnClickListener(v -> {
                 requestListView.setClickable(false); // // Avoid double click
                 String title = mActivity.getString(R.string.reject_req_dialog);
                 String message = mActivity.getString(R.string.reject_req_dialog_msg, username);
                 GenericFragmentDialog.show(mActivity, title, message, () -> rejectRequest(username));
             });
+
             holder.optionsButton.setOnClickListener(v -> {
                 showOptionsPopupMenu(v, username);
             });

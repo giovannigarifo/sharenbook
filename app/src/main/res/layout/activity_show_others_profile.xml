@@ -6,12 +6,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bgGrey"
     tools:context="it.polito.mad.sharenbook.ShowOthersProfile">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarOthersProfile"
@@ -23,30 +19,27 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            >
+            app:layout_scrollFlags="scroll">
 
             <ImageView
                 android:id="@+id/back_button"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_arrow_back_black_24dp"
-                android:elevation="5dp"
-                android:backgroundTint="@color/colorPrimary"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
 
             <!-- user profile picture -->
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/userPicture"
-                android:layout_below="@id/back_button"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
+                android:layout_below="@id/back_button"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginBottom="5dp"
                 android:clickable="true"
                 android:src="@drawable/ic_person_black_135dp"
                 android:tint="@color/darkGrey"
@@ -55,8 +48,13 @@
                 app:civ_shadow="true"
                 app:civ_shadow_color="@color/lightGrey"
                 app:civ_shadow_radius="10"
-                app:layout_collapseMode="parallax"
-                android:elevation="10dp"/>
+                app:layout_collapseMode="parallax" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <!-- Username  -->
             <TextView
@@ -64,13 +62,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/userPicture"
-                android:layout_marginTop="8dp"
-                android:elevation="10dp"
+                android:layout_marginTop="6dp"
+                android:text="@string/placeholder"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:text="@string/placeholder"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -78,9 +74,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_userNickName"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="8dp"
                 android:isIndicator="true"
                 android:numStars="5"
                 android:rating="0"
@@ -94,20 +90,18 @@
         android:id="@+id/reviewsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appbarOthersProfile">
-    </FrameLayout>
-
-
-
-    </RelativeLayout>
+        android:layout_below="@id/appbarOthersProfile"
+        android:layout_marginTop="2dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- Message Floating Action Button-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/openChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="32dp"
         android:layout_gravity="bottom|end"
+        android:layout_marginBottom="27dp"
+        android:layout_marginRight="25dp"
         android:src="@drawable/ic_chat_black_24dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_anchorGravity="bottom|end" />

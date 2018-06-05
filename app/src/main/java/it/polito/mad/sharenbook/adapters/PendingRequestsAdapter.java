@@ -179,6 +179,7 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
                 bundle.putString("bookTitle", req.getTitle());
                 bundle.putString("bookPhoto", req.getThumbName());
                 bundle.putString("bookOwner", req.getOwner());
+                bundle.putBoolean("isBookShared", req.getBookShared());
 
                 RequestListFragment requestFragment = new RequestListFragment();
                 requestFragment.setArguments(bundle);
@@ -224,7 +225,7 @@ public class PendingRequestsAdapter extends RecyclerView.Adapter<PendingRequests
         return requests.size();
     }
 
-    public void undoRequest(BorrowRequest currSelectedRequest) {
+    private void undoRequest(BorrowRequest currSelectedRequest) {
 
         DatabaseReference usernamesDb = FirebaseDatabase.getInstance().getReference(mActivity.getString(R.string.usernames_key));
 

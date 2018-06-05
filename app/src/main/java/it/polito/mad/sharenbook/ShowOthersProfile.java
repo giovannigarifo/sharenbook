@@ -88,9 +88,9 @@ public class ShowOthersProfile extends AppCompatActivity {
             context.startActivity(chatActivity);
         });
 
-        showProfileReviewsFragment();
-
-
+        if (savedInstanceState == null) {
+            showProfileReviewsFragment();
+        }
     }
 
     public void setRating(float floatRating){
