@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="8dp"
-        android:clipToPadding="false"
-        android:layout_marginBottom="108dp"/>
+        android:clipToPadding="false"/>
 
 </FrameLayout>
