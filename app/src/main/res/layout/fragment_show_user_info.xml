@@ -2,143 +2,137 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context="it.polito.mad.sharenbook.fragments.ShowUserInfoFragment">
 
-     <!-- <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"> -->
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/main_profile_info"
+            style="CardViewStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            android:foreground="?android:attr/selectableItemBackground">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/main_profile_info"
-                style="CardViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+
+            <LinearLayout
+                android:id="@+id/wrapper"
                 android:padding="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
-                android:foreground="?android:attr/selectableItemBackground">
-
-
-                <LinearLayout
-                    android:id="@+id/wrapper"
-                    android:padding="16dp"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/cv_personal_info"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:text="@string/personal_info"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"/>
-
-                    <TextView
-                        android:id="@+id/tv_userEmailContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:drawableStart="@drawable/ic_email_black_24dp"
-                        android:drawableLeft="@drawable/ic_email_black_24dp"
-                        android:drawablePadding="32dp"
-                        android:text="@string/placeholder"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_userCityContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:drawableStart="@drawable/ic_place_black_24dp"
-                        android:drawableLeft="@drawable/ic_place_black_24dp"
-                        android:drawablePadding="32dp"
-                        android:text="@string/placeholder"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:id="@+id/tv_userBioContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:drawableStart="@drawable/ic_format_quote_black_24dp"
-                        android:drawableLeft="@drawable/ic_format_quote_black_24dp"
-                        android:drawablePadding="32dp"
-                        android:text="@string/placeholder"
-                        android:textSize="14sp"
-                        android:maxLines="5" />
-
-
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/preferred_categories"
-                style="CardViewStyle"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/cv_personal_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/personal_info"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"/>
+
+                <TextView
+                    android:id="@+id/tv_userEmailContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:drawableStart="@drawable/ic_email_black_24dp"
+                    android:drawableLeft="@drawable/ic_email_black_24dp"
+                    android:drawablePadding="32dp"
+                    android:text="@string/placeholder"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tv_userCityContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:drawableStart="@drawable/ic_place_black_24dp"
+                    android:drawableLeft="@drawable/ic_place_black_24dp"
+                    android:drawablePadding="32dp"
+                    android:text="@string/placeholder"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tv_userBioContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:drawableStart="@drawable/ic_format_quote_black_24dp"
+                    android:drawableLeft="@drawable/ic_format_quote_black_24dp"
+                    android:drawablePadding="32dp"
+                    android:text="@string/placeholder"
+                    android:textSize="14sp"
+                    android:maxLines="5" />
+
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/preferred_categories"
+            style="CardViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            android:foreground="?android:attr/selectableItemBackground">
+
+
+            <LinearLayout
+                android:id="@+id/wrapper2"
                 android:padding="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/tv_pref_categories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/preferred_categories"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"/>
 
-                <LinearLayout
-                    android:id="@+id/wrapper2"
-                    android:padding="16dp"
-                    android:orientation="vertical"
+                <it.polito.mad.sharenbook.views.ExpandableHeightGridView
+                    android:id="@+id/gridview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:numColumns="auto_fit"
+                    android:verticalSpacing="@dimen/grip_view_spacing"
+                    android:horizontalSpacing="@dimen/grip_view_spacing"
+                    android:stretchMode="columnWidth"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    />
 
-                    <TextView
-                        android:id="@+id/tv_pref_categories"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:text="@string/preferred_categories"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"/>
+            </LinearLayout>
 
-                    <it.polito.mad.sharenbook.views.ExpandableHeightGridView
-                        android:id="@+id/gridview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:numColumns="auto_fit"
-                        android:verticalSpacing="@dimen/grip_view_spacing"
-                        android:horizontalSpacing="@dimen/grip_view_spacing"
-                        android:stretchMode="columnWidth"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        />
+        </android.support.v7.widget.CardView>
 
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-        </LinearLayout>
-
-    <!-- </ScrollView> -->
+    </LinearLayout>
 
 </FrameLayout>

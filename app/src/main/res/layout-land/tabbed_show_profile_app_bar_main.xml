@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="it.polito.mad.sharenbook.TabbedShowProfileActivity"
-    tools:showIn="@layout/activity_tabbed_show_profile">
+    tools:showIn="@layout/activity_tabbed_show_profile"
+    android:background="@color/bgGrey">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -182,8 +183,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            android:layout_height="wrap_content" />
 
     </android.support.v4.widget.NestedScrollView>
 
