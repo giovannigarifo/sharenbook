@@ -77,7 +77,7 @@
     <LinearLayout
         android:id="@+id/sba_framelayout_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_anchor="@+id/sba_appbar"
         app:layout_anchorGravity="bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -101,6 +101,6 @@
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"
         app:layout_anchor="@+id/sba_framelayout_wrapper"
-        app:layout_anchorGravity="right|bottom" />
+        app:layout_anchorGravity="right|bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>
