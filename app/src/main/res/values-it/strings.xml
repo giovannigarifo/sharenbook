@@ -182,7 +182,7 @@
 
     <!--        BOOK CATEGORIES         -->
     <string-array name="book_categories">
-        <item name="book_category_art">Arte/Musica/Cinema</item>
+        <item name="book_category_art">Artegit s/Musica/Cinema</item>
         <item name="book_category_biography">Biografia</item>
         <item name="book_category_comics">Fumetti</item>
         <item name="book_category_economy">Economia</item>
@@ -197,7 +197,7 @@
         <item name="book_category_history">Storia</item>
         <item name="book_category_entertainment">Intrattenimento</item>
         <item name="book_category_law">Diritto</item>
-        <item name="book_category_literature">Letterature</item>
+        <item name="book_category_literature">Letteratura</item>
         <item name="book_category_medicine">Medicina</item>
         <item name="book_category_thriller">Thriller</item>
         <item name="book_category_politics">Politica</item>
