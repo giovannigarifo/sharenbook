@@ -38,6 +38,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:rating="4"
+                android:progressTint="@color/colorAccent"
                 />
 
             <TextView

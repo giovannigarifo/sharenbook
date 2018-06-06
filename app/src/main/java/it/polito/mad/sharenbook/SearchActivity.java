@@ -188,6 +188,7 @@ public class SearchActivity extends AppCompatActivity
         outState.putCharSequence("searchInputText", this.searchInputText);
         outState.putString("searchState", this.searchState);
         outState.putInt("currentFragment", this.currentFragment);
+        outState.putString("filterButtonText", this.sba_btn_filter.getText().toString());
     }
 
     @Override
@@ -213,7 +214,6 @@ public class SearchActivity extends AppCompatActivity
             this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
             if (searchInputText != null) {
                 this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
-
                 //remove previous filters if present
                 clearFiltersState();
                 onSearchConfirmed(this.searchInputText.toString()); // Fire the search (async)
@@ -249,6 +249,9 @@ public class SearchActivity extends AppCompatActivity
             search_fab_changeFragment.setImageResource(R.drawable.ic_location_black_12dp);
         else if (this.currentFragment == MAP_FRAG)
             search_fab_changeFragment.setImageResource(R.drawable.ic_view_list_black_24dp);
+
+        //set previously setted filter number
+        this.sba_btn_filter.setText(savedInstanceState.getString("filterButtonText"));
     }
 
 
@@ -306,6 +309,7 @@ public class SearchActivity extends AppCompatActivity
             this.searchListFragment.updateDisplayedSearchResult();
             this.searchMapFragment.updateDisplayedSearchResult();
             this.sba_searchbar.disableSearch();
+            this.sba_searchbar.setText(this.searchInputText.toString());
 
         } else
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();

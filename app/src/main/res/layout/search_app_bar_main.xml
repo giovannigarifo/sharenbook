@@ -27,9 +27,8 @@
             app:mt_maxSuggestionsCount="0"
             app:mt_navIconEnabled="true"
             app:mt_placeholder="@string/searchbar_placeholder"
-            app:mt_searchIconTint="@color/white"
             app:mt_speechMode="false"
-            app:mt_textCursorTint="@android:color/darker_gray" />
+            app:mt_textCursorTint="@color/colorAccent" />
 
         <LinearLayout
             android:layout_width="match_parent"
