@@ -68,13 +68,14 @@
                             android:id="@+id/sba_cv1_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@color/colorAccent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/ic_edit_black_48dp"
-                                android:tint="@color/primaryText"
+                                android:tint="@color/white"
                                 android:layout_gravity="center"
                                 android:padding="10dp"/>
 
@@ -84,7 +85,7 @@
                                 android:gravity="center"
                                 android:layout_gravity="center"
                                 android:text="@string/sba_insert_isbn"
-                                android:textColor="@color/primaryText"
+                                android:textColor="@color/white"
                                 android:textSize="22dp" />
 
                         </LinearLayout>
@@ -115,8 +116,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/search"
-                                android:textColor="@color/white"
-                                android:background="@color/colorAccent"/>
+                                android:textColor="@color/white" />
 
                         </LinearLayout>
 
@@ -145,7 +145,7 @@
                             android:layout_gravity="center"
                             android:layout_marginLeft="15dp"
                             android:src="@drawable/ic_barcode_64dp"
-                            android:tint="@color/primaryText"/>
+                            android:tint="@color/colorAccent"/>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -182,7 +182,7 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_book_64dp"
                             android:layout_gravity="center"
-                            android:tint="@color/primaryText"
+                            android:tint="@color/colorAccent"
                             android:layout_marginLeft="15dp" />
 
                         <TextView
