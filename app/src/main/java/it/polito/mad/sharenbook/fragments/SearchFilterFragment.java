@@ -264,7 +264,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
             this.searchActivity.clearCurrentSearchResult();
 
             //if the user cleared the filters but there is an input text inserted, search for it without filters
-            if(searchActivity.searchInputText != null){
+            if(searchActivity.searchInputText != null && searchActivity.searchInputText != ""){
                 this.searchActivity.onSearchConfirmed(searchActivity.searchInputText.toString());
             }
 
