@@ -1,9 +1,12 @@
 package it.polito.mad.sharenbook.utils;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -184,6 +187,10 @@ public class NavigationDrawerManager {
                         context.startActivity(i);
                         OneSignal.setSubscription(false);
                         Toast.makeText(context, context.getString(R.string.log_out), Toast.LENGTH_SHORT).show();
+
+                        //clear all fragments from back stack
+                        ((FragmentActivity)activity).getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                         activity.finish();
                     });
 

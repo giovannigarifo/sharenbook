@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,19 +41,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import it.polito.mad.sharenbook.adapters.MultipleCheckableCheckboxAdapter;
+import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.NavigationDrawerManager;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UpdatableFragmentDialog;
 import it.polito.mad.sharenbook.utils.UserInterface;
-import it.polito.mad.sharenbook.model.UserProfile;
 import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
 
 
 public class EditProfileActivity extends AppCompatActivity {
-
-    // ProgressDialog used to show loading messages
-    ProgressDialog progressDialog = null;
 
     //views
     private EditText et_userFullName, et_userNickName, et_userCity, et_userBio, et_userEmail;
@@ -762,16 +759,14 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (file != null) {
             // Displaying a progress dialog while upload is going on
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle(getString(R.string.loading_dialog));
-            progressDialog.show();
+            UpdatableFragmentDialog.show(this, getString(R.string.loading_dialog), null);
 
             StorageReference imageReference = storageReference.child("images/" + user.getUsername() + ".jpg");
             DatabaseReference usernameRef = FirebaseDatabase.getInstance().getReference("usernames").child(user.getUsername());
             imageReference.putFile(file)
                     .addOnSuccessListener(taskSnapshot -> { //if the upload is successfull
 
-                        progressDialog.dismiss(); //hiding the progress dialog
+                        UpdatableFragmentDialog.dismiss(); //hiding the progress dialog
 
                         writeProfile_copy.clear().commit();
 
@@ -819,7 +814,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     })
                     .addOnFailureListener(exception -> { //if the upload is not successfull
                         //hiding the progress dialog
-                        progressDialog.dismiss();
+                        UpdatableFragmentDialog.dismiss();
 
                         writeProfile_copy.clear().commit();
 
@@ -831,21 +826,12 @@ public class EditProfileActivity extends AppCompatActivity {
                         double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
 
                         //displaying percentage in progress dialog
-                        progressDialog.setMessage(getString(R.string.upload_progress) + ((int) progress) + "%...");
+                        UpdatableFragmentDialog.updateMessage(getString(R.string.upload_progress) + ((int) progress) + "%...");
                     });
         }
         //if there is not any file
         else {
             writeProfile_copy.clear().commit();
-        }
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
         }
     }
 }

@@ -27,6 +27,9 @@ import android.widget.TextView;
 
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.polito.mad.sharenbook.adapters.AnnouncementAdapter;
 import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.fragments.RequestsFragment;

@@ -171,7 +171,10 @@ public class RequestListFragment extends Fragment {
 
             // Assign click listeners
             if (isBookShared) {
-                holder.acceptButton.setEnabled(false);
+                holder.acceptButton.setAlpha(.3F);
+                holder.acceptButton.setOnClickListener(v -> {
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.book_already_shared, Toast.LENGTH_SHORT).show();
+                });
             } else {
                 holder.acceptButton.setOnClickListener(v -> {
                     requestListView.setClickable(false); // Avoid double click
@@ -299,7 +302,8 @@ public class RequestListFragment extends Fragment {
 
                     // Send notification
                     Utils.sendNotification(requestBody);
-                    Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
+
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
 
                     requestListView.setClickable(true);
                     if (getFragmentManager() != null) {
@@ -307,7 +311,7 @@ public class RequestListFragment extends Fragment {
                     }
 
                 } else {
-                    Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
                     requestListView.setClickable(true);
                 }
             });

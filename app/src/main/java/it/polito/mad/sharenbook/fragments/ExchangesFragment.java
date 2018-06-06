@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,41 +15,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.algolia.search.saas.Client;
-import com.algolia.search.saas.Index;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import it.polito.mad.sharenbook.App;
-import it.polito.mad.sharenbook.ChatActivity;
 import it.polito.mad.sharenbook.R;
-import it.polito.mad.sharenbook.ShowBookActivity;
 import it.polito.mad.sharenbook.ShowMoreActivity;
-import it.polito.mad.sharenbook.ShowOthersProfile;
-import it.polito.mad.sharenbook.WriteReviewActivity;
 import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
 import it.polito.mad.sharenbook.model.Exchange;
-import it.polito.mad.sharenbook.utils.GlideApp;
 
 
 public class ExchangesFragment extends Fragment {
@@ -64,11 +46,16 @@ public class ExchangesFragment extends Fragment {
 
     public RecyclerView takenBooksRV, givenBooksRV, archiveBooksRV;
     public TextView noTakenTV, noGivenTV, takenMoreTV, givenMoreTV, archiveMoreTV;
-    private CardView archiveCV;
+    public CardView archiveCV;
 
-    private ExchangesAdapter takenBooksAdapter, givenBooksAdapter, archiveBooksAdapter;
+    public ExchangesAdapter takenBooksAdapter, givenBooksAdapter, archiveBooksAdapter;
+
+    private ChildEventListener givenEventListener, takenEventListener, archiveEventListener;
 
     private String username;
+
+    private Boolean givenChildAddedEnabled, takenChildAddedEnabled, archiveChildAddedEnabled;
+    private LinearLayoutManager takenBooksLM, givenBooksLM, archiveBooksLM;
 
     public static ExchangesFragment newInstance() {
         ExchangesFragment fragment = new ExchangesFragment();
@@ -136,7 +123,7 @@ public class ExchangesFragment extends Fragment {
         // TAKEN BOOKS recycler view
         takenBooksRV = view.findViewById(R.id.takenBooksRV);
         takenBooksRV.setHasFixedSize(true);
-        LinearLayoutManager takenBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        takenBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
         takenBooksRV.setLayoutManager(takenBooksLM);
         LinearSnapHelper takenLinearSnapHelper = new LinearSnapHelper();
         takenLinearSnapHelper.attachToRecyclerView(takenBooksRV);
@@ -144,7 +131,7 @@ public class ExchangesFragment extends Fragment {
         // GIVEN BOOKS recycler view
         givenBooksRV = view.findViewById(R.id.givenBooksRV);
         givenBooksRV.setHasFixedSize(true);
-        LinearLayoutManager givenBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        givenBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
         givenBooksRV.setLayoutManager(givenBooksLM);
         LinearSnapHelper givenLinearSnapHelper = new LinearSnapHelper();
         givenLinearSnapHelper.attachToRecyclerView(givenBooksRV);
@@ -152,14 +139,72 @@ public class ExchangesFragment extends Fragment {
         // ARCHIVE BOOKS recycler view
         archiveBooksRV = view.findViewById(R.id.archiveBooksRV);
         archiveBooksRV.setHasFixedSize(true);
-        LinearLayoutManager archiveBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        archiveBooksLM = new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false);
         archiveBooksRV.setLayoutManager(archiveBooksLM);
         LinearSnapHelper archiveLinearSnapHelper = new LinearSnapHelper();
         archiveLinearSnapHelper.attachToRecyclerView(archiveBooksRV);
 
     }
 
-    private void loadTakenBooks() {
+    public void loadTakenBooks() {
+
+        takenChildAddedEnabled = false;
+
+        takenEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(takenChildAddedEnabled){
+                    Log.d("taken onChildAdded", "added Book");
+
+                    Exchange ex = dataSnapshot.getValue(Exchange.class);
+                    ex.setExchangeId(dataSnapshot.getKey());
+
+                    if(takenBooksAdapter == null || takenBooksAdapter.getItemCount() == 0){ //there were no books
+                        takenBooksRV.setVisibility(View.VISIBLE);
+                        noTakenTV.setVisibility(View.GONE);
+                        takenMoreTV.setVisibility(View.VISIBLE);
+
+                        takenBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 0, username, getActivity());
+                        takenBooksRV.setAdapter(takenBooksAdapter);
+                    } else {
+                        takenBooksAdapter.addExchange(ex);
+                        takenBooksLM.scrollToPosition(0);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Exchange ex = dataSnapshot.getValue(Exchange.class);
+                ex.setExchangeId(dataSnapshot.getKey());
+
+                takenBooksAdapter.remove(ex);
+
+                if(takenBooksAdapter.getItemCount() == 0){
+                    takenBooksRV.setVisibility(View.GONE);
+                    noTakenTV.setVisibility(View.VISIBLE);
+                    takenMoreTV.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        takenBooksRef.addChildEventListener(takenEventListener);
 
         // Load Taken Book RV
         takenBooksRef.orderByChild("creationTime")
@@ -169,10 +214,13 @@ public class ExchangesFragment extends Fragment {
 
                         List<Exchange> takenList = new ArrayList<>();
 
+                        takenChildAddedEnabled = true;
+
                         if (dataSnapshot.getChildrenCount() == 0) {
                             takenBooksRV.setVisibility(View.GONE);
                             noTakenTV.setVisibility(View.VISIBLE);
                             takenMoreTV.setVisibility(View.INVISIBLE);
+
                             return;
                         }
 
@@ -196,13 +244,76 @@ public class ExchangesFragment extends Fragment {
                 });
     }
 
-    private void loadGivenBooks() {
+    public void loadGivenBooks() {
+
+        givenChildAddedEnabled = false;
+
+        givenEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(givenChildAddedEnabled){
+                    Log.d("onChildAdded called", "added Book");
+
+                    Exchange ex = dataSnapshot.getValue(Exchange.class);
+                    ex.setExchangeId(dataSnapshot.getKey());
+
+                    if(givenBooksAdapter == null || givenBooksAdapter.getItemCount() == 0){ //there were no books
+                        givenBooksRV.setVisibility(View.VISIBLE);
+                        noGivenTV.setVisibility(View.GONE);
+                        givenMoreTV.setVisibility(View.VISIBLE);
+
+                        givenBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 0, username, getActivity());
+                        givenBooksRV.setAdapter(givenBooksAdapter);
+                    } else {
+                        givenBooksAdapter.addExchange(ex);
+                        givenBooksLM.scrollToPosition(0);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Exchange ex = dataSnapshot.getValue(Exchange.class);
+                ex.setExchangeId(dataSnapshot.getKey());
+
+                givenBooksAdapter.remove(ex);
+
+                if(givenBooksAdapter.getItemCount() == 0){
+                    givenBooksRV.setVisibility(View.GONE);
+                    noGivenTV.setVisibility(View.VISIBLE);
+                    givenMoreTV.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        givenBooksRef.addChildEventListener(givenEventListener);
 
         // Load Given Book RV
         givenBooksRef.orderByChild("creationTime")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        Log.d("singleValueList started", "ok");
+
+                        givenChildAddedEnabled = true;
 
                         List<Exchange> takenList = new ArrayList<>();
 
@@ -223,6 +334,7 @@ public class ExchangesFragment extends Fragment {
                         // Specify an adapter
                         givenBooksAdapter = new ExchangesAdapter(takenList, 1, username, getActivity());
                         givenBooksRV.setAdapter(givenBooksAdapter);
+
                     }
 
                     @Override
@@ -230,9 +342,67 @@ public class ExchangesFragment extends Fragment {
                         Log.d("ERROR", "There was an error while fetching taken books list");
                     }
                 });
+
     }
 
-    private void loadArchiveBooks() {
+    public void loadArchiveBooks() {
+
+        archiveChildAddedEnabled = false;
+
+        archiveEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(archiveChildAddedEnabled){
+                    Log.d("archive onChildAdded", "added Book");
+
+                    Exchange ex = dataSnapshot.getValue(Exchange.class);
+                    ex.setExchangeId(dataSnapshot.getKey());
+
+                    if(archiveBooksAdapter == null || archiveBooksAdapter.getItemCount() == 0){ //there were no books
+                        archiveBooksRV.setVisibility(View.VISIBLE);
+                        archiveMoreTV.setVisibility(View.VISIBLE);
+
+                        archiveBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 0, username, getActivity());
+                        archiveBooksRV.setAdapter(archiveBooksAdapter);
+                    } else {
+                        archiveBooksAdapter.addExchange(ex);
+                        archiveBooksLM.scrollToPosition(0);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Exchange ex = dataSnapshot.getValue(Exchange.class);
+                ex.setExchangeId(dataSnapshot.getKey());
+
+                archiveBooksAdapter.remove(ex);
+
+                if(archiveBooksAdapter.getItemCount() == 0){
+                    archiveBooksRV.setVisibility(View.GONE);
+                    archiveMoreTV.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        archiveBooksRef.addChildEventListener(archiveEventListener);
 
         // Load Archive Book RV
         archiveBooksRef.orderByChild("creationTime")
@@ -241,6 +411,8 @@ public class ExchangesFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         List<Exchange> archiveList = new ArrayList<>();
+
+                        archiveChildAddedEnabled = true;
 
                         if (dataSnapshot.getChildrenCount() == 0)
                             return;
@@ -282,5 +454,13 @@ public class ExchangesFragment extends Fragment {
         loadTakenBooks();
         loadGivenBooks();
         loadArchiveBooks();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        takenBooksRef.removeEventListener(takenEventListener);
+        givenBooksRef.removeEventListener(givenEventListener);
+        archiveBooksRef.removeEventListener(archiveEventListener);
     }
 }

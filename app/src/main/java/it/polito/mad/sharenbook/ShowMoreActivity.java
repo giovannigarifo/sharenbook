@@ -1,6 +1,5 @@
 package it.polito.mad.sharenbook;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,15 +13,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +40,6 @@ import it.polito.mad.sharenbook.adapters.ShowBooksAdapter;
 import it.polito.mad.sharenbook.model.Book;
 import it.polito.mad.sharenbook.model.BorrowRequest;
 import it.polito.mad.sharenbook.model.Exchange;
-import it.polito.mad.sharenbook.utils.PermissionsHandler;
 
 public class ShowMoreActivity extends AppCompatActivity {
 
@@ -59,7 +54,6 @@ public class ShowMoreActivity extends AppCompatActivity {
 
     private int moreType;
 
-    private FusedLocationProviderClient mFusedLocationClient;
     private Location mLocation;
 
     private DatabaseReference booksDb;
@@ -87,6 +81,15 @@ public class ShowMoreActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             moreType = bundle.getInt("moreType", 0);
+            double latitude = bundle.getDouble("latitude", 200);
+            double longitude = bundle.getDouble("longitude", 200);
+
+            if (latitude != 200 && longitude != 200) {
+                mLocation = new Location("");
+                mLocation.setLatitude(latitude);
+                mLocation.setLongitude(longitude);
+            }
+
         } else {
             return;
         }
@@ -125,10 +128,6 @@ public class ShowMoreActivity extends AppCompatActivity {
         moreBooksRV.setHasFixedSize(true);
         GridLayoutManager moreBooksLM = new GridLayoutManager(this, getGridColumnCount());
         moreBooksRV.setLayoutManager(moreBooksLM);
-
-        //Setup location client and get current location
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        checkLocation();
 
         // Load books
         loadBooks();
@@ -247,21 +246,6 @@ public class ShowMoreActivity extends AppCompatActivity {
         };
     }
 
-    @SuppressLint("MissingPermission")
-    private void checkLocation() {
-
-        // Get last location
-        PermissionsHandler.check(this, () -> {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                mLocation = location;
-
-                if (moreType == CLOSE_BOOKS) {
-                    loadCloseBooks();
-                }
-            });
-        });
-    }
-
     private int getGridColumnCount() {
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -281,6 +265,12 @@ public class ShowMoreActivity extends AppCompatActivity {
 
         if (moreType == LAST_BOOKS) {
             loadLastBooks();
+        } else if (moreType == CLOSE_BOOKS) {
+
+            if (mLocation != null)
+                loadCloseBooks();
+            else finish();
+
         } else if (moreType == GIVE_REQUESTS) {
             loadGiveRequests();
         } else if (moreType == TAKE_REQUESTS) {
