@@ -62,7 +62,7 @@ public class ShowMoreActivity extends AppCompatActivity {
     private DatabaseReference giveRequestsRef, takeRequestsRef, takenBooksRef, givenBooksRef, archiveBooksRef;
 
     private ValueEventListener requestedBooksListener, favoriteBooksListener;
-    private ChildEventListener giveRequestsListener, takeRequestsListener, takenBooksListener;
+    private ChildEventListener giveRequestsListener, takeRequestsListener, takenBooksListener, booksListener;
 
     private PendingRequestsAdapter giveReqsAdapter, takeReqsAdapter;
 
@@ -72,6 +72,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
     private RecyclerView moreBooksRV;
     private ExchangesAdapter takenBooksAdapter;
+    private ShowBooksAdapter booksAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +141,7 @@ public class ShowMoreActivity extends AppCompatActivity {
         if(moreType < GIVE_REQUESTS) {
             borrowRequestsDb.removeEventListener(requestedBooksListener);
             favoritesDb.removeEventListener(favoriteBooksListener);
+            booksDb.removeEventListener(booksListener);
         } else if (moreType == GIVE_REQUESTS) {
             giveRequestsRef.removeEventListener(giveRequestsListener);
         } else if (moreType == TAKE_REQUESTS) {
@@ -155,6 +157,7 @@ public class ShowMoreActivity extends AppCompatActivity {
         if(moreType < GIVE_REQUESTS) {
             borrowRequestsDb.addValueEventListener(requestedBooksListener);
             favoritesDb.orderByValue().addValueEventListener(favoriteBooksListener);
+            booksDb.addChildEventListener(booksListener);
         } else if (moreType == GIVE_REQUESTS) {
             giveReqsAdapter.clear();
             giveRequestsRef.addChildEventListener(giveRequestsListener);
@@ -280,6 +283,35 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                 if (moreType == FAVORITES_BOOKS)
                     loadFavoriteBooks();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+
+        // Create child changed books listener
+        booksListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                Book updatedBook = dataSnapshot.getValue(Book.class);
+                updatedBook.setBookId(dataSnapshot.getKey());
+
+                if (booksAdapter != null)
+                    booksAdapter.updateItem(updatedBook);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
             }
 
             @Override
@@ -520,7 +552,6 @@ public class ShowMoreActivity extends AppCompatActivity {
     }
 
 
-
     private void loadLastBooks() {
 
         booksDb.orderByChild("creationTime").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -541,7 +572,7 @@ public class ShowMoreActivity extends AppCompatActivity {
                 }
 
                 // Specify an adapter
-                ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                 moreBooksRV.setAdapter(booksAdapter);
             }
 
@@ -574,7 +605,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount) {
                         // Set RV adapter
-                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }
@@ -646,7 +677,7 @@ public class ShowMoreActivity extends AppCompatActivity {
 
                     if (bookList.size() == bookCount.get()) {
                         // Set RV adapter
-                        ShowBooksAdapter booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        booksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         moreBooksRV.setAdapter(booksAdapter);
                     }
                 }

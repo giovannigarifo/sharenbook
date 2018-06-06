@@ -80,7 +80,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private TextView drawer_fullname;
     private TextView drawer_email;
 
-    private ShowBooksAdapter lastBooksAdapter;
+    private ShowBooksAdapter lastBooksAdapter, favoriteBooksAdapter, closeBooksAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -352,6 +352,12 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
                 if (lastBooksAdapter != null)
                     lastBooksAdapter.updateItem(updatedBook);
+
+                if (favoriteBooksAdapter != null)
+                    favoriteBooksAdapter.updateItem(updatedBook);
+
+                if (closeBooksAdapter != null)
+                    closeBooksAdapter.updateItem(updatedBook);
             }
 
             @Override
@@ -402,7 +408,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
                     if (bookList.size() == bookCount) {
                         // Set RV adapter
-                        ShowBooksAdapter favoriteBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        favoriteBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         favoriteBooksRV.setAdapter(favoriteBooksAdapter);
                         findViewById(R.id.showcase_cw_favorites).setVisibility(View.VISIBLE);
                     }
@@ -500,7 +506,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
                     if (bookList.size() == bookCount.get()) {
                         // Set RV adapter
-                        ShowBooksAdapter closeBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        closeBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         closeBooksRV.setAdapter(closeBooksAdapter);
 
                         if (bookCount.get() > 0)
