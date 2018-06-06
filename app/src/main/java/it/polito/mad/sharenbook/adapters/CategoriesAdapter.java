@@ -3,6 +3,7 @@ package it.polito.mad.sharenbook.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
@@ -64,9 +65,7 @@ public class CategoriesAdapter extends BaseAdapter {
         view = categoryInflater.inflate(R.layout.custom_chiptag, null);
 
         holder.chiptag_shape = view.findViewById(R.id.chiptag);
-        GradientDrawable drawable = (GradientDrawable) context.getResources().getDrawable(R.drawable.chiptag_shape);
-        drawable.setColor(App.getContext().getResources().getColor(R.color.white));
-        holder.chiptag_shape.setBackground(drawable);
+        holder.chiptag_shape.setBackground(App.getContext().getResources().getDrawable(R.drawable.button_bg_transparent));
 
         holder.avatar = view.findViewById(R.id.img);
         holder.avatar.setVisibility(View.GONE);

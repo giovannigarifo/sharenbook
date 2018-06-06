@@ -15,6 +15,7 @@
         android:src="@drawable/ic_profile"
         app:layout_constraintStart_toEndOf="@id/text_user"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
@@ -32,7 +33,8 @@
         android:textStyle="bold"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/img_popup_menu"
+        app:layout_constraintStart_toEndOf="@id/img_popup_menu"
+        app:layout_constraintEnd_toStartOf="@id/img"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView

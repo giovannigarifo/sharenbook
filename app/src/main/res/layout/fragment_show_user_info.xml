@@ -125,7 +125,6 @@
                         android:numColumns="auto_fit"
                         android:verticalSpacing="@dimen/grip_view_spacing"
                         android:horizontalSpacing="@dimen/grip_view_spacing"
-                        android:stretchMode="columnWidth"
                         android:gravity="center"
                         android:padding="16dp"
                         />
