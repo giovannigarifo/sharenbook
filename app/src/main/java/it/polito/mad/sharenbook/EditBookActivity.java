@@ -429,12 +429,19 @@ public class EditBookActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * onBackPressed method
      */
     @Override
     public void onBackPressed() {
+
+        showExitRequestDialog();
+    }
+
+    /**
+     * Show an alert to the user, asking if he really want to exit. on affermative response, finish the activity.
+     */
+    public void showExitRequestDialog(){
 
         AlertDialog.Builder exitRequest = new AlertDialog.Builder(EditBookActivity.this); //give a context to Dialog
         exitRequest.setTitle(R.string.exit_request_title);
