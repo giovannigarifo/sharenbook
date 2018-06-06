@@ -125,18 +125,18 @@ public class SearchActivity extends AppCompatActivity
         this.searchResult = new ArrayList<>();
 
         //create fragments or restore them
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
 
             this.searchListFragment = new SearchListFragment();
             this.searchMapFragment = new SearchMapFragment();
 
         } else {
 
-            if(getSupportFragmentManager().findFragmentByTag("searchList") != null)
+            if (getSupportFragmentManager().findFragmentByTag("searchList") != null)
                 this.searchListFragment = (SearchListFragment) getSupportFragmentManager().findFragmentByTag("searchList");
             else this.searchListFragment = new SearchListFragment();
 
-            if(getSupportFragmentManager().findFragmentByTag("searchMap") != null)
+            if (getSupportFragmentManager().findFragmentByTag("searchMap") != null)
                 this.searchMapFragment = (SearchMapFragment) getSupportFragmentManager().findFragmentByTag("searchMap");
             else this.searchMapFragment = new SearchMapFragment();
         }
@@ -212,7 +212,7 @@ public class SearchActivity extends AppCompatActivity
         if (bundle != null) {
 
             this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
-            if (searchInputText != null){
+            if (searchInputText != null) {
                 this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
 
                 //remove previous filters if present
@@ -534,6 +534,7 @@ public class SearchActivity extends AppCompatActivity
      */
     @Override
     protected void onDestroy() {
+
         searcher.destroy();
         super.onDestroy();
     }
@@ -546,10 +547,21 @@ public class SearchActivity extends AppCompatActivity
     public void onBackPressed() {
 
         DrawerLayout drawer = findViewById(R.id.search_drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
+
+            //The user wants to close the activity and go back to the previous activity in stack
             super.onBackPressed();
+
+            //remove all fragments from the fragment back stack
+            this.freeFragmentBackStack();
+
+            // destroy the activity
+            finish();
         }
     }
 
@@ -592,7 +604,6 @@ public class SearchActivity extends AppCompatActivity
 
             DialogFragment filterFragment = SearchFilterFragment.newInstance("Filter Fragment");
 
-
             filterFragment.show(ft, "filterDialog");
         });
 
@@ -624,10 +635,27 @@ public class SearchActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        return NavigationDrawerManager.onNavigationItemSelected(this,null,item,getApplicationContext(),drawer,R.id.drawer_navigation_search);
+
+        //close activity
+        this.freeFragmentBackStack();
+        finish();
+
+        //jump to the selected one from the drawer
+        return NavigationDrawerManager.onNavigationItemSelected(this, null, item, getApplicationContext(), drawer, R.id.drawer_navigation_search);
+    }
 
 
+    /**
+     * Remove all the activity fragments from the fragments back stack
+     */
+    private void freeFragmentBackStack(){
+
+        List<Fragment> searchFraments = getSupportFragmentManager().getFragments();
+
+        for (Fragment fragment : searchFraments) {
+            if (fragment != null)
+                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
     }
 
 
@@ -666,10 +694,11 @@ public class SearchActivity extends AppCompatActivity
 
                 //TODO: find a better solution to display the circle also if we are on SearchListFragment
                 //if the map is currently displayed, center into the circle
-                if(getSupportFragmentManager().findFragmentById(R.id.search_fragment_container) instanceof SearchMapFragment){
-                    if(searchResult.isEmpty())
+                if (getSupportFragmentManager().findFragmentById(R.id.search_fragment_container) instanceof SearchMapFragment) {
+                    if (searchResult.isEmpty())
                         searchMapFragment.showFilterDistanceCircle(filterPlace, filterRange, Color.RED);
-                    else searchMapFragment.showFilterDistanceCircle(filterPlace, filterRange, Color.GREEN);
+                    else
+                        searchMapFragment.showFilterDistanceCircle(filterPlace, filterRange, Color.GREEN);
                 }
             }
 
