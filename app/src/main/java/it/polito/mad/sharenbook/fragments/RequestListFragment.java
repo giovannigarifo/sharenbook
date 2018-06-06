@@ -33,12 +33,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.ChatActivity;
+import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
+import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
+import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
+import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -299,7 +304,8 @@ public class RequestListFragment extends Fragment {
 
                     // Send notification
                     Utils.sendNotification(requestBody);
-                    Toast.makeText(getContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
+
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.borrow_request_accepted, Toast.LENGTH_LONG).show();
 
                     requestListView.setClickable(true);
                     if (getFragmentManager() != null) {
@@ -307,7 +313,7 @@ public class RequestListFragment extends Fragment {
                     }
 
                 } else {
-                    Toast.makeText(getContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.borrow_request_undone_fail, Toast.LENGTH_LONG).show();
                     requestListView.setClickable(true);
                 }
             });

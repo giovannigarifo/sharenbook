@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import com.google.firebase.storage.StorageReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,7 @@ import it.polito.mad.sharenbook.WriteReviewActivity;
 import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GlideApp;
+import it.polito.mad.sharenbook.utils.Utils;
 
 /**
  * Recycler View Adapter Class
@@ -86,9 +90,9 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        
+
         int layoutCode = (mActivity instanceof MyBookActivity) ? R.layout.item_book_showcase_rv : R.layout.item_book_showmore_rv;
-        
+
         ConstraintLayout layout = (ConstraintLayout) LayoutInflater.from(parent.getContext())
                 .inflate(layoutCode, parent, false);
 
@@ -232,7 +236,22 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
                 // Update Algolia
                 algoliaSetBookAsNotShared(ex.getBookId());
 
-                this.removeExchange(ex);
+                //this.removeExchange(ex);
+
+                String requestBody = "{"
+                        + "\"app_id\": \"edfbe9fb-e0fc-4fdb-b449-c5d6369fada5\","
+
+                        + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + ex.getCounterpart() + "\"}],"
+
+                        + "\"data\": {\"notificationType\": \"returnedBook\", \"senderName\": \"" + username + "\"},"
+                        + "\"contents\": {\"en\": \"" + username + " has returned your book: " + ex.getBookTitle() +".\", " +
+                        "\"it\": \"" + username + " ti ha restituto il libro: "+ ex.getBookTitle() +".\"},"
+                        + "\"headings\": {\"en\": \"Your book has returned!\", \"it\": \"Ti è stato restituito un libro!\"}"
+                        + "}";
+
+                // Send notification
+                Utils.sendNotification(requestBody);
+
                 Toast.makeText(App.getContext(), R.string.book_returned_correctly, Toast.LENGTH_LONG).show();
 
             } else {
@@ -257,33 +276,64 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
         }
     }
 
-    public void clear(){
+    public void clear() {
         exchangeList.clear();
         notifyDataSetChanged();
     }
 
-    private void removeExchange(Exchange exchange){
-        int pos = exchangeList.indexOf(exchange);
-        exchangeList.remove(exchange);
-        notifyItemRemoved(pos);
+    private void removeExchange(Exchange exchange) {
 
-        if(exchangeList.size() == 0){
-            if(mActivity instanceof MyBookActivity){
-                ExchangesFragment fragment = ((ExchangesFragment)((MyBookActivity) mActivity).mSectionsPagerAdapter.getCurrentFragment());
+        //Add book to archive Books
+        if (mActivity instanceof MyBookActivity) {
+            ExchangesFragment fragment = ((ExchangesFragment) ((MyBookActivity) mActivity).mSectionsPagerAdapter.getCurrentFragment());
 
-                switch (listType){
-                    case 0:
+            switch (listType) {
+                case 0:
+                    ExchangesAdapter archiveAdapter;
+                    LinearLayoutManager llm = (LinearLayoutManager) fragment.archiveBooksRV.getLayoutManager();
+                    if ((archiveAdapter = (ExchangesAdapter) fragment.archiveBooksRV.getAdapter()) != null) {
+                        archiveAdapter.addExchange(exchange);
+                        llm.scrollToPosition(0);
+                    } else {
+                        fragment.archiveBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(exchange)), 2, username, mActivity);
+                        fragment.archiveBooksRV.setAdapter(fragment.archiveBooksAdapter);
+                        fragment.archiveCV.setVisibility(View.VISIBLE);
+                    }
+
+                    if (exchangeList.size() == 0) {
                         fragment.takenBooksRV.setVisibility(View.GONE);
                         fragment.noTakenTV.setVisibility(View.VISIBLE);
                         fragment.takenMoreTV.setVisibility(View.INVISIBLE);
-                        break;
-                    default:
-                }
-
-            } else if (mActivity instanceof ShowMoreActivity){
-                mActivity.finish();
+                    }
+                    break;
+                default:
             }
+        } else if (mActivity instanceof ShowMoreActivity) {
+            mActivity.finish();
+        }
+    }
 
+    public void addExchange(Exchange ex) {
+        exchangeList.add(0, ex);
+        notifyItemInserted(0);
+
+    }
+
+    public void remove(Exchange ex){
+        int pos = -1;
+        for(Exchange e : exchangeList){
+           if(e.getExchangeId().equals(ex.getExchangeId())){
+               pos = exchangeList.indexOf(e);
+               break;
+           }
+        }
+        if(pos != -1){
+            exchangeList.remove(pos);
+        }
+        notifyItemRemoved(pos);
+
+        if (mActivity instanceof ShowMoreActivity && this.getItemCount() == 0) {
+            mActivity.finish();
         }
     }
 }
