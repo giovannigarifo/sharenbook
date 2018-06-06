@@ -21,6 +21,7 @@ import it.polito.mad.sharenbook.R;
  */
 public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
 
+    private Context context;
     private ArrayList<String> selectedStrings;
     private ArrayList<String> checkedCheckboxes;
 
@@ -28,6 +29,7 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
     public MultipleCheckableCheckboxAdapter(Context context, int textViewResourceId, String[] collection) {
 
         super(context, textViewResourceId, collection);
+        this.context = context;
         this.selectedStrings = new ArrayList<>();
         this.checkedCheckboxes = new ArrayList<>();
     }
@@ -96,6 +98,15 @@ public class MultipleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         this.selectedStrings.clear();
         this.checkedCheckboxes.clear();
         this.notifyDataSetChanged();
+    }
+
+    public void setAlreadyCheckedCheckboxes(List<Integer> alreadyChecked){
+
+        String[] book_categories = context.getResources().getStringArray(R.array.book_categories);
+
+        for( int i=0; i < alreadyChecked.size(); i++){
+            this.checkedCheckboxes.add(book_categories[alreadyChecked.get(i)]);
+        }
     }
 
     public void setCheckboxCheck(String cat){

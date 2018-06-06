@@ -329,6 +329,7 @@ public class EditBookActivity extends AppCompatActivity {
 
         if (!isNewBook) {
             List<Address> places = new ArrayList<>();
+
             try {
                 Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                 places.addAll(geocoder.getFromLocation(book.getLocation_lat(), book.getLocation_long(), 1));
@@ -342,6 +343,15 @@ public class EditBookActivity extends AppCompatActivity {
                 String bookLocation = places.get(0).getLocality() + ", " + places.get(0).getCountryName();
                 editbook_et_location.setText(bookLocation);
             }
+
+            //set previously selected book condition
+            conditionAdapter.setSelectedPosition(book.getBookConditions());
+            conditionAdapter.notifyDataSetChanged();
+
+            //set previously selected book categories
+            categoryAdapter.setAlreadyCheckedCheckboxes(book.getCategories());
+            categoryAdapter.notifyDataSetChanged();
+
         }
 
         if (book.getPageCount() != -1)
@@ -354,6 +364,9 @@ public class EditBookActivity extends AppCompatActivity {
         //tags to comma separated string
         String tags = Utils.listToCommaString(book.getTags());
         editbook_et_tags.setText(tags);
+
+
+
     }
 
 

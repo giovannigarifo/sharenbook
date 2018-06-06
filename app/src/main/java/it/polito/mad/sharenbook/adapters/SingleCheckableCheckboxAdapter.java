@@ -66,5 +66,9 @@ public class SingleCheckableCheckboxAdapter extends ArrayAdapter<String> {
         return selectedPosition;
     }
 
+    public void setSelectedPosition(int sel){
+        this.selectedPosition = sel;
+    }
+
 
 }
