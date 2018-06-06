@@ -415,7 +415,7 @@
     <string name="review_error">An error occour while uploading the review</string>
     <string name="writereview_creationTime_incipit">on date</string>
     <string name="request_give">Requests for your books</string>
-    <string name="request_take">Requests you did for others\' books</string>
+    <string name="request_take">Requests you did for other\'s books</string>
     <string name="no_give_requests">No pending requests for your books.</string>
     <string name="no_take_requests">You did not ask for a book! Give a look at the showcase or search for something of your interest.</string>
     <string name="no_reviews">This user has no reviews yet.</string>
