@@ -1,7 +1,6 @@
 package it.polito.mad.sharenbook;
 
-import android.content.Intent;
-import android.content.res.Configuration;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.location.Address;
 import android.os.Bundle;
@@ -30,14 +29,12 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mikhaellopez.circularimageview.CircularImageView;
-import com.onesignal.OneSignal;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -157,6 +154,8 @@ public class SearchActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
             Log.d("error", "Unable to retrieve search isValid from Algolia");
         });
+        helper = new InstantSearch(searcher);
+
 
         //start alwayis without selected filters
         this.filterState_selectedConditions = null;
@@ -274,7 +273,6 @@ public class SearchActivity extends AppCompatActivity
                 query.setFilters(searchFilters);
 
         searcher.setQuery(query);
-        helper = new InstantSearch(searcher);
         helper.search();
     }
 
@@ -726,6 +724,15 @@ public class SearchActivity extends AppCompatActivity
      */
 
     /**
+     * Clear the currently showed search result
+     */
+    public void clearCurrentSearchResult(){
+        this.searchResult.clear();
+        this.searchListFragment.updateDisplayedSearchResult();
+        this.searchMapFragment.updateDisplayedSearchResult();
+    }
+
+    /**
      * Set the Category, Conditions, Authors filters string
      */
     public void setSearchFilters(String userFilter) {
@@ -799,5 +806,21 @@ public class SearchActivity extends AppCompatActivity
         this.filterState_location = null;
     }
 
+
+    /**
+     * Shows a (#filters) to right of the sba_filter button
+     * @param filtersCounter : the number of setted filters
+     */
+    @SuppressLint("SetTextI18n")
+    public void showFilterCounterInFilterButton(int filtersCounter) {
+        this.sba_btn_filter.setText(getResources().getString(R.string.sba_btn_filters) + " (" + filtersCounter + ")");
+    }
+
+    /**
+     * Remove the (#filters) to the right of sba_filter button
+     */
+    public void clearFilterCounterInFilterButton() {
+        this.sba_btn_filter.setText(R.string.sba_btn_filters);
+    }
 
 }

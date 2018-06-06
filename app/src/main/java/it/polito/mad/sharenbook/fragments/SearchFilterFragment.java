@@ -57,6 +57,9 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     //buttons
     private Button btn_confirm, btn_undo, btn_clear;
 
+    //number of setted filters
+    private int filtersCounter;
+
 
     /**
      * Empty constructor is required for DialogFragment
@@ -89,7 +92,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
         getDialog().setTitle(title);
 
         //get the parent activity
-        searchActivity = (SearchActivity) getActivity();;
+        searchActivity = (SearchActivity) getActivity();
 
         return v;
     }
@@ -249,10 +252,19 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
             //clear the filters state saved in the search activity
             this.searchActivity.clearFiltersState();
 
+            //remove slected filter counter from the FILTERS button
+            this.searchActivity.clearFilterCounterInFilterButton();
+
             //remove focus from edittexts
             fragment_sf_et_address.clearFocus();
             fragment_sf_et_author.clearFocus();
             fragment_sf_et_tags.clearFocus();
+
+            //clear actual searchresult
+            this.searchActivity.clearCurrentSearchResult();
+
+            //close dialog
+            getDialog().dismiss();
         });
 
         /*
@@ -260,11 +272,16 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
          */
         btn_confirm.setOnClickListener(view -> {
 
+            //initially no filters setted
+            filtersCounter = 0;
+
             //create conditions filter
             String conditionFilter = "";
             ArrayList<String> selectedConditions = conditionAdapter.getSelectedStrings(); //get the condition selected by the user
 
             if (selectedConditions.size() > 0) {
+
+                filtersCounter++;
 
                 String[] bookConditions = getResources().getStringArray(R.array.book_conditions); //retrieve the array of all available conditions
 
@@ -288,6 +305,8 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
             if (selectedCategories.size() > 0) {
 
+                filtersCounter++;
+
                 String[] bookCategories = getResources().getStringArray(R.array.book_categories); //retrieve the array of all available conditions
 
                 for (int i = 0; i < selectedCategories.size(); i++) {
@@ -309,6 +328,8 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
             if (fragment_sf_et_tags.getText().toString().length() > 0) {
 
+                filtersCounter++;
+
                 String[] tags = fragment_sf_et_tags.getText().toString().split("\\s+");
                 List<String> splittedTags = Arrays.asList(tags);
 
@@ -326,8 +347,13 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
             //create author filter
             String authorFilter = "";
-            if (fragment_sf_et_author.getText().toString().length() > 0)
+            if (fragment_sf_et_author.getText().toString().length() > 0){
+
+                filtersCounter++;
+
                 authorFilter = "bookData.authors:'" + fragment_sf_et_author.getText().toString().trim().replaceAll("\'\"", "") + "'";
+            }
+
 
             //aggregate filters
             //"(" + conditionFilter + ") AND (" + categoryFilter + ") AND (" + tagsFilter + ") AND " + authorFilter;
@@ -361,6 +387,8 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
                 range = 1;
 
             if (!fragment_sf_et_address.getText().toString().isEmpty()) {
+
+                filtersCounter++;
 
                 String location = fragment_sf_et_address.getText().toString();
                 Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
@@ -405,6 +433,9 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
         this.searchActivity.setSearchFilters(aggregatedFilters);
         this.searchActivity.setFilterPlace(place); //can be null if no place selected
         this.searchActivity.setFilterRange(range); //can be -1 if no range selected
+
+        //add selected filters counter to the FILTERS button
+        this.searchActivity.showFilterCounterInFilterButton(filtersCounter);
 
         //fire search
         this.searchActivity.onSearchConfirmed(null);
