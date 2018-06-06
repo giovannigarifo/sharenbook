@@ -349,6 +349,7 @@
     <string name="contact_owner">Contact owner</string>
     <string name="borrow_book">Borrow this book</string>
     <string name="undo_borrow_book">Cancel borrow request</string>
+    <string name="undo_borrow_book_small">Cancel request</string>
     <string name="undo_borrow_book_msg">Do you really want to cancel the request? If yes, the owner will be alerted of your choice.</string>
     <string name="borrow_req_counter">Requests: %1$d</string>
     <string name="borrow_book_msg">Do you want to ask for this book? The owner will be alerted about your request and will decide to accept or not.</string>
@@ -392,6 +393,8 @@
     <string name="contact_borrower">Contact %1$s</string>
     <string name="not_reviewed">LEAVE A REVIEW</string>
     <string name="exchange_reviewed">REVIEWED</string>
+    <string name="return_book_title">Return book?</string>
+    <string name="return_book_message">Confirm only if you have already given it back to it\'s owner.</string>
 
 
     <!-- ======================== -->

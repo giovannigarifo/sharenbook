@@ -28,6 +28,7 @@ import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,6 +60,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
 
     private ValueEventListener requestedBooksListener;
     private ValueEventListener favoriteBooksListener;
+    private ChildEventListener lastBooksListener;
 
     private FusedLocationProviderClient mFusedLocationClient;
     private Location mLocation;
@@ -78,7 +80,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
     private TextView drawer_fullname;
     private TextView drawer_email;
 
-    public String selectedBookOwner, selectedBookId;
+    private ShowBooksAdapter lastBooksAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +145,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         // Remove listeners
         borrowRequestsDb.removeEventListener(requestedBooksListener);
         favoritesDb.removeEventListener(favoriteBooksListener);
+        booksDb.removeEventListener(lastBooksListener);
     }
 
     @Override
@@ -324,7 +327,7 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         }
 
                         // Specify an adapter
-                        ShowBooksAdapter lastBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
+                        lastBooksAdapter = new ShowBooksAdapter(getActivityContext(), bookList, mLocation, favoritesBookIdList, requestedBookIdList);
                         lastBooksRV.setAdapter(lastBooksAdapter);
                         findViewById(R.id.showcase_cw_lastbook).setVisibility(View.VISIBLE);
                     }
@@ -334,6 +337,35 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
                         Log.d("ERROR", "There was an error while fetching last book inserted");
                     }
                 });
+
+
+        lastBooksListener = booksDb.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                Book updatedBook = dataSnapshot.getValue(Book.class);
+                updatedBook.setBookId(dataSnapshot.getKey());
+
+                if (lastBooksAdapter != null)
+                    lastBooksAdapter.updateItem(updatedBook);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
         // Set MORE button listener
         findViewById(R.id.last_more_button).setOnClickListener(v -> {

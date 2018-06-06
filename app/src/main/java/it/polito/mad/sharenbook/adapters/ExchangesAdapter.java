@@ -43,6 +43,7 @@ import it.polito.mad.sharenbook.ShowOthersProfile;
 import it.polito.mad.sharenbook.WriteReviewActivity;
 import it.polito.mad.sharenbook.fragments.ExchangesFragment;
 import it.polito.mad.sharenbook.model.Exchange;
+import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.Utils;
 
@@ -173,7 +174,9 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
                         return true;
 
                     case R.id.return_book:
-                        returnBook(exchange);
+                        String title = mActivity.getString(R.string.return_book_title);
+                        String message = mActivity.getString(R.string.return_book_message);
+                        GenericFragmentDialog.show(mActivity, title, message, () -> returnBook(exchange));
                         return true;
 
                     default:

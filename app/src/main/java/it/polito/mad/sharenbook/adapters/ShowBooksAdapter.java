@@ -156,6 +156,20 @@ public class ShowBooksAdapter extends RecyclerView.Adapter<ShowBooksAdapter.View
         return mBookList.size();
     }
 
+    public void updateItem(Book updatedBook) {
+
+        for (int i = 0; i < mBookList.size(); i++) {
+
+            String bookId = mBookList.get(i).getBookId();
+
+            if (bookId.equals(updatedBook.getBookId())) {
+                mBookList.set(i, updatedBook);
+                this.notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
     private void showOptionsPopupMenu(View v, Book book) {
 
         final PopupMenu popup = new PopupMenu(mActivity, v);

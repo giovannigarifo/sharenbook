@@ -247,7 +247,7 @@ public class ShowBookActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    requestButton.setText(R.string.undo_borrow_book);
+                    requestButton.setText(R.string.undo_borrow_book_small);
                     requestButton.setOnClickListener(v -> {
                         String title = getString(R.string.undo_borrow_book);
                         String message = getString(R.string.undo_borrow_book_msg);

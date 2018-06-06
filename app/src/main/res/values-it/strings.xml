@@ -315,6 +315,7 @@
     <string name="contact_owner">Contatta proprietario</string>
     <string name="borrow_book">Richiedi in prestito</string>
     <string name="undo_borrow_book">Annulla richiesta</string>
+    <string name="undo_borrow_book_small">Annulla richiesta</string>
     <string name="undo_borrow_book_msg">Vuoi davvero eliminare la richiesta? Se si, il proprietario sarà informato della tua scelta.</string>
     <string name="del_from_favorites">Rimuovi dai preferiti</string>
     <string name="borrow_req_counter">Richieste: %1$d</string>
@@ -357,6 +358,8 @@
     <string name="contact_borrower">Contatta %1$s</string>
     <string name="not_reviewed">RECENSISCI</string>
     <string name="exchange_reviewed">RECENSITO</string>
+    <string name="return_book_title">Restituire libro?</string>
+    <string name="return_book_message">Conferma solo se hai già provveduto a restituire il libro al legittimo proprietario.</string>
 
     <!-- ======================== -->
     <!--    WriteReviewActivity   -->
@@ -383,5 +386,6 @@
     <string name="no_reviews">Questo utente non ha ancora alcuna recensione.</string>
     <string name="no_requests">Tutte le richieste sono state rimosse.</string>
     <string name="book_already_shared">Il libro è gia prestato; attendi il rientro per poterlo prestare nuovamente.</string>
+
 
 </resources>

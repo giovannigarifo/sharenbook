@@ -68,14 +68,13 @@
                             android:id="@+id/sba_cv1_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@color/colorAccent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
                                 android:src="@drawable/ic_edit_black_48dp"
-                                android:tint="@color/white"
+                                android:tint="@color/primaryText"
                                 android:layout_gravity="center"
                                 android:layout_margin="6dp"/>
 
@@ -85,7 +84,7 @@
                                 android:gravity="center"
                                 android:layout_gravity="center"
                                 android:text="@string/sba_insert_isbn"
-                                android:textColor="@android:color/white"
+                                android:textColor="@color/primaryText"
                                 android:textSize="20dp"
                                 android:paddingLeft="0dp"
                                 android:paddingRight="15dp" />
@@ -119,7 +118,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:text="@string/search"
-                                android:textColor="@color/white"/>
+                                android:textColor="@color/white"
+                                android:background="@color/colorAccent"/>
 
                         </LinearLayout>
 
@@ -135,8 +135,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@color/colorAccent">
+                    android:layout_weight="1">
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -150,7 +149,7 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="4dp"
                             android:src="@drawable/ic_barcode_64dp"
-                            android:tint="@color/white"/>
+                            android:tint="@color/primaryText"/>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -159,7 +158,7 @@
                             android:text="@string/sba_scan_isbn"
                             android:textSize="20dp"
                             android:gravity="center"
-                            android:textColor="@color/white"
+                            android:textColor="@color/primaryText"
                             android:layout_gravity="center"
                             android:paddingLeft="15dp"
                             android:paddingRight="15dp" />
@@ -176,8 +175,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="11dp"
                     android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@color/colorAccent">
+                    android:layout_weight="1">
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -190,7 +188,7 @@
                             android:layout_weight="1"
                             android:src="@drawable/ic_book_64dp"
                             android:layout_gravity="center"
-                            android:tint="@color/white"
+                            android:tint="@color/primaryText"
                             android:layout_marginTop="5dp"/>
 
                         <TextView
@@ -200,7 +198,7 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:text="@string/sba_manually_input"
-                            android:textColor="@color/white"
+                            android:textColor="@color/primaryText"
                             android:textSize="20dp"
                             android:paddingLeft="15dp"
                             android:paddingRight="15dp" />
