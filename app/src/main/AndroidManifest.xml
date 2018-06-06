@@ -72,7 +72,8 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
             android:name=".SearchActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

@@ -1,6 +1,7 @@
 package it.polito.mad.sharenbook;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -212,18 +214,24 @@ public class SearchActivity extends AppCompatActivity
         if (bundle != null) {
 
             this.searchInputText = bundle.getCharSequence("searchInputText"); //retrieve text from intent
+
+            //if there is a text to search, search it, if not show the keyboard
             if (searchInputText != null) {
+
                 this.sba_searchbar.setText(searchInputText.toString()); //set the searched text in the searchbar
+
                 //remove previous filters if present
                 clearFiltersState();
                 onSearchConfirmed(this.searchInputText.toString()); // Fire the search (async)
-            }
+
+            } else showKeyboard();
 
             //no fragment already displayes
             this.currentFragment = NO_FRAG;
 
             //add the search list fragment to the view
             addSearchListFragment();
+
         }
     }
 
@@ -263,8 +271,10 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onSearchConfirmed(CharSequence searchInputText) {
 
-        if (searchInputText != null)
+        if (searchInputText != null) {
             this.searchInputText = searchInputText;
+            this.sba_searchbar.setText(searchInputText.toString());
+        }
 
         //first search in algolia using the searchFilters
         Query query = new Query();
@@ -300,19 +310,22 @@ public class SearchActivity extends AppCompatActivity
                 filterByDistance(); //remove from searchResult books that are too far from the selected filter location
 
             /*
-             * display the fragment with the search results
+             * display the fragment with the search results and hide keyboard
              */
             if (this.searchResult.isEmpty())
                 Toast.makeText(getApplicationContext(), getString(R.string.sa_no_results), Toast.LENGTH_SHORT).show();
+            else hidekeyboard();
 
             // notify fragments that a new result is available
             this.searchListFragment.updateDisplayedSearchResult();
             this.searchMapFragment.updateDisplayedSearchResult();
-            this.sba_searchbar.disableSearch();
-            this.sba_searchbar.setText(this.searchInputText.toString());
 
-        } else
+        } else {
+
+            clearCurrentSearchResult();
             Toast.makeText(getApplicationContext(), R.string.sa_no_results, Toast.LENGTH_LONG).show();
+        }
+
     }
 
 
@@ -323,6 +336,29 @@ public class SearchActivity extends AppCompatActivity
     public void onSearchStateChanged(boolean enabled) {
         searchState = enabled ? "enabled" : "disabled";
         Log.d("debug", "search " + searchState);
+    }
+
+    /**
+     * hide keyboard programmatically from the search bar
+     */
+    public void hidekeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(this.sba_searchbar.getWindowToken(), 0);
+        }
+    }
+
+
+    /**
+     * show keyboard programmatically from the search bar
+     */
+    public void showKeyboard() {
+
+        if (this.sba_searchbar.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null)
+                imm.showSoftInput(this.sba_searchbar, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     /**
@@ -650,7 +686,7 @@ public class SearchActivity extends AppCompatActivity
     /**
      * Remove all the activity fragments from the fragments back stack
      */
-    private void freeFragmentBackStack(){
+    private void freeFragmentBackStack() {
 
         List<Fragment> searchFraments = getSupportFragmentManager().getFragments();
 
@@ -730,7 +766,7 @@ public class SearchActivity extends AppCompatActivity
     /**
      * Clear the currently showed search result
      */
-    public void clearCurrentSearchResult(){
+    public void clearCurrentSearchResult() {
         this.searchResult.clear();
         this.searchListFragment.updateDisplayedSearchResult();
         this.searchMapFragment.updateDisplayedSearchResult();
@@ -813,11 +849,13 @@ public class SearchActivity extends AppCompatActivity
 
     /**
      * Shows a (#filters) to right of the sba_filter button
+     *
      * @param filtersCounter : the number of setted filters
      */
     @SuppressLint("SetTextI18n")
     public void showFilterCounterInFilterButton(int filtersCounter) {
-        this.sba_btn_filter.setText(getResources().getString(R.string.sba_btn_filters) + " (" + filtersCounter + ")");
+        if (filtersCounter > 0)
+            this.sba_btn_filter.setText(getResources().getString(R.string.sba_btn_filters) + " (" + filtersCounter + ")");
     }
 
     /**
