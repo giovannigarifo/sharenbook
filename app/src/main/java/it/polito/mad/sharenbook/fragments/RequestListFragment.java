@@ -33,17 +33,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import it.polito.mad.sharenbook.ChatActivity;
-import it.polito.mad.sharenbook.MyBookActivity;
 import it.polito.mad.sharenbook.R;
-import it.polito.mad.sharenbook.ShowMoreActivity;
 import it.polito.mad.sharenbook.ShowOthersProfile;
-import it.polito.mad.sharenbook.adapters.ExchangesAdapter;
-import it.polito.mad.sharenbook.model.Exchange;
 import it.polito.mad.sharenbook.utils.GenericFragmentDialog;
 import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.UserInterface;
@@ -176,7 +171,10 @@ public class RequestListFragment extends Fragment {
 
             // Assign click listeners
             if (isBookShared) {
-                holder.acceptButton.setEnabled(false);
+                holder.acceptButton.setAlpha(.3F);
+                holder.acceptButton.setOnClickListener(v -> {
+                    Toast.makeText(mActivity.getApplicationContext(), R.string.book_already_shared, Toast.LENGTH_SHORT).show();
+                });
             } else {
                 holder.acceptButton.setOnClickListener(v -> {
                     requestListView.setClickable(false); // Avoid double click

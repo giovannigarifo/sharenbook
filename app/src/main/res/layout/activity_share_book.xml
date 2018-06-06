@@ -27,18 +27,6 @@
                 android:background="?attr/colorPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            <ImageView
-                android:id="@+id/sba_bg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginEnd="4dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/sba_bg_port" />
-
         </android.support.design.widget.AppBarLayout>
 
         <!-- ************************************** -->
@@ -64,12 +52,11 @@
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="7dp"
                     android:layout_marginLeft="11dp"
                     android:layout_marginRight="11dp"
-                    android:layout_marginTop="13dp"
-                    android:layout_weight="1.5">
+                    android:layout_marginTop="13dp">
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
@@ -139,12 +126,11 @@
                 <android.support.v7.widget.CardView
                     android:id="@+id/sba_scan_button"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="7dp"
                     android:layout_marginLeft="11dp"
                     android:layout_marginRight="11dp"
                     android:layout_marginTop="7dp"
-                    android:layout_weight="1"
                     app:cardBackgroundColor="@color/colorAccent">
 
                     <LinearLayout
@@ -178,12 +164,11 @@
                 <android.support.v7.widget.CardView
                     android:id="@+id/sba_manual_button"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="13dp"
                     android:layout_marginLeft="11dp"
                     android:layout_marginRight="11dp"
                     android:layout_marginTop="7dp"
-                    android:layout_weight="1"
                     app:cardBackgroundColor="@color/colorAccent">
 
                     <LinearLayout
@@ -197,7 +182,7 @@
                             android:src="@drawable/ic_book_64dp"
                             android:layout_gravity="center"
                             android:tint="@color/white"
-                            android:layout_marginLeft="15dp"/>
+                            android:layout_marginLeft="15dp" />
 
                         <TextView
                             android:layout_width="match_parent"

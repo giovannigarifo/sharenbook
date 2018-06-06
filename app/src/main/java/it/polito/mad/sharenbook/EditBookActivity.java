@@ -2,7 +2,6 @@ package it.polito.mad.sharenbook;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -67,6 +66,7 @@ import it.polito.mad.sharenbook.utils.GlideApp;
 import it.polito.mad.sharenbook.utils.ImageUtils;
 import it.polito.mad.sharenbook.utils.InputValidator;
 import it.polito.mad.sharenbook.utils.PermissionsHandler;
+import it.polito.mad.sharenbook.utils.UpdatableFragmentDialog;
 import it.polito.mad.sharenbook.utils.UserInterface;
 import it.polito.mad.sharenbook.utils.Utils;
 import it.polito.mad.sharenbook.views.ExpandableHeightGridView;
@@ -117,7 +117,6 @@ public class EditBookActivity extends AppCompatActivity {
     private StorageReference bookImagesStorage;
 
     // ProgressDialog
-    private ProgressDialog progressDialog;
     private int photoLoaded;
 
     // Boolean value to check if a new book should be added
@@ -144,9 +143,6 @@ public class EditBookActivity extends AppCompatActivity {
         // Setup FireBase
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         bookImagesStorage = FirebaseStorage.getInstance().getReference(getString(R.string.book_images_key));
-
-        // Setup progress dialog
-        progressDialog = new ProgressDialog(EditBookActivity.this, ProgressDialog.STYLE_SPINNER);
 
         // Setup image utils class
         imageUtils = new ImageUtils(this);
@@ -287,7 +283,6 @@ public class EditBookActivity extends AppCompatActivity {
 
 
 
-
     /**
      * Saves the state of the activity when dealing with system wide events (e.g. rotation)
      *
@@ -302,14 +297,6 @@ public class EditBookActivity extends AppCompatActivity {
         outState.putStringArrayList("removedPhotos", removedPhotos);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
 
     /**
      * Loads all the info obtained from Google Books API into the view
@@ -460,9 +447,7 @@ public class EditBookActivity extends AppCompatActivity {
     private void firebaseSaveBook() {
 
         // Show ProgressDialog
-        progressDialog.setMessage(getText(R.string.default_saving_on_firebase));
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        UpdatableFragmentDialog.show(this, null, getString(R.string.default_saving_on_firebase));
 
         // Get Firebase root node reference
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -592,7 +577,7 @@ public class EditBookActivity extends AppCompatActivity {
         }
 
         Tasks.whenAllComplete(taskList).addOnCompleteListener(task -> {
-            progressDialog.dismiss();
+            UpdatableFragmentDialog.dismiss();
             Toast.makeText(getApplicationContext(), R.string.default_book_saved, Toast.LENGTH_LONG).show();
             Intent i = new Intent(getApplicationContext(), ShowCaseActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -770,7 +755,7 @@ public class EditBookActivity extends AppCompatActivity {
     private void updateProgressDialogMessage(int num, int den) {
         if (num <= den) {
             String msg = getString(R.string.default_saving_photo) + num + getString(R.string.of_preposition) + den + getString(R.string.default_ongoing);
-            progressDialog.setMessage(msg);
+            UpdatableFragmentDialog.updateMessage(msg);
         }
     }
 

@@ -339,6 +339,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         findViewById(R.id.last_more_button).setOnClickListener(v -> {
             Intent i = new Intent(this, ShowMoreActivity.class);
             i.putExtra("moreType", ShowMoreActivity.LAST_BOOKS);
+            if (mLocation != null) {
+                i.putExtra("latitude", mLocation.getLatitude());
+                i.putExtra("longitude", mLocation.getLongitude());
+            }
             startActivity(i);
         });
     }
@@ -382,6 +386,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         findViewById(R.id.favorites_more_button).setOnClickListener(v -> {
             Intent i = new Intent(this, ShowMoreActivity.class);
             i.putExtra("moreType", ShowMoreActivity.FAVORITES_BOOKS);
+            if (mLocation != null) {
+                i.putExtra("latitude", mLocation.getLatitude());
+                i.putExtra("longitude", mLocation.getLongitude());
+            }
             startActivity(i);
         });
     }
@@ -425,6 +433,10 @@ public class ShowCaseActivity extends AppCompatActivity implements NavigationVie
         findViewById(R.id.closebooks_more_button).setOnClickListener(v -> {
             Intent i = new Intent(this, ShowMoreActivity.class);
             i.putExtra("moreType", ShowMoreActivity.CLOSE_BOOKS);
+            if (mLocation != null) {
+                i.putExtra("latitude", mLocation.getLatitude());
+                i.putExtra("longitude", mLocation.getLongitude());
+            }
             startActivity(i);
         });
     }

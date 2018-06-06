@@ -105,9 +105,9 @@
 
     <TextView
         android:id="@+id/exchange_reviewed"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:textSize="13sp"
         android:visibility="gone"
         android:textColor="@color/greenButton"
@@ -119,7 +119,7 @@
 
     <TextView
         android:id="@+id/req_counter"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:textSize="13sp"
@@ -133,7 +133,7 @@
 
     <TextView
         android:id="@+id/undo_req"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:textSize="13sp"
@@ -147,9 +147,8 @@
 
     <Button
         android:id="@+id/exchange_not_reviewed"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="28dp"
-        android:layout_marginBottom="9dp"
         android:layout_marginTop="4dp"
         android:visibility="gone"
         android:text="@string/not_reviewed"
@@ -162,15 +161,10 @@
 
     <Button
         android:id="@+id/undo_req_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="9dp"
         android:layout_marginTop="4dp"
         android:visibility="gone"
-        android:paddingEnd="4dp"
-        android:paddingRight="4dp"
-        android:paddingStart="4dp"
-        android:paddingLeft="4dp"
         android:text="@string/undo_borrow_req"
         android:textColor="@color/redButton"
         android:textSize="10sp"

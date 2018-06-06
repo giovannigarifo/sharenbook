@@ -382,5 +382,6 @@
     <string name="no_take_requests">Non hai ancora richiesto libri! Dai uno sguardo alla bacheca o ricerca qualcosa di tuo interesse.</string>
     <string name="no_reviews">Questo utente non ha ancora alcuna recensione.</string>
     <string name="no_requests">Tutte le richieste sono state rimosse.</string>
+    <string name="book_already_shared">Il libro è gia prestato; attendi il rientro per poterlo prestare nuovamente.</string>
 
 </resources>

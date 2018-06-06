@@ -27,7 +27,6 @@
                 android:layout_marginBottom="10dp"
                 android:padding="16dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
                 android:foreground="?android:attr/selectableItemBackground">
 
 
@@ -99,7 +98,6 @@
                 android:layout_marginBottom="95dp"
                 android:padding="16dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
                 android:foreground="?android:attr/selectableItemBackground">
 
 
