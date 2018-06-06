@@ -60,7 +60,7 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
             context.startActivity(myBookActivity);
 
         }
-        else if (notificationType != null && notificationType.equals("AcceptedRequest")){
+        else if (notificationType != null && (notificationType.equals("AcceptedRequest")||notificationType.equals("returnedBook"))){
 
             Intent myBookActivity = new Intent(context, MyBookActivity.class);
             myBookActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

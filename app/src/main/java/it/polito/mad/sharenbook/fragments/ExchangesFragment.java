@@ -154,7 +154,6 @@ public class ExchangesFragment extends Fragment {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(takenChildAddedEnabled){
-                    Log.d("taken onChildAdded", "added Book");
 
                     Exchange ex = dataSnapshot.getValue(Exchange.class);
                     ex.setExchangeId(dataSnapshot.getKey());
@@ -252,7 +251,6 @@ public class ExchangesFragment extends Fragment {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(givenChildAddedEnabled){
-                    Log.d("onChildAdded called", "added Book");
 
                     Exchange ex = dataSnapshot.getValue(Exchange.class);
                     ex.setExchangeId(dataSnapshot.getKey());
@@ -311,8 +309,6 @@ public class ExchangesFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        Log.d("singleValueList started", "ok");
-
                         givenChildAddedEnabled = true;
 
                         List<Exchange> takenList = new ArrayList<>();
@@ -353,7 +349,6 @@ public class ExchangesFragment extends Fragment {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(archiveChildAddedEnabled){
-                    Log.d("archive onChildAdded", "added Book");
 
                     Exchange ex = dataSnapshot.getValue(Exchange.class);
                     ex.setExchangeId(dataSnapshot.getKey());
@@ -405,7 +400,7 @@ public class ExchangesFragment extends Fragment {
         archiveBooksRef.addChildEventListener(archiveEventListener);
 
         // Load Archive Book RV
-        archiveBooksRef.orderByChild("creationTime")
+        archiveBooksRef.orderByChild("creationTime").limitToLast(20)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

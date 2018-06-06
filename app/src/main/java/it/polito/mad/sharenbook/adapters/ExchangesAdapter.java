@@ -127,6 +127,7 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
 
             if (!exchange.isReviewed()) {
 
+                holder.tvReviewDone.setVisibility(View.GONE);
                 holder.btnNotReviewed.setVisibility(View.VISIBLE);
 
                 holder.btnNotReviewed.setOnClickListener(v -> {
@@ -144,6 +145,7 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
                 });
 
             } else {
+                holder.btnNotReviewed.setVisibility(View.GONE);
                 holder.tvReviewDone.setVisibility(View.VISIBLE);
             }
 

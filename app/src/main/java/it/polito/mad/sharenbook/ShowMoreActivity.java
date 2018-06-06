@@ -62,7 +62,7 @@ public class ShowMoreActivity extends AppCompatActivity {
     private DatabaseReference giveRequestsRef, takeRequestsRef, takenBooksRef, givenBooksRef, archiveBooksRef;
 
     private ValueEventListener requestedBooksListener, favoriteBooksListener;
-    private ChildEventListener giveRequestsListener, takeRequestsListener;
+    private ChildEventListener giveRequestsListener, takeRequestsListener, takenBooksListener;
 
     private PendingRequestsAdapter giveReqsAdapter, takeReqsAdapter;
 
@@ -71,6 +71,7 @@ public class ShowMoreActivity extends AppCompatActivity {
     private HashSet<String> requestedBookIdList;
 
     private RecyclerView moreBooksRV;
+    private ExchangesAdapter takenBooksAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +144,8 @@ public class ShowMoreActivity extends AppCompatActivity {
             giveRequestsRef.removeEventListener(giveRequestsListener);
         } else if (moreType == TAKE_REQUESTS) {
             takeRequestsRef.removeEventListener(takeRequestsListener);
+        } else if (moreType == TAKEN_BOOKS) {
+            takenBooksRef.removeEventListener(takenBooksListener);
         }
     }
 
@@ -158,6 +161,8 @@ public class ShowMoreActivity extends AppCompatActivity {
         } else if (moreType == TAKE_REQUESTS) {
             takeReqsAdapter.clear();
             takeRequestsRef.addChildEventListener(takeRequestsListener);
+        } else if (moreType == TAKEN_BOOKS){
+            takenBooksRef.addChildEventListener(takenBooksListener);
         }
     }
 
@@ -200,6 +205,43 @@ public class ShowMoreActivity extends AppCompatActivity {
 
         requestedBookIdList = new HashSet<>();
         favoritesBookIdList = new LinkedHashSet<>();
+
+        //Create takenBooks listener
+        takenBooksListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Exchange ex = dataSnapshot.getValue(Exchange.class);
+                ex.setExchangeId(dataSnapshot.getKey());
+
+                if(takenBooksAdapter != null){
+                    takenBooksAdapter.remove(ex);
+
+                    if(takenBooksAdapter.getItemCount() == 0){
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
 
         // Create borrow requested books listener
         requestedBooksListener = new ValueEventListener() {
@@ -634,7 +676,7 @@ public class ShowMoreActivity extends AppCompatActivity {
                         }
 
                         // Specify an adapter
-                        ExchangesAdapter takenBooksAdapter = new ExchangesAdapter(takenList, 0, username, getActivityContext());
+                        takenBooksAdapter = new ExchangesAdapter(takenList, 0, username, getActivityContext());
                         moreBooksRV.setAdapter(takenBooksAdapter);
 
                     }
