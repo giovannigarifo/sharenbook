@@ -108,8 +108,8 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putStringArrayList("selectedConditions",conditionAdapter.getSelectedStrings());
-        outState.putStringArrayList("selectedCategories",categoryAdapter.getSelectedStrings());
+        outState.putStringArrayList("selectedConditions", conditionAdapter.getSelectedStrings());
+        outState.putStringArrayList("selectedCategories", categoryAdapter.getSelectedStrings());
         outState.putString("address", fragment_sf_et_address.getText().toString());
         outState.putInt("range", fragment_sf_sb_range.getProgress());
         outState.putString("author", fragment_sf_et_author.getText().toString());
@@ -135,7 +135,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
         String[] book_categories = getResources().getStringArray(R.array.book_categories);
 
         //load filter state
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
 
             //load temporary selection if bundle contains data, e.g. rotation happened
             conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions,
@@ -149,7 +149,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
             fragment_sf_et_author.setText(savedInstanceState.getString("author"));
             fragment_sf_et_tags.setText(savedInstanceState.getString("tags"));
 
-        }else if(this.searchActivity.filtersStatesArePresent()){
+        } else if (this.searchActivity.filtersStatesArePresent()) {
 
             //load previously selected filters if they are present, e.g. previous filters setted by user and saved in SearchActivity
             conditionAdapter = new MultipleCheckableCheckboxAdapter(this.getContext(), R.layout.item_checkbox, book_conditions,
@@ -264,9 +264,10 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
             this.searchActivity.clearCurrentSearchResult();
 
             //if the user cleared the filters but there is an input text inserted, search for it without filters
-            if(searchActivity.searchInputText != null && searchActivity.searchInputText != ""){
-                this.searchActivity.onSearchConfirmed(searchActivity.searchInputText.toString());
-            }
+            if (searchActivity.searchInputText != null)
+                if (searchActivity.searchInputText != "")
+                    this.searchActivity.onSearchConfirmed(searchActivity.searchInputText.toString());
+
 
             //close dialog
             getDialog().dismiss();
@@ -352,7 +353,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
             //create author filter
             String authorFilter = "";
-            if (fragment_sf_et_author.getText().toString().length() > 0){
+            if (fragment_sf_et_author.getText().toString().length() > 0) {
 
                 filtersCounter++;
 
@@ -433,7 +434,7 @@ public class SearchFilterFragment extends AppCompatDialogFragment {
 
     }
 
-    public void confirmSearchAndSaveFiltersState(String aggregatedFilters, Address place, int range){
+    public void confirmSearchAndSaveFiltersState(String aggregatedFilters, Address place, int range) {
 
         this.searchActivity.setSearchFilters(aggregatedFilters);
         this.searchActivity.setFilterPlace(place); //can be null if no place selected

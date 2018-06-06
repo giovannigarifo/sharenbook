@@ -306,8 +306,9 @@ public class SearchActivity extends AppCompatActivity
             this.searchResult.clear();
             this.searchResult.addAll(parseResults(results.hits)); //parse all algolia results and add them into collection
 
-            if (filterRange > 0 && filterPlace != null)
-                filterByDistance(); //remove from searchResult books that are too far from the selected filter location
+            if (filterRange > 0)
+                if (filterPlace != null)
+                    filterByDistance(); //remove from searchResult books that are too far from the selected filter location
 
             /*
              * display the fragment with the search results and hide keyboard
@@ -844,6 +845,9 @@ public class SearchActivity extends AppCompatActivity
         this.filterState_author = null;
         this.filterState_range = -1;
         this.filterState_location = null;
+
+        filterRange = -1;
+        filterPlace = null;
     }
 
 
