@@ -260,7 +260,7 @@ public class ExchangesFragment extends Fragment {
                         noGivenTV.setVisibility(View.GONE);
                         givenMoreTV.setVisibility(View.VISIBLE);
 
-                        givenBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 0, username, getActivity());
+                        givenBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 1, username, getActivity());
                         givenBooksRV.setAdapter(givenBooksAdapter);
                     } else {
                         givenBooksAdapter.addExchange(ex);
@@ -357,7 +357,7 @@ public class ExchangesFragment extends Fragment {
                         archiveBooksRV.setVisibility(View.VISIBLE);
                         archiveMoreTV.setVisibility(View.VISIBLE);
 
-                        archiveBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 0, username, getActivity());
+                        archiveBooksAdapter = new ExchangesAdapter(new ArrayList<>(Arrays.asList(ex)), 2, username, getActivity());
                         archiveBooksRV.setAdapter(archiveBooksAdapter);
                     } else {
                         archiveBooksAdapter.addExchange(ex);
