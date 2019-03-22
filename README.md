@@ -1,15 +1,12 @@
-# Lab2
+# Share'n'Book
 
-Repository for the lab2 exercise of MAD: 
-- Activity for ad creation of a book
-- Firebase support
-- Navigation scheme
+Share'n'Book is an Android mobile application for book sharing. 
+
+The application has been developed as a mandatory project for the [Mobile App Development](https://didattica.polito.it/pls/portal30/sviluppo.guide.visualizza?p_cod_ins=01PFPOV&p_a_acc=2013&p_header=S&p_esa=N&p_ridotto=N&p_lang=EN) course of the master degree in Computer Engineering of Politecnico di Torino, the application has been graded 15/15.
+
+It uses Firebase as backend and Algolia to build the search index.
 
 
-## Resources
+## Slide and Screenshots
 
-* gitignore for android studio project: https://gist.github.com/iainconnor/8605514
-
-* design support library with material design components (e.g. floating action button): https://developer.android.com/topic/libraries/support-library/packages.html#design
-
-* Glide library for image handling: https://bumptech.github.io/glide/
+The slides of the presentation of the project, where you can find some screenshots and additional details, can be found at [this link](https://github.com/giovannigarifo/sharenbook/blob/master/sharenbook_presentation_slides.pdf).
