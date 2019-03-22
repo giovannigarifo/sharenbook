@@ -9,4 +9,4 @@ It uses Firebase as backend and Algolia to build the search index.
 
 ## Slide and Screenshots
 
-The slides of the presentation of the project, where you can find some screenshots and additional details, can be found at [this link](https://github.com/giovannigarifo/sharenbook/blob/master/sharenbook_presentation_slides.pdf).
+The slides of the presentation of the project, where you can find some screenshots and additional details, can be found at [this link](https://github.com/giovannigarifo/sharenbook/blob/master/Sharenbook_presentation_slides.pdf).
