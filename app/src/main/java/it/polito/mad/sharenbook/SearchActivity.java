@@ -23,9 +23,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.algolia.instantsearch.helpers.InstantSearch;
-import com.algolia.instantsearch.helpers.Searcher;
-import com.algolia.instantsearch.model.SearchResults;
+import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.ui.helpers.InstantSearch;
+import com.algolia.instantsearch.core.model.SearchResults;
 import com.algolia.search.saas.Query;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;

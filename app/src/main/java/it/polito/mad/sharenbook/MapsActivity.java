@@ -22,8 +22,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.algolia.instantsearch.helpers.InstantSearch;
-import com.algolia.instantsearch.helpers.Searcher;
+import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
